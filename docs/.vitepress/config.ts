@@ -69,6 +69,14 @@ export default defineConfig({
             { text: "Plugin System", link: "/guide/plugins" },
           ],
         },
+        {
+          text: "3D Charts",
+          items: [
+            { text: "Getting Started", link: "/guide/3d/getting-started" },
+            { text: "Camera Controls", link: "/guide/3d/camera-controls" },
+            { text: "Customizing Axes", link: "/guide/3d/customizing-axes" },
+          ],
+        },
       ],
       "/api/": [
         {
@@ -116,6 +124,19 @@ export default defineConfig({
             { text: "Custom Themes", link: "/api/custom-themes" },
           ],
         },
+        {
+          text: "3D API",
+          items: [
+            { text: "Overview", link: "/api/3d/" },
+            { text: "Bubble3DRenderer", link: "/api/3d/bubble-renderer" },
+            { text: "Axes3D", link: "/api/3d/axes" },
+            { text: "OrbitController", link: "/api/3d/controls" },
+            { text: "OrbitCamera", link: "/api/3d/camera" },
+            { text: "Series Types", link: "/api/3d/series" },
+            { text: "Math Utilities", link: "/api/3d/math" },
+            { text: "Types", link: "/api/3d/types" },
+          ],
+        },
       ],
       "/examples/": [
         {
@@ -141,6 +162,22 @@ export default defineConfig({
             { text: "Stacked Charts", link: "/examples/stacked-charts" },
             { text: "Statistics Panel", link: "/examples/statistics" },
             { text: "Tooltip Showcase", link: "/examples/tooltips" },
+          ],
+        },
+        {
+          text: "3D Charts",
+          items: [
+            { text: "Overview", link: "/examples/3d/" },
+            { text: "Bubble Chart", link: "/examples/3d/bubble-chart" },
+            { text: "Scatter Chart", link: "/examples/3d/scatter-chart" },
+            { text: "Surface Mesh", link: "/examples/3d/surface-mesh" },
+            { text: "Waterfall Chart", link: "/examples/3d/waterfall-chart" },
+            { text: "Point Line", link: "/examples/3d/point-line-chart" },
+            { text: "Column Chart", link: "/examples/3d/column-chart" },
+            { text: "Ribbon Chart", link: "/examples/3d/ribbon-chart" },
+            { text: "Area Chart", link: "/examples/3d/area-chart" },
+            { text: "Heatmap", link: "/examples/3d/heatmap-chart" },
+            { text: "Impulse Chart", link: "/examples/3d/impulse-chart" },
           ],
         },
         // =================================================================
