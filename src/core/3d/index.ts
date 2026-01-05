@@ -35,8 +35,12 @@
  * ```
  */
 
-// Main renderer
+// Main renderers
 export { Bubble3DRenderer, type Bubble3DRendererOptions } from './Bubble3DRenderer';
+export { SurfaceMesh3DRenderer, type SurfaceMesh3DRendererOptions } from './SurfaceMesh3DRenderer';
+
+// Axes renderer
+export { Axes3D, type Axes3DOptions, type AxisLabel3D } from './Axes3D';
 
 // Math utilities
 export { Mat4, Vec3 } from './math';

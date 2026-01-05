@@ -17,6 +17,7 @@ import {
   deleteProgramBundle,
   type ProgramBundle3D,
 } from './shader/programs';
+import { Axes3D, type Axes3DOptions } from './Axes3D';
 import type {
   Bubble3DData,
   Bubble3DStyle,
@@ -32,6 +33,10 @@ export interface Bubble3DRendererOptions extends Renderer3DOptions {
   controls?: OrbitControllerOptions;
   style?: Bubble3DStyle;
   autoRender?: boolean;
+  /** Axes configuration */
+  axes?: Axes3DOptions;
+  /** Show axes (default: true) */
+  showAxes?: boolean;
 }
 
 export class Bubble3DRenderer {
@@ -43,9 +48,11 @@ export class Bubble3DRenderer {
   private mesh: InstancedMesh;
   private camera: OrbitCamera;
   private controller: OrbitController;
+  private axes: Axes3D | null = null;
   
   private backgroundColor: [number, number, number, number] = [0.05, 0.05, 0.1, 1];
   private style: Required<Bubble3DStyle>;
+  private showAxes: boolean;
   
   private instanceData: InstanceData | null = null;
   private bounds: Bounds3D | null = null;
@@ -66,6 +73,7 @@ export class Bubble3DRenderer {
     this.canvas = options.canvas;
     this.dpr = window.devicePixelRatio || 1;
     this.autoRender = options.autoRender ?? true;
+    this.showAxes = options.showAxes ?? true;
     
     if (options.backgroundColor) {
       this.backgroundColor = options.backgroundColor;
@@ -130,6 +138,11 @@ export class Bubble3DRenderer {
       this.needsRender = true;
       this.emitEvent('cameraChange');
     });
+    
+    // Create axes renderer
+    if (this.showAxes) {
+      this.axes = new Axes3D(this.gl, options.axes);
+    }
     
     // Handle resize
     this.resize();
@@ -207,6 +220,11 @@ export class Bubble3DRenderer {
     // Calculate bounds
     this.bounds = this.calculateBounds(data.positions);
     
+    // Update axes with new bounds
+    if (this.axes && this.bounds) {
+      this.axes.updateBounds(this.bounds);
+    }
+    
     // Update mesh
     this.mesh.updateInstances(this.instanceData);
     
@@ -267,6 +285,15 @@ export class Bubble3DRenderer {
     
     if (!this.instanceData) return;
     
+    // Get view projection matrix
+    const viewProj = camera.getViewProjectionMatrix();
+    
+    // Render axes first (behind bubbles)
+    if (this.axes) {
+      this.axes.render(viewProj);
+    }
+    
+    // Now set up and render bubbles
     // Select program based on lighting
     const program = style.enableLighting
       ? programs.bubbleProgram
@@ -275,7 +302,6 @@ export class Bubble3DRenderer {
     gl.useProgram(program.program);
     
     // Set uniforms
-    const viewProj = camera.getViewProjectionMatrix();
     gl.uniformMatrix4fv(program.uniforms['u_viewProjection'], false, viewProj);
     gl.uniform1f(program.uniforms['u_opacity'], style.opacity);
     
@@ -423,6 +449,43 @@ export class Bubble3DRenderer {
   }
   
   /**
+   * Get axis labels for 2D text overlay rendering.
+   * Returns labels with world positions that need to be projected to screen.
+   */
+  getAxisLabels(): { text: string; worldPosition: [number, number, number]; axis: string; color: [number, number, number] }[] {
+    if (!this.axes) return [];
+    return this.axes.getLabels();
+  }
+  
+  /**
+   * Project world coordinates to screen coordinates.
+   * Useful for positioning 2D overlay text.
+   */
+  projectToScreen(worldPos: [number, number, number]): { x: number; y: number; visible: boolean } {
+    if (!this.axes) return { x: 0, y: 0, visible: false };
+    
+    const viewProj = this.camera.getViewProjectionMatrix();
+    const rect = this.canvas.getBoundingClientRect();
+    
+    return this.axes.projectToScreen(worldPos, viewProj, rect.width, rect.height);
+  }
+  
+  /**
+   * Get the current view-projection matrix.
+   */
+  getViewProjectionMatrix(): Float32Array {
+    return this.camera.getViewProjectionMatrix();
+  }
+  
+  /**
+   * Get canvas dimensions.
+   */
+  getCanvasSize(): { width: number; height: number } {
+    const rect = this.canvas.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+  }
+  
+  /**
    * Get WebGL context info.
    */
   getContextInfo(): Record<string, any> {
@@ -448,6 +511,10 @@ export class Bubble3DRenderer {
     this.controller.destroy();
     this.mesh.destroy();
     deleteProgramBundle(this.gl, this.programs);
+    
+    if (this.axes) {
+      this.axes.destroy();
+    }
     
     this.eventListeners.clear();
   }

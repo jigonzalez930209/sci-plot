@@ -32,7 +32,7 @@ export class OrbitController {
   // Settings
   rotateSpeed = 0.005;
   zoomSpeed = 0.001;
-  panSpeed = 0.01;
+  panSpeed = 0.003;  // Reduced for less sensitivity
   enableRotate = true;
   enableZoom = true;
   enablePan = true;
@@ -193,7 +193,8 @@ export class OrbitController {
         this.notifyChange();
       } else if (this.isPanning && this.enablePan) {
         const panScale = this.camera.radius * this.panSpeed;
-        this.camera.pan(-deltaX * panScale, deltaY * panScale);
+        // Invert Y so that moving mouse up moves content up (natural direction)
+        this.camera.pan(-deltaX * panScale, -deltaY * panScale);
         this.notifyChange();
       }
       
