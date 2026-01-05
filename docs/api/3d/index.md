@@ -18,6 +18,13 @@ Specialized renderer for bubble/scatter visualizations with instanced rendering.
 import { Bubble3DRenderer } from 'scichart-engine/core/3d';
 ```
 
+### Axes3D
+3D axis renderer with wall grids, tick marks, and labels.
+
+```typescript
+import { Axes3D } from 'scichart-engine/core/3d';
+```
+
 ## Series Renderers
 
 | Class | Type | Description |
@@ -53,6 +60,9 @@ See [Types Reference](/api/3d/types) for all TypeScript interfaces.
 ## Quick Links
 
 - [Bubble3DRenderer](/api/3d/bubble-renderer)
-- [Series Types](/api/3d/series)
+- [Axes3D](/api/3d/axes)
+- [OrbitController](/api/3d/controls)
 - [OrbitCamera](/api/3d/camera)
+- [Series Types](/api/3d/series)
 - [Math Utilities](/api/3d/math)
+
