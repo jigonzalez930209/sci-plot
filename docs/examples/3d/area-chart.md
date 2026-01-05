@@ -2,7 +2,7 @@
 
 Filled area under a 3D line (curtain effect).
 
-<demo src="area-3d" />
+<ChartDemo3D type="area-3d" />
 
 ## Overview
 

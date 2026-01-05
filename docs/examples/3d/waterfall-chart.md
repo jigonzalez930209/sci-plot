@@ -2,7 +2,7 @@
 
 Cascading spectral visualization for time-series and frequency data.
 
-<demo src="waterfall-3d" />
+<ChartDemo3D type="waterfall-3d" />
 
 ## Overview
 

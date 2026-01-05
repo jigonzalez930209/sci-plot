@@ -2,7 +2,7 @@
 
 Vertical lines from base plane to data points.
 
-<demo src="impulse-3d" />
+<ChartDemo3D type="impulse-3d" />
 
 ## Overview
 

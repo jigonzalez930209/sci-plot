@@ -2,7 +2,7 @@
 
 Extruded line with variable width in 3D space.
 
-<demo src="ribbon-3d" />
+<ChartDemo3D type="ribbon-3d" />
 
 ## Overview
 

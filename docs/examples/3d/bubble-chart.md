@@ -2,7 +2,7 @@
 
 Interactive 3D bubble chart with instanced rendering for high performance.
 
-<demo src="bubble-3d" />
+<ChartDemo3D type="bubble-3d" />
 
 ## Overview
 

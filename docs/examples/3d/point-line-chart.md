@@ -2,7 +2,7 @@
 
 Connected points in 3D space with optional markers.
 
-<demo src="point-line-3d" />
+<ChartDemo3D type="point-line-3d" />
 
 ## Overview
 

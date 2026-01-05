@@ -2,7 +2,7 @@
 
 3D bar/column visualization for categorical data.
 
-<demo src="column-3d" />
+<ChartDemo3D type="column-3d" />
 
 ## Overview
 

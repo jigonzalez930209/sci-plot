@@ -2,7 +2,7 @@
 
 Colored grid visualization on the XZ plane.
 
-<demo src="heatmap-3d" />
+<ChartDemo3D type="heatmap-3d" />
 
 ## Overview
 

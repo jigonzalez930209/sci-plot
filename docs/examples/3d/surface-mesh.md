@@ -2,7 +2,7 @@
 
 Render height-mapped surfaces with colormap visualization.
 
-<demo src="surface-mesh-3d" />
+<ChartDemo3D type="surface-mesh-3d" />
 
 ## Overview
 

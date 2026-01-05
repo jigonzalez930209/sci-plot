@@ -2,7 +2,7 @@
 
 Point cloud visualization in 3D space.
 
-<demo src="scatter-3d" />
+<ChartDemo3D type="scatter-3d" />
 
 ## Overview
 
