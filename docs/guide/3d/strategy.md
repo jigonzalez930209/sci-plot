@@ -170,8 +170,9 @@ renderer.on('render', (e) => {
 | Pan | Click der + arrastrar | — |
 
 ## Próximos pasos (futuros)
-- [ ] Ejes 3D con labels y grid
+- [x] Ejes 3D con labels y grid ✅ **Implementado**
 - [ ] Raycasting para selección de burbujas
 - [ ] Tooltips al hover
 - [ ] Exportar imagen/snapshot
 - [ ] Soporte WebGL1 con extensión `ANGLE_instanced_arrays`
+
