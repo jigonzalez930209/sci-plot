@@ -449,15 +449,6 @@ async function initWaterfallDemo(canvas: HTMLCanvasElement) {
   
   const slices: any[] = []
   
-  // Hot colormap
-  const hot = (t: number): [number, number, number] => {
-    return [
-      Math.min(1, t * 2.5),
-      Math.max(0, Math.min(1, t * 2.5 - 0.8)),
-      Math.max(0, Math.min(1, t * 2.5 - 1.6)),
-    ]
-  }
-  
   for (let s = 0; s < slicesCount; s++) {
     const yValues = new Float32Array(freqBins)
     const z = s * 0.2
@@ -474,11 +465,10 @@ async function initWaterfallDemo(canvas: HTMLCanvasElement) {
       yValues[f] = val
     }
     
-    const sliceIntensity = 1.0 - (s / slicesCount * 0.5)
+    // Let renderer auto-assign colors from palette
     slices.push({
       yValues,
-      z,
-      color: hot(sliceIntensity)
+      z
     })
   }
   
@@ -625,12 +615,12 @@ async function initRibbonDemo(canvas: HTMLCanvasElement) {
                    Math.cos(t * Math.PI * 1.5) * 0.8
     }
     
+    // Let renderer auto-assign colors from palette
     series.push({
       xValues, 
       yValues, 
       z,
-      width: 0.8,
-      color: [0.1 + s * 0.2, 0.5 + Math.sin(s) * 0.2, 0.9 - s * 0.1]
+      width: 0.8
     })
   }
 
@@ -663,7 +653,6 @@ async function initAreaDemo(canvas: HTMLCanvasElement) {
     const x = new Float32Array(pointsPerCurve)
     const y = new Float32Array(pointsPerCurve)
     const z = new Float32Array(pointsPerCurve)
-    const colors = new Float32Array(pointsPerCurve * 3)
     
     const zPos = (c - curves / 2 + 0.5) * 2
     
@@ -672,14 +661,10 @@ async function initAreaDemo(canvas: HTMLCanvasElement) {
       x[i] = (t - 0.5) * 10
       y[i] = Math.sin(t * Math.PI * 2 + c) * 2 + 2
       z[i] = zPos
-      
-      // Color gradient
-      colors[i * 3] = 0.2 + c * 0.15
-      colors[i * 3 + 1] = 0.4 + (c / curves) * 0.4
-      colors[i * 3 + 2] = 0.7 + (c / curves) * 0.3
     }
     
-    areas.push({ x, y, z, colors, baseY: 0 })
+    // Let renderer auto-assign colors from palette
+    areas.push({ x, y, z, baseY: 0 })
   }
   
   renderer = new Area3DRenderer({
