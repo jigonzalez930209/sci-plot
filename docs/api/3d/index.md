@@ -25,18 +25,26 @@ import { Bubble3DRenderer } from 'scichart-engine/core/3d';
 import { Axes3D } from 'scichart-engine/core/3d';
 ```
 
+## Specialized Renderer Classes
+
+| Class | Type | Description |
+|-------|------|-------------|
+| [Waterfall3DRenderer](/api/3d/waterfall-renderer) | `'waterfall'` | Cascading spectral results |
+| [VectorField3DRenderer](/api/3d/vector-field-renderer) | `'quiver'` | Directional 3D vector fields |
+| [PointCloud3DRenderer](/api/3d/point-cloud-renderer) | `'pointcloud'` | High-density 3D markers |
+| [Voxel3DRenderer](/api/3d/voxel-renderer) | `'voxel'` | Volumetric intensity grids |
+| [Ribbon3DRenderer](/api/3d/ribbon-renderer) | `'ribbon'` | Lit extruded path ribbons |
+| [SurfaceBar3DRenderer](/api/3d/surface-bar-renderer) | `'column'` | Instanced 3D histogram |
+
 ## Series Renderers
 
 | Class | Type | Description |
 |-------|------|-------------|
 | `SurfaceMesh3D` | `'surface'` | Grid-based height map |
 | `PointLine3D` | `'pointline'` | Connected points |
-| `Column3D` | `'column'` | 3D bar chart |
-| `Waterfall3D` | `'waterfall'` | Cascading spectral data |
-| `Scatter3D` | `'scatter'` | Point cloud |
-| `Ribbon3D` | `'ribbon'` | Extruded line with width |
+| `Scatter3D` | `'scatter'` | Clusters / Points |
 | `Area3D` | `'area'` | Filled area under line |
-| `Heatmap3D` | `'heatmap'` | Colored grid |
+| `Heatmap3D` | `'heatmap'` | Colored grid on plane |
 | `Impulse3D` | `'impulse'` | Vertical stems |
 
 ## Camera & Controls
