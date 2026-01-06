@@ -55,5 +55,8 @@
     "vite": "^5.0.0",
     "vite-plugin-dts": "^3.6.0",
     "vitepress": "^1.0.0-rc.31"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
   }
 }
