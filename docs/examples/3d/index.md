@@ -4,24 +4,26 @@ High-performance WebGL2-based 3D chart visualizations with instanced rendering.
 
 ## Available Chart Types
 
+### Specialized Renderers
+
+| Chart | Description | Use Case |
+|-------|-------------|----------|
+| [Waterfall](/examples/3d/waterfall-chart) | Cascading spectral slices | Audio spectrograms, time-frequency |
+| [Vector Field](/examples/3d/vector-field) | Directional quiver plot | CFD, fluid flow, magnetics |
+| [Point Cloud](/examples/3d/point-cloud) | Massive point datasets | LIDAR, medical scans |
+| [Voxel (Volumetric)](/examples/3d/voxel-chart) | 3D grid intensity volumes | MRI, CT scans, scalar fields |
+| [Ribbon 3D](/examples/3d/ribbon-chart) | Lit extruded paths | Flow analysis, trajectories |
+| [Surface Bar](/examples/3d/column-chart) | 3D Histogram grid | Demographics, spatial stats |
+
 ### Core Charts
 
 | Chart | Description | Use Case |
 |-------|-------------|----------|
 | [Bubble 3D](/examples/3d/bubble-chart) | Spherical markers in 3D | Point clouds, multi-dimensional data |
 | [Surface Mesh](/examples/3d/surface-mesh) | Height-mapped grid surface | Terrain, mathematical surfaces |
-| [Waterfall](/examples/3d/waterfall-chart) | Cascading spectral slices | Audio spectrograms, time-frequency |
-| [Point Line](/examples/3d/point-line-chart) | Connected points in 3D | Trajectories, paths |
-| [Column](/examples/3d/column-chart) | 3D bar/column chart | Categorical comparisons |
-
-### Additional Charts
-
-| Chart | Description | Use Case |
-|-------|-------------|----------|
 | [Scatter 3D](/examples/3d/scatter-chart) | Unconnected points | Clusters, distributions |
-| [Ribbon](/examples/3d/ribbon-chart) | Extruded line with width | Uncertainty, flow |
+| [Point Line](/examples/3d/point-line-chart) | Connected points in 3D | Trajectories, paths |
 | [Area 3D](/examples/3d/area-chart) | Filled area under line | Curtain visualization |
-| [Heatmap 3D](/examples/3d/heatmap-chart) | Colored grid on XZ plane | Density, temperature |
 | [Impulse](/examples/3d/impulse-chart) | Vertical stems | Discrete signals, events |
 
 ## Quick Start
