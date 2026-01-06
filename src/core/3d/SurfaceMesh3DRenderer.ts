@@ -12,6 +12,8 @@ import {
   type ProgramBundle3D,
 } from './shader/programs';
 import { Axes3D, type Axes3DOptions } from './Axes3D';
+import { Tooltip3D, type Tooltip3DOptions } from './Tooltip3D';
+import { createRayFromScreen, pickSurfaceMesh } from './Raycaster3D';
 import type { SurfaceMesh3DData } from './series/types';
 import type {
   Renderer3DOptions,
@@ -31,6 +33,10 @@ export interface SurfaceMesh3DRendererOptions extends Renderer3DOptions {
   enableLighting?: boolean;
   ambient?: number;
   lightDirection?: [number, number, number];
+  /** Enable tooltips on hover (default: true) */
+  enableTooltip?: boolean;
+  /** Tooltip configuration */
+  tooltip?: Tooltip3DOptions;
 }
 
 export class SurfaceMesh3DRenderer {
@@ -59,6 +65,13 @@ export class SurfaceMesh3DRenderer {
   private needsRender = true;
   
   private eventListeners: Map<string, Set<Renderer3DEventCallback>> = new Map();
+  
+  // Tooltip
+  private tooltip: Tooltip3D | null = null;
+  private enableTooltipOption: boolean = true;
+  private meshData: SurfaceMesh3DData | null = null;
+  private boundHandleMouseMove: ((e: MouseEvent) => void) | null = null;
+  private boundHandleMouseLeave: (() => void) | null = null;
   
   // Stats
   private lastFrameTime = 0;
@@ -119,12 +132,63 @@ export class SurfaceMesh3DRenderer {
       this.axes = new Axes3D(gl, options.axes);
     }
     
+    // Initialize tooltip
+    this.enableTooltipOption = options.enableTooltip ?? true;
+    if (this.enableTooltipOption) {
+      this.tooltip = new Tooltip3D(this.canvas.parentElement || document.body, {
+        ...options.tooltip,
+        showScale: false,
+        showIndex: false,
+      });
+      
+      this.boundHandleMouseMove = this.handleMouseMove.bind(this);
+      this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
+      this.canvas.addEventListener('mousemove', this.boundHandleMouseMove);
+      this.canvas.addEventListener('mouseleave', this.boundHandleMouseLeave);
+    }
+    
     // Handle resize
     this.resize();
     window.addEventListener('resize', this.handleResize);
     
     // Start render loop
     this.startRenderLoop();
+  }
+  
+  private handleMouseMove(e: MouseEvent): void {
+    if (!this.tooltip || !this.meshData) return;
+    
+    const rect = this.canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Create ray from screen coordinates
+    const viewProj = this.camera.getViewProjectionMatrix();
+    const ray = createRayFromScreen(x, y, rect.width, rect.height, viewProj);
+    
+    // Test ray against surface mesh triangles
+    const hit = pickSurfaceMesh(
+      ray,
+      this.meshData.xValues,
+      this.meshData.zValues,
+      this.meshData.yValues
+    );
+    
+    if (hit) {
+      // Only show tooltip when ray actually hits the surface
+      this.tooltip.show({
+        index: hit.row * this.meshData.xValues.length + hit.col,
+        position: hit.point,
+      }, x, y);
+    } else {
+      this.tooltip.hide();
+    }
+  }
+  
+  private handleMouseLeave(): void {
+    if (this.tooltip) {
+      this.tooltip.hide();
+    }
   }
   
   private handleResize = (): void => {
@@ -150,6 +214,7 @@ export class SurfaceMesh3DRenderer {
    */
   setData(data: SurfaceMesh3DData): void {
     this.mesh.updateData(data);
+    this.meshData = data; // Store for tooltip hover
     this.vertexCount = data.xValues.length * data.zValues.length;
     
     // Calculate bounds
@@ -186,21 +251,20 @@ export class SurfaceMesh3DRenderer {
     if (!this.bounds) return;
     
     const { minX, maxX, minY, maxY, minZ, maxZ } = this.bounds;
-    const center: [number, number, number] = [
-      (minX + maxX) / 2,
-      (minY + maxY) / 2,
-      (minZ + maxZ) / 2,
-    ];
     
-    const sizeX = maxX - minX;
-    const sizeY = maxY - minY;
-    const sizeZ = maxZ - minZ;
-    const maxSize = Math.max(sizeX, sizeY, sizeZ);
+    // Add 15% padding to bounds for better fit
+    const dx = maxX - minX;
+    const dy = maxY - minY;
+    const dz = maxZ - minZ;
+    const padding = 0.0001;
     
-    this.camera.target = center;
-    this.camera.radius = maxSize * 2;
-    this.camera.theta = Math.PI / 4;
-    this.camera.phi = Math.PI / 4;
+    this.camera.fitToBounds(
+      minX - dx * padding, minY - dy * padding, minZ - dz * padding,
+      maxX + dx * padding, maxY + dy * padding, maxZ + dz * padding
+    );
+    
+    // Closer fit for impact
+    this.camera.radius *= 1.05;
     
     this.needsRender = true;
   }
@@ -401,6 +465,17 @@ export class SurfaceMesh3DRenderer {
     this.stopRenderLoop();
     
     window.removeEventListener('resize', this.handleResize);
+    
+    // Clean up tooltip
+    if (this.tooltip) {
+      this.tooltip.destroy();
+      if (this.boundHandleMouseMove) {
+        this.canvas.removeEventListener('mousemove', this.boundHandleMouseMove);
+      }
+      if (this.boundHandleMouseLeave) {
+        this.canvas.removeEventListener('mouseleave', this.boundHandleMouseLeave);
+      }
+    }
     
     this.controller.destroy();
     this.mesh.destroy();

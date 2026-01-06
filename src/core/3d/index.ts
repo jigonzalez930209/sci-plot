@@ -38,6 +38,15 @@
 // Main renderers
 export { Bubble3DRenderer, type Bubble3DRendererOptions } from './Bubble3DRenderer';
 export { SurfaceMesh3DRenderer, type SurfaceMesh3DRendererOptions } from './SurfaceMesh3DRenderer';
+export { Line3DRenderer, type Line3DRendererOptions, type Line3DData } from './Line3DRenderer';
+export { Area3DRenderer, type Area3DRendererOptions, type AreaSeriesData } from './Area3DRenderer';
+export { Impulse3DRenderer, type Impulse3DRendererOptions, type ImpulseSeriesData } from './Impulse3DRenderer';
+export { Waterfall3DRenderer, type Waterfall3DRendererOptions, type WaterfallSeriesData } from './Waterfall3DRenderer';
+export { VectorField3DRenderer, type VectorField3DRendererOptions, type VectorFieldData } from './VectorField3DRenderer';
+export { PointCloud3DRenderer, type PointCloud3DRendererOptions, type PointCloudData } from './PointCloud3DRenderer';
+export { Voxel3DRenderer, type Voxel3DRendererOptions, type VoxelData } from './Voxel3DRenderer';
+export { Ribbon3DRenderer, type Ribbon3DRendererOptions, type RibbonSeriesData } from './Ribbon3DRenderer';
+export { SurfaceBar3DRenderer, type SurfaceBar3DRendererOptions, type SurfaceBarData } from './SurfaceBar3DRenderer';
 
 // Axes renderer
 export { Axes3D, type Axes3DOptions, type AxisLabel3D } from './Axes3D';
@@ -51,6 +60,28 @@ export { OrbitCamera, type OrbitCameraOptions } from './camera';
 
 // Controls
 export { OrbitController, type OrbitControllerOptions } from './controls';
+
+// Raycasting
+export {
+  createRayFromScreen,
+  raySphereIntersection,
+  rayTriangleIntersection,
+  pickBubble,
+  pickBubblesInRange,
+  pickSurfaceMesh,
+  pointToRayDistance,
+  type Ray3D,
+  type HitResult,
+  type SurfaceHitResult,
+} from './Raycaster3D';
+
+// Tooltip
+export {
+  Tooltip3D,
+  createHoverHandler,
+  type Tooltip3DOptions,
+  type Tooltip3DData,
+} from './Tooltip3D';
 
 // Mesh and geometry
 export {

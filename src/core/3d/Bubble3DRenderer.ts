@@ -18,6 +18,12 @@ import {
   type ProgramBundle3D,
 } from './shader/programs';
 import { Axes3D, type Axes3DOptions } from './Axes3D';
+import {
+  createRayFromScreen,
+  pickBubble,
+  type Ray3D,
+  type HitResult,
+} from './Raycaster3D';
 import type {
   Bubble3DData,
   Bubble3DStyle,
@@ -27,6 +33,7 @@ import type {
   Renderer3DEvent,
   Renderer3DEventCallback,
 } from './types';
+import { Tooltip3D, type Tooltip3DOptions, type Tooltip3DData } from './Tooltip3D';
 
 export interface Bubble3DRendererOptions extends Renderer3DOptions {
   camera?: OrbitCameraOptions;
@@ -37,6 +44,12 @@ export interface Bubble3DRendererOptions extends Renderer3DOptions {
   axes?: Axes3DOptions;
   /** Show axes (default: true) */
   showAxes?: boolean;
+  /** Enable tooltips on hover (default: true) */
+  enableTooltip?: boolean;
+  /** Tooltip configuration */
+  tooltip?: Tooltip3DOptions;
+  /** Custom tooltip formatter */
+  tooltipFormatter?: (data: Tooltip3DData) => string;
 }
 
 export class Bubble3DRenderer {
@@ -62,6 +75,13 @@ export class Bubble3DRenderer {
   private needsRender = true;
   
   private eventListeners: Map<string, Set<Renderer3DEventCallback>> = new Map();
+  
+  // Tooltip
+  private tooltip: Tooltip3D | null = null;
+  private enableTooltip: boolean;
+  private lastHitIndex = -1;
+  private boundHandleMouseMove: ((e: MouseEvent) => void) | null = null;
+  private boundHandleMouseLeave: (() => void) | null = null;
   
   // Stats
   private lastFrameTime = 0;
@@ -144,6 +164,22 @@ export class Bubble3DRenderer {
       this.axes = new Axes3D(this.gl, options.axes);
     }
     
+    // Initialize tooltip
+    this.enableTooltip = options.enableTooltip ?? true;
+    if (this.enableTooltip) {
+      const tooltipOptions: Tooltip3DOptions = {
+        ...options.tooltip,
+        formatter: options.tooltipFormatter,
+      };
+      this.tooltip = new Tooltip3D(this.canvas.parentElement || document.body, tooltipOptions);
+      
+      // Setup hover handlers
+      this.boundHandleMouseMove = this.handleMouseMove.bind(this);
+      this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
+      this.canvas.addEventListener('mousemove', this.boundHandleMouseMove);
+      this.canvas.addEventListener('mouseleave', this.boundHandleMouseLeave);
+    }
+    
     // Handle resize
     this.resize();
     window.addEventListener('resize', this.handleResize);
@@ -151,6 +187,48 @@ export class Bubble3DRenderer {
     // Start render loop if autoRender
     if (this.autoRender) {
       this.startRenderLoop();
+    }
+  }
+  
+  private handleMouseMove(e: MouseEvent): void {
+    if (!this.tooltip || !this.instanceData) return;
+    
+    const rect = this.canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const hit = this.pickAtScreen(x, y);
+    
+    if (hit) {
+      if (hit.index !== this.lastHitIndex) {
+        this.lastHitIndex = hit.index;
+        
+        const bubbleData = this.getBubbleData(hit.index);
+        if (bubbleData) {
+          this.tooltip.show({
+            index: hit.index,
+            position: bubbleData.position,
+            color: bubbleData.color,
+            scale: bubbleData.scale,
+          }, x, y);
+          
+          this.emitEvent('hover');
+        }
+      } else {
+        this.tooltip.updatePosition(x, y);
+      }
+    } else {
+      if (this.lastHitIndex !== -1) {
+        this.tooltip.hide();
+        this.lastHitIndex = -1;
+      }
+    }
+  }
+  
+  private handleMouseLeave(): void {
+    if (this.tooltip) {
+      this.tooltip.hide();
+      this.lastHitIndex = -1;
     }
   }
   
@@ -258,10 +336,19 @@ export class Bubble3DRenderer {
    */
   fitToData(): void {
     if (this.bounds) {
+      const { minX, maxX, minY, maxY, minZ, maxZ } = this.bounds;
+      
+      const dx = maxX - minX;
+      const dy = maxY - minY;
+      const dz = maxZ - minZ;
+      const padding = 0.01;
+      
       this.camera.fitToBounds(
-        this.bounds.minX, this.bounds.minY, this.bounds.minZ,
-        this.bounds.maxX, this.bounds.maxY, this.bounds.maxZ
+        minX - dx * padding, minY - dy * padding, minZ - dz * padding,
+        maxX + dx * padding, maxY + dy * padding, maxZ + dz * padding
       );
+      
+      this.camera.radius *= 1.05;
       this.needsRender = true;
     }
   }
@@ -501,12 +588,139 @@ export class Bubble3DRenderer {
   }
   
   /**
+   * Pick a bubble at screen coordinates.
+   * @param screenX X coordinate relative to canvas
+   * @param screenY Y coordinate relative to canvas
+   * @returns Hit result with bubble index, or null if no hit
+   */
+  pickAtScreen(screenX: number, screenY: number): HitResult | null {
+    if (!this.instanceData) return null;
+    
+    const { width, height } = this.getCanvasSize();
+    const viewProj = this.camera.getViewProjectionMatrix();
+    
+    const ray = createRayFromScreen(screenX, screenY, width, height, viewProj);
+    
+    return pickBubble(ray, this.instanceData.positions, this.instanceData.scales);
+  }
+  
+  /**
+   * Create a ray from screen coordinates.
+   * Useful for custom picking logic.
+   */
+  createRay(screenX: number, screenY: number): Ray3D {
+    const { width, height } = this.getCanvasSize();
+    const viewProj = this.camera.getViewProjectionMatrix();
+    return createRayFromScreen(screenX, screenY, width, height, viewProj);
+  }
+  
+  /**
+   * Get data for a specific bubble by index.
+   */
+  getBubbleData(index: number): { position: [number, number, number]; color: [number, number, number]; scale: number } | null {
+    if (!this.instanceData || index < 0 || index >= this.instanceData.scales.length) {
+      return null;
+    }
+    
+    const i3 = index * 3;
+    return {
+      position: [
+        this.instanceData.positions[i3],
+        this.instanceData.positions[i3 + 1],
+        this.instanceData.positions[i3 + 2],
+      ],
+      color: [
+        this.instanceData.colors[i3],
+        this.instanceData.colors[i3 + 1],
+        this.instanceData.colors[i3 + 2],
+      ],
+      scale: this.instanceData.scales[index],
+    };
+  }
+  /**
+   * Export the current view as an image.
+   * @param format Image format ('png' | 'jpeg' | 'webp')
+   * @param quality Quality for jpeg/webp (0-1)
+   * @param transparent Use transparent background (only for 'png')
+   * @returns Data URL of the image
+   */
+  exportImage(
+    format: 'png' | 'jpeg' | 'webp' = 'png',
+    quality = 0.92,
+    transparent = false
+  ): string {
+    // Save current background
+    const savedBg = [...this.backgroundColor];
+    
+    // Set transparent background if requested
+    if (transparent && format === 'png') {
+      this.backgroundColor = [0, 0, 0, 0];
+    }
+    
+    // Force a render to capture current state
+    this.render();
+    
+    // Restore background
+    this.backgroundColor = savedBg as [number, number, number, number];
+    
+    // Export canvas
+    const mimeType = `image/${format}`;
+    return this.canvas.toDataURL(mimeType, quality);
+  }
+  
+  /**
+   * Export the current view as a Blob.
+   * @param format Image format ('png' | 'jpeg' | 'webp')
+   * @param quality Quality for jpeg/webp (0-1)
+   * @returns Promise that resolves to Blob
+   */
+  async exportImageBlob(
+    format: 'png' | 'jpeg' | 'webp' = 'png',
+    quality = 0.92
+  ): Promise<Blob | null> {
+    return new Promise((resolve) => {
+      this.render();
+      const mimeType = `image/${format}`;
+      this.canvas.toBlob(resolve, mimeType, quality);
+    });
+  }
+  
+  /**
+   * Download the current view as an image file.
+   * @param filename Filename without extension
+   * @param format Image format
+   * @param quality Quality for jpeg/webp
+   */
+  downloadImage(
+    filename = 'chart-3d',
+    format: 'png' | 'jpeg' | 'webp' = 'png',
+    quality = 0.92
+  ): void {
+    const dataUrl = this.exportImage(format, quality);
+    const link = document.createElement('a');
+    link.download = `${filename}.${format}`;
+    link.href = dataUrl;
+    link.click();
+  }
+  
+  /**
    * Clean up all resources.
    */
   destroy(): void {
     this.stopRenderLoop();
     
     window.removeEventListener('resize', this.handleResize);
+    
+    // Clean up tooltip
+    if (this.tooltip) {
+      this.tooltip.destroy();
+      if (this.boundHandleMouseMove) {
+        this.canvas.removeEventListener('mousemove', this.boundHandleMouseMove);
+      }
+      if (this.boundHandleMouseLeave) {
+        this.canvas.removeEventListener('mouseleave', this.boundHandleMouseLeave);
+      }
+    }
     
     this.controller.destroy();
     this.mesh.destroy();
