@@ -205,3 +205,38 @@ export function createBillboardQuad(): GeometryData {
     indexCount: 6,
   };
 }
+/**
+ * Generate a standard AABB cube for voxels.
+ */
+export function createVoxelCube(): GeometryData {
+  const positions = new Float32Array([
+    // Front
+    -0.5, -0.5,  0.5,   0.5, -0.5,  0.5,   0.5,  0.5,  0.5,  -0.5,  0.5,  0.5,
+    // Back
+    -0.5, -0.5, -0.5,  -0.5,  0.5, -0.5,   0.5,  0.5, -0.5,   0.5, -0.5, -0.5,
+    // Top
+    -0.5,  0.5, -0.5,  -0.5,  0.5,  0.5,   0.5,  0.5,  0.5,   0.5,  0.5, -0.5,
+    // Bottom
+    -0.5, -0.5, -0.5,   0.5, -0.5, -0.5,   0.5, -0.5,  0.5,  -0.5, -0.5,  0.5,
+    // Right
+     0.5, -0.5, -0.5,   0.5,  0.5, -0.5,   0.5,  0.5,  0.5,   0.5, -0.5,  0.5,
+    // Left
+    -0.5, -0.5, -0.5,  -0.5, -0.5,  0.5,  -0.5,  0.5,  0.5,  -0.5,  0.5, -0.5,
+  ]);
+
+  const indices = new Uint16Array([
+    0, 1, 2,   0, 2, 3,    // Front
+    4, 5, 6,   4, 6, 7,    // Back
+    8, 9, 10,  8, 10, 11,  // Top
+    12, 13, 14, 12, 14, 15, // Bottom
+    16, 17, 18, 16, 18, 19, // Right
+    20, 21, 22, 20, 22, 23, // Left
+  ]);
+
+  return {
+    positions,
+    indices,
+    vertexCount: 24,
+    indexCount: 36,
+  };
+}
