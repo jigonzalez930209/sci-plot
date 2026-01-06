@@ -13,6 +13,9 @@ type Demo3DType =
   | 'area-3d'
   | 'heatmap-3d'
   | 'impulse-3d'
+  | 'quiver-3d'
+  | 'point-cloud-3d'
+  | 'voxel-3d'
 
 const props = defineProps<{
   type: Demo3DType
@@ -219,6 +222,15 @@ async function initDemo() {
     case 'impulse-3d':
       await initImpulseDemo(canvas)
       break
+    case 'quiver-3d':
+      await initQuiverDemo(canvas)
+      break
+    case 'point-cloud-3d':
+      await initPointCloudDemo(canvas)
+      break
+    case 'voxel-3d':
+      await initVoxelDemo(canvas)
+      break
     default:
       await initBubbleDemo(canvas)
   }
@@ -424,193 +436,165 @@ async function initSurfaceDemo(canvas: HTMLCanvasElement) {
 }
 
 async function initWaterfallDemo(canvas: HTMLCanvasElement) {
-  const { Bubble3DRenderer } = await import('@src/core/3d')
+  const { Waterfall3DRenderer } = await import('@src/core/3d')
   
   // Simulated waterfall spectrogram
-  const slices = 40
-  const freqBins = 64
-  const count = slices * freqBins
+  const slicesCount = 50
+  const freqBins = 100
   
-  const positions = new Float32Array(count * 3)
-  const colors = new Float32Array(count * 3)
-  const scales = new Float32Array(count)
+  const xValues = new Float32Array(freqBins)
+  for (let i = 0; i < freqBins; i++) {
+    xValues[i] = (i - freqBins / 2) * 0.1
+  }
+  
+  const slices: any[] = []
   
   // Hot colormap
   const hot = (t: number): [number, number, number] => {
     return [
-      Math.min(1, t * 3),
-      Math.max(0, Math.min(1, t * 3 - 1)),
-      Math.max(0, Math.min(1, t * 3 - 2)),
+      Math.min(1, t * 2.5),
+      Math.max(0, Math.min(1, t * 2.5 - 0.8)),
+      Math.max(0, Math.min(1, t * 2.5 - 1.6)),
     ]
   }
   
-  for (let s = 0; s < slices; s++) {
+  for (let s = 0; s < slicesCount; s++) {
+    const yValues = new Float32Array(freqBins)
+    const z = s * 0.2
+    
+    // Dynamic noise and harmonic movement
+    const shift = Date.now() * 0.001
+    const sFactor = s / slicesCount
+    
     for (let f = 0; f < freqBins; f++) {
-      const idx = s * freqBins + f
-      const x = (f - freqBins / 2) * 0.15
-      const z = s * 0.3
-      
-      // Simulated spectrum with harmonics
       const freq = f / freqBins
-      const y = Math.exp(-Math.pow(freq - 0.2, 2) / 0.01) * 2 +
-                Math.exp(-Math.pow(freq - 0.4, 2) / 0.02) * 1.5 +
-                Math.exp(-Math.pow(freq - 0.6, 2) / 0.015) * 1 +
-                Math.random() * 0.2
-      
-      positions[idx * 3] = x
-      positions[idx * 3 + 1] = y
-      positions[idx * 3 + 2] = z
-      
-      // Color based on intensity
-      const t = y / 2.5
-      const [r, g, b] = hot(Math.max(0, Math.min(1, t)))
-      colors[idx * 3] = r
-      colors[idx * 3 + 1] = g
-      colors[idx * 3 + 2] = b
-      
-      // Fade older slices
-      const fade = 1 - s / slices * 0.5
-      colors[idx * 3] *= fade
-      colors[idx * 3 + 1] *= fade
-      colors[idx * 3 + 2] *= fade
-      
-      scales[idx] = 0.08
+      const val = Math.exp(-Math.pow(freq - (0.3 + Math.sin(sFactor * 3 + shift) * 0.1), 2) / 0.005) * 3 +
+                  Math.exp(-Math.pow(freq - (0.6 + Math.cos(sFactor * 2 + shift * 0.5) * 0.1), 2) / 0.01) * 2 +
+                  Math.random() * 0.3
+      yValues[f] = val
     }
+    
+    const sliceIntensity = 1.0 - (s / slicesCount * 0.5)
+    slices.push({
+      yValues,
+      z,
+      color: hot(sliceIntensity)
+    })
   }
   
-  renderer = new Bubble3DRenderer({
+  renderer = new Waterfall3DRenderer({
     canvas,
     backgroundColor: backgroundColor.value,
-    style: {
-      geometry: 'cube',
-      enableLighting: true,
-      ambient: 0.3,
-    },
+    xValues,
+    sliceStyle: 'area',
+    baseY: -1,
+    opacity: 0.85
   })
   
-  renderer.setData({ positions, colors, scales })
+  renderer.setData(slices)
   renderer.fitToData()
   
   renderer.on('render', (e: any) => {
     fps.value = Math.round(e.stats.fps)
   })
   
-  pointCount.value = count
+  pointCount.value = freqBins * slicesCount
 }
 
 async function initPointLineDemo(canvas: HTMLCanvasElement) {
-  const { Bubble3DRenderer } = await import('@src/core/3d')
+  const { Line3DRenderer } = await import('@src/core/3d')
   
   // 3D spiral trajectory
   const spirals = 3
   const pointsPerSpiral = 500
-  const count = spirals * pointsPerSpiral
   
-  const positions = new Float32Array(count * 3)
-  const colors = new Float32Array(count * 3)
-  const scales = new Float32Array(count)
+  const lines: { x: Float32Array; y: Float32Array; z: Float32Array; color: [number, number, number] }[] = []
   
-  const spiralColors = [
+  const spiralColors: [number, number, number][] = [
     [0.9, 0.3, 0.5],
     [0.3, 0.9, 0.5],
     [0.5, 0.3, 0.9],
   ]
   
   for (let s = 0; s < spirals; s++) {
+    const x = new Float32Array(pointsPerSpiral)
+    const y = new Float32Array(pointsPerSpiral)
+    const z = new Float32Array(pointsPerSpiral)
+    
     const offset = (s / spirals) * Math.PI * 2
     for (let i = 0; i < pointsPerSpiral; i++) {
-      const idx = s * pointsPerSpiral + i
       const t = i / pointsPerSpiral
       const theta = t * Math.PI * 6 + offset
       const r = 2 + t * 2
       
-      positions[idx * 3] = r * Math.cos(theta)
-      positions[idx * 3 + 1] = t * 8 - 4
-      positions[idx * 3 + 2] = r * Math.sin(theta)
-      
-      colors[idx * 3] = spiralColors[s][0]
-      colors[idx * 3 + 1] = spiralColors[s][1]
-      colors[idx * 3 + 2] = spiralColors[s][2]
-      
-      scales[idx] = 0.05 + t * 0.03
+      x[i] = r * Math.cos(theta)
+      y[i] = t * 8 - 4
+      z[i] = r * Math.sin(theta)
     }
+    
+    lines.push({ x, y, z, color: spiralColors[s] })
   }
   
-  renderer = new Bubble3DRenderer({
+  renderer = new Line3DRenderer({
     canvas,
     backgroundColor: backgroundColor.value,
-    style: {
-      geometry: 'icosphere',
-      subdivisions: 0,
-      enableLighting: true,
-    },
+    lineWidth: 0.08,
+    tubeSides: 8,
   })
   
-  renderer.setData({ positions, colors, scales })
+  renderer.setData(lines)
   renderer.fitToData()
   
   renderer.on('render', (e: any) => {
     fps.value = Math.round(e.stats.fps)
   })
   
-  pointCount.value = count
+  pointCount.value = spirals * pointsPerSpiral
 }
 
 async function initColumnDemo(canvas: HTMLCanvasElement) {
-  const { Bubble3DRenderer } = await import('@src/core/3d')
+  const { SurfaceBar3DRenderer } = await import('@src/core/3d')
   
-  // 3D bar chart
-  const rows = 10
-  const cols = 10
+  const rows = 15
+  const cols = 15
   const count = rows * cols
   
-  const positions = new Float32Array(count * 3)
+  const heights = new Float32Array(count)
   const colors = new Float32Array(count * 3)
-  const scales = new Float32Array(count)
   
-  for (let j = 0; j < rows; j++) {
-    for (let i = 0; i < cols; i++) {
-      const idx = j * cols + i
-      const x = (i - cols / 2 + 0.5) * 0.8
-      const z = (j - rows / 2 + 0.5) * 0.8
-      const height = Math.random() * 3 + 0.5
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const idx = r * cols + c
+      const dx = (c - cols / 2) / (cols / 2)
+      const dz = (r - rows / 2) / (rows / 2)
+      const dist = Math.sqrt(dx * dx + dz * dz)
       
-      positions[idx * 3] = x
-      positions[idx * 3 + 1] = height / 2
-      positions[idx * 3 + 2] = z
+      // Funky circular wave height pattern
+      heights[idx] = Math.cos(dist * Math.PI) * 1.5 + 2.5
       
-      // Rainbow color based on position
-      const hue = (i / cols + j / rows) * 0.5
-      const h = hue * 6
-      const c = 1
-      const x2 = c * (1 - Math.abs(h % 2 - 1))
-      let r = 0, g = 0, b = 0
-      if (h < 1) { r = c; g = x2 }
-      else if (h < 2) { r = x2; g = c }
-      else if (h < 3) { g = c; b = x2 }
-      else if (h < 4) { g = x2; b = c }
-      else if (h < 5) { r = x2; b = c }
-      else { r = c; b = x2 }
-      
-      colors[idx * 3] = r * 0.7 + 0.3
-      colors[idx * 3 + 1] = g * 0.7 + 0.3
-      colors[idx * 3 + 2] = b * 0.7 + 0.3
-      
-      scales[idx] = 0.35
+      // Color based on height (normalized)
+      const h = heights[idx] / 4.0
+      colors[idx * 3] = h 
+      colors[idx * 3 + 1] = 0.8 - h
+      colors[idx * 3 + 2] = 0.5 + h * 0.5
     }
   }
   
-  renderer = new Bubble3DRenderer({
+  renderer = new SurfaceBar3DRenderer({
     canvas,
     backgroundColor: backgroundColor.value,
-    style: {
-      geometry: 'cube',
-      enableLighting: true,
-      ambient: 0.35,
-    },
+    barScale: 0.85,
+    opacity: 1.0
   })
   
-  renderer.setData({ positions, colors, scales })
+  renderer.setData({
+    rows,
+    cols,
+    heights,
+    colors,
+    spacing: [1.0, 1.0],
+    origin: [-cols / 2, 0, -rows / 2]
+  })
   renderer.fitToData()
   
   renderer.on('render', (e: any) => {
@@ -621,137 +605,97 @@ async function initColumnDemo(canvas: HTMLCanvasElement) {
 }
 
 async function initRibbonDemo(canvas: HTMLCanvasElement) {
-  const { Bubble3DRenderer } = await import('@src/core/3d')
+  const { Ribbon3DRenderer } = await import('@src/core/3d')
   
-  // Double helix ribbon
-  const pointsPerStrand = 300
-  const strandsCount = 2
-  const count = strandsCount * pointsPerStrand
+  // Multiple overlapping ribbons
+  const seriesCount = 5
+  const pointsCount = 150
+  const series: any[] = []
   
-  const positions = new Float32Array(count * 3)
-  const colors = new Float32Array(count * 3)
-  const scales = new Float32Array(count)
-  
-  for (let s = 0; s < strandsCount; s++) {
-    const offset = s * Math.PI
-    for (let i = 0; i < pointsPerStrand; i++) {
-      const idx = s * pointsPerStrand + i
-      const t = (i / pointsPerStrand) * Math.PI * 4
-      const r = 2
-      
-      positions[idx * 3] = r * Math.cos(t + offset)
-      positions[idx * 3 + 1] = (i / pointsPerStrand) * 10 - 5
-      positions[idx * 3 + 2] = r * Math.sin(t + offset)
-      
-      // Gradient color along ribbon
-      const gradient = i / pointsPerStrand
-      if (s === 0) {
-        colors[idx * 3] = 0.2 + gradient * 0.6
-        colors[idx * 3 + 1] = 0.5
-        colors[idx * 3 + 2] = 0.9 - gradient * 0.4
-      } else {
-        colors[idx * 3] = 0.9 - gradient * 0.4
-        colors[idx * 3 + 1] = 0.5
-        colors[idx * 3 + 2] = 0.2 + gradient * 0.6
-      }
-      
-      scales[idx] = 0.15
+  for (let s = 0; s < seriesCount; s++) {
+    const xValues = new Float32Array(pointsCount)
+    const yValues = new Float32Array(pointsCount)
+    const z = (s - (seriesCount-1)/2) * 1.5
+    
+    for (let i = 0; i < pointsCount; i++) {
+      const t = i / pointsCount
+      xValues[i] = (t - 0.5) * 12
+      // Wave-like pattern with different frequencies
+      yValues[i] = Math.sin(t * Math.PI * (2 + s * 0.5)) * 1.5 + 
+                   Math.cos(t * Math.PI * 1.5) * 0.8
     }
+    
+    series.push({
+      xValues, 
+      yValues, 
+      z,
+      width: 0.8,
+      color: [0.1 + s * 0.2, 0.5 + Math.sin(s) * 0.2, 0.9 - s * 0.1]
+    })
   }
-  
-  renderer = new Bubble3DRenderer({
+
+  renderer = new Ribbon3DRenderer({
     canvas,
     backgroundColor: backgroundColor.value,
-    style: {
-      geometry: 'icosphere',
-      subdivisions: 1,
-      enableLighting: true,
-    },
+    opacity: 0.85
   })
   
-  renderer.setData({ positions, colors, scales })
+  renderer.setData(series)
   renderer.fitToData()
   
   renderer.on('render', (e: any) => {
     fps.value = Math.round(e.stats.fps)
   })
   
-  pointCount.value = count
+  pointCount.value = seriesCount * pointsCount
 }
 
 async function initAreaDemo(canvas: HTMLCanvasElement) {
-  const { Bubble3DRenderer } = await import('@src/core/3d')
+  const { Area3DRenderer } = await import('@src/core/3d')
   
   // Filled curtain visualization
   const curves = 5
   const pointsPerCurve = 100
-  const fillDensity = 10 // Points per unit height
   
-  // First pass: calculate total points
-  let totalPoints = 0
+  const areas: any[] = []
+  
   for (let c = 0; c < curves; c++) {
+    const x = new Float32Array(pointsPerCurve)
+    const y = new Float32Array(pointsPerCurve)
+    const z = new Float32Array(pointsPerCurve)
+    const colors = new Float32Array(pointsPerCurve * 3)
+    
+    const zPos = (c - curves / 2 + 0.5) * 2
+    
     for (let i = 0; i < pointsPerCurve; i++) {
       const t = i / pointsPerCurve
-      const y = Math.sin(t * Math.PI * 2 + c) * 2 + 2
-      const fillPoints = Math.max(1, Math.floor(y * fillDensity))
-      totalPoints += fillPoints
-    }
-  }
-  
-  const positions = new Float32Array(totalPoints * 3)
-  const colors = new Float32Array(totalPoints * 3)
-  const scales = new Float32Array(totalPoints)
-  
-  let idx = 0
-  for (let c = 0; c < curves; c++) {
-    const z = (c - curves / 2 + 0.5) * 2
-    for (let i = 0; i < pointsPerCurve; i++) {
-      const t = i / pointsPerCurve
-      const x = (t - 0.5) * 10
-      const maxY = Math.sin(t * Math.PI * 2 + c) * 2 + 2
-      const fillPoints = Math.max(1, Math.floor(maxY * fillDensity))
+      x[i] = (t - 0.5) * 10
+      y[i] = Math.sin(t * Math.PI * 2 + c) * 2 + 2
+      z[i] = zPos
       
-      for (let f = 0; f < fillPoints; f++) {
-        const y = (f / fillDensity)
-        
-        positions[idx * 3] = x
-        positions[idx * 3 + 1] = y
-        positions[idx * 3 + 2] = z
-        
-        // Color gradient
-        const heightRatio = y / maxY
-        colors[idx * 3] = 0.2 + c * 0.15
-        colors[idx * 3 + 1] = 0.3 + heightRatio * 0.5
-        colors[idx * 3 + 2] = 0.7 + heightRatio * 0.3
-        
-        scales[idx] = 0.08
-        idx++
-      }
+      // Color gradient
+      colors[i * 3] = 0.2 + c * 0.15
+      colors[i * 3 + 1] = 0.4 + (c / curves) * 0.4
+      colors[i * 3 + 2] = 0.7 + (c / curves) * 0.3
     }
+    
+    areas.push({ x, y, z, colors, baseY: 0 })
   }
   
-  renderer = new Bubble3DRenderer({
+  renderer = new Area3DRenderer({
     canvas,
     backgroundColor: backgroundColor.value,
-    style: {
-      geometry: 'cube',
-      enableLighting: true,
-      ambient: 0.4,
-    },
+    opacity: 0.85,
   })
   
-  renderer.setData({ 
-    positions: positions.subarray(0, idx * 3), 
-    colors: colors.subarray(0, idx * 3), 
-    scales: scales.subarray(0, idx) 
-  })
+  renderer.setData(areas)
   renderer.fitToData()
   
   renderer.on('render', (e: any) => {
     fps.value = Math.round(e.stats.fps)
   })
   
-  pointCount.value = idx
+  pointCount.value = curves * pointsPerCurve
 }
 
 async function initHeatmapDemo(canvas: HTMLCanvasElement) {
@@ -824,65 +768,52 @@ async function initHeatmapDemo(canvas: HTMLCanvasElement) {
 }
 
 async function initImpulseDemo(canvas: HTMLCanvasElement) {
-  const { Bubble3DRenderer } = await import('@src/core/3d')
+  const { Impulse3DRenderer } = await import('@src/core/3d')
   
   // Impulse/stem plot
   const rows = 15
   const cols = 15
-  const stemDensity = 5 // Points per stem
-  const count = rows * cols * stemDensity
+  const count = rows * cols
   
-  const positions = new Float32Array(count * 3)
+  const x = new Float32Array(count)
+  const y = new Float32Array(count)
+  const z = new Float32Array(count)
   const colors = new Float32Array(count * 3)
-  const scales = new Float32Array(count)
   
   let idx = 0
   for (let j = 0; j < rows; j++) {
     for (let i = 0; i < cols; i++) {
-      const x = (i - cols / 2 + 0.5) * 0.5
-      const z = (j - rows / 2 + 0.5) * 0.5
-      const height = Math.sin(i * 0.5) * Math.cos(j * 0.4) * 2 + 2.5
+      x[idx] = (i - cols / 2 + 0.5) * 0.5
+      z[idx] = (j - rows / 2 + 0.5) * 0.5
+      y[idx] = Math.sin(i * 0.5) * Math.cos(j * 0.4) * 2 + 2.5
       
-      // Create stem (vertical line of points)
-      for (let s = 0; s < stemDensity; s++) {
-        const y = (s / (stemDensity - 1)) * height
-        
-        positions[idx * 3] = x
-        positions[idx * 3 + 1] = y
-        positions[idx * 3 + 2] = z
-        
-        // Color: cool blue at base, warm at top
-        const t = y / height
-        colors[idx * 3] = 0.2 + t * 0.6
-        colors[idx * 3 + 1] = 0.4 + t * 0.2
-        colors[idx * 3 + 2] = 0.9 - t * 0.4
-        
-        // Larger sphere at top
-        scales[idx] = s === stemDensity - 1 ? 0.12 : 0.04
-        
-        idx++
-      }
+      // Color: gradient based on height
+      const t = y[idx] / 4.5
+      colors[idx * 3] = 0.2 + t * 0.6
+      colors[idx * 3 + 1] = 0.4 + t * 0.2
+      colors[idx * 3 + 2] = 0.9 - t * 0.4
+      
+      idx++
     }
   }
   
-  renderer = new Bubble3DRenderer({
+  renderer = new Impulse3DRenderer({
     canvas,
     backgroundColor: backgroundColor.value,
-    style: {
-      geometry: 'icosphere',
-      subdivisions: 0,
-      enableLighting: true,
-    },
+    stemWidth: 0.015,
+    stemSides: 6,
+    showMarkers: true,
+    markerSize: 2.5,
   })
   
-  renderer.setData({ positions, colors, scales })
+  renderer.setData({ x, y, z, colors, baseY: 0 })
   renderer.fitToData()
   
   renderer.on('render', (e: any) => {
     fps.value = Math.round(e.stats.fps)
   })
   
-  pointCount.value = idx
+  pointCount.value = count
 }
 
 async function resetDemo() {
@@ -961,6 +892,147 @@ async function resetDemo() {
       })
     }
   }
+}
+async function initQuiverDemo(canvas: HTMLCanvasElement) {
+  const { VectorField3DRenderer } = await import('@src/core/3d')
+  
+  const size = 15
+  const total = size * size * size
+  const positions = new Float32Array(total * 3)
+  const directions = new Float32Array(total * 3)
+  const colors = new Float32Array(total * 3)
+  
+  for (let z = 0; z < size; z++) {
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const idx = (z * size * size + y * size + x)
+        const px = (x - size / 2) * 0.8
+        const py = (y - size / 2) * 0.8
+        const pz = (z - size / 2) * 0.8
+        
+        positions[idx * 3] = px
+        positions[idx * 3 + 1] = py
+        positions[idx * 3 + 2] = pz
+        
+        // Simular un campo de flujo rotacional
+        const dx = -py * 0.2
+        const dy = px * 0.2
+        const dz = Math.sin(px * 0.5) * 0.1
+        
+        directions[idx * 3] = dx
+        directions[idx * 3 + 1] = dy
+        directions[idx * 3 + 2] = dz
+        
+        const mag = Math.sqrt(dx*dx + dy*dy + dz*dz)
+        colors[idx * 3] = 0.2 + mag * 0.5
+        colors[idx * 3 + 1] = 0.5 + Math.sin(pz) * 0.3
+        colors[idx * 3 + 2] = 0.9
+      }
+    }
+  }
+  
+  renderer = new VectorField3DRenderer({
+    canvas,
+    backgroundColor: backgroundColor.value,
+    scaleMultiplier: 2.0,
+    opacity: 0.9
+  })
+  
+  renderer.setData({ positions, directions, colors })
+  renderer.fitToData()
+  
+  renderer.on('render', (e: any) => {
+    fps.value = Math.round(e.stats.fps)
+  })
+  
+  pointCount.value = total
+}
+async function initPointCloudDemo(canvas: HTMLCanvasElement) {
+  const { PointCloud3DRenderer } = await import('@src/core/3d')
+  
+  const count = 100000
+  const positions = new Float32Array(count * 3)
+  const colors = new Float32Array(count * 4)
+  const sizes = new Float32Array(count)
+  
+  for (let i = 0; i < count; i++) {
+    // Toroide de puntos
+    const u = Math.random() * Math.PI * 2
+    const v = Math.random() * Math.PI * 2
+    const R = 4, r = 1.5
+    
+    positions[i * 3] = (R + r * Math.cos(v)) * Math.cos(u)
+    positions[i * 3 + 1] = (R + r * Math.cos(v)) * Math.sin(u)
+    positions[i * 3 + 2] = r * Math.sin(v)
+    
+    // Gradiente de color senoidal
+    colors[i * 4] = 0.5 + Math.sin(u) * 0.5
+    colors[i * 4 + 1] = 0.5 + Math.cos(v) * 0.5
+    colors[i * 4 + 2] = 0.8
+    colors[i * 4 + 3] = 1.0
+    
+    sizes[i] = 1.0 + Math.random() * 2.0
+  }
+  
+  renderer = new PointCloud3DRenderer({
+    canvas,
+    backgroundColor: backgroundColor.value,
+    pointSize: 3.0,
+    circular: true
+  })
+  
+  renderer.setData({ positions, colors, sizes })
+  renderer.fitToData()
+  
+  renderer.on('render', (e: any) => {
+    fps.value = Math.round(e.stats.fps)
+  })
+  
+  pointCount.value = count
+}
+async function initVoxelDemo(canvas: HTMLCanvasElement) {
+  const { Voxel3DRenderer } = await import('@src/core/3d')
+  
+  const size = 25
+  const values = new Float32Array(size * size * size)
+  
+  for (let z = 0; z < size; z++) {
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const dx = (x - size / 2) / (size / 2)
+        const dy = (y - size / 2) / (size / 2)
+        const dz = (z - size / 2) / (size / 2)
+        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz)
+        
+        // Simular una esfera hueca o campo de intensidad
+        const val = Math.max(0, 1.0 - Math.abs(dist - 0.7) * 3.0)
+        values[z * size * size + y * size + x] = val
+      }
+    }
+  }
+  
+  renderer = new Voxel3DRenderer({
+    canvas,
+    backgroundColor: backgroundColor.value,
+    voxelScale: 0.9,
+    threshold: 0.15,
+    opacity: 0.7
+  })
+  
+  renderer.setData({
+    dimensions: [size, size, size],
+    values,
+    spacing: [0.5, 0.5, 0.5],
+    origin: [-size*0.25, -size*0.25, -size*0.25]
+  })
+  
+  renderer.fitToData()
+  
+  renderer.on('render', (e: any) => {
+    fps.value = Math.round(e.stats.fps)
+  })
+  
+  pointCount.value = size * size * size
 }
 </script>
 
