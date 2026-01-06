@@ -16,6 +16,16 @@ import {
   LINE_POINT_FRAG,
   WATERFALL_VERT,
   WATERFALL_FRAG,
+  VECTOR_FIELD_VERT,
+  VECTOR_FIELD_FRAG,
+  POINT_CLOUD_VERT,
+  POINT_CLOUD_FRAG,
+  VOXEL_VERT,
+  VOXEL_FRAG,
+  RIBBON_VERT,
+  RIBBON_FRAG,
+  SURFACE_BAR_VERT,
+  SURFACE_BAR_FRAG,
 } from './sources';
 
 export interface ShaderProgram3D {
@@ -31,6 +41,11 @@ export interface ProgramBundle3D {
   surfaceProgram: ShaderProgram3D;
   linePointProgram: ShaderProgram3D;
   waterfallProgram: ShaderProgram3D;
+  vectorFieldProgram: ShaderProgram3D;
+  pointCloudProgram: ShaderProgram3D;
+  voxelProgram: ShaderProgram3D;
+  ribbonProgram: ShaderProgram3D;
+  surfaceBarProgram: ShaderProgram3D;
 }
 
 function createShader(
@@ -150,6 +165,46 @@ export function createProgramBundle3D(
     ['u_viewProjection', 'u_opacity', 'u_fadeStart', 'u_fadeEnd']
   );
 
+  const vectorFieldProgram = createProgram(
+    gl,
+    VECTOR_FIELD_VERT,
+    VECTOR_FIELD_FRAG,
+    ['a_position', 'a_normal', 'a_instancePos', 'a_direction', 'a_color'],
+    ['u_viewProjection', 'u_opacity', 'u_scaleMultiplier', 'u_lightDir']
+  );
+
+  const pointCloudProgram = createProgram(
+    gl,
+    POINT_CLOUD_VERT,
+    POINT_CLOUD_FRAG,
+    ['a_position', 'a_color', 'a_size'],
+    ['u_viewProjection', 'u_opacity', 'u_globalSize', 'u_circular']
+  );
+
+  const voxelProgram = createProgram(
+    gl,
+    VOXEL_VERT,
+    VOXEL_FRAG,
+    ['a_position', 'a_instancePos', 'a_value'],
+    ['u_viewProjection', 'u_opacity', 'u_voxelSize', 'u_threshold', 'u_lightDir']
+  );
+
+  const ribbonProgram = createProgram(
+    gl,
+    RIBBON_VERT,
+    RIBBON_FRAG,
+    ['a_position', 'a_normal', 'a_color'],
+    ['u_viewProjection', 'u_opacity', 'u_lightDir']
+  );
+
+  const surfaceBarProgram = createProgram(
+    gl,
+    SURFACE_BAR_VERT,
+    SURFACE_BAR_FRAG,
+    ['a_position', 'a_instancePos', 'a_height', 'a_color'],
+    ['u_viewProjection', 'u_opacity', 'u_barWidth', 'u_barDepth', 'u_lightDir']
+  );
+
   return {
     bubbleProgram,
     bubbleFlatProgram,
@@ -157,6 +212,11 @@ export function createProgramBundle3D(
     surfaceProgram,
     linePointProgram,
     waterfallProgram,
+    vectorFieldProgram,
+    pointCloudProgram,
+    voxelProgram,
+    ribbonProgram,
+    surfaceBarProgram,
   };
 }
 
@@ -177,4 +237,9 @@ export function deleteProgramBundle(
   deleteProgram(gl, bundle.surfaceProgram);
   deleteProgram(gl, bundle.linePointProgram);
   deleteProgram(gl, bundle.waterfallProgram);
+  deleteProgram(gl, bundle.vectorFieldProgram);
+  deleteProgram(gl, bundle.pointCloudProgram);
+  deleteProgram(gl, bundle.voxelProgram);
+  deleteProgram(gl, bundle.ribbonProgram);
+  deleteProgram(gl, bundle.surfaceBarProgram);
 }
