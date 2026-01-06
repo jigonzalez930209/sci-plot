@@ -1,43 +1,13 @@
-/**
- * 3D Rendering Module for scichart-engine
- * 
- * Lightweight WebGL2-based 3D bubble chart renderer with:
- * - Instanced rendering for 100k+ bubbles in single draw call
- * - Orbit camera with mouse/touch controls
- * - No external dependencies (custom math library)
- * 
- * @example
- * ```typescript
- * import { Bubble3DRenderer } from 'scichart-engine/core/3d';
- * 
- * const renderer = new Bubble3DRenderer({
- *   canvas: document.getElementById('canvas') as HTMLCanvasElement,
- * });
- * 
- * // Set data (10k bubbles)
- * const count = 10000;
- * const positions = new Float32Array(count * 3);
- * const colors = new Float32Array(count * 3);
- * const scales = new Float32Array(count);
- * 
- * for (let i = 0; i < count; i++) {
- *   positions[i * 3] = Math.random() * 10 - 5;
- *   positions[i * 3 + 1] = Math.random() * 10 - 5;
- *   positions[i * 3 + 2] = Math.random() * 10 - 5;
- *   colors[i * 3] = Math.random();
- *   colors[i * 3 + 1] = Math.random();
- *   colors[i * 3 + 2] = Math.random();
- *   scales[i] = 0.05 + Math.random() * 0.1;
- * }
- * 
- * renderer.setData({ positions, colors, scales });
- * renderer.fitToData();
- * ```
- */
+
 
 // Main renderers
 export { Bubble3DRenderer, type Bubble3DRendererOptions } from './Bubble3DRenderer';
 export { SurfaceMesh3DRenderer, type SurfaceMesh3DRendererOptions } from './SurfaceMesh3DRenderer';
+
+// Color themes
+export * from './colorThemes';
+export type { ColorTheme, ColorPalette, CustomThemeOptions } from './colorThemes';
+export { DARK_THEME, LIGHT_THEME, getThemeFromBackground, createTheme } from './colorThemes';
 export { Line3DRenderer, type Line3DRendererOptions, type Line3DData } from './Line3DRenderer';
 export { Area3DRenderer, type Area3DRendererOptions, type AreaSeriesData } from './Area3DRenderer';
 export { Impulse3DRenderer, type Impulse3DRendererOptions, type ImpulseSeriesData } from './Impulse3DRenderer';

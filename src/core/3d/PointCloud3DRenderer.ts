@@ -19,6 +19,7 @@ import type {
   Bounds3D,
   Renderer3DEventCallback,
 } from './types';
+import { createTheme, type CustomThemeOptions, type ColorTheme } from './colorThemes';
 
 export interface PointCloudData {
   /** Positions [x0, y0, z0, x1, y1, z1, ...] */
@@ -34,12 +35,14 @@ export interface PointCloud3DRendererOptions extends Renderer3DOptions {
   controls?: OrbitControllerOptions;
   axes?: Axes3DOptions;
   showAxes?: boolean;
-  /** Global point size multiplier (default: 1.0) */
+  /** Global point size multiplier (default: 2.0) */
   pointSize?: number;
   /** Use circular points instead of squares (default: true) */
   circular?: boolean;
   /** Global opacity (default: 1.0) */
   opacity?: number;
+  /** Color theme options */
+  theme?: CustomThemeOptions;
   /** Enable tooltips */
   enableTooltip?: boolean;
 }
@@ -78,6 +81,9 @@ export class PointCloud3DRenderer {
   private lastHitIndex: number = -1;
   private boundHandleMouseMove?: (e: MouseEvent) => void;
   private boundHandleMouseLeave?: () => void;
+  
+  // Color theme
+  private colorTheme: ColorTheme;
 
   constructor(options: PointCloud3DRendererOptions) {
     this.canvas = options.canvas;
@@ -87,6 +93,9 @@ export class PointCloud3DRenderer {
     this.opacity = options.opacity ?? 1.0;
     
     if (options.backgroundColor) this.backgroundColor = options.backgroundColor;
+    
+    // Initialize color theme
+    this.colorTheme = createTheme(options.theme || {}, this.backgroundColor);
 
     const gl = this.canvas.getContext('webgl2', { alpha: true, antialias: true });
     if (!gl) throw new Error('WebGL2 not supported');
@@ -160,7 +169,9 @@ export class PointCloud3DRenderer {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, data.positions, gl.DYNAMIC_DRAW);
 
-    const colors = data.colors || new Float32Array(this.pointCount * 4).fill(1.0);
+    // Use theme color if no custom colors provided
+    const defaultColor = this.colorTheme.seriesPalette[0];
+    const colors = data.colors || this.generateThemeColors(this.pointCount, defaultColor);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.DYNAMIC_DRAW);
 
@@ -183,6 +194,16 @@ export class PointCloud3DRenderer {
     }
     this.bounds = { minX, maxX, minY, maxY, minZ, maxZ };
     if (this.axes) this.axes.updateBounds(this.bounds);
+  }
+  
+  private generateThemeColors(count: number, defaultColor: [number, number, number]): Float32Array {
+    const colors = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      colors[i * 3] = defaultColor[0];
+      colors[i * 3 + 1] = defaultColor[1];
+      colors[i * 3 + 2] = defaultColor[2];
+    }
+    return colors;
   }
 
   render(): void {

@@ -1,7 +1,7 @@
 /**
  * Waterfall 3D Renderer
  * Renders multiple 3D series (lines or areas) offset along the Z-axis.
- * Ideal for spettrograms and time-series evolution.
+ * Ideal for spectrograms and time-series evolution.
  */
 
 import { OrbitCamera, type OrbitCameraOptions } from './camera/OrbitCamera';
@@ -20,6 +20,7 @@ import type {
   Renderer3DEvent,
   Renderer3DEventCallback,
 } from './types';
+import { createTheme, type CustomThemeOptions, type ColorTheme } from './colorThemes';
 
 export interface WaterfallSeriesData {
   /** Y values for this slice */
@@ -45,6 +46,8 @@ export interface Waterfall3DRendererOptions extends Renderer3DOptions {
   opacity?: number;
   /** Enable tooltips */
   enableTooltip?: boolean;
+  /** Color theme options */
+  theme?: CustomThemeOptions;
 }
 
 export class Waterfall3DRenderer {
@@ -60,6 +63,7 @@ export class Waterfall3DRenderer {
   // Buffers
   private vao: WebGLVertexArrayObject | null = null;
   private positionBuffer: WebGLBuffer | null = null;
+  private normalBuffer: WebGLBuffer | null = null;
   private colorBuffer: WebGLBuffer | null = null;
   private indexBuffer: WebGLBuffer | null = null;
   private indexCount = 0;
@@ -77,6 +81,10 @@ export class Waterfall3DRenderer {
   private needsRender = true;
   private eventListeners: Map<string, Set<Renderer3DEventCallback>> = new Map();
   
+  // Hover highlight
+  private hoveredSeriesIndex: number | null = null;
+  private colorTheme: ColorTheme;
+  
   // Tooltip
   private tooltip: Tooltip3D | null = null;
   private lastHitIndex: { slice: number, point: number } | null = null;
@@ -92,6 +100,9 @@ export class Waterfall3DRenderer {
     this.xValues = options.xValues;
     
     if (options.backgroundColor) this.backgroundColor = options.backgroundColor;
+    
+    // Initialize color theme
+    this.colorTheme = createTheme(options.theme || {}, this.backgroundColor);
 
     const gl = this.canvas.getContext('webgl2', { alpha: true, antialias: true });
     if (!gl) throw new Error('WebGL2 not supported');
@@ -162,12 +173,23 @@ export class Waterfall3DRenderer {
     const { gl } = this;
 
     const positions: number[] = [];
+    const normals: number[] = [];
     const colors: number[] = [];
     const indices: number[] = [];
     let vertexOffset = 0;
 
-    for (const slice of this.slices) {
-      const sliceColor = slice.color || [0.2, 0.6, 1.0];
+    // Get color palette from theme
+    const colorPalette = this.colorTheme.seriesPalette;
+    const highlightColor = this.colorTheme.highlightColor;
+
+    for (let sliceIdx = 0; sliceIdx < this.slices.length; sliceIdx++) {
+      const slice = this.slices[sliceIdx];
+      
+      // Use highlight color if this series is hovered
+      const isHovered = sliceIdx === this.hoveredSeriesIndex;
+      const sliceColor = isHovered 
+        ? highlightColor
+        : (slice.color || colorPalette[sliceIdx % colorPalette.length]);
       
       for (let i = 0; i < this.xValues.length; i++) {
         const x = this.xValues[i];
@@ -175,11 +197,26 @@ export class Waterfall3DRenderer {
         const z = slice.z;
 
         if (this.sliceStyle === 'area') {
+          // Calculate normal for curtain (perpendicular to line direction in XZ plane)
+          let nx = 0, ny = 0, nz = 1;
+          if (i < this.xValues.length - 1) {
+            const dx = this.xValues[i + 1] - x;
+            const len = Math.sqrt(dx * dx);
+            if (len > 0.001) {
+              nx = 0;
+              ny = 0;
+              nz = 1;
+            }
+          }
+
           // Top vertex
           positions.push(x, y, z);
+          normals.push(nx, ny, nz);
           colors.push(...sliceColor);
+          
           // Bottom vertex
           positions.push(x, this.baseY, z);
+          normals.push(nx, ny, nz);
           colors.push(...sliceColor); 
 
           if (i < this.xValues.length - 1) {
@@ -192,6 +229,7 @@ export class Waterfall3DRenderer {
         } else {
           // Line style
           positions.push(x, y, z);
+          normals.push(0, 0, 1);
           colors.push(...sliceColor);
           if (i < this.xValues.length - 1) {
             indices.push(vertexOffset + i, vertexOffset + i + 1);
@@ -212,6 +250,15 @@ export class Waterfall3DRenderer {
     if (posLoc !== -1) {
       gl.enableVertexAttribArray(posLoc);
       gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
+    }
+
+    if (!this.normalBuffer) this.normalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+    const normalLoc = program.attributes.a_normal;
+    if (normalLoc !== -1) {
+      gl.enableVertexAttribArray(normalLoc);
+      gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 0, 0);
     }
 
     if (!this.colorBuffer) this.colorBuffer = gl.createBuffer();
@@ -251,6 +298,8 @@ export class Waterfall3DRenderer {
       
       gl.uniform1f(program.uniforms.u_fadeStart, -1000);
       gl.uniform1f(program.uniforms.u_fadeEnd, 1000);
+      gl.uniform3fv(program.uniforms.u_lightDir, new Float32Array([0.5, 1.0, 0.3]));
+      gl.uniform1f(program.uniforms.u_ambient, 0.6);
 
       gl.bindVertexArray(this.vao);
       if (this.sliceStyle === 'area') {
@@ -290,35 +339,54 @@ export class Waterfall3DRenderer {
   }
 
   private handleMouseMove(e: MouseEvent): void {
-    if (!this.tooltip || this.slices.length === 0) return;
+    if (this.slices.length === 0) return;
     const rect = this.canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
     const hit = this.pickAtScreen(x, y);
-    if (hit) {
-      const isNew = !this.lastHitIndex || this.lastHitIndex.slice !== hit.seriesIndex || this.lastHitIndex.point !== hit.pointIndex;
-      if (isNew) {
-        this.lastHitIndex = { slice: hit.seriesIndex, point: hit.pointIndex };
-        const slice = this.slices[hit.seriesIndex];
-        this.tooltip.show({
-          index: hit.pointIndex,
-          position: [this.xValues[hit.pointIndex], slice.yValues[hit.pointIndex], slice.z],
-          color: slice.color || [0.2, 0.6, 1.0],
-          customData: { series: hit.seriesIndex, z: slice.z.toFixed(2) }
-        }, x, y);
+    
+    // Update hovered series
+    const newHoveredIndex = hit ? hit.seriesIndex : null;
+    if (newHoveredIndex !== this.hoveredSeriesIndex) {
+      this.hoveredSeriesIndex = newHoveredIndex;
+      this.updateGeometry(); // Rebuild with highlight
+      this.needsRender = true;
+    }
+    
+    // Tooltip logic
+    if (this.tooltip) {
+      if (hit) {
+        const isNew = !this.lastHitIndex || this.lastHitIndex.slice !== hit.seriesIndex || this.lastHitIndex.point !== hit.pointIndex;
+        if (isNew) {
+          this.lastHitIndex = { slice: hit.seriesIndex, point: hit.pointIndex };
+          const slice = this.slices[hit.seriesIndex];
+          this.tooltip.show({
+            index: hit.pointIndex,
+            position: [this.xValues[hit.pointIndex], slice.yValues[hit.pointIndex], slice.z],
+            color: slice.color || [0.2, 0.6, 1.0],
+            customData: { series: hit.seriesIndex, z: slice.z.toFixed(2) }
+          }, x, y);
+        } else {
+          this.tooltip.updatePosition(x, y);
+        }
       } else {
-        this.tooltip.updatePosition(x, y);
-      }
-    } else {
-      if (this.lastHitIndex) {
-        this.tooltip.hide();
-        this.lastHitIndex = null;
+        if (this.lastHitIndex) {
+          this.tooltip.hide();
+          this.lastHitIndex = null;
+        }
       }
     }
   }
 
   private handleMouseLeave(): void {
+    // Reset highlight
+    if (this.hoveredSeriesIndex !== null) {
+      this.hoveredSeriesIndex = null;
+      this.updateGeometry();
+      this.needsRender = true;
+    }
+    
     if (this.tooltip) {
       this.tooltip.hide();
       this.lastHitIndex = null;
@@ -401,6 +469,7 @@ export class Waterfall3DRenderer {
     const { gl } = this;
     if (this.vao) gl.deleteVertexArray(this.vao);
     if (this.positionBuffer) gl.deleteBuffer(this.positionBuffer);
+    if (this.normalBuffer) gl.deleteBuffer(this.normalBuffer);
     if (this.colorBuffer) gl.deleteBuffer(this.colorBuffer);
     if (this.indexBuffer) gl.deleteBuffer(this.indexBuffer);
     deleteProgramBundle(gl, this.programs);

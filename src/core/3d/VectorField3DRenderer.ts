@@ -19,6 +19,7 @@ import type {
   Bounds3D,
   Renderer3DEventCallback,
 } from './types';
+import { createTheme, type CustomThemeOptions, type ColorTheme } from './colorThemes';
 
 export interface VectorFieldData {
   /** Origin positions [x0, y0, z0, x1, y1, z1, ...] */
@@ -38,8 +39,10 @@ export interface VectorField3DRendererOptions extends Renderer3DOptions {
   showAxes?: boolean;
   /** Arrow scale multiplier (default: 1.0) */
   scaleMultiplier?: number;
-  /** Opacity (default: 1.0) */
+  /** Opacity for arrows (default: 0.9) */
   opacity?: number;
+  /** Color theme options */
+  theme?: CustomThemeOptions;
   /** Enable tooltips */
   enableTooltip?: boolean;
 }
@@ -83,6 +86,9 @@ export class VectorField3DRenderer {
   private lastHitIndex: number = -1;
   private boundHandleMouseMove?: (e: MouseEvent) => void;
   private boundHandleMouseLeave?: () => void;
+  
+  // Color theme
+  private colorTheme: ColorTheme;
 
   constructor(options: VectorField3DRendererOptions) {
     this.canvas = options.canvas;
@@ -91,6 +97,9 @@ export class VectorField3DRenderer {
     this.opacity = options.opacity ?? 1.0;
     
     if (options.backgroundColor) this.backgroundColor = options.backgroundColor;
+    
+    // Initialize color theme
+    this.colorTheme = createTheme(options.theme || {}, this.backgroundColor);
 
     const gl = this.canvas.getContext('webgl2', { alpha: true, antialias: true });
     if (!gl) throw new Error('WebGL2 not supported');
@@ -217,10 +226,9 @@ export class VectorField3DRenderer {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceDirBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, data.directions, gl.STATIC_DRAW);
 
-    const colors = data.colors || new Float32Array(this.vectorCount * 3).fill(0).map((_, i) => {
-      const c = data.color || [0.3, 0.8, 1.0];
-      return c[i % 3];
-    });
+    // Use theme colors if no custom colors provided
+    const defaultColor = data.color || this.colorTheme.seriesPalette[0] as [number, number, number];
+    const colors = data.colors || new Float32Array(this.vectorCount * 3).fill(0).map((_, i) => defaultColor[i % 3]);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.instanceColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
 

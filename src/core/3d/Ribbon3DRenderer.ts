@@ -19,6 +19,7 @@ import type {
   Bounds3D,
   Renderer3DEventCallback,
 } from './types';
+import { createTheme, type CustomThemeOptions, type ColorTheme } from './colorThemes';
 
 export interface RibbonSeriesData {
   /** X coordinates */
@@ -42,6 +43,8 @@ export interface Ribbon3DRendererOptions extends Renderer3DOptions {
   opacity?: number;
   /** Enable tooltips */
   enableTooltip?: boolean;
+  /** Color theme options */
+  theme?: CustomThemeOptions;
 }
 
 export class Ribbon3DRenderer {
@@ -72,6 +75,10 @@ export class Ribbon3DRenderer {
   private needsRender = true;
   private eventListeners: Map<string, Set<Renderer3DEventCallback>> = new Map();
   
+  // Hover highlight
+  private hoveredSeriesIndex: number | null = null;
+  private colorTheme: ColorTheme;
+  
   // Tooltip
   private tooltip: Tooltip3D | null = null;
   private lastHitIndex: { series: number, point: number } | null = null;
@@ -84,6 +91,9 @@ export class Ribbon3DRenderer {
     this.opacity = options.opacity ?? 0.9;
     
     if (options.backgroundColor) this.backgroundColor = options.backgroundColor;
+    
+    // Initialize color theme
+    this.colorTheme = createTheme(options.theme || {}, this.backgroundColor);
 
     const gl = this.canvas.getContext('webgl2', { alpha: true, antialias: true });
     if (!gl) throw new Error('WebGL2 not supported');
@@ -155,8 +165,15 @@ export class Ribbon3DRenderer {
     const indices: number[] = [];
     let vertexOffset = 0;
 
-    for (const s of this.series) {
-      const col = s.color || [0.3, 0.8, 1.0];
+    for (let seriesIdx = 0; seriesIdx < this.series.length; seriesIdx++) {
+      const s = this.series[seriesIdx];
+      
+      // Use highlight color if this series is hovered
+      const isHovered = seriesIdx === this.hoveredSeriesIndex;
+      const col = isHovered 
+        ? this.colorTheme.highlightColor
+        : (s.color || this.colorTheme.seriesPalette[seriesIdx % this.colorTheme.seriesPalette.length]);
+      
       const halfW = (s.width ?? 0.5) / 2;
       const n = s.xValues.length;
 
@@ -249,6 +266,7 @@ export class Ribbon3DRenderer {
       gl.uniformMatrix4fv(program.uniforms.u_viewProjection, false, viewProj);
       gl.uniform1f(program.uniforms.u_opacity, this.opacity);
       gl.uniform3fv(program.uniforms.u_lightDir, new Float32Array([0.5, 1.0, 0.3]));
+      gl.uniform1f(program.uniforms['u_ambient'], 0.6);
 
       gl.bindVertexArray(this.vao);
       gl.drawElements(gl.TRIANGLES, this.indexCount, gl.UNSIGNED_INT, 0);
@@ -278,7 +296,7 @@ export class Ribbon3DRenderer {
   }
 
   private handleMouseMove(e: MouseEvent): void {
-    if (!this.tooltip || this.series.length === 0) return;
+    if (this.series.length === 0) return;
     const rect = this.canvas.getBoundingClientRect();
     const x = e.clientX - rect.left, y = e.clientY - rect.top;
     
@@ -293,27 +311,45 @@ export class Ribbon3DRenderer {
     }));
     
     const hit = pickLine(ray, lines, 0.4);
+    
+    // Update hovered series
+    const newHoveredIndex = hit ? hit.seriesIndex : null;
+    if (newHoveredIndex !== this.hoveredSeriesIndex) {
+      this.hoveredSeriesIndex = newHoveredIndex;
+      this.updateGeometry();
+      this.needsRender = true;
+    }
 
-    if (hit) {
-      if (!this.lastHitIndex || this.lastHitIndex.series !== hit.seriesIndex || this.lastHitIndex.point !== hit.pointIndex) {
-        this.lastHitIndex = { series: hit.seriesIndex, point: hit.pointIndex };
-        const s = this.series[hit.seriesIndex];
-        this.tooltip.show({
-          index: hit.pointIndex,
-          position: [s.xValues[hit.pointIndex], s.yValues[hit.pointIndex], s.z],
-          color: s.color || [0.3, 0.8, 1.0],
-          customData: { Series: hit.seriesIndex, Z: s.z.toFixed(2) }
-        }, x, y);
-      } else {
-        this.tooltip.updatePosition(x, y);
+    // Tooltip logic
+    if (this.tooltip) {
+      if (hit) {
+        if (!this.lastHitIndex || this.lastHitIndex.series !== hit.seriesIndex || this.lastHitIndex.point !== hit.pointIndex) {
+          this.lastHitIndex = { series: hit.seriesIndex, point: hit.pointIndex };
+          const s = this.series[hit.seriesIndex];
+          this.tooltip.show({
+            index: hit.pointIndex,
+            position: [s.xValues[hit.pointIndex], s.yValues[hit.pointIndex], s.z],
+            color: s.color || [0.3, 0.8, 1.0],
+            customData: { Series: hit.seriesIndex, Z: s.z.toFixed(2) }
+          }, x, y);
+        } else {
+          this.tooltip.updatePosition(x, y);
+        }
+      } else if (this.lastHitIndex) {
+        this.tooltip.hide();
+        this.lastHitIndex = null;
       }
-    } else if (this.lastHitIndex) {
-      this.tooltip.hide();
-      this.lastHitIndex = null;
     }
   }
 
   private handleMouseLeave(): void {
+    // Reset highlight
+    if (this.hoveredSeriesIndex !== null) {
+      this.hoveredSeriesIndex = null;
+      this.updateGeometry();
+      this.needsRender = true;
+    }
+    
     if (this.tooltip) { this.tooltip.hide(); this.lastHitIndex = null; }
   }
 

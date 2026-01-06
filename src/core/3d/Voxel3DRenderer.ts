@@ -20,6 +20,7 @@ import type {
   Bounds3D,
   Renderer3DEventCallback,
 } from './types';
+import type { CustomThemeOptions } from './colorThemes';
 
 export interface VoxelData {
   /** Dimensions of the 3D grid [nx, ny, nz] */
@@ -47,6 +48,8 @@ export interface Voxel3DRendererOptions extends Renderer3DOptions {
   opacity?: number;
   /** Enable tooltips */
   enableTooltip?: boolean;
+  /** Color theme options */
+  theme?: CustomThemeOptions;
 }
 
 export class Voxel3DRenderer {

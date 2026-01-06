@@ -20,6 +20,7 @@ import type {
   Bounds3D,
   Renderer3DEventCallback,
 } from './types';
+import { createTheme, type CustomThemeOptions, type ColorTheme } from './colorThemes';
 
 export interface SurfaceBarData {
   /** Number of rows in the grid (Z axis) */
@@ -41,10 +42,12 @@ export interface SurfaceBar3DRendererOptions extends Renderer3DOptions {
   controls?: OrbitControllerOptions;
   axes?: Axes3DOptions;
   showAxes?: boolean;
-  /** Bar width scale relative to spacing (0.0 to 1.0, default 0.8) */
-  barScale?: number;
-  /** Global opacity (default: 1.0) */
+  /** Opacity (default: 1.0) */
   opacity?: number;
+  /** Bar scale (default: 1.0) */
+  barScale?: number;
+  /** Color theme options */
+  theme?: CustomThemeOptions;
   /** Enable tooltips */
   enableTooltip?: boolean;
 }
@@ -89,6 +92,9 @@ export class SurfaceBar3DRenderer {
   private lastHitIndex: number = -1;
   private boundHandleMouseMove?: (e: MouseEvent) => void;
   private boundHandleMouseLeave?: () => void;
+  
+  // Color theme
+  private colorTheme: ColorTheme;
 
   constructor(options: SurfaceBar3DRendererOptions) {
     this.canvas = options.canvas;
@@ -97,6 +103,9 @@ export class SurfaceBar3DRenderer {
     this.opacity = options.opacity ?? 1.0;
     
     if (options.backgroundColor) this.backgroundColor = options.backgroundColor;
+    
+    // Initialize color theme
+    this.colorTheme = createTheme(options.theme || {}, this.backgroundColor);
 
     const gl = this.canvas.getContext('webgl2', { alpha: true, antialias: true });
     if (!gl) throw new Error('WebGL2 not supported');
@@ -205,7 +214,8 @@ export class SurfaceBar3DRenderer {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.heightBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, data.heights, gl.STATIC_DRAW);
 
-    const colors = data.colors || new Float32Array(this.barCount * 3).fill(0.8);
+    // Use theme palette if no colors provided
+    const colors = data.colors || this.generateThemeColors(this.barCount);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
 
@@ -232,6 +242,18 @@ export class SurfaceBar3DRenderer {
       maxZ: origin[2] + (rows - 1) * spacing[1] + spacing[1]/2
     };
     if (this.axes) this.axes.updateBounds(this.bounds);
+  }
+  
+  private generateThemeColors(count: number): Float32Array {
+    const colors = new Float32Array(count * 3);
+    const palette = this.colorTheme.seriesPalette;
+    for (let i = 0; i < count; i++) {
+      const c = palette[i % palette.length];
+      colors[i * 3] = c[0];
+      colors[i * 3 + 1] = c[1];
+      colors[i * 3 + 2] = c[2];
+    }
+    return colors;
   }
 
   render(): void {

@@ -20,6 +20,7 @@ import type {
   Renderer3DEvent,
   Renderer3DEventCallback,
 } from './types';
+import { createTheme, type CustomThemeOptions, type ColorTheme } from './colorThemes';
 import { createRayFromScreen, pickImpulse } from './Raycaster3D';
 
 export interface ImpulseSeriesData {
@@ -53,6 +54,8 @@ export interface Impulse3DRendererOptions extends Renderer3DOptions {
   /** Enable tooltips (default: true) */
   enableTooltip?: boolean;
   tooltip?: Tooltip3DOptions;
+  /** Color theme options */
+  theme?: CustomThemeOptions;
 }
 
 export class Impulse3DRenderer {
@@ -109,6 +112,9 @@ export class Impulse3DRenderer {
   private fps = 0;
   private lastFpsUpdate = 0;
   
+  // Color theme
+  private colorTheme: ColorTheme;
+  
   constructor(options: Impulse3DRendererOptions) {
     this.canvas = options.canvas;
     this.dpr = window.devicePixelRatio || 1;
@@ -122,6 +128,9 @@ export class Impulse3DRenderer {
     if (options.backgroundColor) {
       this.backgroundColor = options.backgroundColor;
     }
+    
+    // Initialize color theme
+    this.colorTheme = createTheme(options.theme || {}, this.backgroundColor);
     
     // Get WebGL2 context
     const gl = this.canvas.getContext('webgl2', {
@@ -294,7 +303,7 @@ export class Impulse3DRenderer {
     if (!impulseData) return;
     
     const count = impulseData.x.length;
-    const defaultColor = impulseData.color ?? [0.5, 0.7, 1.0];
+    const defaultColor = impulseData.color ?? this.colorTheme.seriesPalette[0] as [number, number, number];
     const baseY = impulseData.baseY ?? 0;
     
     const allPositions: number[] = [];
@@ -373,7 +382,7 @@ export class Impulse3DRenderer {
     if (!impulseData) return;
     
     const count = impulseData.x.length;
-    const defaultColor = impulseData.color ?? [0.5, 0.7, 1.0];
+    const defaultColor = impulseData.color ?? this.colorTheme.seriesPalette[0] as [number, number, number];
     const radius = stemWidth * markerSize;
     
     // Simple octahedron for markers (fast)

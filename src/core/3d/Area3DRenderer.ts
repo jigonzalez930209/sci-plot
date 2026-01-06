@@ -21,6 +21,7 @@ import type {
   Renderer3DEventCallback,
 } from './types';
 import { createRayFromScreen, pickArea } from './Raycaster3D';
+import { createTheme, type CustomThemeOptions, type ColorTheme } from './colorThemes';
 
 export interface AreaSeriesData {
   /** X coordinates */
@@ -47,6 +48,8 @@ export interface Area3DRendererOptions extends Renderer3DOptions {
   /** Enable tooltips (default: true) */
   enableTooltip?: boolean;
   tooltip?: Tooltip3DOptions;
+  /** Color theme options */
+  theme?: CustomThemeOptions;
 }
 
 export class Area3DRenderer {
@@ -79,6 +82,10 @@ export class Area3DRenderer {
   
   private eventListeners: Map<string, Set<Renderer3DEventCallback>> = new Map();
   
+  // Hover highlight
+  private hoveredSeriesIndex: number | null = null;
+  private colorTheme: ColorTheme;
+  
   // Tooltip
   private tooltip: Tooltip3D | null = null;
   private enableTooltip: boolean;
@@ -102,6 +109,9 @@ export class Area3DRenderer {
     if (options.backgroundColor) {
       this.backgroundColor = options.backgroundColor;
     }
+    
+    // Initialize color theme
+    this.colorTheme = createTheme(options.theme || {}, this.backgroundColor);
     
     // Get WebGL2 context
     const gl = this.canvas.getContext('webgl2', {
@@ -161,7 +171,7 @@ export class Area3DRenderer {
   }
 
   private handleMouseMove(e: MouseEvent): void {
-    if (!this.tooltip || this.areas.length === 0) return;
+    if (this.areas.length === 0) return;
     
     const rect = this.canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -169,34 +179,52 @@ export class Area3DRenderer {
     
     const hit = this.pickAtScreen(x, y);
     
-    if (hit) {
-      const isNew = !this.lastHitIndex || 
-                   this.lastHitIndex.series !== hit.seriesIndex || 
-                   this.lastHitIndex.point !== hit.pointIndex;
-      
-      if (isNew) {
-        this.lastHitIndex = { series: hit.seriesIndex, point: hit.pointIndex };
-        const area = this.areas[hit.seriesIndex];
-        const color = area.color || [0.5, 0.7, 1.0];
+    // Update hovered series
+    const newHoveredIndex = hit ? hit.seriesIndex : null;
+    if (newHoveredIndex !== this.hoveredSeriesIndex) {
+      this.hoveredSeriesIndex = newHoveredIndex;
+      this.buildAreaGeometry();
+      this.needsRender = true;
+    }
+    
+    // Tooltip logic
+    if (this.tooltip) {
+      if (hit) {
+        const isNew = !this.lastHitIndex || 
+                     this.lastHitIndex.series !== hit.seriesIndex || 
+                     this.lastHitIndex.point !== hit.pointIndex;
         
-        this.tooltip.show({
-          index: hit.pointIndex,
-          position: [area.x[hit.pointIndex], area.y[hit.pointIndex], area.z[hit.pointIndex]],
-          color: color,
-          customData: { series: hit.seriesIndex }
-        }, x, y);
+        if (isNew) {
+          this.lastHitIndex = { series: hit.seriesIndex, point: hit.pointIndex };
+          const area = this.areas[hit.seriesIndex];
+          const color = area.color || [0.5, 0.7, 1.0];
+          
+          this.tooltip.show({
+            index: hit.pointIndex,
+            position: [area.x[hit.pointIndex], area.y[hit.pointIndex], area.z[hit.pointIndex]],
+            color: color,
+            customData: { series: hit.seriesIndex }
+          }, x, y);
+        } else {
+          this.tooltip.updatePosition(x, y);
+        }
       } else {
-        this.tooltip.updatePosition(x, y);
-      }
-    } else {
-      if (this.lastHitIndex) {
-        this.tooltip.hide();
-        this.lastHitIndex = null;
+        if (this.lastHitIndex) {
+          this.tooltip.hide();
+          this.lastHitIndex = null;
+        }
       }
     }
   }
 
   private handleMouseLeave(): void {
+    // Reset highlight
+    if (this.hoveredSeriesIndex !== null) {
+      this.hoveredSeriesIndex = null;
+      this.buildAreaGeometry();
+      this.needsRender = true;
+    }
+    
     if (this.tooltip) {
       this.tooltip.hide();
       this.lastHitIndex = null;
@@ -299,11 +327,21 @@ export class Area3DRenderer {
     const allIndices: number[] = [];
     let vertexOffset = 0;
     
-    for (const area of areas) {
+    // Get color palette from theme
+    const colorPalette = this.colorTheme.seriesPalette;
+    const highlightColor = this.colorTheme.highlightColor;
+    
+    for (let areaIdx = 0; areaIdx < areas.length; areaIdx++) {
+      const area = areas[areaIdx];
       const pointCount = area.x.length;
       if (pointCount < 2) continue;
       
-      const defaultColor = area.color ?? [0.4, 0.6, 0.9];
+      // Use highlight color if this series is hovered
+      const isHovered = areaIdx === this.hoveredSeriesIndex;
+      const defaultColor = isHovered
+        ? highlightColor
+        : (area.color ?? colorPalette[areaIdx % colorPalette.length]);
+      
       const baseY = area.baseY ?? 0;
       
       // For each segment, create a quad (2 triangles)
@@ -358,7 +396,7 @@ export class Area3DRenderer {
           allColors.push(r * 0.5, g * 0.5, b * 0.5); // Bottom (darker)
         } else {
           allColors.push(defaultColor[0], defaultColor[1], defaultColor[2]); // Top
-          allColors.push(defaultColor[0] * 0.4, defaultColor[1] * 0.4, defaultColor[2] * 0.6); // Bottom
+          allColors.push(defaultColor[0] * 0.5, defaultColor[1] * 0.5, defaultColor[2] * 0.6); // Bottom
         }
         
         // Generate indices (connect to next segment)
@@ -488,7 +526,7 @@ export class Area3DRenderer {
       gl.uniformMatrix4fv(program.uniforms['u_viewProjection'], false, viewProj);
       gl.uniform1f(program.uniforms['u_opacity'], this.opacity);
       gl.uniform3f(program.uniforms['u_lightDir'], 1, 1, 1);
-      gl.uniform1f(program.uniforms['u_ambient'], 0.4);
+      gl.uniform1f(program.uniforms['u_ambient'], 0.6);
       
       gl.bindVertexArray(this.vao);
       

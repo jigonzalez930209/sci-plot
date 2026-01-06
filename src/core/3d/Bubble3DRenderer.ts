@@ -34,6 +34,7 @@ import type {
   Renderer3DEventCallback,
 } from './types';
 import { Tooltip3D, type Tooltip3DOptions, type Tooltip3DData } from './Tooltip3D';
+import { createTheme, type CustomThemeOptions, type ColorTheme } from './colorThemes';
 
 export interface Bubble3DRendererOptions extends Renderer3DOptions {
   camera?: OrbitCameraOptions;
@@ -50,6 +51,8 @@ export interface Bubble3DRendererOptions extends Renderer3DOptions {
   tooltip?: Tooltip3DOptions;
   /** Custom tooltip formatter */
   tooltipFormatter?: (data: Tooltip3DData) => string;
+  /** Color theme options */
+  theme?: CustomThemeOptions;
 }
 
 export class Bubble3DRenderer {
@@ -89,6 +92,9 @@ export class Bubble3DRenderer {
   private fps = 0;
   private lastFpsUpdate = 0;
   
+  // Color theme
+  private colorTheme: ColorTheme;
+  
   constructor(options: Bubble3DRendererOptions) {
     this.canvas = options.canvas;
     this.dpr = window.devicePixelRatio || 1;
@@ -99,16 +105,19 @@ export class Bubble3DRenderer {
       this.backgroundColor = options.backgroundColor;
     }
     
-    // Initialize style with defaults
+    // Initialize color theme
+    this.colorTheme = createTheme(options.theme || {}, this.backgroundColor);
+    
+    // Initialize style with defaults (using theme colors)
     this.style = {
       opacity: options.style?.opacity ?? 1,
-      defaultColor: options.style?.defaultColor ?? [0.2, 0.6, 1],
+      defaultColor: options.style?.defaultColor ?? this.colorTheme.seriesPalette[0],
       defaultScale: options.style?.defaultScale ?? 0.1,
       geometry: options.style?.geometry ?? 'icosphere',
       subdivisions: options.style?.subdivisions ?? 1,
       enableLighting: options.style?.enableLighting ?? true,
       lightDirection: options.style?.lightDirection ?? [1, 1, 1],
-      ambient: options.style?.ambient ?? 0.3,
+      ambient: options.style?.ambient ?? 0.4,
     };
     
     // Initialize WebGL2 context
