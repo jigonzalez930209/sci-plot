@@ -239,22 +239,25 @@ void main() {
 }
 `;
 
-// Waterfall shader with gradient coloring
+// Waterfall shader with gradient coloring and lighting
 export const WATERFALL_VERT = `#version 300 es
 precision highp float;
 
 in vec3 a_position;
 in vec3 a_color;
+in vec3 a_normal;
 
 uniform mat4 u_viewProjection;
 
 out vec3 v_color;
 out float v_depth;
+out vec3 v_normal;
 
 void main() {
   gl_Position = u_viewProjection * vec4(a_position, 1.0);
   v_color = a_color;
   v_depth = a_position.z;
+  v_normal = a_normal;
 }
 `;
 
@@ -263,21 +266,30 @@ precision highp float;
 
 in vec3 v_color;
 in float v_depth;
+in vec3 v_normal;
 
 uniform float u_opacity;
 uniform float u_fadeStart;
 uniform float u_fadeEnd;
+uniform vec3 u_lightDir;
+uniform float u_ambient;
 
 out vec4 fragColor;
 
 void main() {
+  // Lighting
+  vec3 normal = normalize(v_normal);
+  vec3 lightDir = normalize(u_lightDir);
+  float diff = max(dot(normal, lightDir), 0.0);
+  float lighting = u_ambient + (1.0 - u_ambient) * diff;
+  
   // Fade based on depth (Z position)
   float fade = 1.0;
   if (u_fadeEnd > u_fadeStart) {
     fade = 1.0 - smoothstep(u_fadeStart, u_fadeEnd, v_depth);
   }
   
-  fragColor = vec4(v_color, u_opacity * fade);
+  fragColor = vec4(v_color * lighting, u_opacity * fade);
 }
 `;
 // Vector Field shader for Quiver plots
@@ -326,12 +338,15 @@ in vec3 v_color;
 in vec3 v_normal;
 uniform float u_opacity;
 uniform vec3 u_lightDir;
+uniform float u_ambient;
 out vec4 fragColor;
 
 void main() {
   vec3 normal = normalize(v_normal);
-  float diff = max(dot(normal, normalize(u_lightDir)), 0.3);
-  fragColor = vec4(v_color * diff, u_opacity);
+  vec3 lightDir = normalize(u_lightDir);
+  float diff = max(dot(normal, lightDir), 0.0);
+  float lighting = u_ambient + (1.0 - u_ambient) * diff;
+  fragColor = vec4(v_color * lighting, u_opacity);
 }
 `;
 // Point Cloud shader for massive datasets
@@ -412,6 +427,7 @@ in vec3 v_normal;
 
 uniform float u_opacity;
 uniform vec3 u_lightDir;
+uniform float u_ambient;
 
 out vec4 fragColor;
 
@@ -422,13 +438,15 @@ vec3 heatmap(float t) {
 
 void main() {
   vec3 normal = normalize(v_normal);
-  float diff = max(dot(normal, normalize(u_lightDir)), 0.3);
+  vec3 lightDir = normalize(u_lightDir);
+  float diff = max(dot(normal, lightDir), 0.0);
+  float lighting = u_ambient + (1.0 - u_ambient) * diff;
   
   // Spectral colormap
   vec3 color = vec3(v_value, 0.2, 1.0 - v_value);
   if (v_value > 0.5) color = vec3(1.0, 1.0 - (v_value-0.5)*2.0, 0.0);
   
-  fragColor = vec4(color * diff, u_opacity * v_value);
+  fragColor = vec4(color * lighting, u_opacity * v_value);
 }
 `;
 // Ribbon shader for 3D paths with width
@@ -459,13 +477,16 @@ in vec3 v_normal;
 
 uniform float u_opacity;
 uniform vec3 u_lightDir;
+uniform float u_ambient;
 
 out vec4 fragColor;
 
 void main() {
   vec3 normal = normalize(v_normal);
-  float diff = max(dot(normal, normalize(u_lightDir)), 0.45);
-  fragColor = vec4(v_color * diff, u_opacity);
+  vec3 lightDir = normalize(u_lightDir);
+  float diff = max(dot(normal, lightDir), 0.0);
+  float lighting = u_ambient + (1.0 - u_ambient) * diff;
+  fragColor = vec4(v_color * lighting, u_opacity);
 }
 `;
 // Surface Bar (3D Histogram) shader
@@ -508,12 +529,15 @@ in vec3 v_normal;
 
 uniform float u_opacity;
 uniform vec3 u_lightDir;
+uniform float u_ambient;
 
 out vec4 fragColor;
 
 void main() {
   vec3 normal = normalize(v_normal);
-  float diff = max(dot(normal, normalize(u_lightDir)), 0.4);
-  fragColor = vec4(v_color * diff, u_opacity);
+  vec3 lightDir = normalize(u_lightDir);
+  float diff = max(dot(normal, lightDir), 0.0);
+  float lighting = u_ambient + (1.0 - u_ambient) * diff;
+  fragColor = vec4(v_color * lighting, u_opacity);
 }
 `;

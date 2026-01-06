@@ -161,8 +161,8 @@ export function createProgramBundle3D(
     gl,
     WATERFALL_VERT,
     WATERFALL_FRAG,
-    ['a_position', 'a_color'],
-    ['u_viewProjection', 'u_opacity', 'u_fadeStart', 'u_fadeEnd']
+    ['a_position', 'a_color', 'a_normal'],
+    ['u_viewProjection', 'u_opacity', 'u_fadeStart', 'u_fadeEnd', 'u_lightDir', 'u_ambient']
   );
 
   const vectorFieldProgram = createProgram(
@@ -170,7 +170,7 @@ export function createProgramBundle3D(
     VECTOR_FIELD_VERT,
     VECTOR_FIELD_FRAG,
     ['a_position', 'a_normal', 'a_instancePos', 'a_direction', 'a_color'],
-    ['u_viewProjection', 'u_opacity', 'u_scaleMultiplier', 'u_lightDir']
+    ['u_viewProjection', 'u_opacity', 'u_scaleMultiplier', 'u_lightDir', 'u_ambient']
   );
 
   const pointCloudProgram = createProgram(
@@ -186,7 +186,7 @@ export function createProgramBundle3D(
     VOXEL_VERT,
     VOXEL_FRAG,
     ['a_position', 'a_instancePos', 'a_value'],
-    ['u_viewProjection', 'u_opacity', 'u_voxelSize', 'u_threshold', 'u_lightDir']
+    ['u_viewProjection', 'u_opacity', 'u_voxelSize', 'u_threshold', 'u_lightDir', 'u_ambient']
   );
 
   const ribbonProgram = createProgram(
@@ -194,7 +194,7 @@ export function createProgramBundle3D(
     RIBBON_VERT,
     RIBBON_FRAG,
     ['a_position', 'a_normal', 'a_color'],
-    ['u_viewProjection', 'u_opacity', 'u_lightDir']
+    ['u_viewProjection', 'u_opacity', 'u_lightDir', 'u_ambient']
   );
 
   const surfaceBarProgram = createProgram(
@@ -202,7 +202,7 @@ export function createProgramBundle3D(
     SURFACE_BAR_VERT,
     SURFACE_BAR_FRAG,
     ['a_position', 'a_instancePos', 'a_height', 'a_color'],
-    ['u_viewProjection', 'u_opacity', 'u_barWidth', 'u_barDepth', 'u_lightDir']
+    ['u_viewProjection', 'u_opacity', 'u_barWidth', 'u_barDepth', 'u_lightDir', 'u_ambient']
   );
 
   return {
