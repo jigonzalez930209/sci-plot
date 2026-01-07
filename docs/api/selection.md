@@ -2,6 +2,9 @@
 
 Advanced point selection and hit-testing capabilities for interactive data exploration.
 
+## Interactive Demo
+<ChartDemo type="selection" height="400px" />
+
 ## Overview
 
 The Selection API provides:

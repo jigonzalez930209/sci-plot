@@ -2,6 +2,9 @@
 
 Automatic responsive design for charts that adapts to container size and device capabilities.
 
+## Interactive Demo
+<ChartDemo type="responsive" height="300px" />
+
 ## Overview
 
 The Responsive Design system provides:
