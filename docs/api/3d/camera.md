@@ -1,3 +1,8 @@
+---
+title: OrbitCamera & OrbitController
+description: Explore the OrbitCamera and OrbitController classes for interactive 3D scene navigation, featuring rotation, zoom, and panning via mouse/touch.
+---
+
 # OrbitCamera
 
 Spherical coordinate camera for 3D scene navigation.

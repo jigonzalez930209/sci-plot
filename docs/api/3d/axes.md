@@ -1,3 +1,8 @@
+---
+title: Axes3D API
+description: Comprehensive documentation for 3D axis rendering, including wall grids, tick marks, numeric labels, and 2D text overlay projection utilities.
+---
+
 # Axes3D API
 
 3D axis renderer with wall grids, tick marks, and text labels.

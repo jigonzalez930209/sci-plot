@@ -1,3 +1,8 @@
+---
+title: 3D API Reference
+description: Documentation for SciChart Engine's high-performance 3D rendering module, featuring specialized renderers for waterfall, point cloud, and volumetric visualizations.
+---
+
 # 3D API Reference
 
 Complete API documentation for the 3D rendering module.

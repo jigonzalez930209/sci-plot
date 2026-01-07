@@ -1,3 +1,8 @@
+---
+title: Tooltip System API
+description: High-performance, customizable tooltip system for scientific charts, featuring data point snapping, crosshair tracking, and scientific notation.
+---
+
 # Tooltip System API Reference
 
 The SciChart Engine features a high-performance, customizable tooltip system designed for scientific data visualization. It supports multiple tooltip types, professional themes, and extensible templates.

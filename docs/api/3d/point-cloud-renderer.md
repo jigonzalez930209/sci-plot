@@ -1,3 +1,8 @@
+---
+title: PointCloud3DRenderer API
+description: Visualize massive high-density 3D datasets with the PointCloud3DRenderer, optimized for LIDAR, medical scans, and big data plotting.
+---
+
 # PointCloud3DRenderer
 
 Massively parallel renderer for high-density 3D points.

@@ -1,3 +1,8 @@
+---
+title: Waterfall3DRenderer API
+description: Configure the Waterfall3DRenderer for cascading spectral 3D charts, featuring gradient fills, colormaps, and real-time slice updates.
+---
+
 # Waterfall3DRenderer
 
 High-performance 3D renderer for cascading spectral or time-series data.

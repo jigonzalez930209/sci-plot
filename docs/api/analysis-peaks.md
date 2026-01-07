@@ -1,3 +1,8 @@
+---
+title: Peak Detection API
+description: Find local maxima and minima in your data using the detectPeaks function, featuring prominence filtering for scientific signal analysis.
+---
+
 # Peak Detection
 
 Find local maxima and minima in data.

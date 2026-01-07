@@ -1,3 +1,8 @@
+---
+title: 3D Chart Examples
+description: Explore a wide range of interactive 3D chart types, including waterfall, point cloud, surface mesh, and volumetric voxel charts powered by WebGL2.
+---
+
 # 3D Charts
 
 High-performance WebGL2-based 3D chart visualizations with instanced rendering.

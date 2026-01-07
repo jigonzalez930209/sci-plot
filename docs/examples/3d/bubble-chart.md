@@ -1,3 +1,8 @@
+---
+title: 3D Bubble Chart
+description: Interactive 3D bubble chart with instanced rendering for high performance, visualizing data with customizable spheres, colors, and sizes in WebGL2.
+---
+
 # 3D Bubble Chart
 
 Interactive 3D bubble chart with instanced rendering for high performance.

@@ -1,3 +1,8 @@
+---
+title: Waterfall 3D Chart
+description: Interactive 3D waterfall chart for spectral analysis and time-frequency data, featuring real-time streaming, depth fading, and scientific colormaps.
+---
+
 # Interactive Waterfall 3D Chart
 
 Cascading spectral visualization for time-series and frequency data.

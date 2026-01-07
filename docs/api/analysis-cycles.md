@@ -1,3 +1,8 @@
+---
+title: Cycle Detection API
+description: Detect cycles in oscillating or periodic data with SciChart Engine's detectCycles utility, perfect for cyclic voltammetry and signal processing.
+---
+
 # Cycle Detection
 
 Detect cycles in oscillating or periodic data.

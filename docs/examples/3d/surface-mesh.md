@@ -1,3 +1,8 @@
+---
+title: Surface Mesh 3D Chart
+description: Render complex height-mapped surfaces in 3D with various colormaps, wireframe options, and real-time data updates for mathematical and scientific modeling.
+---
+
 # 3D Surface Mesh Chart
 
 Render height-mapped surfaces with colormap visualization.

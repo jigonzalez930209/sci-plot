@@ -1,6 +1,6 @@
 ---
-title: Area Charts Demo
-description: Area charts with fill from curve to baseline
+title: Area Chart Examples
+description: Visualize cumulative data and trends with SciChart Engine's high-performance area charts, featuring semi-transparent fills and real-time updates.
 ---
 
 # Area Chart Demo

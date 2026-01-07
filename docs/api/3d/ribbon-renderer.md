@@ -1,3 +1,8 @@
+---
+title: Ribbon3DRenderer API
+description: Visualize trajectories and flow analysis with the Ribbon3DRenderer, featuring continuous 3D lit ribbons and customizable widths.
+---
+
 # Ribbon3DRenderer
 
 Renders time-series or profile data as continuous 3D lit ribbons.

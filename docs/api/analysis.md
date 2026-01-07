@@ -1,3 +1,8 @@
+---
+title: Data Analysis API
+description: Built-in utilities for scientific data analysis, including peak detection, cycle detection, moving averages, and high-performance downsampling (LTTB).
+---
+
 # Data Analysis
 
 SciChart Engine includes built-in utilities for common data analysis tasks.

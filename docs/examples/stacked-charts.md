@@ -1,3 +1,8 @@
+---
+title: Stacked Chart Examples
+description: Master cumulative data visualization with stacked area and band charts. Learn how to use stackId for automatic accumulations and auto-scaling y-axes.
+---
+
 # Stacked Charts
 
 Visualizing cumulative data by stacking series on top of each other.

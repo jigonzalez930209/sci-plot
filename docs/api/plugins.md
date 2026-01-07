@@ -1,3 +1,8 @@
+---
+title: Plugins API
+description: Extend SciChart Engine through its powerful plugin system, allowing custom lifecycle hooks for rendering, series management, and UI overlays.
+---
+
 # Plugins API
 
 The Plugin System allows you to hook into the SciChart Engine lifecycle.

@@ -1,3 +1,8 @@
+---
+title: Bubble3DRenderer API
+description: Master the Bubble3DRenderer for high-performance 3D bubble charts, utilizing WebGL2 instanced rendering for visualizing thousands of 3D data points.
+---
+
 # Bubble3DRenderer
 
 High-performance 3D bubble chart renderer with instanced rendering.

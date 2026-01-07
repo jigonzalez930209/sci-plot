@@ -1,3 +1,8 @@
+---
+title: Built-in Themes
+description: Explore SciChart Engine's high-contrast dark, light, midnight, and specialized electrochemistry themes for professional scientific data visualization.
+---
+
 # Built-in Themes
 
 SciChart Engine includes several pre-built themes optimized for different use cases.

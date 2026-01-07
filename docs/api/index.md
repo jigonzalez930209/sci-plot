@@ -1,3 +1,8 @@
+---
+title: API Reference
+description: Comprehensive API documentation for SciChart Engine, covering chart creation, series management, interactions, and scientific data analysis.
+---
+
 # API Reference
 
 SciChart Engine provides a comprehensive API for creating high-performance scientific charts.

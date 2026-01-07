@@ -8,9 +8,9 @@ const base = '/scichart-engine/';
 
 export default defineConfig({
   base,
-  title: "SciChart Engine",
+  title: "SciChart Engine | Ultra-fast WebGL Charts",
   description:
-    "High-performance WebGL scientific charting engine for data visualization",
+    "Open-source high-performance WebGL2 scientific charting engine for real-time visualization of millions of data points at 60 FPS. Supports 2D and 3D charts with zero-copy architecture.",
   ignoreDeadLinks: true,
   head: [
     ['link', { rel: 'icon', href: `${base}favicon.svg` }],
@@ -95,6 +95,8 @@ export default defineConfig({
             { text: "Error Bars", link: "/api/error-bars" },
             { text: "Annotations", link: "/api/annotations" },
             { text: "Tooltip System", link: "/api/tooltips" },
+            { text: "Animations", link: "/api/animations" },
+            { text: "Multi-Axis", link: "/api/multi-axis" },
             { text: "Plugins", link: "/api/plugins" },
             { text: "Statistics Panel", link: "/api/statistics-panel" },
             { text: "Data Export", link: "/api/export" },

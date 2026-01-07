@@ -1,3 +1,8 @@
+---
+title: 3D Series Types
+description: Reference for all available 3D data interfaces and series types in SciChart Engine, including bubble, surface, pointline, column, and waterfall metrics.
+---
+
 # 3D Series Types
 
 All available series types for 3D charts.

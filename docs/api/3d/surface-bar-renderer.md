@@ -1,3 +1,8 @@
+---
+title: SurfaceBar3DRenderer API
+description: Learn how to create 3D histograms and bar charts with the SurfaceBar3DRenderer, utilizing instanced rendering for grid-based spatial statistics.
+---
+
 # SurfaceBar3DRenderer
 
 High-performance 3D histogram/bar chart for grid-based data.

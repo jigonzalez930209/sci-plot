@@ -1,3 +1,8 @@
+---
+title: useSciChart React Hook
+description: Master the useSciChart hook for imperative control over your charts in React, enabling direct access to the Chart instance and custom interaction logic.
+---
+
 # useSciChart Hook
 
 Low-level React hook for imperative chart control.

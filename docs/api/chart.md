@@ -1,3 +1,8 @@
+---
+title: createChart API
+description: Learn how to initialize SciChart Engine with createChart, including configuration for axes, themes, and WebGL rendering options.
+---
+
 # createChart
 
 Creates a new SciChart Engine instance.

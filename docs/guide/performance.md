@@ -1,3 +1,8 @@
+---
+title: Performance Optimization
+description: Learn how SciChart Engine achieves 60 FPS with millions of points using WebGL rendering, zero-copy architecture, and optimized typed arrays.
+---
+
 # Performance
 
 Optimize SciChart Engine for maximum performance with large datasets.

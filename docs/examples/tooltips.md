@@ -1,3 +1,8 @@
+---
+title: Tooltips Showcase
+description: Interactive showcase of SciChart Engine's high-performance tooltip system, featuring glassmorphism themes, multi-series crosshairs, and custom templates.
+---
+
 # Tooltips Showcase
 
 Explore the power and versatility of the SciChart Engine's new tooltip system. This demo showcases different themes, templates, and interaction modes.

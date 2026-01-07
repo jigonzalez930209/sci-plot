@@ -1,3 +1,8 @@
+---
+title: SciChart React Component
+description: Declarative React component for SciChart Engine, simplifying chart integration with props for series, axes, themes, and automated lifecycle management.
+---
+
 # SciChart Component
 
 React component for declarative chart creation.

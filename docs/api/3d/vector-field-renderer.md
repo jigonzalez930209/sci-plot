@@ -1,3 +1,8 @@
+---
+title: VectorField3DRenderer API
+description: Visualize complex 3D vector fields and directional quiver plots using the high-performance VectorField3DRenderer with instanced geometry.
+---
+
 # VectorField3DRenderer
 
 Visualizes directional vector fields (quiver plots) using instanced arrow primitives.

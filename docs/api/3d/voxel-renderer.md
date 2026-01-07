@@ -1,3 +1,8 @@
+---
+title: Voxel3DRenderer API
+description: Master volumetric data visualization with the Voxel3DRenderer, ideal for MRI/CT scans and 3D grid intensity volumes.
+---
+
 # Voxel3DRenderer
 
 Renders volumetric data as a grid of interactive 3D blocks.
