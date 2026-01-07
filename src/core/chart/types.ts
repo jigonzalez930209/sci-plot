@@ -137,6 +137,35 @@ export interface Chart {
   getSelectionCount(): number;
   /** Configure selection behavior */
   configureSelection(config: Partial<import("../selection").SelectionConfig>): void;
+
+  // ============================================
+  // Responsive Design
+  // ============================================
+  
+  /** Get current responsive state */
+  getResponsiveState(): import("../responsive").ResponsiveState;
+  /** Configure responsive behavior */
+  configureResponsive(config: Partial<import("../responsive").ResponsiveConfig>): void;
+  /** Check if responsive mode is enabled */
+  isResponsiveEnabled(): boolean;
+
+  // ============================================
+  // Serialization & Persistence
+  // ============================================
+  
+  /** Export complete chart state */
+  serialize(options?: import("../../serialization").SerializeOptions): import("../../serialization").ChartState;
+  /** Restore chart from saved state */
+  deserialize(state: import("../../serialization").ChartState, options?: import("../../serialization").DeserializeOptions): void;
+  /** Convert current state to URL-safe hash */
+  toUrlHash(compress?: boolean): string;
+  /** Load state from URL hash */
+  fromUrlHash(hash: string, compressed?: boolean): void;
+
+  /** Use a plugin */
+  use(plugin: ChartPlugin): void;
+  /** Destroy the chart and cleanup resources */
+  destroy(): void;
 }
 
 export interface ChartPlugin {

@@ -71,10 +71,11 @@ function fitLinear(x: any, y: any, opts: FitOptions): FitResult {
   const predict = (v: number) => slope * v + intercept;
   const prec = opts.precision ?? 4;
   
+  const label = opts.label || "y";
   return {
     type: 'linear',
     coefficients: [slope, intercept],
-    equation: `y = ${slope.toFixed(prec)}x ${intercept >= 0 ? '+' : '-'} ${Math.abs(intercept).toFixed(prec)}`,
+    equation: `${label} = ${slope.toFixed(prec)}x ${intercept >= 0 ? '+' : '-'} ${Math.abs(intercept).toFixed(prec)}`,
     rSquared: calculateR2(x, y, predict),
     predict
   };
@@ -123,10 +124,11 @@ function fitPolynomial(x: any, y: any, degree: number, opts: FitOptions): FitRes
     equation += `${Math.abs(c).toFixed(prec)}${i > 0 ? (i > 1 ? `x^${i}` : 'x') : ''}`;
   }
 
+  const label = opts.label || "y";
   return {
     type: 'polynomial',
     coefficients: coeffs,
-    equation,
+    equation: `${label} = ${equation.substring(4)}`, // replace "y = " with custom label
     rSquared: calculateR2(x, y, predict),
     predict
   };
@@ -153,10 +155,11 @@ function fitExponential(x: any, y: any, opts: FitOptions): FitResult {
   const predict = (v: number) => a * Math.exp(b * v);
   const prec = opts.precision ?? 4;
 
+  const label = opts.label || "y";
   return {
     type: 'exponential',
     coefficients: [a, b],
-    equation: `y = ${a.toFixed(prec)} * e^(${b.toFixed(prec)}x)`,
+    equation: `${label} = ${a.toFixed(prec)} * e^(${b.toFixed(prec)}x)`,
     rSquared: calculateR2(x, y, predict),
     predict
   };
@@ -183,10 +186,11 @@ function fitLogarithmic(x: any, y: any, opts: FitOptions): FitResult {
   const predict = (v: number) => a + b * Math.log(v);
   const prec = opts.precision ?? 4;
 
+  const label = opts.label || "y";
   return {
     type: 'logarithmic',
     coefficients: [a, b],
-    equation: `y = ${a.toFixed(prec)} ${b >= 0 ? '+' : '-'} ${Math.abs(b).toFixed(prec)} * ln(x)`,
+    equation: `${label} = ${a.toFixed(prec)} ${b >= 0 ? '+' : '-'} ${Math.abs(b).toFixed(prec)} * ln(x)`,
     rSquared: calculateR2(x, y, predict),
     predict
   };
@@ -212,10 +216,11 @@ function fitPower(x: any, y: any, opts: FitOptions): FitResult {
   const predict = (v: number) => a * Math.pow(v, b);
   const prec = opts.precision ?? 4;
 
+  const label = opts.label || "y";
   return {
     type: 'power',
     coefficients: [a, b],
-    equation: `y = ${a.toFixed(prec)} * x^(${b.toFixed(prec)})`,
+    equation: `${label} = ${a.toFixed(prec)} * x^(${b.toFixed(prec)})`,
     rSquared: calculateR2(x, y, predict),
     predict
   };

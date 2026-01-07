@@ -2,7 +2,7 @@
  * Data Analysis module exports
  *
  * General-purpose utilities for data formatting, cycle detection,
- * peak detection, and data validation.
+ * peak detection, data validation, FFT, filters, and statistics.
  */
 
 export {
@@ -47,3 +47,63 @@ export type {
 } from './fitting';
 
 export * from './contours';
+
+// ============================================
+// Advanced Analysis (FFT, Filters, Statistics)
+// ============================================
+
+export {
+  // FFT
+  fft,
+  ifft,
+  analyzeSpectrum,
+  powerSpectrum,
+  dominantFrequency,
+  hanningWindow,
+  hammingWindow,
+  blackmanWindow,
+  nextPowerOf2,
+} from './fft';
+
+export type {
+  Complex,
+  FFTResult,
+  PowerSpectrumResult,
+} from './fft';
+
+export {
+  // Filters
+  lowPassFilter,
+  highPassFilter,
+  bandPassFilter,
+  bandStopFilter,
+  butterworth,
+  exponentialMovingAverage,
+  gaussianSmooth,
+  savitzkyGolay,
+  medianFilter,
+} from './filters';
+
+export type {
+  FilterType,
+  FilterOptions,
+  ButterworthOptions,
+} from './filters';
+
+export {
+  // Statistics
+  crossCorrelation,
+  autoCorrelation,
+  detectAnomalies,
+  trapezoidalIntegration,
+  simpsonsIntegration,
+  cumulativeIntegration as cumulativeIntegral2,
+  tTest,
+} from './statistics';
+
+export type {
+  CorrelationResult,
+  AnomalyResult,
+  AnomalyOptions,
+  TTestResult,
+} from './statistics';

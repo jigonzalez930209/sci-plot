@@ -45,6 +45,16 @@ import {
   type ResponsiveConfig,
   type ResponsiveState,
 } from "../responsive";
+import {
+  SERIALIZATION_VERSION,
+  encodeFloat32Array,
+  decodeFloat32Array,
+  stateToUrlHash,
+  urlHashToState,
+  type ChartState,
+  type SerializeOptions,
+  type DeserializeOptions,
+} from "../../serialization";
 
 import type { Chart, ExportOptions } from "./types";
 import { exportToCSV, exportToJSON, exportToImage } from "./ChartExporter";
@@ -795,6 +805,141 @@ export class ChartImpl implements Chart {
    */
   isResponsiveEnabled(): boolean {
     return this.responsiveManager.isEnabled();
+  }
+
+  // ============================================
+  // Serialization & Persistence
+  // ============================================
+
+  /**
+   * Export complete chart state
+   */
+  serialize(options: SerializeOptions = {}): ChartState {
+    const { includeData = true, includeAnnotations = true } = options;
+
+    const state: ChartState = {
+      version: SERIALIZATION_VERSION,
+      timestamp: Date.now(),
+      viewBounds: { ...this.viewBounds },
+      xAxis: {
+        id: "primary-x",
+        position: this.xAxisOptions.position,
+        label: this.xAxisOptions.label,
+        scale: this.xScale.type,
+        min: this.xScale.domain[0],
+        max: this.xScale.domain[1],
+        auto: (this.xScale as any).auto !== undefined ? (this.xScale as any).auto : true,
+      },
+      yAxes: Array.from(this.yScales.values()).map((s: any) => ({
+        id: s.id || "y",
+        position: s.position || "left",
+        label: s.label || "",
+        scale: s.type,
+        min: s.domain[0],
+        max: s.domain[1],
+        auto: s.auto !== undefined ? s.auto : true,
+      })),
+      primaryYAxisId: this.primaryYAxisId,
+      series: Array.from(this.series.values()).map((s) => ({
+        id: s.getId(),
+        name: s.getName(),
+        type: s.getType(),
+        yAxisId: s.getYAxisId(),
+        style: s.getStyle(),
+        visible: s.isVisible(),
+        data: includeData
+          ? {
+              x: encodeFloat32Array(s.getData().x),
+              y: encodeFloat32Array(s.getData().y),
+            }
+          : { x: "", y: "" },
+      })),
+      annotations: includeAnnotations ? this.annotationManager.getAll() : [],
+      options: {
+        showLegend: this.showLegend,
+        showControls: this.showControls,
+        showStatistics: this.showStatistics,
+        autoScroll: this.autoScroll,
+      },
+    };
+
+    return state;
+  }
+
+  /**
+   * Restore chart from saved state
+   */
+  deserialize(state: ChartState, options: DeserializeOptions = {}): void {
+    const { skipData = false, skipAnnotations = false } = options;
+
+    // Restore view/axis settings
+    this.viewBounds = { ...state.viewBounds };
+    this.primaryYAxisId = state.primaryYAxisId;
+
+    // Restore Y axes
+    state.yAxes.forEach((ax) => {
+      this.updateYAxis(ax.id, {
+        label: ax.label,
+        scale: ax.scale,
+        min: ax.min,
+        max: ax.max,
+        auto: ax.auto,
+      });
+    });
+
+    // Restore series
+    if (!skipData) {
+      // Clear existing first
+      const seriesIds = Array.from(this.series.keys());
+      seriesIds.forEach((id) => this.removeSeries(id));
+
+      state.series.forEach((s) => {
+        this.addSeries({
+          id: s.id,
+          name: s.name,
+          type: s.type,
+          yAxisId: s.yAxisId,
+          data: {
+            x: decodeFloat32Array(s.data.x),
+            y: decodeFloat32Array(s.data.y),
+          },
+          style: s.style as any,
+        });
+      });
+    }
+
+    // Restore annotations
+    if (!skipAnnotations && state.annotations) {
+      this.annotationManager.clear();
+      state.annotations.forEach((a) => this.annotationManager.add(a));
+    }
+
+    // Restore UI options
+    if (state.options) {
+      this.showLegend = state.options.showLegend ?? this.showLegend;
+      this.showControls = state.options.showControls ?? this.showControls;
+      this.showStatistics = state.options.showStatistics ?? this.showStatistics;
+      this.autoScroll = state.options.autoScroll ?? this.autoScroll;
+    }
+
+    this.requestRender();
+  }
+
+  /**
+   * Convert current state to URL-safe hash
+   */
+  toUrlHash(compress: boolean = true): string {
+    return stateToUrlHash(this.serialize({ includeData: true }), compress);
+  }
+
+  /**
+   * Load state from URL hash
+   */
+  fromUrlHash(hash: string, compressed: boolean = true): void {
+    const state = urlHashToState(hash, compressed);
+    if (state) {
+      this.deserialize(state);
+    }
   }
 
   use(plugin: any): void {
