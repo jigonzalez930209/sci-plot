@@ -101,6 +101,7 @@ export class Series {
   getName = () => this.name || this.id;
   getType = () => this.type;
   getYAxisId = () => this.yAxisId;
+  setYAxisId = (id: string) => { this.yAxisId = id; };
   getStackId = () => this.stackId;
   getVisible = () => this.visible;
   isVisible = () => this.visible;

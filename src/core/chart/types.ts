@@ -12,10 +12,12 @@ import type {
   CursorOptions,
   ChartEventMap,
   Bounds,
+  AxisOptions,
 } from "../../types";
 import type { Series } from "../Series";
 import type { FitType, FitOptions } from "../../analysis";
 import type { Annotation } from "../annotations";
+import type { ChartAnimationConfig } from "../animation";
 import * as analysis from "../../analysis";
 
 // ============================================
@@ -38,7 +40,7 @@ export interface Chart {
   setAutoScroll(enabled: boolean): void;
   setMaxPoints(id: string, maxPoints: number): void;
   addFitLine(seriesId: string, type: FitType, options?: FitOptions): string;
-  zoom(options: ZoomOptions): void;
+  zoom(options: ZoomOptions & { animate?: boolean }): void;
   pan(deltaX: number, deltaY: number): void;
   resetZoom(): void;
   getViewBounds(): Bounds;
@@ -56,10 +58,11 @@ export interface Chart {
   ): void;
   destroy(): void;
   exportImage(type?: "png" | "jpeg"): string;
-  autoScale(): void;
+  autoScale(animate?: boolean): void;
   setTheme(theme: string | object): void;
   /** Access to data analysis utilities */
   readonly analysis: typeof analysis;
+  
   // Annotation methods
   addAnnotation(annotation: Annotation): string;
   removeAnnotation(id: string): boolean;
@@ -67,13 +70,73 @@ export interface Chart {
   getAnnotation(id: string): Annotation | undefined;
   getAnnotations(): Annotation[];
   clearAnnotations(): void;
+  
   // Export methods
   exportCSV(options?: ExportOptions): string;
   exportJSON(options?: ExportOptions): string;
+  
   /** Attach a plugin to extend chart functionality */
   use(plugin: ChartPlugin): void;
+  
   /** Access to the tooltip system */
   readonly tooltip: import("../tooltip").TooltipManager;
+  
+  // ============================================
+  // Animation API
+  // ============================================
+  
+  /** Animate view bounds to specific target */
+  animateTo(options: {
+    xRange?: [number, number];
+    yRange?: [number, number];
+    duration?: number;
+    easing?: string;
+  }): void;
+  /** Get current animation configuration */
+  getAnimationConfig(): ChartAnimationConfig;
+  /** Update animation configuration */
+  setAnimationConfig(config: Partial<ChartAnimationConfig>): void;
+  /** Check if any animations are currently running */
+  isAnimating(): boolean;
+  
+  // ============================================
+  // Axis Management API
+  // ============================================
+  
+  /** Add a new Y axis dynamically */
+  addYAxis(options: AxisOptions): string;
+  /** Remove a Y axis by ID */
+  removeYAxis(id: string): boolean;
+  /** Update Y axis configuration */
+  updateYAxis(id: string, options: Partial<AxisOptions>): void;
+  /** Get Y axis configuration by ID */
+  getYAxis(id: string): AxisOptions | undefined;
+  /** Get all Y axes configurations */
+  getAllYAxes(): AxisOptions[];
+  /** Get the primary Y axis ID */
+  getPrimaryYAxisId(): string;
+  
+  // ============================================
+  // Selection API
+  // ============================================
+  
+  /** Select data points programmatically */
+  selectPoints(
+    points: Array<{ seriesId: string; indices: number[] }>,
+    mode?: import("../selection").SelectionMode
+  ): void;
+  /** Get all currently selected points */
+  getSelectedPoints(): import("../selection").SelectedPoint[];
+  /** Clear all selections */
+  clearSelection(): void;
+  /** Hit-test at a pixel coordinate */
+  hitTest(pixelX: number, pixelY: number): import("../selection").HitTestResult | null;
+  /** Check if a specific point is selected */
+  isPointSelected(seriesId: string, index: number): boolean;
+  /** Get selection count */
+  getSelectionCount(): number;
+  /** Configure selection behavior */
+  configureSelection(config: Partial<import("../selection").SelectionConfig>): void;
 }
 
 export interface ChartPlugin {

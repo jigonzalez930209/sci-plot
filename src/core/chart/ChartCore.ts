@@ -24,7 +24,7 @@ import {
   NativeWebGLRenderer,
   parseColor,
 } from "../../renderer/NativeWebGLRenderer";
-import type { Scale } from "../../scales";
+import { LinearScale, LogScale, type Scale } from "../../scales";
 import { getThemeByName, type ChartTheme } from "../../theme";
 import { OverlayRenderer } from "../OverlayRenderer";
 import { InteractionManager } from "../InteractionManager";
@@ -33,6 +33,18 @@ import { ChartLegend } from "../ChartLegend";
 import { ChartStatistics } from "../ChartStatistics";
 import { AnnotationManager, type Annotation } from "../annotations";
 import { TooltipManager } from "../tooltip";
+import {
+  SelectionManager,
+  type SelectedPoint,
+  type SelectionMode,
+  type HitTestResult,
+  type SelectionConfig,
+} from "../selection";
+import {
+  ResponsiveManager,
+  type ResponsiveConfig,
+  type ResponsiveState,
+} from "../responsive";
 
 import type { Chart, ExportOptions } from "./types";
 import { exportToCSV, exportToJSON, exportToImage } from "./ChartExporter";
@@ -42,6 +54,18 @@ import {
   type NavigationContext,
 } from "./ChartNavigation";
 import { autoScaleAll, handleBoxZoom } from "./ChartScaling";
+import {
+  AnimationEngine,
+  mergeAnimationConfig,
+  DEFAULT_ANIMATION_CONFIG,
+  type ChartAnimationConfig,
+} from "../animation";
+import {
+  applyAnimatedZoom,
+  applyAnimatedAutoScale,
+  animateToBounds,
+  type AnimatedNavigationContext,
+} from "./ChartAnimatedNavigation";
 import { prepareSeriesData, renderOverlay } from "./ChartRenderer";
 import {
   addSeries as addSeriesImpl,
@@ -119,6 +143,10 @@ export class ChartImpl implements Chart {
   private pluginManager: PluginManagerImpl;
   private initialOptions: ChartOptions;
   public readonly analysis = analysis;
+  private animationEngine: AnimationEngine;
+  private animationConfig: ChartAnimationConfig;
+  private selectionManager: SelectionManager;
+  private responsiveManager: ResponsiveManager;
 
   constructor(options: ChartOptions) {
     this.initialOptions = options;
@@ -156,6 +184,36 @@ export class ChartImpl implements Chart {
     this.renderer.setDPR(this.dpr);
     this.overlay = new OverlayRenderer(this.overlayCtx, this.theme);
     this.pluginManager = new PluginManagerImpl(this);
+    
+    // Initialize animation system
+    this.animationEngine = new AnimationEngine();
+    this.animationConfig = typeof options.animations === 'boolean'
+      ? { ...DEFAULT_ANIMATION_CONFIG, enabled: options.animations }
+      : mergeAnimationConfig(options.animations);
+    
+    // Initialize selection manager
+    this.selectionManager = new SelectionManager({
+      getSeries: () => this.series,
+      getPlotArea: () => this.getPlotArea(),
+      getXScale: () => this.xScale,
+      getYScales: () => this.yScales,
+      getPrimaryYAxisId: () => this.primaryYAxisId,
+      events: this.events as any, // SelectionEventMap is a subset of ChartEventMap
+      requestRender: () => this.requestRender(),
+    });
+    
+    // Initialize responsive manager
+    const responsiveConfig = typeof options.responsive === 'boolean'
+      ? { enabled: options.responsive }
+      : options.responsive;
+    this.responsiveManager = new ResponsiveManager(
+      {
+        container: this.container,
+        onStateChange: (state: ResponsiveState) => this.handleResponsiveChange(state),
+      },
+      responsiveConfig
+    );
+    
     this.interaction = new InteractionManager(
       this.container,
       {
@@ -377,25 +435,80 @@ export class ChartImpl implements Chart {
     };
   }
 
-  zoom(options: ZoomOptions): void {
-    applyZoom(this.getNavContext(), options);
+  private getAnimatedNavContext(): AnimatedNavigationContext {
+    return {
+      ...this.getNavContext(),
+      animationEngine: this.animationEngine,
+      animationConfig: this.animationConfig,
+    };
+  }
+
+  zoom(options: ZoomOptions & { animate?: boolean }): void {
+    if (this.animationConfig.enabled && options.animate !== false) {
+      applyAnimatedZoom(this.getAnimatedNavContext(), options);
+    } else {
+      applyZoom(this.getNavContext(), options);
+    }
   }
   pan(deltaX: number, deltaY: number, axisId?: string): void {
     applyPan(this.getNavContext(), deltaX, deltaY, axisId);
   }
   resetZoom(): void {
     this.autoScale();
-    this.events.emit("zoom", {
-      x: [this.viewBounds.xMin, this.viewBounds.xMax],
-      y: [this.viewBounds.yMin, this.viewBounds.yMax],
-    });
-    this.requestRender();
   }
   getViewBounds(): Bounds {
     return { ...this.viewBounds };
   }
-  autoScale(): void {
-    autoScaleAll(this.getNavContext());
+  autoScale(animate: boolean = true): void {
+    if (this.animationConfig.enabled && animate) {
+      applyAnimatedAutoScale(this.getAnimatedNavContext(), true);
+    } else {
+      autoScaleAll(this.getNavContext());
+    }
+  }
+  
+  /**
+   * Animate view bounds to specific target
+   */
+  animateTo(options: {
+    xRange?: [number, number];
+    yRange?: [number, number];
+    duration?: number;
+    easing?: string;
+  }): void {
+    animateToBounds(this.getAnimatedNavContext(), {
+      xMin: options.xRange?.[0],
+      xMax: options.xRange?.[1],
+      yMin: options.yRange?.[0],
+      yMax: options.yRange?.[1],
+    }, {
+      duration: options.duration,
+      easing: options.easing,
+    });
+  }
+  
+  /**
+   * Get animation configuration
+   */
+  getAnimationConfig(): ChartAnimationConfig {
+    return { ...this.animationConfig };
+  }
+  
+  /**
+   * Set animation configuration
+   */
+  setAnimationConfig(config: Partial<ChartAnimationConfig>): void {
+    this.animationConfig = mergeAnimationConfig({
+      ...this.animationConfig,
+      ...config,
+    });
+  }
+  
+  /**
+   * Check if animations are currently running
+   */
+  isAnimating(): boolean {
+    return this.animationEngine.isAnimating();
   }
   private handleBoxZoom(
     rect: { x: number; y: number; width: number; height: number } | null
@@ -457,6 +570,231 @@ export class ChartImpl implements Chart {
   }
   exportJSON(options?: ExportOptions): string {
     return exportToJSON(this.getAllSeries(), this.viewBounds, options);
+  }
+
+  // ============================================
+  // Axis Management
+  // ============================================
+  
+  /**
+   * Add a new Y axis dynamically
+   */
+  addYAxis(options: AxisOptions): string {
+    const existingIds = Array.from(this.yAxisOptionsMap.keys());
+    const id = options.id || `y${existingIds.length}`;
+    
+    if (this.yAxisOptionsMap.has(id)) {
+      console.warn(`[SciChart] Y axis with id '${id}' already exists`);
+      return id;
+    }
+    
+    const position = options.position || 'right';
+    const fullOptions: AxisOptions = { 
+      scale: 'linear', 
+      auto: true, 
+      position, 
+      ...options, 
+      id 
+    };
+    
+    this.yAxisOptionsMap.set(id, fullOptions);
+    
+    // Create scale for this axis
+    const scale = fullOptions.scale === 'log' 
+      ? new LogScale() 
+      : new LinearScale();
+    this.yScales.set(id, scale);
+    
+    this.requestRender();
+    return id;
+  }
+  
+  /**
+   * Remove a Y axis by ID
+   */
+  removeYAxis(id: string): boolean {
+    if (id === this.primaryYAxisId) {
+      console.warn(`[SciChart] Cannot remove primary Y axis '${id}'`);
+      return false;
+    }
+    
+    if (!this.yAxisOptionsMap.has(id)) {
+      return false;
+    }
+    
+    this.yAxisOptionsMap.delete(id);
+    this.yScales.delete(id);
+    
+    // Update any series using this axis
+    this.series.forEach((s) => {
+      if (s.getYAxisId() === id) {
+        // Move to primary axis
+        s.setYAxisId(this.primaryYAxisId);
+      }
+    });
+    
+    this.requestRender();
+    return true;
+  }
+  
+  /**
+   * Update Y axis configuration
+   */
+  updateYAxis(id: string, options: Partial<AxisOptions>): void {
+    const existing = this.yAxisOptionsMap.get(id);
+    if (!existing) {
+      console.warn(`[SciChart] Y axis '${id}' not found`);
+      return;
+    }
+    
+    const updated: AxisOptions = { ...existing, ...options, id };
+    this.yAxisOptionsMap.set(id, updated);
+    
+    // Update scale if scale type changed
+    if (options.scale && options.scale !== existing.scale) {
+      const newScale = options.scale === 'log' 
+        ? new LogScale() 
+        : new LinearScale();
+      const oldScale = this.yScales.get(id);
+      if (oldScale) {
+        newScale.setDomain(oldScale.domain[0], oldScale.domain[1]);
+      }
+      this.yScales.set(id, newScale);
+    }
+    
+    this.requestRender();
+  }
+  
+  /**
+   * Get Y axis configuration by ID
+   */
+  getYAxis(id: string): AxisOptions | undefined {
+    return this.yAxisOptionsMap.get(id);
+  }
+  
+  /**
+   * Get all Y axes configurations
+   */
+  getAllYAxes(): AxisOptions[] {
+    return Array.from(this.yAxisOptionsMap.values());
+  }
+  
+  /**
+   * Get the primary Y axis ID
+   */
+  getPrimaryYAxisId(): string {
+    return this.primaryYAxisId;
+  }
+
+  // ============================================
+  // Selection API
+  // ============================================
+
+  /**
+   * Select data points programmatically
+   */
+  selectPoints(
+    points: Array<{ seriesId: string; indices: number[] }>,
+    mode?: SelectionMode
+  ): void {
+    this.selectionManager.selectPoints(points, mode);
+  }
+
+  /**
+   * Get all currently selected points
+   */
+  getSelectedPoints(): SelectedPoint[] {
+    return this.selectionManager.getSelectedPoints();
+  }
+
+  /**
+   * Clear all selections
+   */
+  clearSelection(): void {
+    this.selectionManager.clearSelection();
+  }
+
+  /**
+   * Hit-test at a pixel coordinate
+   */
+  hitTest(pixelX: number, pixelY: number): HitTestResult | null {
+    return this.selectionManager.hitTest(pixelX, pixelY);
+  }
+
+  /**
+   * Check if a specific point is selected
+   */
+  isPointSelected(seriesId: string, index: number): boolean {
+    return this.selectionManager.isPointSelected(seriesId, index);
+  }
+
+  /**
+   * Get selection count
+   */
+  getSelectionCount(): number {
+    return this.selectionManager.getSelectionCount();
+  }
+
+  /**
+   * Configure selection behavior
+   */
+  configureSelection(config: Partial<SelectionConfig>): void {
+    this.selectionManager.configure(config);
+  }
+
+  // ============================================
+  // Responsive Design
+  // ============================================
+
+  /**
+   * Handle responsive state changes
+   */
+  private handleResponsiveChange(state: ResponsiveState): void {
+    // Update theme with scaled values
+    this.theme = this.responsiveManager.scaleTheme(this.theme);
+    this.overlay.setTheme(this.theme);
+    
+    // Update selection hit radius
+    this.selectionManager.configure({
+      hitRadius: this.responsiveManager.getScaledHitRadius(20),
+    });
+    
+    // Update legend visibility based on breakpoint
+    if (this.legend) {
+      const shouldShow = this.responsiveManager.shouldShowLegend();
+      // Legend visibility is handled internally by checking showLegend
+      this.showLegend = shouldShow;
+    }
+    
+    // Request render with new responsive settings
+    this.requestRender();
+    
+    // Emit resize event
+    this.events.emit('resize', {
+      width: state.width,
+      height: state.height,
+    });
+  }
+
+  /**
+   * Get current responsive state
+   */
+  getResponsiveState(): ResponsiveState {
+    return this.responsiveManager.getState();
+  }
+
+  /**
+   * Configure responsive behavior
+   */
+  configureResponsive(config: Partial<ResponsiveConfig>): void {
+    this.responsiveManager.configure(config);
+  }
+
+  /**
+   * Check if responsive mode is enabled
+   */
+  isResponsiveEnabled(): boolean {
+    return this.responsiveManager.isEnabled();
   }
 
   use(plugin: any): void {
@@ -584,6 +922,9 @@ export class ChartImpl implements Chart {
   destroy(): void {
     this.isDestroyed = true;
     if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+    this.animationEngine.destroy();
+    this.selectionManager.destroy();
+    this.responsiveManager.destroy();
     this.interaction.destroy();
     this.series.forEach((s) => {
       this.renderer.deleteBuffer(s.getId());

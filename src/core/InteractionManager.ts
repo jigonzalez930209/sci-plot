@@ -144,12 +144,16 @@ export class InteractionManager {
 
     // Hit test Y axes
     for (const axis of axes) {
-      const axisX = axis.position === 'left' 
-        ? plotArea.x - axis.offset 
-        : plotArea.x + plotArea.width + axis.offset;
-      
       const hitWidth = 65; // Matches axis spacing
-      const hitX = axis.position === 'left' ? axisX - hitWidth : axisX;
+      let hitX: number;
+      
+      if (axis.position === 'left') {
+        // Left axes: start from (plotArea.x - hitWidth) and go further left with offset
+        hitX = plotArea.x - hitWidth - axis.offset;
+      } else {
+        // Right axes: start from plotArea.x + plotArea.width and go further right with offset
+        hitX = plotArea.x + plotArea.width + axis.offset;
+      }
 
       if (
         mouseX >= hitX &&
@@ -247,12 +251,14 @@ export class InteractionManager {
     // Check if mouse is in axis area for dragging
     const axes = this.getAxesLayout();
     for (const axis of axes) {
-      const axisX = axis.position === 'left' 
-        ? plotArea.x - axis.offset 
-        : plotArea.x + plotArea.width + axis.offset;
-      
       const hitWidth = 65;
-      const hitX = axis.position === 'left' ? axisX - hitWidth : axisX;
+      let hitX: number;
+      
+      if (axis.position === 'left') {
+        hitX = plotArea.x - hitWidth - axis.offset;
+      } else {
+        hitX = plotArea.x + plotArea.width + axis.offset;
+      }
 
       if (
         mouseX >= hitX &&

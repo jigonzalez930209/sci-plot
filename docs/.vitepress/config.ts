@@ -97,6 +97,8 @@ export default defineConfig({
             { text: "Tooltip System", link: "/api/tooltips" },
             { text: "Animations", link: "/api/animations" },
             { text: "Multi-Axis", link: "/api/multi-axis" },
+            { text: "Selection API", link: "/api/selection" },
+            { text: "Responsive Design", link: "/api/responsive" },
             { text: "Plugins", link: "/api/plugins" },
             { text: "Statistics Panel", link: "/api/statistics-panel" },
             { text: "Data Export", link: "/api/export" },

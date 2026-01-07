@@ -50,6 +50,37 @@ export interface AxisOptions {
   auto?: boolean;
   /** Force scientific notation (e.g., 1.2 × 10⁵) */
   scientific?: boolean;
+  
+  // ============================================
+  // Advanced Multi-Axis Options
+  // ============================================
+  
+  /** Axis color (line, ticks, labels) - defaults to theme */
+  color?: string;
+  /** Axis line width in pixels (default: 1) */
+  lineWidth?: number;
+  /** Show axis line (default: true) */
+  showLine?: boolean;
+  /** Show tick marks (default: true) */
+  showTicks?: boolean;
+  /** Show labels (default: true) */
+  showLabels?: boolean;
+  /** Show grid lines for this axis (default: true for primary, false for secondary) */
+  showGrid?: boolean;
+  /** Grid line color (default: from theme) */
+  gridColor?: string;
+  /** Grid line opacity (default: from theme) */
+  gridOpacity?: number;
+  /** Offset from edge in pixels (for stacking multiple axes) */
+  offset?: number;
+  /** Whether this axis is visible (default: true) */
+  visible?: boolean;
+  /** Associated series IDs (auto-scale will only consider these series) */
+  seriesIds?: string[];
+  /** Label font size in pixels */
+  labelFontSize?: number;
+  /** Label rotation in degrees (useful for crowded X-axis) */
+  labelRotation?: number;
 }
 
 // ============================================
@@ -331,6 +362,10 @@ export interface ChartOptions {
   showStatistics?: boolean;
   /** Tooltip configuration */
   tooltip?: import("./core/tooltip/types").TooltipOptions;
+  /** Animation configuration */
+  animations?: import("./core/animation").ChartAnimationConfig | boolean;
+  /** Responsive design configuration */
+  responsive?: import("./core/responsive").ResponsiveConfig | boolean;
 }
 
 // ============================================
@@ -395,6 +430,11 @@ export interface ChartEventMap {
   render: { fps: number; frameTime: number };
   legendMove: { x: number; y: number };
   autoScale: undefined;
+  // Selection events
+  pointSelect: import("./core/selection").PointSelectEvent;
+  regionSelect: import("./core/selection").RegionSelectEvent;
+  selectionChange: { selected: import("./core/selection").SelectedPoint[]; previous: import("./core/selection").SelectedPoint[] };
+  selectionClear: undefined;
 }
 
 // ============================================

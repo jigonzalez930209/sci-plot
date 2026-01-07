@@ -22,6 +22,25 @@ export { EventEmitter } from "./core/EventEmitter";
 export type { Chart, ChartOptions, ExportOptions } from "./core/Chart";
 
 // ============================================
+// Animation
+// ============================================
+export {
+  AnimationEngine,
+  easings,
+  DEFAULT_ANIMATION_CONFIG,
+  mergeAnimationConfig,
+  getSharedAnimationEngine,
+} from "./core/animation";
+export type {
+  AnimationOptions,
+  AnimationHandle,
+  BoundsAnimation,
+  ChartAnimationConfig,
+  EasingFunction,
+  EasingName,
+} from "./core/animation";
+
+// ============================================
 // Annotations
 // ============================================
 export { AnnotationManager } from "./core/annotations";
