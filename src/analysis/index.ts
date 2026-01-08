@@ -32,10 +32,10 @@ export {
   fitData,
 } from './fitting';
 
-export type { 
-  CycleInfo, 
-  Peak, 
-  PrefixInfo, 
+export type {
+  CycleInfo,
+  Peak,
+  PrefixInfo,
   ValidationResult,
   DataStats,
 } from './utils';
@@ -63,11 +63,20 @@ export {
   hammingWindow,
   blackmanWindow,
   nextPowerOf2,
+  // Complex FFT functions
+  analyzeComplexSpectrum,
+  fftFromComplexInput,
+  complexToArrays,
+  arraysToComplex,
+  ifftFromArrays,
+  ifftComplex,
+  getPositiveFrequencies,
 } from './fft';
 
 export type {
   Complex,
   FFTResult,
+  ComplexFFTResult,
   PowerSpectrumResult,
 } from './fft';
 
