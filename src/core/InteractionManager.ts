@@ -15,7 +15,7 @@ import type { Bounds } from "../types";
 
 export interface AxisLayout {
   id: string;
-  position: 'left' | 'right';
+  position: "left" | "right";
   offset: number;
 }
 
@@ -27,6 +27,18 @@ export interface InteractionCallbacks {
   ) => void;
   onCursorMove: (x: number, y: number) => void;
   onCursorLeave: () => void;
+  onPointClick?: (
+    pixelX: number,
+    pixelY: number,
+    ctrlKey: boolean,
+    shiftKey: boolean
+  ) => void;
+  onBoxSelect?: (
+    rect: { x: number; y: number; width: number; height: number } | null,
+    additive: boolean
+  ) => void;
+  onBoxSelectUpdate?: (pixelX: number, pixelY: number) => void;
+  onBoxSelectStart?: (pixelX: number, pixelY: number) => void;
 }
 
 export interface PlotAreaGetter {
@@ -146,8 +158,8 @@ export class InteractionManager {
     for (const axis of axes) {
       const hitWidth = 65; // Matches axis spacing
       let hitX: number;
-      
-      if (axis.position === 'left') {
+
+      if (axis.position === "left") {
         // Left axes: start from (plotArea.x - hitWidth) and go further left with offset
         hitX = plotArea.x - hitWidth - axis.offset;
       } else {
@@ -253,8 +265,8 @@ export class InteractionManager {
     for (const axis of axes) {
       const hitWidth = 65;
       let hitX: number;
-      
-      if (axis.position === 'left') {
+
+      if (axis.position === "left") {
         hitX = plotArea.x - hitWidth - axis.offset;
       } else {
         hitX = plotArea.x + plotArea.width + axis.offset;
@@ -287,9 +299,13 @@ export class InteractionManager {
         this.lastMousePos = { x: e.clientX, y: e.clientY };
         this.container.style.cursor = "grabbing";
       } else {
+        // Selection mode: start box selection
         this.isBoxSelecting = true;
         this.selectionStart = { x: mouseX, y: mouseY };
         this.container.style.cursor = "crosshair";
+        if (this.callbacks.onBoxSelectStart) {
+          this.callbacks.onBoxSelectStart(mouseX, mouseY);
+        }
       }
     }
   }
@@ -308,16 +324,28 @@ export class InteractionManager {
       this.callbacks.onPan(deltaX, deltaY, this.panningAxisId);
       this.lastMousePos = { x: e.clientX, y: e.clientY };
     } else if (this.isBoxSelecting) {
+      // In selection mode, update the selection box
+      if (this.callbacks.onBoxSelectUpdate) {
+        this.callbacks.onBoxSelectUpdate(mouseX, mouseY);
+      }
+    }
+  }
+
+  private handleMouseUp(e: MouseEvent): void {
+    if (this.isBoxSelecting) {
+      const rect = this.container.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
       const x = Math.min(this.selectionStart.x, mouseX);
       const y = Math.min(this.selectionStart.y, mouseY);
       const width = Math.abs(mouseX - this.selectionStart.x);
       const height = Math.abs(mouseY - this.selectionStart.y);
-      this.callbacks.onBoxZoom({ x, y, width, height });
-    }
-  }
 
-  private handleMouseUp(): void {
-    if (this.isBoxSelecting) {
+      // Call box select callback if available
+      if (this.callbacks.onBoxSelect) {
+        this.callbacks.onBoxSelect({ x, y, width, height }, e.shiftKey);
+      }
       this.callbacks.onBoxZoom(null); // Signal to apply
     }
     this.isDragging = false;
