@@ -1,6 +1,6 @@
 # Scientific Analysis (FFT & Filters)
 
-<ChartDemo type="analysis" height="450px" />
+<ChartDemo type="spectral" height="450px" />
 
 SciChart Engine provides a powerful suite of scientific analysis tools for signal processing, frequency analysis, and statistical evaluation.
 

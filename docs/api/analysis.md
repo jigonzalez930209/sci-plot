@@ -124,6 +124,23 @@ Generate distinct colors for multiple series.
 function generateCycleColors(count: number): string[]
 ```
 
+## Advanced Analysis
+
+For more complex signal processing, see the specialized modules:
+
+### [Spectral & FFT](/api/analysis-advanced#spectral-analysis)
+Fast Fourier Transform, Windowing functions (Hanning, Hamming, Blackman), and Power Spectrum analysis.
+
+### [Digital Filters](/api/analysis-advanced#digital-filters)
+IIR Filters (LowPass, HighPass, BandPass), Moving Averages, Median Filters, and Savitzky-Golay smoothing.
+
+### [Statistics](/api/analysis-advanced#statistics)
+Correlation analysis, Anomaly detection, and numerical integration (Trapezoidal/Simpson).
+
+### [Curve Fitting](/api/fitting)
+Linear and non-linear regression models (Polynomial, Exponential, Logarithmic).
+
+
 ## Quick Examples
 
 ```typescript
