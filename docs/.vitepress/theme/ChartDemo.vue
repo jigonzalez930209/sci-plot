@@ -25,6 +25,7 @@ const demoComponent = computed(() => {
     case 'candlestick': return defineAsyncComponent(() => import('./demos/2d/CandlestickDemo.vue'))
     case 'stacked': return defineAsyncComponent(() => import('./demos/2d/StackedDemo.vue'))
     case 'analysis': return defineAsyncComponent(() => import('./demos/2d/AnalysisDemo.vue'))
+    case 'spectral': return defineAsyncComponent(() => import('./demos/2d/SpectralDemo.vue'))
     case 'statistics': return defineAsyncComponent(() => import('./demos/2d/StatisticsDemo.vue'))
     case 'annotations': return defineAsyncComponent(() => import('./demos/2d/AnnotationsDemo.vue'))
     case 'multi-axis':
