@@ -41,6 +41,17 @@ export type {
 } from "./core/animation";
 
 // ============================================
+// Chart Initialization Queue (for multiple charts)
+// ============================================
+export {
+  ChartInitQueue,
+  getChartInitQueue,
+  queueChartInit,
+  waitForAnimations,
+  resetChartQueue,
+} from "./core/ChartInitQueue";
+
+// ============================================
 // Annotations
 // ============================================
 export { AnnotationManager } from "./core/annotations";
@@ -215,23 +226,23 @@ export {
   // Backends
   WebGPUBackend,
   WebGLBackend,
-  
+
   // Renderer facade
   GpuRenderer,
   createGpuRenderer,
-  
+
   // Adapter utilities
   SeriesAdapter,
   parseColorToRGBA,
-  
+
   // Resource management
   PipelineCache,
   BaseBufferStore,
   BaseTextureStore,
-  
+
   // Benchmark
   GpuBenchmark,
-  
+
   // GPU Compute
   GpuCompute,
 } from "./gpu";
@@ -244,16 +255,16 @@ export type {
   GpuBackend,
   BufferId,
   TextureId,
-  
+
   // Frame types
   FrameUniforms,
-  
+
   // Draw types
   DrawKind,
   DrawCall,
   DrawList,
   PointSymbol,
-  
+
   // Adapter types
   SeriesData as GpuSeriesData,
   Bounds as GpuBounds,
@@ -261,11 +272,11 @@ export type {
   GpuRendererOptions,
   BackendPreference,
   WebGPUBackendOptions,
-  
+
   // Benchmark types
   BenchmarkResult,
   BenchmarkOptions,
-  
+
   // Compute types
   DataStats as GpuDataStats,
   DataBounds as GpuDataBounds,
