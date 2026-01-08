@@ -1,5 +1,31 @@
 <script setup lang="ts">
-import { defineAsyncComponent, computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref } from 'vue'
+
+// Eager imports for all demos
+import BasicDemo from './demos/2d/BasicDemo.vue'
+import RealtimeDemo from './demos/2d/RealtimeDemo.vue'
+import LargeDatasetDemo from './demos/2d/LargeDatasetDemo.vue'
+import ScatterDemo from './demos/2d/ScatterDemo.vue'
+import MultiSeriesDemo from './demos/2d/MultiSeriesDemo.vue'
+import StepDemo from './demos/2d/StepDemo.vue'
+import ErrorBarsDemo from './demos/2d/ErrorBarsDemo.vue'
+import SymbolsDemo from './demos/2d/SymbolsDemo.vue'
+import FittingDemo from './demos/2d/FittingDemo.vue'
+import AreaDemo from './demos/2d/AreaDemo.vue'
+import BarDemo from './demos/2d/BarDemo.vue'
+import HeatmapDemo from './demos/2d/HeatmapDemo.vue'
+import CandlestickDemo from './demos/2d/CandlestickDemo.vue'
+import StackedDemo from './demos/2d/StackedDemo.vue'
+import AnalysisDemo from './demos/2d/AnalysisDemo.vue'
+import SpectralDemo from './demos/2d/SpectralDemo.vue'
+import FFTWaveformsDemo from './demos/2d/FFTWaveformsDemo.vue'
+import StatisticsDemo from './demos/2d/StatisticsDemo.vue'
+import AnnotationsDemo from './demos/2d/AnnotationsDemo.vue'
+import MultiAxisDemo from './demos/2d/MultiAxisDemo.vue'
+import TooltipsDemo from './demos/2d/TooltipsDemo.vue'
+import ResponsiveDemo from './demos/2d/ResponsiveDemo.vue'
+import PersistenceDemo from './demos/2d/PersistenceDemo.vue'
+import SelectionDemo from './demos/2d/SelectionDemo.vue'
 
 const props = defineProps<{
   type: string
@@ -7,75 +33,41 @@ const props = defineProps<{
   points?: number
 }>()
 
-const isVisible = ref(false)
+// Charts are now visible by default. The core ChartInitQueue handles sequential loading.
+const isVisible = ref(true)
 const containerRef = ref<HTMLElement | null>(null)
-let observer: IntersectionObserver | null = null
 
 const demoComponent = computed(() => {
   switch (props.type) {
-    case 'basic': return defineAsyncComponent(() => import('./demos/2d/BasicDemo.vue'))
-    case 'realtime': return defineAsyncComponent(() => import('./demos/2d/RealtimeDemo.vue'))
+    case 'basic': return BasicDemo
+    case 'realtime': return RealtimeDemo
     case 'large-dataset':
-    case 'large': return defineAsyncComponent(() => import('./demos/2d/LargeDatasetDemo.vue'))
-    case 'scatter': return defineAsyncComponent(() => import('./demos/2d/ScatterDemo.vue'))
+    case 'large': return LargeDatasetDemo
+    case 'scatter': return ScatterDemo
     case 'multi-series':
-    case 'multi': return defineAsyncComponent(() => import('./demos/2d/MultiSeriesDemo.vue'))
-    case 'step': return defineAsyncComponent(() => import('./demos/2d/StepDemo.vue'))
+    case 'multi': return MultiSeriesDemo
+    case 'step': return StepDemo
     case 'error-bars':
-    case 'errorbars': return defineAsyncComponent(() => import('./demos/2d/ErrorBarsDemo.vue'))
-    case 'symbols': return defineAsyncComponent(() => import('./demos/2d/SymbolsDemo.vue'))
-    case 'fitting': return defineAsyncComponent(() => import('./demos/2d/FittingDemo.vue'))
-    case 'area': return defineAsyncComponent(() => import('./demos/2d/AreaDemo.vue'))
-    case 'bar': return defineAsyncComponent(() => import('./demos/2d/BarDemo.vue'))
-    case 'heatmap': return defineAsyncComponent(() => import('./demos/2d/HeatmapDemo.vue'))
-    case 'candlestick': return defineAsyncComponent(() => import('./demos/2d/CandlestickDemo.vue'))
-    case 'stacked': return defineAsyncComponent(() => import('./demos/2d/StackedDemo.vue'))
-    case 'analysis': return defineAsyncComponent(() => import('./demos/2d/AnalysisDemo.vue'))
-    case 'spectral': return defineAsyncComponent(() => import('./demos/2d/SpectralDemo.vue'))
-    case 'statistics': return defineAsyncComponent(() => import('./demos/2d/StatisticsDemo.vue'))
-    case 'annotations': return defineAsyncComponent(() => import('./demos/2d/AnnotationsDemo.vue'))
+    case 'errorbars': return ErrorBarsDemo
+    case 'symbols': return SymbolsDemo
+    case 'fitting': return FittingDemo
+    case 'area': return AreaDemo
+    case 'bar': return BarDemo
+    case 'heatmap': return HeatmapDemo
+    case 'candlestick': return CandlestickDemo
+    case 'stacked': return StackedDemo
+    case 'analysis': return AnalysisDemo
+    case 'spectral': return SpectralDemo
+    case 'fft-waveforms': return FFTWaveformsDemo
+    case 'statistics': return StatisticsDemo
+    case 'annotations': return AnnotationsDemo
     case 'multi-axis':
-    case 'multiaxis': return defineAsyncComponent(() => import('./demos/2d/MultiAxisDemo.vue'))
-    case 'tooltips': return defineAsyncComponent(() => import('./demos/2d/TooltipsDemo.vue'))
-    case 'responsive': return defineAsyncComponent(() => import('./demos/2d/ResponsiveDemo.vue'))
-    case 'persistence': return defineAsyncComponent(() => import('./demos/2d/PersistenceDemo.vue'))
-    case 'selection': return defineAsyncComponent(() => import('./demos/2d/SelectionDemo.vue'))
-    default: return defineAsyncComponent(() => import('./demos/2d/BasicDemo.vue'))
-  }
-})
-
-onMounted(() => {
-  if (typeof window === 'undefined' || !containerRef.value) return
-  
-  // Use Intersection Observer for lazy loading
-  observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && !isVisible.value) {
-          // Add a small delay to ensure DOM is ready
-          setTimeout(() => {
-            isVisible.value = true
-          }, 50)
-          // Once loaded, disconnect observer to prevent re-loading
-          if (observer) {
-            observer.disconnect()
-          }
-        }
-      })
-    },
-    {
-      // Load when element is 200px from viewport
-      rootMargin: '200px',
-      threshold: 0
-    }
-  )
-  
-  observer.observe(containerRef.value)
-})
-
-onUnmounted(() => {
-  if (observer) {
-    observer.disconnect()
+    case 'multiaxis': return MultiAxisDemo
+    case 'tooltips': return TooltipsDemo
+    case 'responsive': return ResponsiveDemo
+    case 'persistence': return PersistenceDemo
+    case 'selection': return SelectionDemo
+    default: return BasicDemo
   }
 })
 </script>
@@ -86,7 +78,7 @@ onUnmounted(() => {
     <div v-else class="chart-placeholder" :style="{ height: height || '400px' }">
       <div class="loading-indicator">
         <span>📊</span>
-        <p>Chart will load when visible...</p>
+        <p>Loading chart...</p>
       </div>
     </div>
   </div>
@@ -127,3 +119,4 @@ onUnmounted(() => {
   font-size: 0.9rem;
 }
 </style>
+
