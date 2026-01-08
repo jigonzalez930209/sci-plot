@@ -47,7 +47,7 @@ onMounted(async () => {
 
     chart.on('render', (e: any) => { fps.value = Math.round(e.fps) })
 
-    await updateChart()
+    updateChart()
   } catch (err) {
     console.error('SpectralDemo: Error initializing chart', err)
   }
@@ -102,8 +102,7 @@ async function updateChart() {
       
       if (mode.value === 'time') {
         // --- TIME DOMAIN ---
-        chart.setXAxis({ label: 'Time (s)', auto: true })
-        chart.setYAxis({ label: 'Amplitude (V)', auto: true })
+        chart.updateYAxis('default', { label: 'Amplitude (V)', auto: true })
 
         let displayY = y
         
@@ -158,8 +157,7 @@ async function updateChart() {
 
       } else {
         // --- FREQUENCY DOMAIN (FFT) ---
-        chart.setXAxis({ label: 'Frequency (Hz)', auto: false, min: 0, max: 100 })
-        chart.setYAxis({ label: 'Magnitude (dB)', auto: true })
+        chart.updateYAxis('default', { label: 'Magnitude (dB)', auto: true })
 
         const bins = 200
         const xFreq = new Float32Array(bins)

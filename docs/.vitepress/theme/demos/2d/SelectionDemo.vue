@@ -21,17 +21,21 @@ onMounted(async () => {
   chart = createChart({
     container: chartContainer.value,
     theme: chartTheme.value,
-    showControls: true
+    showControls: true,
+    tooltip: { enabled: false }
   })
 
   chart.on('render', (e: any) => {
     fps.value = Math.round(e.fps)
   })
 
-  // Mock selection event if engine supports it
-  chart.on('selectionChanged', (e: any) => {
-    selectedPoints.value = e.selectedCount || 0
+  // Listen to selection changes
+  chart.on('selectionChange', (e: any) => {
+    selectedPoints.value = e.selected?.length || 0
   })
+
+  // Disable pan mode to enable selection
+  chart.setPanMode(false)
 
   initDemo()
 })

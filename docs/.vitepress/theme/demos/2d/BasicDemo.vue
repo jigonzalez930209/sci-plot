@@ -17,6 +17,17 @@ const chartTheme = computed(() => isDark.value ? 'midnight' : 'light')
 
 onMounted(async () => {
   if (typeof window === 'undefined' || !chartContainer.value) return
+  
+  // Clean up any existing chart instance (for HMR)
+  if (chart) {
+    try {
+      chart.destroy()
+    } catch (e) {
+      // Ignore errors if chart was already destroyed
+    }
+    chart = null
+  }
+  
   const { createChart } = await import('@src/index')
   
   chart = createChart({
@@ -46,13 +57,22 @@ onMounted(async () => {
     style: { color: '#00f2ff', width: 1.5 },
   })
   pointCount.value = n
+  
+  // Ensure proper rendering after lazy loading
+  setTimeout(() => {
+    if (chart) {
+      chart.resize()
+      chart.autoScale(false)
+      chart.render()
+    }
+  }, 100)
 })
 
 onUnmounted(() => {
   if (chart) chart.destroy()
 })
 
-watch(isDark, (val) => {
+watch(isDark, () => {
   if (chart) {
     chart.setTheme(chartTheme.value)
     setTimeout(() => {

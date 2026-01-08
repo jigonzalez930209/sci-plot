@@ -49,6 +49,15 @@ function initDemo() {
   });
   
   pointCount.value = n
+  
+  // Ensure proper rendering after lazy loading
+  setTimeout(() => {
+    if (chart) {
+      chart.resize()
+      chart.autoScale(false)
+      chart.render()
+    }
+  }, 100)
 }
 
 function resetDemo() {

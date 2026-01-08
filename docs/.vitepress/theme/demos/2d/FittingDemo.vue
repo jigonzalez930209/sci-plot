@@ -75,11 +75,16 @@ function initDemo() {
   // Use the built-in addFitLine for cubic polynomial
   chart.addFitLine('noisy-poly', 'polynomial', { degree: 3, label: 'Cubic', precision: 2 });
   
-  // CRITICAL: Auto-scale to see the data
-  chart.autoScale();
-  chart.render();
-
   pointCount.value = n * 2
+  
+  // Ensure proper rendering after lazy loading
+  setTimeout(() => {
+    if (chart) {
+      chart.resize()
+      chart.autoScale(false)
+      chart.render()
+    }
+  }, 100)
 }
 
 function resetDemo() {
