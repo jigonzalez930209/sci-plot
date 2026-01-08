@@ -730,8 +730,8 @@ createChart({
 | 6 | Serialización | 🔴 Alto | 3/5 | **Done** |
 | 7 | Análisis FFT/Filtros | 🔴 Alto | 4/5 | **Done** |
 | 3 | Sistema de Plugins | 🔴 Alto | 5/5 | **P1** |
-| 8 | Anotaciones Avanzadas | 🟡 Medio | 3/5 | **Done** |
-| 11 | Exportación PDF/SVG | 🟡 Medio | 4/5 | **Done** |
+| 8 | Anotaciones Avanzadas | 🟡 Medio | 3/5 | **P1** |
+| 11 | Exportación PDF/SVG | 🟡 Medio | 4/5 | **P1** |
 | 12 | Sincronización Charts | 🟡 Medio | 3/5 | **P3** |
 | 9 | Editor de Temas | 🟡 Medio | 3/5 | **P3** |
 | 10 | Indicadores Financieros | 🟡 Medio | 3/5 | **P3** |
