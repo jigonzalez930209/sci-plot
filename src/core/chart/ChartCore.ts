@@ -298,6 +298,18 @@ export class ChartImpl implements Chart {
         onBoxSelectStart: (pixelX, pixelY) => {
           this.selectionManager.startBoxSelection(pixelX, pixelY);
         },
+        onDragStart: () => {
+          // Suspend tooltip during any drag operation
+          if (this.tooltip) {
+            this.tooltip.setSuspended(true);
+          }
+        },
+        onDragEnd: () => {
+          // Resume tooltip after drag operation ends
+          if (this.tooltip) {
+            this.tooltip.setSuspended(false);
+          }
+        },
       },
       () => this.getPlotArea(),
       (axisId) => this.getInteractedBounds(axisId),
@@ -347,6 +359,7 @@ export class ChartImpl implements Chart {
       requestRender: () => this.requestRender(),
       exportImage: () => this.exportImage(),
       setPanMode: (active) => this.interaction.setPanMode(active),
+      setMode: (mode) => this.interaction.setMode(mode),
       onLegendMove: (x: number, y: number) =>
         this.events.emit("legendMove", { x, y }),
       toggleLegend: () => this.toggleLegend(),
@@ -378,6 +391,7 @@ export class ChartImpl implements Chart {
         requestRender: () => this.requestRender(),
         exportImage: () => this.exportImage(),
         setPanMode: (active) => this.interaction.setPanMode(active),
+        setMode: (mode) => this.interaction.setMode(mode),
         onLegendMove: (x: number, y: number) =>
           this.events.emit("legendMove", { x, y }),
         toggleLegend: () => this.toggleLegend(),
@@ -853,9 +867,25 @@ export class ChartImpl implements Chart {
 
   /**
    * Set pan mode (true = pan, false = selection)
+   * @deprecated Use setMode('pan') or setMode('select') instead
    */
   setPanMode(enabled: boolean): void {
     this.interaction.setPanMode(enabled);
+  }
+
+  /**
+   * Set the interaction mode
+   * @param mode - 'pan' for pan/drag, 'boxZoom' for rectangle zoom, 'select' for point selection
+   */
+  setMode(mode: 'pan' | 'boxZoom' | 'select'): void {
+    this.interaction.setMode(mode);
+  }
+
+  /**
+   * Get the current interaction mode
+   */
+  getMode(): 'pan' | 'boxZoom' | 'select' {
+    return this.interaction.getMode();
   }
 
   // ============================================

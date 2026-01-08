@@ -6,7 +6,7 @@ export { createChart, type Chart, type ChartOptions, type ExportOptions } from '
 export { Series } from './Series';
 export { EventEmitter } from './EventEmitter';
 export { OverlayRenderer } from './OverlayRenderer';
-export { InteractionManager } from './InteractionManager';
+export { InteractionManager, type InteractionMode } from './InteractionManager';
 export * from './annotations';
 export * from './selection';
 export * from './responsive';

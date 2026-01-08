@@ -9,12 +9,14 @@
  */
 
 import { ChartTheme } from "../theme";
+import type { InteractionMode } from "./InteractionManager";
 
 export interface ChartControlsCallbacks {
   onResetZoom: () => void;
   onSetType: (type: "line" | "scatter" | "line+scatter") => void;
   onToggleSmoothing: () => void;
   onTogglePan: (active: boolean) => void;
+  onSetMode: (mode: InteractionMode) => void;
   onExport: () => void;
   onAutoScale: () => void;
   onToggleLegend: (visible: boolean) => void;
@@ -26,6 +28,8 @@ export interface ChartControlsCallbacks {
 
 const ICONS = {
   PAN: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path></svg>`,
+  BOX_ZOOM: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"></rect><circle cx="9" cy="9" r="3"></circle><line x1="21" y1="21" x2="15" y2="15"></line></svg>`,
+  SELECT: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1" stroke-dasharray="4 2"></rect><circle cx="8" cy="10" r="1.5" fill="currentColor"></circle><circle cx="12" cy="14" r="1.5" fill="currentColor"></circle><circle cx="16" cy="9" r="1.5" fill="currentColor"></circle></svg>`,
   RESET: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`,
   LINE: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>`,
   SCATTER: `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><circle cx="7" cy="14" r="2"></circle><circle cx="11" cy="10" r="2"></circle><circle cx="15" cy="13" r="2"></circle><circle cx="19" cy="8" r="2"></circle><path d="M3 3v18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`,
@@ -43,7 +47,7 @@ export class ChartControls {
   private theme: ChartTheme;
 
   private isSmoothing = false;
-  private isPanMode = true;
+  private currentMode: InteractionMode = 'pan';
   private isLegendVisible = true;
   private currentType: "line" | "scatter" | "line+scatter" = "line";
 
@@ -114,13 +118,37 @@ export class ChartControls {
     // Pan Mode
     this.createButton(
       ICONS.PAN,
-      "Pan Mode",
+      "Pan Mode (drag to move)",
       () => {
-        this.isPanMode = !this.isPanMode;
+        this.currentMode = 'pan';
         this.updateButtonStates();
-        this.callbacks.onTogglePan(this.isPanMode);
+        this.callbacks.onSetMode('pan');
       },
       "pan"
+    );
+
+    // Box Zoom Mode
+    this.createButton(
+      ICONS.BOX_ZOOM,
+      "Box Zoom (drag to zoom)",
+      () => {
+        this.currentMode = 'boxZoom';
+        this.updateButtonStates();
+        this.callbacks.onSetMode('boxZoom');
+      },
+      "boxZoom"
+    );
+
+    // Selection Mode
+    this.createButton(
+      ICONS.SELECT,
+      "Select Points (drag to select)",
+      () => {
+        this.currentMode = 'select';
+        this.updateButtonStates();
+        this.callbacks.onSetMode('select');
+      },
+      "select"
     );
 
     // Reset Zoom
@@ -297,7 +325,9 @@ export class ChartControls {
     const buttons = this.toolbar.querySelectorAll("button");
     const isDark = this.isDarkTheme();
 
-    const activeColor = "#38bdf8"; // Brighter blue
+    const panActiveColor = "#38bdf8"; // Brighter blue for pan
+    const zoomActiveColor = "#f59e0b"; // Orange for box zoom
+    const selectActiveColor = "#a855f7"; // Purple for selection
     const smoothActiveColor = "#fb7185"; // Brighter pink
     const legendActiveColor = "#4ade80"; // Brighter green
     const normalColor = isDark ? "#f1f5f9" : "#334155"; // High contrast
@@ -306,14 +336,28 @@ export class ChartControls {
       const id = btn.dataset.id;
       const isHover = btn.matches(":hover");
 
+      // Mode buttons (pan, boxZoom, select) - only one can be active
       if (id === "pan") {
-        btn.style.color = this.isPanMode ? activeColor : normalColor;
-        btn.style.opacity = isHover || this.isPanMode ? "1" : "0.8";
-        if (this.isPanMode) {
-          btn.style.background = isDark
-            ? "rgba(56, 189, 248, 0.15)"
-            : "rgba(56, 189, 248, 0.1)";
-        }
+        const isActive = this.currentMode === 'pan';
+        btn.style.color = isActive ? panActiveColor : normalColor;
+        btn.style.opacity = isHover || isActive ? "1" : "0.8";
+        btn.style.background = isActive
+          ? (isDark ? "rgba(56, 189, 248, 0.15)" : "rgba(56, 189, 248, 0.1)")
+          : "transparent";
+      } else if (id === "boxZoom") {
+        const isActive = this.currentMode === 'boxZoom';
+        btn.style.color = isActive ? zoomActiveColor : normalColor;
+        btn.style.opacity = isHover || isActive ? "1" : "0.8";
+        btn.style.background = isActive
+          ? (isDark ? "rgba(245, 158, 11, 0.15)" : "rgba(245, 158, 11, 0.1)")
+          : "transparent";
+      } else if (id === "select") {
+        const isActive = this.currentMode === 'select';
+        btn.style.color = isActive ? selectActiveColor : normalColor;
+        btn.style.opacity = isHover || isActive ? "1" : "0.8";
+        btn.style.background = isActive
+          ? (isDark ? "rgba(168, 85, 247, 0.15)" : "rgba(168, 85, 247, 0.1)")
+          : "transparent";
       } else if (id === "smooth") {
         btn.style.color = this.isSmoothing ? smoothActiveColor : normalColor;
         btn.style.opacity = isHover || this.isSmoothing ? "1" : "0.8";
@@ -321,6 +365,8 @@ export class ChartControls {
           btn.style.background = isDark
             ? "rgba(251, 113, 133, 0.15)"
             : "rgba(251, 113, 133, 0.1)";
+        } else if (!isHover) {
+          btn.style.background = "transparent";
         }
       } else if (id === "legend") {
         btn.style.color = this.isLegendVisible ? legendActiveColor : normalColor;
@@ -329,6 +375,8 @@ export class ChartControls {
           btn.style.background = isDark
             ? "rgba(74, 222, 128, 0.15)"
             : "rgba(74, 222, 128, 0.1)";
+        } else if (!isHover) {
+          btn.style.background = "transparent";
         }
       } else if (id === "type") {
         btn.innerHTML =
@@ -341,20 +389,15 @@ export class ChartControls {
         this.enforceSVGVisibility(btn);
         btn.style.color = normalColor;
         btn.style.opacity = isHover ? "1" : "0.8";
+        if (!isHover) {
+          btn.style.background = "transparent";
+        }
       } else if (id === "reset" || id === "autoscale" || id === "export") {
         btn.style.color = normalColor;
         btn.style.opacity = isHover ? "1" : "0.8";
-      }
-
-      if (
-        !isHover &&
-        !(
-          (id === "pan" && this.isPanMode) ||
-          (id === "smooth" && this.isSmoothing) ||
-          (id === "legend" && this.isLegendVisible)
-        )
-      ) {
-        btn.style.background = "transparent";
+        if (!isHover) {
+          btn.style.background = "transparent";
+        }
       }
     });
   }

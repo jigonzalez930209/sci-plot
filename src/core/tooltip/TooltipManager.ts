@@ -158,6 +158,8 @@ export class TooltipManager {
   private lastKnownDataSize = 0;
   // Hysteresis factor: new point must be this much closer to switch (2 = 2x closer)
   private hysteresisRatio = 2.0;
+  // Suspended state - used during drag operations to hide tooltip
+  private suspended = false;
 
   constructor(config: TooltipManagerConfig) {
     this.ctx = config.overlayCtx;
@@ -356,6 +358,24 @@ export class TooltipManager {
   }
 
   /**
+   * Suspend tooltip display (used during drag operations)
+   * When suspended, tooltips are immediately hidden and cursor movements are ignored
+   */
+  setSuspended(suspended: boolean): void {
+    this.suspended = suspended;
+    if (suspended) {
+      this.hideAll();
+    }
+  }
+
+  /**
+   * Check if tooltips are suspended
+   */
+  isSuspended(): boolean {
+    return this.suspended;
+  }
+
+  /**
    * Set tooltip theme
    */
   setTheme(theme: TooltipTheme | string): void {
@@ -405,7 +425,7 @@ export class TooltipManager {
    * Optimized with hysteresis to prevent jumping between nearby points
    */
   handleCursorMove(pixelX: number, pixelY: number): void {
-    if (!this.options.enabled) return;
+    if (!this.options.enabled || this.suspended) return;
 
     this.lastCursorX = pixelX;
     this.lastCursorY = pixelY;

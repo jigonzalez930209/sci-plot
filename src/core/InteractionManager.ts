@@ -39,6 +39,10 @@ export interface InteractionCallbacks {
   ) => void;
   onBoxSelectUpdate?: (pixelX: number, pixelY: number) => void;
   onBoxSelectStart?: (pixelX: number, pixelY: number) => void;
+  /** Called when any drag operation starts (pan, box zoom, box select) */
+  onDragStart?: () => void;
+  /** Called when any drag operation ends */
+  onDragEnd?: () => void;
 }
 
 export interface PlotAreaGetter {
@@ -57,6 +61,8 @@ export interface AxisLayoutGetter {
 // Interaction Manager Class
 // ============================================
 
+export type InteractionMode = 'pan' | 'boxZoom' | 'select';
+
 export class InteractionManager {
   private container: HTMLElement;
   private callbacks: InteractionCallbacks;
@@ -67,9 +73,10 @@ export class InteractionManager {
   private isDragging = false;
   private panningAxisId?: string;
   private isBoxSelecting = false;
+  private isBoxZooming = false;
   private selectionStart = { x: 0, y: 0 };
   private lastMousePos = { x: 0, y: 0 };
-  private isPanMode = true;
+  private mode: InteractionMode = 'pan';
 
   // Bound handlers for cleanup
   private boundWheel: (e: WheelEvent) => void;
@@ -131,8 +138,26 @@ export class InteractionManager {
     this.container.removeEventListener("touchend", this.boundTouchEnd);
   }
 
+  /**
+   * Set the interaction mode
+   * @deprecated Use setMode instead
+   */
   public setPanMode(enabled: boolean): void {
-    this.isPanMode = enabled;
+    this.mode = enabled ? 'pan' : 'select';
+  }
+
+  /**
+   * Set the interaction mode: 'pan', 'boxZoom', or 'select'
+   */
+  public setMode(mode: InteractionMode): void {
+    this.mode = mode;
+  }
+
+  /**
+   * Get the current interaction mode
+   */
+  public getMode(): InteractionMode {
+    return this.mode;
   }
 
   // ----------------------------------------
@@ -282,6 +307,7 @@ export class InteractionManager {
         this.panningAxisId = axis.id;
         this.lastMousePos = { x: e.clientX, y: e.clientY };
         this.container.style.cursor = "ns-resize";
+        this.callbacks.onDragStart?.();
         return;
       }
     }
@@ -293,19 +319,31 @@ export class InteractionManager {
       mouseY >= plotArea.y &&
       mouseY <= plotArea.y + plotArea.height
     ) {
-      if (this.isPanMode) {
-        this.isDragging = true;
-        this.panningAxisId = undefined;
-        this.lastMousePos = { x: e.clientX, y: e.clientY };
-        this.container.style.cursor = "grabbing";
-      } else {
-        // Selection mode: start box selection
-        this.isBoxSelecting = true;
-        this.selectionStart = { x: mouseX, y: mouseY };
-        this.container.style.cursor = "crosshair";
-        if (this.callbacks.onBoxSelectStart) {
-          this.callbacks.onBoxSelectStart(mouseX, mouseY);
-        }
+      switch (this.mode) {
+        case 'pan':
+          this.isDragging = true;
+          this.panningAxisId = undefined;
+          this.lastMousePos = { x: e.clientX, y: e.clientY };
+          this.container.style.cursor = "grabbing";
+          this.callbacks.onDragStart?.();
+          break;
+        case 'boxZoom':
+          this.isBoxZooming = true;
+          this.selectionStart = { x: mouseX, y: mouseY };
+          this.container.style.cursor = "crosshair";
+          // Start box zoom visual (use same callback as onBoxZoom for consistency)
+          this.callbacks.onBoxZoom({ x: mouseX, y: mouseY, width: 0, height: 0 });
+          this.callbacks.onDragStart?.();
+          break;
+        case 'select':
+          this.isBoxSelecting = true;
+          this.selectionStart = { x: mouseX, y: mouseY };
+          this.container.style.cursor = "crosshair";
+          if (this.callbacks.onBoxSelectStart) {
+            this.callbacks.onBoxSelectStart(mouseX, mouseY);
+          }
+          this.callbacks.onDragStart?.();
+          break;
       }
     }
   }
@@ -323,6 +361,13 @@ export class InteractionManager {
       const deltaY = e.clientY - this.lastMousePos.y;
       this.callbacks.onPan(deltaX, deltaY, this.panningAxisId);
       this.lastMousePos = { x: e.clientX, y: e.clientY };
+    } else if (this.isBoxZooming) {
+      // In box zoom mode, update the zoom box
+      const x = Math.min(this.selectionStart.x, mouseX);
+      const y = Math.min(this.selectionStart.y, mouseY);
+      const width = Math.abs(mouseX - this.selectionStart.x);
+      const height = Math.abs(mouseY - this.selectionStart.y);
+      this.callbacks.onBoxZoom({ x, y, width, height });
     } else if (this.isBoxSelecting) {
       // In selection mode, update the selection box
       if (this.callbacks.onBoxSelectUpdate) {
@@ -332,11 +377,22 @@ export class InteractionManager {
   }
 
   private handleMouseUp(e: MouseEvent): void {
-    if (this.isBoxSelecting) {
-      const rect = this.container.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+    const rect = this.container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
+    if (this.isBoxZooming) {
+      const x = Math.min(this.selectionStart.x, mouseX);
+      const y = Math.min(this.selectionStart.y, mouseY);
+      const width = Math.abs(mouseX - this.selectionStart.x);
+      const height = Math.abs(mouseY - this.selectionStart.y);
+
+      // Only apply box zoom if significant area was selected
+      if (width > 5 && height > 5) {
+        this.callbacks.onBoxZoom({ x, y, width, height });
+      }
+      this.callbacks.onBoxZoom(null); // Signal to apply/clear the box
+    } else if (this.isBoxSelecting) {
       const x = Math.min(this.selectionStart.x, mouseX);
       const y = Math.min(this.selectionStart.y, mouseY);
       const width = Math.abs(mouseX - this.selectionStart.x);
@@ -346,12 +402,20 @@ export class InteractionManager {
       if (this.callbacks.onBoxSelect) {
         this.callbacks.onBoxSelect({ x, y, width, height }, e.shiftKey);
       }
-      this.callbacks.onBoxZoom(null); // Signal to apply
     }
+    // Check if we were in a drag operation
+    const wasDragging = this.isDragging || this.isBoxSelecting || this.isBoxZooming;
+
     this.isDragging = false;
     this.panningAxisId = undefined;
     this.isBoxSelecting = false;
+    this.isBoxZooming = false;
     this.container.style.cursor = "";
+
+    // Notify drag end if we were dragging
+    if (wasDragging) {
+      this.callbacks.onDragEnd?.();
+    }
   }
 
   private handleMouseLeave(): void {

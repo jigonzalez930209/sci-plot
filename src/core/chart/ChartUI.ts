@@ -6,6 +6,7 @@ import { ChartLegend } from "../ChartLegend";
 import { ChartTheme } from "../../theme";
 import { ChartOptions } from "../../types";
 import { Series } from "../Series";
+import type { InteractionMode } from "../InteractionManager";
 
 export interface UIContext {
   container: HTMLDivElement;
@@ -18,6 +19,7 @@ export interface UIContext {
   requestRender: () => void;
   exportImage: () => string;
   setPanMode: (active: boolean) => void;
+  setMode: (mode: InteractionMode) => void;
   onLegendMove: (x: number, y: number) => void;
   toggleLegend: () => void;
 }
@@ -48,6 +50,7 @@ export function initControls(ctx: UIContext): ChartControls | null {
       ctx.requestRender();
     },
     onTogglePan: (active) => ctx.setPanMode(active),
+    onSetMode: (mode) => ctx.setMode(mode),
     onExport: () => {
       const link = document.createElement("a");
       link.download = `scichart-export-${Date.now()}.png`;

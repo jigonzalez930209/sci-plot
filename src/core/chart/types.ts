@@ -147,8 +147,22 @@ export interface Chart {
   // Interaction Mode
   // ============================================
 
-  /** Set pan mode (true = pan, false = selection) */
+  /** 
+   * Set pan mode (true = pan, false = selection) 
+   * @deprecated Use setMode('pan') or setMode('select') instead
+   */
   setPanMode(enabled: boolean): void;
+  
+  /**
+   * Set the interaction mode
+   * @param mode - 'pan' for pan/drag, 'boxZoom' for rectangle zoom, 'select' for point selection
+   */
+  setMode(mode: 'pan' | 'boxZoom' | 'select'): void;
+  
+  /**
+   * Get the current interaction mode
+   */
+  getMode(): 'pan' | 'boxZoom' | 'select';
 
   // ============================================
   // Responsive Design
