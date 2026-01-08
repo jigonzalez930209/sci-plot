@@ -1,18 +1,22 @@
 /**
  * Chart Renderer
- * 
+ *
  * Core rendering logic for the chart (WebGL + Overlay).
  */
 
 import type { Bounds, CursorOptions, AxisOptions } from "../../types";
 import type { Series } from "../Series";
 import type { Scale } from "../../scales";
-import type { NativeWebGLRenderer, NativeSeriesRenderData as SeriesRenderData } from "../../renderer/NativeWebGLRenderer";
+import type {
+  NativeWebGLRenderer,
+  NativeSeriesRenderData as SeriesRenderData,
+} from "../../renderer/NativeWebGLRenderer";
 import type { OverlayRenderer } from "../OverlayRenderer";
 import type { PlotArea, CursorState, ChartEventMap } from "../../types";
 import type { AnnotationManager } from "../annotations";
 import type { ChartStatistics } from "../ChartStatistics";
 import type { EventEmitter } from "../EventEmitter";
+import type { SelectionManager } from "../selection";
 
 export interface RenderContext {
   webglCanvas: HTMLCanvasElement;
@@ -41,6 +45,7 @@ export interface RenderContext {
   pixelToDataX: (px: number) => number;
   pixelToDataY: (py: number) => number;
   tooltip: import("../tooltip").TooltipManager;
+  selectionManager: SelectionManager;
 }
 
 /**
@@ -71,25 +76,24 @@ export function prepareSeriesData(
 
     const buf = ctx.renderer.getBuffer(s.getId());
     const seriesType = s.getType();
-    
+
     // Candlesticks use sub-buffers, so main buffer might be missing
-    if (buf || seriesType === 'candlestick') {
-      
+    if (buf || seriesType === "candlestick") {
       // Determine Y-bounds for this series
       const axisId = s.getYAxisId() || ctx.primaryYAxisId;
       const scale = ctx.yScales.get(axisId);
       let yBounds: { min: number; max: number } | undefined;
-      
+
       if (scale) {
-         yBounds = { min: scale.domain[0], max: scale.domain[1] };
+        yBounds = { min: scale.domain[0], max: scale.domain[1] };
       }
 
       // Map area type to band for rendering (area fills to y=0)
-      const renderType = seriesType === 'area' ? 'band' : seriesType;
+      const renderType = seriesType === "area" ? "band" : seriesType;
 
       // Base render data (only if buffer exists)
       let renderData: SeriesRenderData | null = null;
-      
+
       if (buf) {
         renderData = {
           id: s.getId(),
@@ -109,24 +113,24 @@ export function prepareSeriesData(
         } else if (seriesType === "bar") {
           renderData.count = s.getPointCount() * 6;
         }
-      
+
         // Add step buffer for step types
-        if (seriesType === 'step' || seriesType === 'step+scatter') {
+        if (seriesType === "step" || seriesType === "step+scatter") {
           const stepBuf = ctx.renderer.getBuffer(`${s.getId()}_step`);
           if (stepBuf) {
             renderData.stepBuffer = stepBuf;
             // Calculate step count based on mode
-            const stepMode = s.getStyle().stepMode ?? 'after';
+            const stepMode = s.getStyle().stepMode ?? "after";
             const pointCount = s.getPointCount();
-            if (stepMode === 'center') {
+            if (stepMode === "center") {
               renderData.stepCount = 1 + (pointCount - 1) * 3;
             } else {
               renderData.stepCount = pointCount * 2 - 1;
             }
           }
         }
-      
-        if (seriesType === 'heatmap') {
+
+        if (seriesType === "heatmap") {
           const hData = s.getHeatmapData();
           const hStyle = s.getHeatmapStyle();
           if (hData) {
@@ -134,9 +138,10 @@ export function prepareSeriesData(
             const w = hData.xValues.length;
             const h = hData.yValues.length;
             renderData.count = (w - 1) * (h - 1) * 6;
-            
+
             // Calculate Z-bounds if not provided
-            let zMin = Infinity, zMax = -Infinity;
+            let zMin = Infinity,
+              zMax = -Infinity;
             for (let i = 0; i < hData.zValues.length; i++) {
               const v = hData.zValues[i];
               if (v < zMin) zMin = v;
@@ -147,15 +152,15 @@ export function prepareSeriesData(
               zMax += 1;
             }
 
-            renderData.zBounds = { 
-              min: hStyle?.colorScale?.min ?? (zMin === Infinity ? 0 : zMin), 
-              max: hStyle?.colorScale?.max ?? (zMax === -Infinity ? 1 : zMax) 
+            renderData.zBounds = {
+              min: hStyle?.colorScale?.min ?? (zMin === Infinity ? 0 : zMin),
+              max: hStyle?.colorScale?.max ?? (zMax === -Infinity ? 1 : zMax),
             };
-            
+
             if (renderData.zBounds.min === renderData.zBounds.max) {
-               renderData.zBounds.max = renderData.zBounds.min + 1;
+              renderData.zBounds.max = renderData.zBounds.min + 1;
             }
-            
+
             // Attach texture
             const colormapId = `${s.getId()}_colormap`;
             renderData.colormapTexture = ctx.renderer.getTexture(colormapId);
@@ -163,16 +168,19 @@ export function prepareSeriesData(
         }
       }
 
-      if (seriesType === 'candlestick') {
+      if (seriesType === "candlestick") {
         const bullishBuf = ctx.renderer.getBuffer(`${s.getId()}_bullish`);
         if (bullishBuf) {
           seriesData.push({
             id: `${s.getId()}_bullish`,
             buffer: bullishBuf,
             count: s.bullishCount || 0,
-            style: { ...s.getStyle(), color: (s.getStyle() as any).bullishColor || '#26a69a' },
+            style: {
+              ...s.getStyle(),
+              color: (s.getStyle() as any).bullishColor || "#26a69a",
+            },
             visible: s.isVisible(),
-            type: 'bar', // Using bar renderer (triangles)
+            type: "bar", // Using bar renderer (triangles)
             yBounds,
           });
         }
@@ -182,9 +190,12 @@ export function prepareSeriesData(
             id: `${s.getId()}_bearish`,
             buffer: bearishBuf,
             count: s.bearishCount || 0,
-            style: { ...s.getStyle(), color: (s.getStyle() as any).bearishColor || '#ef5350' },
+            style: {
+              ...s.getStyle(),
+              color: (s.getStyle() as any).bearishColor || "#ef5350",
+            },
             visible: s.isVisible(),
-            type: 'bar', // Using bar renderer (triangles)
+            type: "bar", // Using bar renderer (triangles)
             yBounds,
           });
         }
@@ -207,7 +218,9 @@ export function renderOverlay(
 ): void {
   const rect = ctx.container.getBoundingClientRect();
   if (rect.width === 0 || rect.height === 0) {
-    console.warn("[SciChart] Container has zero size in render, skipping overlay");
+    console.warn(
+      "[SciChart] Container has zero size in render, skipping overlay"
+    );
     return;
   }
 
@@ -218,30 +231,30 @@ export function renderOverlay(
   // Group axes by position
   const leftAxes: string[] = [];
   const rightAxes: string[] = [];
-  
+
   ctx.yAxisOptionsMap.forEach((opts, id) => {
-      if(opts.position === 'right') rightAxes.push(id);
-      else leftAxes.push(id);
+    if (opts.position === "right") rightAxes.push(id);
+    else leftAxes.push(id);
   });
 
   // Draw Left Axes (stacked outwards)
   leftAxes.forEach((id, index) => {
-      const scale = ctx.yScales.get(id);
-      const opts = ctx.yAxisOptionsMap.get(id);
-      if(scale && opts) {
-           const offset = index * 65; 
-           ctx.overlay.drawYAxis(plotArea, scale, opts, 'left', offset);
-      }
+    const scale = ctx.yScales.get(id);
+    const opts = ctx.yAxisOptionsMap.get(id);
+    if (scale && opts) {
+      const offset = index * 65;
+      ctx.overlay.drawYAxis(plotArea, scale, opts, "left", offset);
+    }
   });
 
   // Draw Right Axes (stacked outwards)
   rightAxes.forEach((id, index) => {
-      const scale = ctx.yScales.get(id);
-      const opts = ctx.yAxisOptionsMap.get(id);
-      if(scale && opts) {
-           const offset = index * 65; 
-           ctx.overlay.drawYAxis(plotArea, scale, opts, 'right', offset);
-      }
+    const scale = ctx.yScales.get(id);
+    const opts = ctx.yAxisOptionsMap.get(id);
+    if (scale && opts) {
+      const offset = index * 65;
+      ctx.overlay.drawYAxis(plotArea, scale, opts, "right", offset);
+    }
   });
 
   ctx.overlay.drawPlotBorder(plotArea);
@@ -251,8 +264,8 @@ export function renderOverlay(
     if (s.isVisible() && s.hasErrorData()) {
       const axisId = s.getYAxisId() || ctx.primaryYAxisId;
       const scale = ctx.yScales.get(axisId);
-      const yScale = scale || primaryYScale; 
-      
+      const yScale = scale || primaryYScale;
+
       ctx.overlay.drawErrorBars(plotArea, s, ctx.xScale, yScale);
     }
   });
@@ -267,25 +280,30 @@ export function renderOverlay(
     ctx.annotationManager.render(ctx.overlayCtx, plotArea, ctx.viewBounds);
   }
 
+  // Draw Selection Highlights
+  ctx.selectionManager.render(ctx.overlayCtx, plotArea);
+
   // Cursor
   if (ctx.cursorOptions?.enabled && ctx.cursorPosition) {
     // Use legacy tooltip only if new tooltip system doesn't have an active tooltip
     const skipLegacyTooltip = ctx.tooltip?.hasActiveTooltip?.();
-    
+
     const cursor: CursorState = {
       enabled: true,
       x: ctx.cursorPosition.x,
       y: ctx.cursorPosition.y,
       crosshair: ctx.cursorOptions.crosshair ?? false,
-      tooltipText: skipLegacyTooltip 
-        ? undefined 
-        : (ctx.cursorOptions.formatter
-            ? ctx.cursorOptions.formatter(
-                ctx.pixelToDataX(ctx.cursorPosition.x),
-                ctx.pixelToDataY(ctx.cursorPosition.y),
-                ""
-              )
-            : `X: ${ctx.pixelToDataX(ctx.cursorPosition.x).toFixed(3)}\nY: ${ctx.pixelToDataY(ctx.cursorPosition.y).toExponential(2)}`),
+      tooltipText: skipLegacyTooltip
+        ? undefined
+        : ctx.cursorOptions.formatter
+        ? ctx.cursorOptions.formatter(
+            ctx.pixelToDataX(ctx.cursorPosition.x),
+            ctx.pixelToDataY(ctx.cursorPosition.y),
+            ""
+          )
+        : `X: ${ctx.pixelToDataX(ctx.cursorPosition.x).toFixed(3)}\nY: ${ctx
+            .pixelToDataY(ctx.cursorPosition.y)
+            .toExponential(2)}`,
     };
     ctx.overlay.drawCursor(plotArea, cursor);
   }

@@ -58,11 +58,7 @@ import {
 
 import type { Chart, ExportOptions } from "./types";
 import { exportToCSV, exportToJSON, exportToImage } from "./ChartExporter";
-import {
-  applyZoom,
-  applyPan,
-  type NavigationContext,
-} from "./ChartNavigation";
+import { applyZoom, applyPan, type NavigationContext } from "./ChartNavigation";
 import { autoScaleAll, handleBoxZoom } from "./ChartScaling";
 import {
   AnimationEngine,
@@ -95,7 +91,10 @@ import {
   pixelToDataY as pxToDataY,
 } from "./ChartSetup";
 import { PluginManagerImpl } from "./plugins/PluginManager";
-import { initControls as createControls, initLegend as createLegend } from "./ChartUI";
+import {
+  initControls as createControls,
+  initLegend as createLegend,
+} from "./ChartUI";
 
 // ============================================
 // Chart Implementation
@@ -194,13 +193,14 @@ export class ChartImpl implements Chart {
     this.renderer.setDPR(this.dpr);
     this.overlay = new OverlayRenderer(this.overlayCtx, this.theme);
     this.pluginManager = new PluginManagerImpl(this);
-    
+
     // Initialize animation system
     this.animationEngine = new AnimationEngine();
-    this.animationConfig = typeof options.animations === 'boolean'
-      ? { ...DEFAULT_ANIMATION_CONFIG, enabled: options.animations }
-      : mergeAnimationConfig(options.animations);
-    
+    this.animationConfig =
+      typeof options.animations === "boolean"
+        ? { ...DEFAULT_ANIMATION_CONFIG, enabled: options.animations }
+        : mergeAnimationConfig(options.animations);
+
     // Initialize selection manager
     this.selectionManager = new SelectionManager({
       getSeries: () => this.series,
@@ -211,19 +211,21 @@ export class ChartImpl implements Chart {
       events: this.events as any, // SelectionEventMap is a subset of ChartEventMap
       requestRender: () => this.requestRender(),
     });
-    
+
     // Initialize responsive manager
-    const responsiveConfig = typeof options.responsive === 'boolean'
-      ? { enabled: options.responsive }
-      : options.responsive;
+    const responsiveConfig =
+      typeof options.responsive === "boolean"
+        ? { enabled: options.responsive }
+        : options.responsive;
     this.responsiveManager = new ResponsiveManager(
       {
         container: this.container,
-        onStateChange: (state: ResponsiveState) => this.handleResponsiveChange(state),
+        onStateChange: (state: ResponsiveState) =>
+          this.handleResponsiveChange(state),
       },
       responsiveConfig
     );
-    
+
     this.interaction = new InteractionManager(
       this.container,
       {
@@ -233,13 +235,68 @@ export class ChartImpl implements Chart {
         onBoxZoom: (rect) => this.handleBoxZoom(rect),
         onCursorMove: (x, y) => {
           this.cursorPosition = { x, y };
-          this.tooltip.handleCursorMove(x, y);
+          if (this.tooltip) {
+            this.tooltip.handleCursorMove(x, y);
+          }
           this.requestOverlayRender();
         },
         onCursorLeave: () => {
           this.cursorPosition = null;
-          this.tooltip.handleCursorLeave();
+          if (this.tooltip) {
+            this.tooltip.handleCursorLeave();
+          }
           this.requestOverlayRender();
+        },
+        onBoxSelect: (rect, additive) => {
+          if (rect) {
+            const xScale = this.xScale;
+            const yScales = this.yScales;
+            const primaryYScale = yScales.get(this.primaryYAxisId);
+
+            if (primaryYScale) {
+              const dataBounds: Bounds = {
+                xMin: xScale.invert(rect.x),
+                xMax: xScale.invert(rect.x + rect.width),
+                yMin: primaryYScale.invert(rect.y + rect.height),
+                yMax: primaryYScale.invert(rect.y),
+              };
+
+              const hits = this.selectionManager.hitTestRegion(dataBounds);
+              if (hits.length > 0) {
+                const bySeriesMap = new Map<string, number[]>();
+                hits.forEach((hit) => {
+                  let arr = bySeriesMap.get(hit.seriesId);
+                  if (!arr) {
+                    arr = [];
+                    bySeriesMap.set(hit.seriesId, arr);
+                  }
+                  arr.push(hit.index);
+                });
+
+                const pointsToSelect = Array.from(bySeriesMap.entries()).map(
+                  ([seriesId, indices]) => ({
+                    seriesId,
+                    indices,
+                  })
+                );
+
+                this.selectionManager.selectPoints(
+                  pointsToSelect,
+                  additive ? "add" : "single"
+                );
+              } else if (!additive) {
+                this.selectionManager.clearSelection();
+              }
+            }
+          }
+          // Complete the box selection
+          this.selectionManager.completeBoxSelection(additive);
+        },
+        onBoxSelectUpdate: (pixelX, pixelY) => {
+          this.selectionManager.updateBoxSelection(pixelX, pixelY);
+        },
+        onBoxSelectStart: (pixelX, pixelY) => {
+          this.selectionManager.startBoxSelection(pixelX, pixelY);
         },
       },
       () => this.getPlotArea(),
@@ -257,7 +314,7 @@ export class ChartImpl implements Chart {
       getXScale: () => this.xScale,
       getYScales: () => this.yScales,
       getViewBounds: () => this.viewBounds,
-      options: options.tooltip
+      options: options.tooltip,
     });
 
     new ResizeObserver(() => !this.isDestroyed && this.resize()).observe(
@@ -290,7 +347,8 @@ export class ChartImpl implements Chart {
       requestRender: () => this.requestRender(),
       exportImage: () => this.exportImage(),
       setPanMode: (active) => this.interaction.setPanMode(active),
-      onLegendMove: (x: number, y: number) => this.events.emit("legendMove", { x, y }),
+      onLegendMove: (x: number, y: number) =>
+        this.events.emit("legendMove", { x, y }),
       toggleLegend: () => this.toggleLegend(),
     });
   }
@@ -302,26 +360,30 @@ export class ChartImpl implements Chart {
       this.legend.update(this.getAllSeries());
     } else if (this.showLegend) {
       // Re-initialize if it didn't exist
-      this.initLegend(this.initialOptions); 
+      this.initLegend(this.initialOptions);
     }
     this.requestRender();
   }
 
   private initLegend(options: ChartOptions): void {
-    this.legend = createLegend({
-      container: this.container,
-      theme: this.theme,
-      showControls: this.showControls,
-      showLegend: this.showLegend,
-      series: this.series,
-      autoScale: () => this.autoScale(),
-      resetZoom: () => this.resetZoom(),
-      requestRender: () => this.requestRender(),
-      exportImage: () => this.exportImage(),
-      setPanMode: (active) => this.interaction.setPanMode(active),
-      onLegendMove: (x: number, y: number) => this.events.emit("legendMove", { x, y }),
-      toggleLegend: () => this.toggleLegend(),
-    }, options);
+    this.legend = createLegend(
+      {
+        container: this.container,
+        theme: this.theme,
+        showControls: this.showControls,
+        showLegend: this.showLegend,
+        series: this.series,
+        autoScale: () => this.autoScale(),
+        resetZoom: () => this.resetZoom(),
+        requestRender: () => this.requestRender(),
+        exportImage: () => this.exportImage(),
+        setPanMode: (active) => this.interaction.setPanMode(active),
+        onLegendMove: (x: number, y: number) =>
+          this.events.emit("legendMove", { x, y }),
+        toggleLegend: () => this.toggleLegend(),
+      },
+      options
+    );
   }
 
   setTheme(theme: string | ChartTheme): void {
@@ -329,13 +391,13 @@ export class ChartImpl implements Chart {
     const bgColor = parseColor(this.theme.backgroundColor);
     this.backgroundColor = [bgColor[0], bgColor[1], bgColor[2], bgColor[3]];
     this.container.style.backgroundColor = this.theme.backgroundColor;
-    
+
     this.overlay.setTheme(this.theme);
     this.tooltip.updateChartTheme(this.theme);
     if (this.controls) this.controls.updateTheme(this.theme);
     if (this.legend) this.legend.updateTheme(this.theme);
     if (this.stats) this.stats.updateTheme(this.theme);
-    
+
     this.requestRender();
   }
 
@@ -389,7 +451,7 @@ export class ChartImpl implements Chart {
   addSeries(options: SeriesOptions | HeatmapOptions): void {
     addSeriesImpl(this.getSeriesContext() as any, options as any);
     const series = this.series.get((options as any).id);
-    if (series) this.pluginManager.notify('onSeriesAdded', series);
+    if (series) this.pluginManager.notify("onSeriesAdded", series);
   }
   addBar(options: Omit<SeriesOptions, "type">): void {
     this.addSeries({ ...options, type: "bar" } as SeriesOptions);
@@ -455,10 +517,23 @@ export class ChartImpl implements Chart {
 
   zoom(options: ZoomOptions & { animate?: boolean }): void {
     if (this.animationConfig.enabled && options.animate !== false) {
-      applyAnimatedZoom(this.getAnimatedNavContext(), options);
+      const animation = applyAnimatedZoom(
+        this.getAnimatedNavContext(),
+        options
+      );
+      // Catch animation cancellation errors silently
+      if (animation) {
+        animation.promise.catch((err) => {
+          // Ignore cancellation errors
+          if (err.message !== "Animation cancelled") {
+            console.error("[SciChart] Animation error:", err);
+          }
+        });
+      }
     } else {
       applyZoom(this.getNavContext(), options);
     }
+    this.requestRender();
   }
   pan(deltaX: number, deltaY: number, axisId?: string): void {
     applyPan(this.getNavContext(), deltaX, deltaY, axisId);
@@ -471,12 +546,25 @@ export class ChartImpl implements Chart {
   }
   autoScale(animate: boolean = true): void {
     if (this.animationConfig.enabled && animate) {
-      applyAnimatedAutoScale(this.getAnimatedNavContext(), true);
+      const animation = applyAnimatedAutoScale(
+        this.getAnimatedNavContext(),
+        true
+      );
+      // Catch animation cancellation errors silently
+      if (animation) {
+        animation.promise.catch((err) => {
+          // Ignore cancellation errors
+          if (err.message !== "Animation cancelled") {
+            console.error("[SciChart] Animation error:", err);
+          }
+        });
+      }
     } else {
       autoScaleAll(this.getNavContext());
     }
+    this.requestRender();
   }
-  
+
   /**
    * Animate view bounds to specific target
    */
@@ -486,24 +574,37 @@ export class ChartImpl implements Chart {
     duration?: number;
     easing?: string;
   }): void {
-    animateToBounds(this.getAnimatedNavContext(), {
-      xMin: options.xRange?.[0],
-      xMax: options.xRange?.[1],
-      yMin: options.yRange?.[0],
-      yMax: options.yRange?.[1],
-    }, {
-      duration: options.duration,
-      easing: options.easing,
-    });
+    const animation = animateToBounds(
+      this.getAnimatedNavContext(),
+      {
+        xMin: options.xRange?.[0],
+        xMax: options.xRange?.[1],
+        yMin: options.yRange?.[0],
+        yMax: options.yRange?.[1],
+      },
+      {
+        duration: options.duration,
+        easing: options.easing,
+      }
+    );
+    // Catch animation cancellation errors silently
+    if (animation) {
+      animation.promise.catch((err) => {
+        // Ignore cancellation errors
+        if (err.message !== "Animation cancelled") {
+          console.error("[SciChart] Animation error:", err);
+        }
+      });
+    }
   }
-  
+
   /**
    * Get animation configuration
    */
   getAnimationConfig(): ChartAnimationConfig {
     return { ...this.animationConfig };
   }
-  
+
   /**
    * Set animation configuration
    */
@@ -513,7 +614,7 @@ export class ChartImpl implements Chart {
       ...config,
     });
   }
-  
+
   /**
    * Check if animations are currently running
    */
@@ -530,7 +631,7 @@ export class ChartImpl implements Chart {
       this.selectionRect,
       (o: any) => this.zoom(o)
     );
-    
+
     if (isFinishing) {
       this.requestRender();
     } else {
@@ -585,40 +686,39 @@ export class ChartImpl implements Chart {
   // ============================================
   // Axis Management
   // ============================================
-  
+
   /**
    * Add a new Y axis dynamically
    */
   addYAxis(options: AxisOptions): string {
     const existingIds = Array.from(this.yAxisOptionsMap.keys());
     const id = options.id || `y${existingIds.length}`;
-    
+
     if (this.yAxisOptionsMap.has(id)) {
       console.warn(`[SciChart] Y axis with id '${id}' already exists`);
       return id;
     }
-    
-    const position = options.position || 'right';
-    const fullOptions: AxisOptions = { 
-      scale: 'linear', 
-      auto: true, 
-      position, 
-      ...options, 
-      id 
+
+    const position = options.position || "right";
+    const fullOptions: AxisOptions = {
+      scale: "linear",
+      auto: true,
+      position,
+      ...options,
+      id,
     };
-    
+
     this.yAxisOptionsMap.set(id, fullOptions);
-    
+
     // Create scale for this axis
-    const scale = fullOptions.scale === 'log' 
-      ? new LogScale() 
-      : new LinearScale();
+    const scale =
+      fullOptions.scale === "log" ? new LogScale() : new LinearScale();
     this.yScales.set(id, scale);
-    
+
     this.requestRender();
     return id;
   }
-  
+
   /**
    * Remove a Y axis by ID
    */
@@ -627,14 +727,14 @@ export class ChartImpl implements Chart {
       console.warn(`[SciChart] Cannot remove primary Y axis '${id}'`);
       return false;
     }
-    
+
     if (!this.yAxisOptionsMap.has(id)) {
       return false;
     }
-    
+
     this.yAxisOptionsMap.delete(id);
     this.yScales.delete(id);
-    
+
     // Update any series using this axis
     this.series.forEach((s) => {
       if (s.getYAxisId() === id) {
@@ -642,11 +742,11 @@ export class ChartImpl implements Chart {
         s.setYAxisId(this.primaryYAxisId);
       }
     });
-    
+
     this.requestRender();
     return true;
   }
-  
+
   /**
    * Update Y axis configuration
    */
@@ -656,39 +756,38 @@ export class ChartImpl implements Chart {
       console.warn(`[SciChart] Y axis '${id}' not found`);
       return;
     }
-    
+
     const updated: AxisOptions = { ...existing, ...options, id };
     this.yAxisOptionsMap.set(id, updated);
-    
+
     // Update scale if scale type changed
     if (options.scale && options.scale !== existing.scale) {
-      const newScale = options.scale === 'log' 
-        ? new LogScale() 
-        : new LinearScale();
+      const newScale =
+        options.scale === "log" ? new LogScale() : new LinearScale();
       const oldScale = this.yScales.get(id);
       if (oldScale) {
         newScale.setDomain(oldScale.domain[0], oldScale.domain[1]);
       }
       this.yScales.set(id, newScale);
     }
-    
+
     this.requestRender();
   }
-  
+
   /**
    * Get Y axis configuration by ID
    */
   getYAxis(id: string): AxisOptions | undefined {
     return this.yAxisOptionsMap.get(id);
   }
-  
+
   /**
    * Get all Y axes configurations
    */
   getAllYAxes(): AxisOptions[] {
     return Array.from(this.yAxisOptionsMap.values());
   }
-  
+
   /**
    * Get the primary Y axis ID
    */
@@ -752,6 +851,13 @@ export class ChartImpl implements Chart {
     this.selectionManager.configure(config);
   }
 
+  /**
+   * Set pan mode (true = pan, false = selection)
+   */
+  setPanMode(enabled: boolean): void {
+    this.interaction.setPanMode(enabled);
+  }
+
   // ============================================
   // Responsive Design
   // ============================================
@@ -763,24 +869,24 @@ export class ChartImpl implements Chart {
     // Update theme with scaled values
     this.theme = this.responsiveManager.scaleTheme(this.theme);
     this.overlay.setTheme(this.theme);
-    
+
     // Update selection hit radius
     this.selectionManager.configure({
       hitRadius: this.responsiveManager.getScaledHitRadius(20),
     });
-    
+
     // Update legend visibility based on breakpoint
     if (this.legend) {
       const shouldShow = this.responsiveManager.shouldShowLegend();
       // Legend visibility is handled internally by checking showLegend
       this.showLegend = shouldShow;
     }
-    
+
     // Request render with new responsive settings
     this.requestRender();
-    
+
     // Emit resize event
-    this.events.emit('resize', {
+    this.events.emit("resize", {
       width: state.width,
       height: state.height,
     });
@@ -828,7 +934,10 @@ export class ChartImpl implements Chart {
         scale: this.xScale.type,
         min: this.xScale.domain[0],
         max: this.xScale.domain[1],
-        auto: (this.xScale as any).auto !== undefined ? (this.xScale as any).auto : true,
+        auto:
+          (this.xScale as any).auto !== undefined
+            ? (this.xScale as any).auto
+            : true,
       },
       yAxes: Array.from(this.yScales.values()).map((s: any) => ({
         id: s.id || "y",
@@ -1004,18 +1113,19 @@ export class ChartImpl implements Chart {
       pixelToDataX: (px: number) => this.pixelToDataX(px),
       pixelToDataY: (py: number) => this.pixelToDataY(py),
       tooltip: this.tooltip,
+      selectionManager: this.selectionManager,
     };
 
     if (full) {
       const seriesData = prepareSeriesData(ctx, plotArea);
-      this.pluginManager.notify('onBeforeRender', this);
+      this.pluginManager.notify("onBeforeRender", this);
       this.renderer.render(seriesData, {
         bounds: this.viewBounds,
         backgroundColor: this.backgroundColor,
         plotArea,
       });
       renderOverlay(ctx, plotArea, this.yScale);
-      this.pluginManager.notify('onAfterRender', this);
+      this.pluginManager.notify("onAfterRender", this);
     } else {
       // Overlay only render
       renderOverlay(ctx, plotArea, this.yScale);

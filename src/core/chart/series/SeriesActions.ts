@@ -2,15 +2,26 @@
  * Series Actions (Add, Remove, Append)
  */
 import { Series } from "../../Series";
-import type { SeriesOptions, HeatmapOptions, SeriesUpdateData } from "../../../types";
+import type {
+  SeriesOptions,
+  HeatmapOptions,
+  SeriesUpdateData,
+} from "../../../types";
 import { updateSeriesBuffer } from "./SeriesBuffer";
 
-export function addSeries(ctx: any, options: SeriesOptions | HeatmapOptions): void {
+export function addSeries(
+  ctx: any,
+  options: SeriesOptions | HeatmapOptions
+): void {
   const s = new Series(options);
   ctx.series.set(s.getId(), s);
   updateSeriesBuffer(ctx, s);
-  if (ctx.xAxisOptions.auto || Array.from(ctx.yAxisOptionsMap.values()).some((o: any) => o.auto)) {
-    ctx.autoScale();
+  if (
+    ctx.xAxisOptions.auto ||
+    Array.from(ctx.yAxisOptionsMap.values()).some((o: any) => o.auto)
+  ) {
+    // Don't animate autoscale when adding series to avoid animation conflicts
+    ctx.autoScale(false);
   }
   ctx.updateLegend?.();
   ctx.requestRender();
@@ -28,7 +39,11 @@ export function removeSeries(ctx: any, id: string): void {
   }
 }
 
-export function updateSeries(ctx: any, id: string, data: SeriesUpdateData): void {
+export function updateSeries(
+  ctx: any,
+  id: string,
+  data: SeriesUpdateData
+): void {
   const s = ctx.series.get(id);
   if (s) {
     s.updateData(data);
@@ -37,7 +52,12 @@ export function updateSeries(ctx: any, id: string, data: SeriesUpdateData): void
   }
 }
 
-export function appendData(ctx: any, id: string, x: number[] | Float32Array, y: number[] | Float32Array): void {
+export function appendData(
+  ctx: any,
+  id: string,
+  x: number[] | Float32Array,
+  y: number[] | Float32Array
+): void {
   const s = ctx.series.get(id);
   if (!s) return;
   const oldMaxX = s.getBounds()?.xMax ?? -Infinity;
@@ -54,8 +74,12 @@ export function appendData(ctx: any, id: string, x: number[] | Float32Array, y: 
       }
     }
   }
-  if (ctx.xAxisOptions.auto || Array.from(ctx.yAxisOptionsMap.values()).some((o: any) => o.auto)) {
-    ctx.autoScale();
+  if (
+    ctx.xAxisOptions.auto ||
+    Array.from(ctx.yAxisOptionsMap.values()).some((o: any) => o.auto)
+  ) {
+    // Don't animate autoscale when appending data to avoid animation conflicts
+    ctx.autoScale(false);
   }
   ctx.requestRender();
 }

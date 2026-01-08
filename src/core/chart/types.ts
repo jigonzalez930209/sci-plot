@@ -62,7 +62,7 @@ export interface Chart {
   setTheme(theme: string | object): void;
   /** Access to data analysis utilities */
   readonly analysis: typeof analysis;
-  
+
   // Annotation methods
   addAnnotation(annotation: Annotation): string;
   removeAnnotation(id: string): boolean;
@@ -70,21 +70,21 @@ export interface Chart {
   getAnnotation(id: string): Annotation | undefined;
   getAnnotations(): Annotation[];
   clearAnnotations(): void;
-  
+
   // Export methods
   exportCSV(options?: ExportOptions): string;
   exportJSON(options?: ExportOptions): string;
-  
+
   /** Attach a plugin to extend chart functionality */
   use(plugin: ChartPlugin): void;
-  
+
   /** Access to the tooltip system */
   readonly tooltip: import("../tooltip").TooltipManager;
-  
+
   // ============================================
   // Animation API
   // ============================================
-  
+
   /** Animate view bounds to specific target */
   animateTo(options: {
     xRange?: [number, number];
@@ -98,11 +98,11 @@ export interface Chart {
   setAnimationConfig(config: Partial<ChartAnimationConfig>): void;
   /** Check if any animations are currently running */
   isAnimating(): boolean;
-  
+
   // ============================================
   // Axis Management API
   // ============================================
-  
+
   /** Add a new Y axis dynamically */
   addYAxis(options: AxisOptions): string;
   /** Remove a Y axis by ID */
@@ -115,11 +115,11 @@ export interface Chart {
   getAllYAxes(): AxisOptions[];
   /** Get the primary Y axis ID */
   getPrimaryYAxisId(): string;
-  
+
   // ============================================
   // Selection API
   // ============================================
-  
+
   /** Select data points programmatically */
   selectPoints(
     points: Array<{ seriesId: string; indices: number[] }>,
@@ -130,33 +130,52 @@ export interface Chart {
   /** Clear all selections */
   clearSelection(): void;
   /** Hit-test at a pixel coordinate */
-  hitTest(pixelX: number, pixelY: number): import("../selection").HitTestResult | null;
+  hitTest(
+    pixelX: number,
+    pixelY: number
+  ): import("../selection").HitTestResult | null;
   /** Check if a specific point is selected */
   isPointSelected(seriesId: string, index: number): boolean;
   /** Get selection count */
   getSelectionCount(): number;
   /** Configure selection behavior */
-  configureSelection(config: Partial<import("../selection").SelectionConfig>): void;
+  configureSelection(
+    config: Partial<import("../selection").SelectionConfig>
+  ): void;
+
+  // ============================================
+  // Interaction Mode
+  // ============================================
+
+  /** Set pan mode (true = pan, false = selection) */
+  setPanMode(enabled: boolean): void;
 
   // ============================================
   // Responsive Design
   // ============================================
-  
+
   /** Get current responsive state */
   getResponsiveState(): import("../responsive").ResponsiveState;
   /** Configure responsive behavior */
-  configureResponsive(config: Partial<import("../responsive").ResponsiveConfig>): void;
+  configureResponsive(
+    config: Partial<import("../responsive").ResponsiveConfig>
+  ): void;
   /** Check if responsive mode is enabled */
   isResponsiveEnabled(): boolean;
 
   // ============================================
   // Serialization & Persistence
   // ============================================
-  
+
   /** Export complete chart state */
-  serialize(options?: import("../../serialization").SerializeOptions): import("../../serialization").ChartState;
+  serialize(
+    options?: import("../../serialization").SerializeOptions
+  ): import("../../serialization").ChartState;
   /** Restore chart from saved state */
-  deserialize(state: import("../../serialization").ChartState, options?: import("../../serialization").DeserializeOptions): void;
+  deserialize(
+    state: import("../../serialization").ChartState,
+    options?: import("../../serialization").DeserializeOptions
+  ): void;
   /** Convert current state to URL-safe hash */
   toUrlHash(compress?: boolean): string;
   /** Load state from URL hash */
