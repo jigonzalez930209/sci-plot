@@ -178,6 +178,11 @@ export default defineConfig({
         {
           text: "Advanced Analysis",
           items: [
+            { text: "FFT Waveforms", link: "/examples/fft-waveforms" },
+            { text: "├─ Sine Waves", link: "/examples/sine-waves" },
+            { text: "├─ Square Waves", link: "/examples/square-waves" },
+            { text: "├─ Triangle Waves", link: "/examples/triangle-waves" },
+            { text: "Complex FFT", link: "/examples/complex-fft" },
             { text: "Curve Fitting", link: "/examples/curve-fitting" },
             { text: "Peak Analysis", link: "/examples/analysis" },
             { text: "Statistics Panel", link: "/examples/statistics" },

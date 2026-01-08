@@ -1,6 +1,6 @@
 # Scientific Analysis (FFT & Filters)
 
-<ChartDemo type="spectral" height="450px" />
+<AnalysisAdvancedChart height="500px" />
 
 SciChart Engine provides a powerful suite of scientific analysis tools for signal processing, frequency analysis, and statistical evaluation.
 
@@ -42,6 +42,69 @@ Apply windows to reduce spectral leakage before FFT:
 - `hanningWindow(data)`
 - `hammingWindow(data)`
 - `blackmanWindow(data)`
+
+### Complex FFT (Real & Imaginary Parts)
+
+For advanced signal processing, you can access the full complex spectrum with separate real and imaginary components:
+
+```typescript
+import { analyzeComplexSpectrum, type ComplexFFTResult } from 'scichart-engine';
+
+const signal = new Float32Array([/* ... */]);
+const sampleRate = 1000;
+
+const result: ComplexFFTResult = analyzeComplexSpectrum(signal, sampleRate);
+
+console.log(result.real);      // Float32Array - Real part of spectrum
+console.log(result.imag);      // Float32Array - Imaginary part of spectrum
+console.log(result.magnitude); // Float32Array - |Z| = sqrt(real² + imag²)
+console.log(result.phase);     // Float32Array - atan2(imag, real)
+console.log(result.frequency); // Float32Array - Frequency bins
+console.log(result.length);    // Spectrum length (power of 2)
+console.log(result.nyquist);   // Nyquist index (length / 2)
+```
+
+### FFT from Complex Input
+
+Process complex signals (e.g., I/Q data, previous FFT results):
+
+```typescript
+import { fftFromComplexInput } from 'scichart-engine';
+
+// Separate real and imaginary arrays
+const realPart = new Float32Array([1, 0, -1, 0, 1, 0, -1, 0]);
+const imagPart = new Float32Array([0, 1, 0, -1, 0, 1, 0, -1]);
+
+const result = fftFromComplexInput(realPart, imagPart);
+// result.real, result.imag contain the FFT of the complex input
+```
+
+### Utility Functions
+
+```typescript
+import { 
+  complexToArrays, 
+  arraysToComplex, 
+  ifftFromArrays,
+  ifftComplex,
+  getPositiveFrequencies 
+} from 'scichart-engine';
+
+// Convert Complex[] to separate arrays
+const { real, imag } = complexToArrays(spectrum.complex);
+
+// Convert arrays back to Complex[]
+const complex = arraysToComplex(real, imag);
+
+// Inverse FFT from arrays (returns real part)
+const reconstructed = ifftFromArrays(real, imag);
+
+// Inverse FFT with complex output
+const { real: outReal, imag: outImag } = ifftComplex(complex);
+
+// Get only positive frequencies (up to Nyquist)
+const positive = getPositiveFrequencies(complexResult);
+```
 
 ## Digital Filtering
 
