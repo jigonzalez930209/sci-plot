@@ -106,7 +106,6 @@ export function useSciChart(
       setBounds(chartInstance.getViewBounds());
       setError(null);
 
-      console.log("[useSciChart] Chart initialized");
     } catch (err) {
       console.error("[useSciChart] Failed to initialize chart:", err);
       setError(err instanceof Error ? err : new Error(String(err)));

@@ -6,7 +6,7 @@
  */
 
 import { createChart } from "./index";
-import { formatWithPrefix, detectCycles } from "./analysis";
+import { formatWithPrefix, detectCycles, analyzeSpectrum } from "./analysis";
 
 /**
  * Example: Basic CV Plot
@@ -70,22 +70,6 @@ export function exampleBasicCV() {
     },
   });
 
-  // Listen to events
-  chart.on("zoom", (range) => {
-    console.log("Zoom:", range);
-  });
-
-  chart.on("hover", (point) => {
-    if (point) {
-      console.log(
-        `Hover: ${formatWithPrefix(point.point.x, "V")}, ${formatWithPrefix(
-          point.point.y,
-          "A"
-        )}`
-      );
-    }
-  });
-
   // Enable cursor
   chart.enableCursor({
     snap: true,
@@ -95,6 +79,118 @@ export function exampleBasicCV() {
   });
 
   return chart;
+}
+
+/**
+ * Example: FFT of sine, square, and mixed waves
+ */
+export function exampleFFTWaveforms(target?: HTMLDivElement) {
+  const container =
+    target ?? (document.getElementById("chart") as HTMLDivElement | null);
+  if (!container) {
+    throw new Error(
+      "exampleFFTWaveforms: container not found. Pass a target or ensure #chart exists."
+    );
+  }
+
+  // Clear container and create two panels (time + spectrum)
+  container.innerHTML = "";
+  const timeDiv = document.createElement("div");
+  const freqDiv = document.createElement("div");
+  timeDiv.style.height = "300px";
+  freqDiv.style.height = "300px";
+  timeDiv.style.marginBottom = "16px";
+  container.appendChild(timeDiv);
+  container.appendChild(freqDiv);
+
+  const sampleRate = 512; // Hz
+  const samples = 1024; // power-of-two recommended
+  const freq = 5; // Hz
+
+  const x = new Float32Array(samples);
+  const sine = new Float32Array(samples);
+  const square = new Float32Array(samples);
+  const mixed = new Float32Array(samples);
+
+  for (let i = 0; i < samples; i++) {
+    const t = i / sampleRate;
+    const angle = 2 * Math.PI * freq * t;
+    const s = Math.sin(angle);
+    const sq = Math.sign(Math.sin(angle)) || 1; // ±1
+    x[i] = t;
+    sine[i] = s;
+    square[i] = sq;
+    mixed[i] = s + 0.5 * sq;
+  }
+
+  // Time-domain signals
+  const timeChart = createChart({
+    container: timeDiv,
+    xAxis: { label: "Time / s" },
+    yAxis: { label: "Amplitude" },
+    background: "#111826",
+  });
+
+  timeChart.addSeries({
+    id: "sine",
+    type: "line",
+    data: { x, y: sine },
+    style: { color: "#00eaff", width: 2 },
+  });
+
+  timeChart.addSeries({
+    id: "square",
+    type: "line",
+    data: { x, y: square },
+    style: { color: "#ff8a00", width: 2 },
+  });
+
+  timeChart.addSeries({
+    id: "mixed",
+    type: "line",
+    data: { x, y: mixed },
+    style: { color: "#c084fc", width: 2 },
+  });
+
+  // FFT of each signal
+  const sineSpec = analyzeSpectrum(sine, sampleRate);
+  const squareSpec = analyzeSpectrum(square, sampleRate);
+  const mixedSpec = analyzeSpectrum(mixed, sampleRate);
+
+  const freqChart = createChart({
+    container: freqDiv,
+    xAxis: { label: "Frequency / Hz" },
+    yAxis: { label: "Magnitude" },
+    background: "#0f172a",
+  });
+
+  freqChart.addSeries({
+    id: "sine-spec",
+    type: "line",
+    data: { x: sineSpec.frequency, y: sineSpec.magnitude },
+    style: { color: "#00eaff", width: 2 },
+  });
+
+  freqChart.addSeries({
+    id: "square-spec",
+    type: "line",
+    data: { x: squareSpec.frequency, y: squareSpec.magnitude },
+    style: { color: "#ff8a00", width: 2 },
+  });
+
+  freqChart.addSeries({
+    id: "mixed-spec",
+    type: "line",
+    data: { x: mixedSpec.frequency, y: mixedSpec.magnitude },
+    style: { color: "#c084fc", width: 2 },
+  });
+
+  return {
+    destroy() {
+      timeChart.destroy();
+      freqChart.destroy();
+    },
+  };
 }
 
 /**
@@ -191,7 +287,6 @@ export function exampleMultiCycle() {
 
   // Detect cycles automatically
   const cycles = detectCycles(x);
-  console.log("Detected cycles:", cycles);
 
   // Add each cycle as separate series
   const colors = ["#ff0055", "#00ff88", "#00aaff"];
