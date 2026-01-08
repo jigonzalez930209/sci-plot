@@ -38,8 +38,8 @@ export const easings = {
     return t === 0
       ? 0
       : t === 1
-      ? 1
-      : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+        ? 1
+        : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
   },
 
   /** Elastic overshoot */
@@ -48,10 +48,10 @@ export const easings = {
     return t === 0
       ? 0
       : t === 1
-      ? 1
-      : t < 0.5
-      ? -(Math.pow(2, 20 * t - 10) * Math.sin((20 * t - 11.125) * c5)) / 2
-      : (Math.pow(2, -20 * t + 10) * Math.sin((20 * t - 11.125) * c5)) / 2 + 1;
+        ? 1
+        : t < 0.5
+          ? -(Math.pow(2, 20 * t - 10) * Math.sin((20 * t - 11.125) * c5)) / 2
+          : (Math.pow(2, -20 * t + 10) * Math.sin((20 * t - 11.125) * c5)) / 2 + 1;
   },
 
   /** Bounce effect */
@@ -136,14 +136,14 @@ export class AnimationEngine {
    */
   animate(options: AnimationOptions): AnimationHandle {
     const id = `anim_${++this.idCounter}`;
-    
+
     const easingFn = typeof options.easing === 'function'
       ? options.easing
       : easings[options.easing || 'easeOutCubic'];
 
     let resolve: () => void;
     let reject: (reason?: any) => void;
-    
+
     const promise = new Promise<void>((res, rej) => {
       resolve = res;
       reject = rej;
@@ -207,7 +207,7 @@ export class AnimationEngine {
     };
 
     return this.animate({
-      duration: target.duration ?? 300,
+      duration: target.duration ?? 150, // Was 300
       easing: target.easing ?? 'easeOutCubic',
       onUpdate: (progress) => {
         onUpdate({
@@ -249,6 +249,31 @@ export class AnimationEngine {
    */
   isAnimating(): boolean {
     return this.animations.size > 0;
+  }
+
+  /**
+   * Returns a promise that resolves when all current animations are complete
+   */
+  async waitForIdle(): Promise<void> {
+    if (!this.isAnimating()) return;
+
+    // Wait for all current animations to complete
+    const promises = Array.from(this.animations.values()).map(a =>
+      // Create a promise from the existing resolve/reject but don't fail if one is cancelled
+      new Promise<void>(resolve => {
+        const originalResolve = a.resolve;
+        a.resolve = () => { originalResolve(); resolve(); };
+        const originalReject = a.reject;
+        a.reject = (err) => { originalReject(err); resolve(); };
+      })
+    );
+
+    await Promise.all(promises);
+
+    // Recursive check in case new animations started while waiting
+    if (this.isAnimating()) {
+      await this.waitForIdle();
+    }
   }
 
   /**
@@ -355,27 +380,27 @@ export const DEFAULT_ANIMATION_CONFIG: ChartAnimationConfig = {
   enabled: true,
   zoom: {
     enabled: true,
-    duration: 200,
+    duration: 100,  // Was 200
     easing: 'easeOutCubic',
   },
   pan: {
     enabled: false, // Usually immediate for responsiveness
-    duration: 100,
+    duration: 50,   // Was 100
     easing: 'easeOut',
   },
   dataUpdate: {
     enabled: true,
-    duration: 150,
+    duration: 75,   // Was 150
     easing: 'easeOut',
   },
   seriesEntry: {
     enabled: true,
-    duration: 400,
+    duration: 200,  // Was 400
     easing: 'easeOutCubic',
   },
   autoScale: {
     enabled: true,
-    duration: 300,
+    duration: 150,  // Was 300
     easing: 'easeOutCubic',
   },
 };
@@ -387,7 +412,7 @@ export function mergeAnimationConfig(
   config?: Partial<ChartAnimationConfig>
 ): ChartAnimationConfig {
   if (!config) return { ...DEFAULT_ANIMATION_CONFIG };
-  
+
   return {
     enabled: config.enabled ?? DEFAULT_ANIMATION_CONFIG.enabled,
     zoom: { ...DEFAULT_ANIMATION_CONFIG.zoom, ...config.zoom },

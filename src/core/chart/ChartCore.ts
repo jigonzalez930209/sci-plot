@@ -95,6 +95,9 @@ import {
   initControls as createControls,
   initLegend as createLegend,
 } from "./ChartUI";
+import {
+  markInitComplete,
+} from "../ChartInitQueue";
 
 // ============================================
 // Chart Implementation
@@ -137,10 +140,19 @@ export class ChartImpl implements Chart {
   private animationFrameId: number | null = null;
   private needsFullRender = false;
   private needsOverlayRender = false;
-  private isDestroyed = false;
+  private _isDestroyed = false;
   private autoScroll = false;
   private showStatistics = false;
   private stats: ChartStatistics | null = null;
+  private initQueueId: string | null = null;
+  private initStarted = false;
+  private commandQueue: Array<{ fn: () => void; name: string }> = [];
+
+  /** Whether the chart has been destroyed */
+  get isDestroyed(): boolean {
+    return this._isDestroyed;
+  }
+
   private selectionRect: {
     x: number;
     y: number;
@@ -169,7 +181,7 @@ export class ChartImpl implements Chart {
         typeof (globalThis as any).navigator.gpu !== "undefined";
       console.warn(
         `[SciChart] 'renderer: "webgpu"' requested but WebGPU renderer is experimental and not yet implemented. ` +
-          `Falling back to WebGL. WebGPU supported: ${isSupported}`
+        `Falling back to WebGL. WebGPU supported: ${isSupported}`
       );
     }
 
@@ -338,13 +350,71 @@ export class ChartImpl implements Chart {
       this.stats = new ChartStatistics(this.container, this.theme, this.series);
     }
 
+    // NOTE: resize() and startRenderLoop() are now called by startInit()
+    // This allows the queue system to control when rendering actually begins
+  }
+
+  /**
+   * Start the chart initialization (called by queue system)
+   * This performs the actual render startup that was deferred from constructor
+   */
+  startInit(): void {
+    if (this.initStarted || this._isDestroyed) return;
+    this.initStarted = true;
+
     this.resize();
     this.startRenderLoop();
+
+    // Process any commands that were queued before initialization
+    if (this.commandQueue.length > 0) {
+      this.commandQueue.forEach((cmd) => {
+        try {
+          cmd.fn();
+        } catch (err) {
+          console.error(
+            `[SciChart] Error executing queued command '${cmd.name}':`,
+            err
+          );
+        }
+      });
+      this.commandQueue = [];
+    }
+
     setTimeout(() => !this.isDestroyed && this.resize(), 100);
-    console.log("[SciChart] Initialized", {
-      dpr: this.dpr,
-      theme: this.theme.name,
-    });
+  }
+
+  /**
+   * Mark this chart's initialization as complete in the queue
+   */
+  async completeInit(): Promise<void> {
+    if (!this.initQueueId) return;
+
+    // Wait for all startup animations (like autoScale) to finish
+    // before allowing the next chart to start its heavy initialization.
+    await this.animationEngine.waitForIdle();
+
+    // Extra safety wait to allow browser to breathe
+    await new Promise((r) => setTimeout(r, 60));
+
+    if (this.initQueueId) {
+      markInitComplete(this.initQueueId);
+      this.initQueueId = null;
+    }
+  }
+
+  private executeOrQueue(name: string, fn: () => void): void {
+    if (this.initStarted) {
+      fn();
+    } else {
+      this.commandQueue.push({ fn, name });
+    }
+  }
+
+  /**
+   * Set the initialization queue ID (internal use)
+   */
+  setInitQueueId(id: string): void {
+    this.initQueueId = id;
   }
 
   private initControls(): void {
@@ -559,24 +629,26 @@ export class ChartImpl implements Chart {
     return { ...this.viewBounds };
   }
   autoScale(animate: boolean = true): void {
-    if (this.animationConfig.enabled && animate) {
-      const animation = applyAnimatedAutoScale(
-        this.getAnimatedNavContext(),
-        true
-      );
-      // Catch animation cancellation errors silently
-      if (animation) {
-        animation.promise.catch((err) => {
-          // Ignore cancellation errors
-          if (err.message !== "Animation cancelled") {
-            console.error("[SciChart] Animation error:", err);
-          }
-        });
+    this.executeOrQueue("autoScale", () => {
+      if (this.animationConfig.enabled && animate) {
+        const animation = applyAnimatedAutoScale(
+          this.getAnimatedNavContext(),
+          true
+        );
+        // Catch animation cancellation errors silently
+        if (animation) {
+          animation.promise.catch((err) => {
+            // Ignore cancellation errors
+            if (err.message !== "Animation cancelled") {
+              console.error("[SciChart] Animation error:", err);
+            }
+          });
+        }
+      } else {
+        autoScaleAll(this.getNavContext());
       }
-    } else {
-      autoScaleAll(this.getNavContext());
-    }
-    this.requestRender();
+      this.requestRender();
+    });
   }
 
   /**
@@ -988,9 +1060,9 @@ export class ChartImpl implements Chart {
         visible: s.isVisible(),
         data: includeData
           ? {
-              x: encodeFloat32Array(s.getData().x),
-              y: encodeFloat32Array(s.getData().y),
-            }
+            x: encodeFloat32Array(s.getData().x),
+            y: encodeFloat32Array(s.getData().y),
+          }
           : { x: "", y: "" },
       })),
       annotations: includeAnnotations ? this.annotationManager.getAll() : [],
@@ -1102,14 +1174,24 @@ export class ChartImpl implements Chart {
   }
 
   requestRender(): void {
-    this.needsFullRender = true;
+    this.executeOrQueue("requestRender", () => {
+      this.needsFullRender = true;
+      this.scheduleRenderFrame();
+    });
   }
 
   requestOverlayRender(): void {
-    this.needsOverlayRender = true;
+    this.executeOrQueue("requestOverlayRender", () => {
+      this.needsOverlayRender = true;
+      this.scheduleRenderFrame();
+    });
   }
 
   render(full: boolean = true): void {
+    if (!this.initStarted) {
+      this.commandQueue.push({ fn: () => this.render(full), name: "render" });
+      return;
+    }
     if (this.isDestroyed) return;
     const start = performance.now();
     const plotArea = this.getPlotArea();
@@ -1176,8 +1258,18 @@ export class ChartImpl implements Chart {
   }
 
   private startRenderLoop(): void {
-    const loop = () => {
+    // On-demand render loop - only runs when there's work to do
+    // This dramatically improves performance with multiple charts
+    this.scheduleRenderFrame();
+  }
+
+  private scheduleRenderFrame(): void {
+    if (this.animationFrameId !== null || this.isDestroyed) return;
+
+    this.animationFrameId = requestAnimationFrame(() => {
+      this.animationFrameId = null;
       if (this.isDestroyed) return;
+
       if (this.needsFullRender) {
         this.render(true);
         this.needsFullRender = false;
@@ -1186,9 +1278,12 @@ export class ChartImpl implements Chart {
         this.render(false);
         this.needsOverlayRender = false;
       }
-      this.animationFrameId = requestAnimationFrame(loop);
-    };
-    this.animationFrameId = requestAnimationFrame(loop);
+
+      // If there are animations running, keep the loop going
+      if (this.animationEngine.isAnimating()) {
+        this.scheduleRenderFrame();
+      }
+    });
   }
 
   on<K extends keyof ChartEventMap>(
@@ -1205,7 +1300,7 @@ export class ChartImpl implements Chart {
   }
 
   destroy(): void {
-    this.isDestroyed = true;
+    this._isDestroyed = true;
     if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
     this.animationEngine.destroy();
     this.selectionManager.destroy();
@@ -1222,10 +1317,38 @@ export class ChartImpl implements Chart {
     if (this.tooltip) this.tooltip.destroy();
     while (this.container.firstChild)
       this.container.removeChild(this.container.firstChild);
-    console.log("[SciChart] Destroyed");
   }
 }
 
+import { waitForInitTurn } from "../ChartInitQueue";
+
+/**
+ * Create a new chart. Charts are automatically queued for sequential
+ * initialization when multiple charts are created on the same page.
+ */
 export function createChart(options: ChartOptions): Chart {
-  return new ChartImpl(options);
+  const chart = new ChartImpl(options);
+
+  // Queue for sequential initialization
+  waitForInitTurn().then((queueId) => {
+    chart.setInitQueueId(queueId);
+
+    // If chart was destroyed before queue turn, mark complete immediately
+    if (chart.isDestroyed) {
+      markInitComplete(queueId);
+      return;
+    }
+
+    // Start the actual rendering
+    chart.startInit();
+
+    // Wait for initial render and autoScale to complete before allowing next chart
+    // completeInit() is async and waits for animationEngine to be idle.
+    chart.completeInit();
+  });
+
+  return chart;
 }
+
+
+
