@@ -34,8 +34,8 @@ onMounted(async () => {
     selectedPoints.value = e.selected?.length || 0
   })
 
-  // Disable pan mode to enable selection
-  chart.setPanMode(false)
+  // Enable selection mode
+  chart.setMode('select')
 
   initDemo()
 })
