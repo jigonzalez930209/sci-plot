@@ -61,7 +61,7 @@ export interface AxisLayoutGetter {
 // Interaction Manager Class
 // ============================================
 
-export type InteractionMode = 'pan' | 'boxZoom' | 'select';
+export type InteractionMode = 'pan' | 'boxZoom' | 'select' | 'delta' | 'peak';
 
 export class InteractionManager {
   private container: HTMLElement;

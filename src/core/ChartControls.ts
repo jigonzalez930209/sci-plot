@@ -30,6 +30,7 @@ const ICONS = {
   PAN: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path></svg>`,
   BOX_ZOOM: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"></rect><circle cx="9" cy="9" r="3"></circle><line x1="21" y1="21" x2="15" y2="15"></line></svg>`,
   SELECT: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1" stroke-dasharray="4 2"></rect><circle cx="8" cy="10" r="1.5" fill="currentColor"></circle><circle cx="12" cy="14" r="1.5" fill="currentColor"></circle><circle cx="16" cy="9" r="1.5" fill="currentColor"></circle></svg>`,
+  DELTA: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="4" stroke-dasharray="4 2"></line><circle cx="4" cy="20" r="2" fill="currentColor"></circle><circle cx="20" cy="4" r="2" fill="currentColor"></circle><path d="M8 16h8M16 16v-8" stroke-width="1" opacity="0.5"></path></svg>`,
   RESET: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`,
   LINE: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>`,
   SCATTER: `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><circle cx="7" cy="14" r="2"></circle><circle cx="11" cy="10" r="2"></circle><circle cx="15" cy="13" r="2"></circle><circle cx="19" cy="8" r="2"></circle><path d="M3 3v18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`,
@@ -37,7 +38,8 @@ const ICONS = {
   SMOOTH: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c.5 0 .9-.3 1.2-.7l1.6-2.6c.3-.4.7-.7 1.2-.7h2c.5 0 .9.3 1.2.7l1.6 2.6c.3.4.7.7 1.2.7h2c.5 0 .9-.3 1.2-.7l1.6-2.6c.3-.4.7-.7 1.2-.7h2"></path></svg>`,
   AUTOSCALE: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>`,
   EXPORT: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`,
-  LEGEND: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>`
+  LEGEND: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>`,
+  INTEGRATE: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16c3-9 15-9 18 0"></path><line x1="3" y1="16" x2="21" y2="16"></line><path d="M7 16v-4M12 16V9M17 16v-4" stroke-width="1" opacity="0.5"></path></svg>`
 };
 
 export class ChartControls {
@@ -149,6 +151,30 @@ export class ChartControls {
         this.callbacks.onSetMode('select');
       },
       "select"
+    );
+
+    // Delta Tool Mode
+    this.createButton(
+      ICONS.DELTA,
+      "Delta Tool (measure distances)",
+      () => {
+        this.currentMode = 'delta';
+        this.updateButtonStates();
+        this.callbacks.onSetMode('delta');
+      },
+      "delta"
+    );
+
+    // Peak integration Mode
+    this.createButton(
+      ICONS.INTEGRATE,
+      "Peak Integration (detect baseline & calculate area)",
+      () => {
+        this.currentMode = 'peak';
+        this.updateButtonStates();
+        this.callbacks.onSetMode('peak');
+      },
+      "peak"
     );
 
     // Reset Zoom
@@ -357,6 +383,22 @@ export class ChartControls {
         btn.style.opacity = isHover || isActive ? "1" : "0.8";
         btn.style.background = isActive
           ? (isDark ? "rgba(168, 85, 247, 0.15)" : "rgba(168, 85, 247, 0.1)")
+          : "transparent";
+      } else if (id === "delta") {
+        const isActive = this.currentMode === 'delta';
+        const deltaActiveColor = "#ef4444"; // Red for delta
+        btn.style.color = isActive ? deltaActiveColor : normalColor;
+        btn.style.opacity = isHover || isActive ? "1" : "0.8";
+        btn.style.background = isActive
+          ? (isDark ? "rgba(239, 68, 68, 0.15)" : "rgba(239, 68, 68, 0.1)")
+          : "transparent";
+      } else if (id === "peak") {
+        const isActive = this.currentMode === 'peak';
+        const peakActiveColor = "#10b981"; // Green for peak/integrate
+        btn.style.color = isActive ? peakActiveColor : normalColor;
+        btn.style.opacity = isHover || isActive ? "1" : "0.8";
+        btn.style.background = isActive
+          ? (isDark ? "rgba(16, 185, 129, 0.15)" : "rgba(16, 185, 129, 0.1)")
           : "transparent";
       } else if (id === "smooth") {
         btn.style.color = this.isSmoothing ? smoothActiveColor : normalColor;

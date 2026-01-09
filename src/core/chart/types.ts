@@ -157,12 +157,22 @@ export interface Chart {
    * Set the interaction mode
    * @param mode - 'pan' for pan/drag, 'boxZoom' for rectangle zoom, 'select' for point selection
    */
-  setMode(mode: 'pan' | 'boxZoom' | 'select'): void;
+  setMode(mode: 'pan' | 'boxZoom' | 'select' | 'delta' | 'peak'): void;
   
   /**
    * Get the current interaction mode
    */
-  getMode(): 'pan' | 'boxZoom' | 'select';
+  getMode(): 'pan' | 'boxZoom' | 'select' | 'delta' | 'peak';
+  
+  /**
+   * Get the Delta Tool instance for advanced measurements
+   */
+  getDeltaTool(): import("../delta-tool").DeltaTool | null;
+
+  /**
+   * Get the Peak Tool instance for peak integration
+   */
+  getPeakTool(): import("../peak-tool").PeakTool | null;
 
   // ============================================
   // Responsive Design

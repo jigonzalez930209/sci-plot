@@ -450,6 +450,80 @@ export interface ClickEvent {
   dataIndex?: number;
 }
 
+/** Data loading progress event */
+export interface DataLoadingEvent {
+  /** Current progress 0-100 */
+  progress: number;
+  /** Number of points loaded so far */
+  pointsLoaded: number;
+  /** Total points to load (if known) */
+  totalPoints?: number;
+  /** Current operation message */
+  message?: string;
+}
+
+/** Delta measurement result */
+export interface DeltaMeasurement {
+  /** First point X data coordinate */
+  x1: number;
+  /** First point Y data coordinate */
+  y1: number;
+  /** Second point X data coordinate */
+  x2: number;
+  /** Second point Y data coordinate */
+  y2: number;
+  /** Delta X (x2 - x1) */
+  deltaX: number;
+  /** Delta Y (y2 - y1) */
+  deltaY: number;
+  /** Slope (deltaY / deltaX) */
+  slope: number;
+  /** Euclidean distance */
+  distance: number;
+  /** First point pixel X */
+  pixelX1: number;
+  /** First point pixel Y */
+  pixelY1: number;
+  /** Second point pixel X */
+  pixelX2: number;
+  /** Second point pixel Y */
+  pixelY2: number;
+}
+
+/** Peak integration result */
+export interface PeakMeasurement {
+  /** Start point X data coordinate */
+  x1: number;
+  /** Start point Y data coordinate */
+  y1: number;
+  /** End point X data coordinate */
+  x2: number;
+  /** End point Y data coordinate */
+  y2: number;
+  /** Area above baseline */
+  area: number;
+  /** Total integral (raw area under curve) */
+  integral: number;
+  /** Baseline slope */
+  baselineSlope: number;
+  /** Baseline Y-intercept */
+  baselineIntercept: number;
+  /** Maximum peak height above baseline */
+  peakHeight: number;
+  /** Peak location X (data) */
+  peakX: number;
+  /** Peak location Y (data, above baseline) */
+  peakY: number;
+  /** Start point pixel X */
+  pixelX1: number;
+  /** Start point pixel Y */
+  pixelY1: number;
+  /** End point pixel X */
+  pixelX2: number;
+  /** End point pixel Y */
+  pixelY2: number;
+}
+
 /** Chart event map for type-safe event handling */
 export interface ChartEventMap {
   zoom: ZoomEvent;
@@ -465,6 +539,11 @@ export interface ChartEventMap {
   regionSelect: import("./core/selection").RegionSelectEvent;
   selectionChange: { selected: import("./core/selection").SelectedPoint[]; previous: import("./core/selection").SelectedPoint[] };
   selectionClear: undefined;
+  // Loading events
+  dataLoading: DataLoadingEvent;
+  // Delta tool events
+  deltaMeasure: DeltaMeasurement;
+  peakMeasure: PeakMeasurement;
 }
 
 // ============================================

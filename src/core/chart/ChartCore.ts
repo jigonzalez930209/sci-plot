@@ -98,6 +98,8 @@ import {
 import {
   markInitComplete,
 } from "../ChartInitQueue";
+import { DeltaTool } from "../delta-tool";
+import { PeakTool } from "../peak-tool";
 
 // ============================================
 // Chart Implementation
@@ -168,6 +170,8 @@ export class ChartImpl implements Chart {
   private animationConfig: ChartAnimationConfig;
   private selectionManager: SelectionManager;
   private responsiveManager: ResponsiveManager;
+  private deltaTool: DeltaTool | null = null;
+  private peakTool: PeakTool | null = null;
 
   constructor(options: ChartOptions) {
     this.initialOptions = options;
@@ -350,6 +354,49 @@ export class ChartImpl implements Chart {
       this.stats = new ChartStatistics(this.container, this.theme, this.series);
     }
 
+    // Initialize Delta Tool for measurement mode
+    this.deltaTool = new DeltaTool({
+      container: this.container,
+      getPlotArea: () => this.getPlotArea(),
+      getViewBounds: () => this.viewBounds,
+      requestRender: () => this.render(),
+      getSeries: () => {
+        // Convert series to simple data format for delta tool
+        const result: Array<{ id: string; x: Float32Array | Float64Array | number[]; y: Float32Array | Float64Array | number[] }> = [];
+        this.series.forEach((s, id) => {
+          const data = s.getData();
+          if (data.x && data.y) {
+            result.push({ id, x: data.x, y: data.y });
+          }
+        });
+        return result;
+      },
+      onMeasure: (measurement) => {
+        this.events.emit('deltaMeasure', measurement);
+      },
+    });
+
+    // Initialize Peak Tool for integration mode
+    this.peakTool = new PeakTool({
+      container: this.container,
+      getPlotArea: () => this.getPlotArea(),
+      getViewBounds: () => this.viewBounds,
+      requestRender: () => this.render(),
+      getSeries: () => {
+        const result: Array<{ id: string; x: Float32Array | Float64Array | number[]; y: Float32Array | Float64Array | number[] }> = [];
+        this.series.forEach((s, id) => {
+          const data = s.getData();
+          if (data.x && data.y) {
+            result.push({ id, x: data.x, y: data.y });
+          }
+        });
+        return result;
+      },
+      onMeasure: (measurement) => {
+        this.events.emit('peakMeasure', measurement as any);
+      },
+    });
+
     // NOTE: resize() and startRenderLoop() are now called by startInit()
     // This allows the queue system to control when rendering actually begins
   }
@@ -429,7 +476,7 @@ export class ChartImpl implements Chart {
       requestRender: () => this.requestRender(),
       exportImage: () => this.exportImage(),
       setPanMode: (active) => this.interaction.setPanMode(active),
-      setMode: (mode) => this.interaction.setMode(mode),
+      setMode: (mode) => this.setMode(mode),
       onLegendMove: (x: number, y: number) =>
         this.events.emit("legendMove", { x, y }),
       toggleLegend: () => this.toggleLegend(),
@@ -461,7 +508,7 @@ export class ChartImpl implements Chart {
         requestRender: () => this.requestRender(),
         exportImage: () => this.exportImage(),
         setPanMode: (active) => this.interaction.setPanMode(active),
-        setMode: (mode) => this.interaction.setMode(mode),
+        setMode: (mode) => this.setMode(mode),
         onLegendMove: (x: number, y: number) =>
           this.events.emit("legendMove", { x, y }),
         toggleLegend: () => this.toggleLegend(),
@@ -947,17 +994,48 @@ export class ChartImpl implements Chart {
 
   /**
    * Set the interaction mode
-   * @param mode - 'pan' for pan/drag, 'boxZoom' for rectangle zoom, 'select' for point selection
+   * @param mode - 'pan' for pan/drag, 'boxZoom' for rectangle zoom, 'select' for point selection, 'delta' for measurements
    */
-  setMode(mode: 'pan' | 'boxZoom' | 'select'): void {
+  setMode(mode: 'pan' | 'boxZoom' | 'select' | 'delta' | 'peak'): void {
+    // Disable active tool if switching away
+    const currentMode = this.getMode();
+    if (currentMode === 'delta' && mode !== 'delta' && this.deltaTool) {
+      this.deltaTool.disable();
+    }
+    if (currentMode === 'peak' && mode !== 'peak' && this.peakTool) {
+      this.peakTool.disable();
+    }
+    
     this.interaction.setMode(mode);
+    
+    // Enable new tool
+    if (mode === 'delta' && this.deltaTool) {
+      this.deltaTool.enable();
+    }
+    if (mode === 'peak' && this.peakTool) {
+      this.peakTool.enable();
+    }
   }
 
   /**
    * Get the current interaction mode
    */
-  getMode(): 'pan' | 'boxZoom' | 'select' {
+  getMode(): 'pan' | 'boxZoom' | 'select' | 'delta' | 'peak' {
     return this.interaction.getMode();
+  }
+  
+  /**
+   * Get the Delta Tool instance for advanced measurements
+   */
+  getDeltaTool(): DeltaTool | null {
+    return this.deltaTool;
+  }
+
+  /**
+   * Get the Peak Tool instance for peak integration
+   */
+  getPeakTool(): PeakTool | null {
+    return this.peakTool;
   }
 
   // ============================================
