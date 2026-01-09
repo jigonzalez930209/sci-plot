@@ -1,94 +1,95 @@
 # Plugin System
 
-The Plugin System allows you to extend the functionality of SciChart Engine without modifying the core library.
+The SciChart Engine features a modular plugin system that allows you to extend chart functionality, add custom visualizations, and hook into the internal lifecycle of the chart.
 
-## What can plugins do?
+## Core Concepts
 
-Plugins can hook into the chart's lifecycle to:
-- Perform custom drawing before or after the main render.
-- React to new series being added.
-- Manage their own state synced with the chart's lifecycle.
-- Cleanup resources when the chart is destroyed.
+Plugins are self-contained modules that receive a **PluginContext** upon initialization. This context provides access to:
+- **Render Context**: WebGL and 2D Canvas contexts, plot area information.
+- **Data Context**: Access to series data and bounds.
+- **UI Context**: Methods for creating overlays and managing themes.
+- **Coordinate Context**: Conversions between data and pixel coordinates.
+- **Event Context**: Mechanism to subscribe to and emit events.
 
-## Using a Plugin
+## Using Built-in Plugins
 
-To use a plugin, call the `.use()` method on your chart instance.
+The most common plugins are **auto-loaded** by defaults in `ChartCore`, but you can also configure them explicitly.
 
 ```typescript
-import { createChart } from 'scichart-engine';
-import { myPlugin } from './plugins/myPlugin';
+import { createChart, PluginTools, PluginAnalysis } from 'scichart-engine';
 
-const chart = createChart({ container });
-chart.use(myPlugin);
+const chart = createChart({
+  container: document.getElementById('chart'),
+  theme: 'midnight'
+});
+
+// Accessing auto-loaded plugins
+const tools = chart.getPluginAPI('scichart-tools');
+const analysis = chart.getPluginAPI('scichart-analysis');
+
+// Example: setting a measurement tool
+tools.setMode('delta');
 ```
 
-## Creating a Plugin
+## Creating a Custom Plugin
 
-A plugin is simply an object that implements the `ChartPlugin` interface.
-
-```typescript
-import type { Chart, ChartPlugin, Series } from 'scichart-engine';
-
-export const MyAnnotationPlugin: ChartPlugin = {
-  name: 'my-custom-annotations',
-
-  init(chart: Chart) {
-    console.log('Plugin initialized');
-  },
-
-  onBeforeRender(chart: Chart) {
-    // Custom logic before WebGL render
-  },
-
-  onAfterRender(chart: Chart) {
-    // Custom logic after WebGL and Overlay render
-    // Useful for drawing custom SVG or Canvas elements on top
-  },
-
-  onSeriesAdded(series: Series) {
-    console.log(`New series added: ${series.getId()}`);
-  },
-
-  destroy() {
-    // Cleanup logic
-  }
-};
-```
-
-## Example: Simple FPS Counter Plugin
+A plugin is an object or a function returning an object that implements the `ChartPlugin` interface.
 
 ```typescript
-export const FpsCounterPlugin: ChartPlugin = {
-  name: 'fps-counter',
-  
-  init(chart) {
-    this.el = document.createElement('div');
-    this.el.style.cssText = 'position:absolute;top:10px;right:10px;color:white;background:black;padding:4px;';
-    chart.container.appendChild(this.el);
-    this.frames = 0;
-    this.lastTime = performance.now();
-  },
+import { definePlugin, type PluginContext } from 'scichart-engine';
 
-  onAfterRender() {
-    this.frames++;
-    const now = performance.now();
-    if (now - this.lastTime >= 1000) {
-      this.el.innerText = `FPS: ${this.frames}`;
-      this.frames = 0;
-      this.lastTime = now;
+export const MyCustomPlugin = definePlugin({
+  name: 'my-plugin',
+  version: '1.0.0',
+  provides: ['visualization']
+}, (config = {}) => {
+  let container: HTMLElement;
+
+  return {
+    onInit(ctx: PluginContext) {
+      ctx.log.info("My plugin initialized!");
+      
+      // Create a 2D overlay
+      const overlay = ctx.ui.createOverlay('my-overlay', {
+        zIndex: 100
+      });
+      overlay.innerHTML = '<div style="color: white">Hello Plugin!</div>';
+    },
+
+    onRenderOverlay(ctx: PluginContext) {
+      // Custom drawing on the 2D canvas after everything else
+      const { ctx2d } = ctx.render;
+      if (!ctx2d) return;
+
+      ctx2d.fillStyle = 'rgba(255, 0, 0, 0.5)';
+      ctx2d.fillRect(50, 50, 100, 100);
+    },
+
+    onDestroy(ctx: PluginContext) {
+      // Cleanup happens automatically for overlays created via ctx.ui
+      ctx.log.info("Plugin destroyed");
     }
-  },
-
-  destroy() {
-    this.el.remove();
-  }
-};
+  };
+});
 ```
 
-## Plugin Lifecycle
+## Plugin Lifecycle Hooks
 
-1. **`init(chart)`**: Called immediately when `chart.use(plugin)` is executed. Use this to setup DOM or initial state.
-2. **`onBeforeRender(chart)`**: Called at the start of every render frame.
-3. **`onAfterRender(chart)`**: Called after all drawing (WebGL, Grids, Axes, Annotations) is complete.
-4. **`onSeriesAdded(series)`**: Called whenever `chart.addSeries()` or `chart.addBar()` is successful.
-5. **`destroy()`**: Called when the chart is destroyed.
+The following hooks are available in a plugin:
+
+| Hook | Purpose |
+| :--- | :--- |
+| `onInit` | Initial setup, subscribing to events, creating UI elements. |
+| `onBeforeRender` | Called before the render frame starts. Can return `false` to skip render. |
+| `onRenderWebGL` | Hook for custom WebGL drawing. |
+| `onRenderOverlay` | Hook for custom 2D Canvas drawing (tooltips, crosshairs). |
+| `onInteraction` | React to mouse, touch, or keyboard events. |
+| `onViewChange` | Triggered on zoom or pan. |
+| `onDataUpdate` | Triggered when series data changes. |
+| `onDestroy` | Resource cleanup. |
+
+## Why use plugins?
+
+1. **Decoupling**: Keep specialized logic (like FFT or specialized measurements) out of the core rendering engine.
+2. **Performance**: Plugins can use the same optimized render loop and coordinate systems as the core.
+3. **Reusability**: Package complex interactive features once and share them across different projects.
