@@ -216,6 +216,17 @@ export class ChartImpl implements Chart {
     this.renderer.setDPR(this.dpr);
     this.overlay = new OverlayRenderer(this.overlayCtx, this.theme);
 
+    // Initialize selection manager EARLY so plugins can use it for hit-testing
+    this.selectionManager = new SelectionManager({
+      getSeries: () => this.series,
+      getPlotArea: () => this.getPlotArea(),
+      getXScale: () => this.xScale,
+      getYScales: () => this.yScales,
+      getPrimaryYAxisId: () => this.primaryYAxisId,
+      events: this.events as any, // SelectionEventMap is a subset of ChartEventMap
+      requestRender: () => this.requestRender(),
+    });
+
     // Initialize the NEW PluginManager with all necessary dependencies
     this.pluginManager = new PluginManagerImpl({
       chart: this,
@@ -235,6 +246,7 @@ export class ChartImpl implements Chart {
       dataToPixelY: (y, yAxisId) => (this.yScales.get(yAxisId || this.primaryYAxisId) || this.yScale).transform(y),
       pixelToDataX: (px) => this.pixelToDataX(px),
       pixelToDataY: (py, yAxisId) => this.pixelToDataY(py, yAxisId),
+      findNearestPoint: (px, py, radius) => this.selectionManager.hitTest(px, py, radius),
       getPlugin: (name) => this.pluginManager.get(name) as any
     });
 
@@ -244,17 +256,6 @@ export class ChartImpl implements Chart {
       typeof options.animations === "boolean"
         ? { ...DEFAULT_ANIMATION_CONFIG, enabled: options.animations }
         : mergeAnimationConfig(options.animations);
-
-    // Initialize selection manager
-    this.selectionManager = new SelectionManager({
-      getSeries: () => this.series,
-      getPlotArea: () => this.getPlotArea(),
-      getXScale: () => this.xScale,
-      getYScales: () => this.yScales,
-      getPrimaryYAxisId: () => this.primaryYAxisId,
-      events: this.events as any, // SelectionEventMap is a subset of ChartEventMap
-      requestRender: () => this.requestRender(),
-    });
 
     // Initialize responsive manager
     const responsiveConfig =
@@ -386,6 +387,20 @@ export class ChartImpl implements Chart {
         this.use(PluginDebug(config));
       });
     }
+
+    // Auto-load tools plugin for delta/peak measurement and tooltips
+    import("../../plugins/tools").then(({ PluginTools }) => {
+      this.use(PluginTools({
+        enableDeltaTool: true,
+        enablePeakTool: true,
+        useEnhancedTooltips: true,
+      }));
+    });
+
+    // Auto-load analysis plugin for curve fitting and analysis features
+    import("../../plugins/analysis").then(({ PluginAnalysis }) => {
+      this.use(PluginAnalysis());
+    });
 
     // NOTE: resize() and startRenderLoop() are now called by startInit()
     // This allows the queue system to control when rendering actually begins
@@ -1028,8 +1043,24 @@ export class ChartImpl implements Chart {
 
     // Delegate to tools plugin if available
     const toolsApi = this.getPluginAPI<any>("scichart-tools");
-    if (toolsApi) {
-      toolsApi.setMode(mode === 'delta' ? 'delta' : mode === 'peak' ? 'peak' : 'none');
+    if (mode === 'delta' || mode === 'peak') {
+      if (toolsApi) {
+        toolsApi.setMode(mode);
+      } else {
+        // Plugin not yet loaded - retry after a short delay
+        console.info(`[SciChart] Tools plugin not ready, retrying setMode('${mode}')...`);
+        setTimeout(() => {
+          const api = this.getPluginAPI<any>("scichart-tools");
+          if (api) {
+            api.setMode(mode);
+          } else {
+            console.warn(`[SciChart] Tools plugin still not available for mode '${mode}'`);
+          }
+        }, 100);
+      }
+    } else if (toolsApi) {
+      // Disable tools when switching to non-tool modes
+      toolsApi.setMode('none');
     }
 
     this.interaction.setMode(mode);
