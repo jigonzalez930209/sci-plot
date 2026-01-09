@@ -428,42 +428,36 @@ const ema20 = indicators.ema(closeData, 20);
 
 ---
 
-### 11. 🖨️ Exportación Avanzada (PDF, SVG vectorial)
+### 11. 🖨️ Exportación Avanzada (SVG vectorial)
 
 | Atributo | Valor |
 |----------|-------|
-| **Complejidad** | ⭐⭐⭐⭐ (4/5) |
+| **Complejidad** | ⭐⭐⭐ (3/5) |
 | **Impacto** | MEDIO |
 | **Beneficio** | Publicaciones científicas |
 
 **Descripción:**  
 Exportar gráficos en formatos vectoriales para publicaciones:
 - SVG con capas editables
-- PDF de alta resolución
-- EPS para LaTeX
 - PNG/JPEG escalables
+- Formato CSV/JSON para datos
 
 **Mejora para usuarios:**  
 - Gráficos listos para journals científicos
 - Edición posterior en Illustrator/Inkscape
 - Reproducibilidad en publicaciones
 
-**Implementación sugerida:**
+**Implementación actual:**
 ```typescript
-// API propuesta
-const svg = await chart.exportSVG({ 
-  width: 800, 
-  height: 600,
-  embedFonts: true,
-  layers: true // Separar datos, ejes, anotaciones
-});
+// API implementada
+import { exportToSVG } from 'scichart-engine';
 
-const pdf = await chart.exportPDF({
-  pageSize: 'A4',
-  orientation: 'landscape',
-  title: 'Cyclic Voltammogram',
-  author: 'Dr. Smith'
-});
+const svgString = exportToSVG(chart);
+
+// También disponible:
+const csvData = chart.exportCSV();
+const jsonData = chart.exportJSON();
+const imageData = chart.exportImage('png');
 ```
 
 ---
@@ -721,28 +715,28 @@ createChart({
 
 ## Matriz de Priorización
 
-| # | Mejora | Impacto | Complejidad | Prioridad |
-|---|--------|---------|-------------|-----------|
-| 1 | Animaciones y Transiciones | 🔴 Alto | 4/5 | **Done** |
-| 2 | Multi-Eje Avanzado | 🔴 Alto | 4/5 | **Done** |
-| 5 | Responsive Design | 🔴 Alto | 3/5 | **Done** |
-| 4 | Hit-Testing Mejorado | 🔴 Alto | 3/5 | **Done** |
-| 6 | Serialización | 🔴 Alto | 3/5 | **Done** |
-| 7 | Análisis FFT/Filtros | 🔴 Alto | 4/5 | **Done** |
-| 3 | Sistema de Plugins | 🔴 Alto | 5/5 | **P1** |
-| 8 | Anotaciones Avanzadas | 🟡 Medio | 3/5 | **Done** |
-| 11 | Exportación PDF/SVG | 🟡 Medio | 4/5 | **Done** |
-| 12 | Sincronización Charts | 🟡 Medio | 3/5 | **Done** |
-| 9 | Editor de Temas | 🟡 Medio | 3/5 | **Done** |
-| 10 | Indicadores Financieros | 🟡 Medio | 3/5 | **Done** |
-| 13 | Streaming Backpressure | 🟡 Medio | 3/5 | **Done** |
-| 14 | Testing Utilities | 🟡 Medio | 2/5 | **Done** |
-| 15 | Copiar al Portapapeles | 🟢 Bajo | 1/5 | **Done** |
-| 16 | Modo Debug | 🟢 Bajo | 2/5 | **Done** |
-| 17 | Internacionalización | 🟢 Bajo | 2/5 | **Done** |
-| 18 | Atajos de Teclado | 🟢 Bajo | 2/5 | **Done** |
-| 19 | Indicador de Carga | 🟢 Bajo | 1/5 | **Done** |
-| 20 | Modo Solo Lectura | 🟢 Bajo | 1/5 | **Done** |
+| # | Mejora | Impacto | Complejidad | Estado |
+|---|--------|---------|-------------|--------|
+| 1 | Animaciones y Transiciones | 🔴 Alto | 4/5 | ✅ **Done** |
+| 2 | Multi-Eje Avanzado | 🔴 Alto | 4/5 | ✅ **Done** |
+| 3 | Sistema de Plugins | 🔴 Alto | 5/5 | 🏗️ **En Progreso** |
+| 4 | Hit-Testing Mejorado | 🔴 Alto | 3/5 | ✅ **Done** |
+| 5 | Responsive Design | 🔴 Alto | 3/5 | ✅ **Done** |
+| 6 | Serialización | 🔴 Alto | 3/5 | ✅ **Done** |
+| 7 | Análisis FFT/Filtros | 🔴 Alto | 4/5 | ✅ **Done** |
+| 8 | Anotaciones Avanzadas | 🟡 Medio | 3/5 | ✅ **Done** |
+| 9 | Editor de Temas | 🟡 Medio | 3/5 | ✅ **Done** |
+| 10 | Indicadores Financieros | 🟡 Medio | 3/5 | ✅ **Done** |
+| 11 | Exportación SVG | 🟡 Medio | 3/5 | ✅ **Done** |
+| 12 | Sincronización Charts | 🟡 Medio | 3/5 | ✅ **Done** |
+| 13 | Streaming Backpressure | 🟡 Medio | 3/5 | ✅ **Done** |
+| 14 | Testing Utilities | 🟡 Medio | 2/5 | ✅ **Done** |
+| 15 | Copiar al Portapapeles | 🟢 Bajo | 1/5 | ✅ **Done** |
+| 16 | Modo Debug | 🟢 Bajo | 2/5 | ✅ **Done** |
+| 17 | Internacionalización | 🟢 Bajo | 2/5 | ✅ **Done** |
+| 18 | Atajos de Teclado | 🟢 Bajo | 2/5 | ✅ **Done** |
+| 19 | Indicador de Carga | 🟢 Bajo | 1/5 | ✅ **Done** |
+| 20 | Modo Solo Lectura | 🟢 Bajo | 1/5 | ✅ **Done** |
 
 ---
 
@@ -765,7 +759,7 @@ createChart({
 - ✅ Mejora #7: Análisis FFT/Filtros (4/5)
 
 ### Q4 2026 (Completed)
-- ✅ Mejora #11: Exportación PDF/SVG (4/5)
+- ✅ Mejora #11: Exportación SVG (3/5)
 - ✅ Mejora #14: Testing Utilities (2/5)
 - ✅ Mejora #15: Copiar al Portapapeles (1/5)
 - ✅ Mejora #16: Modo Debug (2/5)
@@ -1058,35 +1052,69 @@ chart.onDeltaMeasure((m) => {
 
 ---
 
-## Matriz de Priorización - Nuevas Mejoras
+## Matriz de Priorización - Funciones Matemáticas Avanzadas
 
-| # | Mejora | Impacto | Complejidad | Prioridad |
-|---|--------|---------|-------------|-----------|
-| 21 | Savitzky-Golay | 🔴 Alto | 3/5 | **P1** |
-| 22 | Corrección Línea Base | 🔴 Alto | 4/5 | **P1** |
-| 23 | Peak Picking Avanzado | 🔴 Alto | 3/5 | **P1** |
-| 24 | Integración Numérica | 🔴 Alto | 2/5 | **P1** |
-| 25 | Derivadas | 🟡 Medio | 2/5 | **P2** |
-| 26 | LTTB Downsampling | 🔴 Alto | 3/5 | **P1** |
-| 27 | Delta Tool | 🟡 Medio | 3/5 | **P2** |
+| # | Mejora | Impacto | Complejidad | Estado | Ubicación API |
+|---|--------|---------|-------------|--------|---------------|
+| 21 | Savitzky-Golay | 🔴 Alto | 3/5 | ✅ **Done** | `analysis.savitzkyGolay()` |
+| 22 | Corrección Línea Base | 🔴 Alto | 4/5 | ✅ **Done** | `analysis.subtractBaseline()` |
+| 23 | Peak Picking Avanzado | 🔴 Alto | 3/5 | ✅ **Done** | `analysis.detectPeaks()` |
+| 24 | Integración Numérica | 🔴 Alto | 2/5 | ✅ **Done** | `analysis.integrate()` |
+| 25 | Derivadas | 🟡 Medio | 2/5 | ✅ **Done** | `analysis.derivative()` |
+| 26 | LTTB Downsampling | 🔴 Alto | 3/5 | ✅ **Done** | `analysis.downsampleLTTB()` |
+| 27 | Delta Tool | 🟡 Medio | 3/5 | ✅ **Done** | `DeltaTool` class |
 
 ---
 
-## Roadmap Q2 2027
+## Funciones Matemáticas Avanzadas - Resumen de Implementación
 
-### Sprint 1: Procesamiento de Señal
-- [ ] Mejora #21: Savitzky-Golay Filter
-- [ ] Mejora #25: Derivadas (1ra y 2da)
+Todas las funciones de análisis científico están disponibles bajo `chart.analysis.*` o importables directamente:
 
-### Sprint 2: Análisis de Picos
-- [ ] Mejora #22: Baseline Correction (ALS)
-- [ ] Mejora #23: Peak Picking Avanzado
-- [ ] Mejora #24: Integración Numérica (ROI)
+```typescript
+import { 
+  savitzkyGolay,      // Smoothing preserving peaks
+  subtractBaseline,   // Linear baseline correction
+  detectPeaks,        // Peak detection with prominence
+  integrate,          // Trapezoidal integration
+  derivative,         // Numerical derivatives
+  downsampleLTTB,     // Visual downsampling
+  fft, ifft,          // Fourier Transform
+  lowPassFilter,      // FIR filters
+  highPassFilter,
+  butterworth,        // IIR Butterworth filter
+  crossCorrelation,   // Signal correlation
+  anomalyDetection,   // Z-score anomaly detection
+  // Technical indicators
+  sma, ema, macd, rsi, bollingerBands, atr, vwap
+} from 'scichart-engine/analysis';
+```
 
-### Sprint 3: Performance & Tools
-- [ ] Mejora #26: LTTB Downsampling
-- [ ] Mejora #27: Delta Tool
-- [ ] Fix: Responsive design improvements
+### Uso con el Chart API
+
+```typescript
+const chart = createChart({ container });
+
+// Access analysis directly from chart instance
+const smoothed = chart.analysis.savitzkyGolay(data, 11, 3);
+const peaks = chart.analysis.detectPeaks(x, y, { minProminence: 0.1 });
+const area = chart.analysis.integrate(x, y);
+```
+
+---
+
+## Demo Interactivo
+
+Ver la demostración interactiva de funciones matemáticas avanzadas en:
+**`/examples/analysis-advanced`**
+
+La demo incluye botones dinámicos para:
+- 📈 Aplicar/remover Savitzky-Golay
+- 📉 Corrección de línea base
+- 🎯 Detección automática de picos
+- ∫ Calcular área bajo la curva
+- 📐 Calcular derivadas
+- 🔍 LTTB downsampling visual
+- 📏 Herramienta Delta Tool
 
 ---
 
@@ -1097,3 +1125,15 @@ chart.onDeltaMeasure((m) => {
 - Aumentar grosor de ejes para mejor visibilidad en pantallas pequeñas
 - Mejorar legibilidad en dispositivos móviles
 
+
+### ✅ Completado
+- Todas las funciones matemáticas avanzadas (#21-#27)
+- Indicadores de carga con LoadingIndicator
+- Delta Tool para mediciones interactivas
+- Exportación SVG vectorial
+- Sistema de eventos dataLoading y deltaMeasure
+
+### 🏗️ En Progreso  
+- Mejora #3: Sistema de Plugins Robusto (Hot-reload, Marketplace)
+
+---
