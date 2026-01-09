@@ -74,6 +74,7 @@ export default defineConfig({
             { text: "Large Datasets", link: "/guide/large-datasets" },
             { text: "Scientific Analysis", link: "/guide/analysis" },
             { text: "Plugin System", link: "/guide/plugins" },
+            { text: "Utilities & DX", link: "/guide/utilities" },
           ],
         },
         {
@@ -133,6 +134,7 @@ export default defineConfig({
             { text: "Peak Detection", link: "/api/analysis-peaks" },
             { text: "Curve Fitting", link: "/api/fitting" },
             { text: "Cycle Analysis", link: "/api/analysis-cycles" },
+            { text: "Financial Indicators", link: "/api/indicators" },
           ],
         },
         {
@@ -151,6 +153,7 @@ export default defineConfig({
             { text: "React Components", link: "/api/react-scichart" },
             { text: "React Hooks", link: "/api/react-hook" },
             { text: "Theming API", link: "/api/themes" },
+            { text: "Chart Sync", link: "/api/chart-sync" },
           ],
         },
       ],
@@ -219,6 +222,17 @@ export default defineConfig({
             { text: "Trajectories: Point Line 3D", link: "/examples/3d/point-line-chart" },
             { text: "Surface Mesh", link: "/examples/3d/surface-mesh" },
             { text: "Volumetric: Voxel", link: "/examples/3d/voxel-chart" },
+          ],
+        },
+        {
+          text: "Developer Experience",
+          items: [
+            { text: "Financial Indicators", link: "/examples/indicators" },
+           // { text: "Chart Synchronization", link: "/examples/chart-sync" },
+            { text: "Theme Editor", link: "/examples/theme-editor" },
+            { text: "Waveform Generators", link: "/examples/waveforms" },
+            { text: "Backpressure Demo", link: "/examples/backpressure" },
+            { text: "Internationalization", link: "/examples/i18n" },
           ],
         },
       ],

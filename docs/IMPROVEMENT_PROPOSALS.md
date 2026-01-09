@@ -730,19 +730,19 @@ createChart({
 | 6 | Serialización | 🔴 Alto | 3/5 | **Done** |
 | 7 | Análisis FFT/Filtros | 🔴 Alto | 4/5 | **Done** |
 | 3 | Sistema de Plugins | 🔴 Alto | 5/5 | **P1** |
-| 8 | Anotaciones Avanzadas | 🟡 Medio | 3/5 | **P1** |
-| 11 | Exportación PDF/SVG | 🟡 Medio | 4/5 | **P1** |
-| 12 | Sincronización Charts | 🟡 Medio | 3/5 | **P3** |
-| 9 | Editor de Temas | 🟡 Medio | 3/5 | **P3** |
-| 10 | Indicadores Financieros | 🟡 Medio | 3/5 | **P3** |
-| 13 | Streaming Backpressure | 🟡 Medio | 3/5 | **P3** |
-| 14 | Testing Utilities | 🟡 Medio | 2/5 | **P3** |
-| 15 | Copiar al Portapapeles | 🟢 Bajo | 1/5 | **P4** |
-| 16 | Modo Debug | 🟢 Bajo | 2/5 | **P4** |
-| 17 | Internacionalización | 🟢 Bajo | 2/5 | **P4** |
-| 18 | Atajos de Teclado | 🟢 Bajo | 2/5 | **P4** |
-| 19 | Indicador de Carga | 🟢 Bajo | 1/5 | **P4** |
-| 20 | Modo Solo Lectura | 🟢 Bajo | 1/5 | **P4** |
+| 8 | Anotaciones Avanzadas | 🟡 Medio | 3/5 | **Done** |
+| 11 | Exportación PDF/SVG | 🟡 Medio | 4/5 | **Done** |
+| 12 | Sincronización Charts | 🟡 Medio | 3/5 | **Done** |
+| 9 | Editor de Temas | 🟡 Medio | 3/5 | **Done** |
+| 10 | Indicadores Financieros | 🟡 Medio | 3/5 | **Done** |
+| 13 | Streaming Backpressure | 🟡 Medio | 3/5 | **Done** |
+| 14 | Testing Utilities | 🟡 Medio | 2/5 | **Done** |
+| 15 | Copiar al Portapapeles | 🟢 Bajo | 1/5 | **Done** |
+| 16 | Modo Debug | 🟢 Bajo | 2/5 | **Done** |
+| 17 | Internacionalización | 🟢 Bajo | 2/5 | **Done** |
+| 18 | Atajos de Teclado | 🟢 Bajo | 2/5 | **Done** |
+| 19 | Indicador de Carga | 🟢 Bajo | 1/5 | **Done** |
+| 20 | Modo Solo Lectura | 🟢 Bajo | 1/5 | **Done** |
 
 ---
 
@@ -764,12 +764,26 @@ createChart({
 - ✅ Mejora #14: Testing Utilities (2/5)
 - ✅ Mejora #7: Análisis FFT/Filtros (4/5)
 
-### Q4 2026 (In Progress)
-- 🏗️ Mejora #3: Sistema de Plugins (5/5) - Next Objective
+### Q4 2026 (Completed)
 - ✅ Mejora #11: Exportación PDF/SVG (4/5)
-- 🏗️ Mejora #12: Sincronización Charts (3/5)
-- 🏗️ Mejora #13: Streaming Backpressure (3/5)
+- ✅ Mejora #14: Testing Utilities (2/5)
+- ✅ Mejora #15: Copiar al Portapapeles (1/5)
+- ✅ Mejora #16: Modo Debug (2/5)
+- ✅ Mejora #17: Internacionalización (2/5)
+- ✅ Mejora #18: Atajos de Teclado (2/5)
+- ✅ Mejora #19: Indicador de Carga (1/5)
+- ✅ Mejora #20: Modo Solo Lectura (1/5)
+
+### Q1 2027 (Completed)
+- ✅ Mejora #12: Sincronización Charts (3/5)
+- ✅ Mejora #9: Editor de Temas (3/5)
+- ✅ Mejora #10: Indicadores Financieros (3/5)
+- ✅ Mejora #13: Streaming Backpressure (3/5)
+
+### Q2 2027 (Pending)
+- 🏗️ Mejora #3: Sistema de Plugins (5/5)
 
 ---
 
-*Documento generado automáticamente. Última actualización: 2026-01-07*
+*Documento generado automáticamente. Última actualización: 2026-01-08*
+
