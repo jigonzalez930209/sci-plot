@@ -153,7 +153,7 @@ export class SelectionManager {
   /**
    * Hit-test at a pixel coordinate to find the nearest data point
    */
-  hitTest(pixelX: number, pixelY: number): HitTestResult | null {
+  hitTest(pixelX: number, pixelY: number, radius?: number): HitTestResult | null {
     if (!this.config.enabled) return null;
 
     const plotArea = this.ctx.getPlotArea();
@@ -171,7 +171,7 @@ export class SelectionManager {
     const xScale = this.ctx.getXScale();
     const yScales = this.ctx.getYScales();
     const series = this.ctx.getSeries();
-    const hitRadius = this.config.hitRadius;
+    const hitRadius = radius ?? this.config.hitRadius;
     const hitRadiusSq = hitRadius * hitRadius;
 
     let nearest: HitTestResult | null = null;

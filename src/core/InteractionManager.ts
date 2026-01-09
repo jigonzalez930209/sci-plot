@@ -356,6 +356,12 @@ export class InteractionManager {
           }
           this.callbacks.onDragStart?.();
           break;
+        case 'delta':
+        case 'peak':
+          // Delta and Peak modes are handled by their respective tools
+          // Do nothing here - let the tools handle the events
+          this.container.style.cursor = "crosshair";
+          break;
       }
     }
   }

@@ -87,6 +87,8 @@ export type {
   ErrorBarStyle,
   ErrorBarDirection,
   ScatterSymbol,
+  DeltaMeasurement,
+  PeakMeasurement,
 } from "./types";
 
 // ============================================
@@ -492,6 +494,8 @@ export {
   WatermarkPlugin,
   GridHighlightPlugin,
   DataLoggerPlugin,
+  PluginTools,
+  PluginAnalysis,
   BuiltinPlugins,
 } from "./plugins";
 
@@ -537,5 +541,7 @@ export type {
   WatermarkPluginConfig,
   GridHighlightConfig,
   DataLoggerConfig,
+  PluginToolsConfig,
+  PluginAnalysisConfig,
 } from "./plugins";
 

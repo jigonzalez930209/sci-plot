@@ -54,7 +54,18 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
                 getViewBounds: () => ctx.data.getViewBounds(),
                 getYBounds: (id?: string) => ctx.data.getYAxisBounds(id),
                 requestRender: () => ctx.requestRender(),
-                getSeries: () => ctx.data.getAllSeries() as any,
+                getSeries: () => {
+                    // Transform Series objects to the format expected by DeltaTool/PeakTool
+                    return ctx.data.getAllSeries().map((s: any) => {
+                        const data = s.getData();
+                        return {
+                            id: s.getId(),
+                            x: data.x,
+                            y: data.y,
+                            yAxisId: s.getYAxisId?.() || undefined
+                        };
+                    });
+                },
                 onMeasure: (m: any) => ctx.events.emit('measure', m)
             };
 
@@ -67,26 +78,38 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
             if (_config.useEnhancedTooltips ?? true) {
                 // Safely access internal properties for bridge
                 const chart = ctx.chart as any;
-                tooltipManager = new TooltipManager({
-                    overlayCtx: ctx.render.ctx2d!,
-                    chartTheme: ctx.ui.theme,
-                    getPlotArea: () => ctx.render.plotArea,
-                    getSeries: () => ctx.data.getAllSeries() as any,
-                    pixelToDataX: (px) => ctx.coords.pixelToDataX(px),
-                    pixelToDataY: (py) => ctx.coords.pixelToDataY(py),
-                    getXScale: () => chart.xScale,
-                    getYScales: () => chart.yScales,
-                    getViewBounds: () => ctx.data.getViewBounds(),
-                    options: chart.initialOptions?.tooltip,
+                
+                // Debug logging
+                ctx.log.debug("TooltipManager init - checking deps:", {
+                    hasCtx2d: !!ctx.render.ctx2d,
+                    hasXScale: !!chart.xScale,
+                    hasYScales: !!chart.yScales,
+                    seriesCount: ctx.data.getAllSeries().length
                 });
+                
+                if (!ctx.render.ctx2d) {
+                    ctx.log.warn("TooltipManager: No 2D context available, tooltips disabled");
+                } else {
+                    tooltipManager = new TooltipManager({
+                        overlayCtx: ctx.render.ctx2d,
+                        chartTheme: ctx.ui.theme,
+                        getPlotArea: () => ctx.render.plotArea,
+                        getSeries: () => ctx.data.getAllSeries() as any,
+                        pixelToDataX: (px) => ctx.coords.pixelToDataX(px),
+                        pixelToDataY: (py) => ctx.coords.pixelToDataY(py),
+                        getXScale: () => chart.xScale,
+                        getYScales: () => chart.yScales,
+                        getViewBounds: () => ctx.data.getViewBounds(),
+                        options: chart.initialOptions?.tooltip,
+                    });
+                }
             }
         },
 
-        onInteraction(_ctx, event) {
-            // Forward relevant events to tools if they don't have their own listeners
-            if (event.type === 'mousemove') {
-                tooltipManager?.handleCursorMove(event.pixelX, event.pixelY);
-            }
+        onRenderOverlay(_ctx) {
+            tooltipManager?.render();
+            deltaTool?.renderOverlay();
+            peakTool?.renderOverlay();
         },
 
         onDestroy(ctx: PluginContext) {
