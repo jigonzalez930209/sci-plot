@@ -1,7 +1,6 @@
 import type {
     PluginContext,
     PluginManifest,
-    DataUpdateEvent,
 } from "../../types";
 import { definePlugin } from "../../PluginRegistry";
 

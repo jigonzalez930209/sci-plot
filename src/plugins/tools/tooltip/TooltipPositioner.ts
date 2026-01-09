@@ -10,7 +10,7 @@
  * @module tooltip/TooltipPositioner
  */
 
-import type { PlotArea } from '../types';
+import type { PlotArea } from '../../../types';
 import type {
   TooltipPosition,
   TooltipMeasurement,
