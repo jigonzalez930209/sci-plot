@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Delta Tool Module
+ * SciChart Engine - Peak Tool Module
  * 
  * Provides interactive measurement tool for measuring distances,
  * differences, and slopes between two data points on the chart.
@@ -8,19 +8,19 @@
  * - Click to select first point (snaps to nearest data point)
  * - Click to select second point 
  * - Highlight points on hover
- * - Show delta measurements between points
+ * - Show peak measurements between points
  * 
- * @module delta-tool
+ * @module peak-tool
  */
 
-import type { DeltaMeasurement, Bounds } from '../../../../types';
-import type { AnimationEngine } from '../../../../core/animation';
+import type { PeakMeasurement, Bounds } from '../../../types';
+import type { AnimationEngine } from '../../../core/animation';
 
 // ============================================
 // Types
 // ============================================
 
-export interface DeltaToolOptions {
+export interface PeakToolOptions {
   /** Line color for measurement (default: '#ff6b6b') */
   lineColor?: string;
   /** Line width in pixels (default: 2) */
@@ -33,16 +33,16 @@ export interface DeltaToolOptions {
   labelBackground?: string;
   /** Label text color (default: '#ffffff') */
   labelColor?: string;
-  /** Show delta values inline (default: true) */
-  showDelta?: boolean;
+  /** Show peak values inline (default: true) */
+  showPeak?: boolean;
   /** Number precision for values (default: 4) */
   precision?: number;
-  /** Show slope value (default: true) */
-  showSlope?: boolean;
-  /** Show distance value (default: true) */
-  showDistance?: boolean;
   /** Custom CSS class for overlay elements */
   className?: string;
+  /** Number of points to use for baseline regression (default: 10) */
+  baselineWindow?: number;
+  /** Area fill color (default: 'rgba(255, 107, 107, 0.3)') */
+  areaFill?: string;
   /** Point highlight size when hovering (default: 10) */
   highlightSize?: number;
   /** Point highlight color (default: '#00f2ff') */
@@ -62,7 +62,7 @@ export interface DataPoint {
   pixelY: number;
 }
 
-export interface DeltaToolState {
+export interface PeakToolState {
   /** Whether the tool is enabled */
   enabled: boolean;
   /** Selection state: 'idle' | 'waitingSecond' | 'complete' */
@@ -74,7 +74,7 @@ export interface DeltaToolState {
   /** Currently hovered point (for highlighting) */
   hoveredPoint: DataPoint | null;
   /** Last completed measurement */
-  lastMeasurement: DeltaMeasurement | null;
+  lastMeasurement: PeakMeasurement | null;
 }
 
 export interface SeriesData {
@@ -84,25 +84,25 @@ export interface SeriesData {
   yAxisId?: string;
 }
 
-export interface DeltaToolContext {
+export interface PeakToolContext {
   container: HTMLElement;
   getPlotArea: () => { x: number; y: number; width: number; height: number };
   getViewBounds: () => Bounds;
   getYBounds?: (yAxisId?: string) => { yMin: number; yMax: number };
   requestRender: () => void;
   getSeries?: () => SeriesData[];
-  onMeasure?: (measurement: DeltaMeasurement) => void;
+  onMeasure?: (measurement: PeakMeasurement) => void;
   animationEngine?: AnimationEngine;
 }
 
 // ============================================
-// Delta Tool Implementation
+// Peak Tool Implementation
 // ============================================
 
-export class DeltaTool {
-  private ctx: DeltaToolContext;
-  private options: Required<DeltaToolOptions>;
-  private state: DeltaToolState = {
+export class PeakTool {
+  private ctx: PeakToolContext;
+  private options: Required<PeakToolOptions>;
+  private state: PeakToolState = {
     enabled: false,
     selectionState: 'idle',
     point1: null,
@@ -129,7 +129,7 @@ export class DeltaTool {
   private boundMouseUp: (e: MouseEvent) => void;
   private boundResize: () => void;
 
-  constructor(context: DeltaToolContext, options?: DeltaToolOptions) {
+  constructor(context: PeakToolContext, options?: PeakToolOptions) {
     this.ctx = context;
     this.options = {
       lineColor: '#ff6b6b',
@@ -138,14 +138,14 @@ export class DeltaTool {
       labelFontSize: 12,
       labelBackground: 'rgba(0, 0, 0, 0.85)',
       labelColor: '#ffffff',
-      showDelta: true,
+      showPeak: true,
       precision: 4,
-      showSlope: true,
-      showDistance: true,
-      className: 'scichart-delta-tool',
+      className: 'scichart-peak-tool',
       highlightSize: 12,
       highlightColor: '#00f2ff',
       snapRadius: 30,
+      baselineWindow: 10,
+      areaFill: 'rgba(255, 107, 107, 0.3)',
       ...options,
     };
 
@@ -158,7 +158,7 @@ export class DeltaTool {
   }
 
   /**
-   * Enable the delta measurement tool
+   * Enable the peak measurement tool
    */
   enable(): void {
     if (this.state.enabled) return;
@@ -171,7 +171,7 @@ export class DeltaTool {
   }
 
   /**
-   * Disable the delta measurement tool
+   * Disable the peak measurement tool
    */
   disable(): void {
     if (!this.state.enabled) return;
@@ -208,14 +208,14 @@ export class DeltaTool {
   /**
    * Get the current state
    */
-  getState(): DeltaToolState {
+  getState(): PeakToolState {
     return { ...this.state };
   }
 
   /**
    * Get the last completed measurement
    */
-  getMeasurement(): DeltaMeasurement | null {
+  getMeasurement(): PeakMeasurement | null {
     return this.state.lastMeasurement;
   }
 
@@ -392,7 +392,11 @@ export class DeltaTool {
     this.crosshairPosition = { x: pixelX, y: pixelY };
 
     // Find nearest data point
-    const nearestPoint = this.findNearestPoint(pixelX, pixelY, plotArea, bounds);
+    // When waiting for second point, only show points from the same series
+    const seriesFilter = this.state.selectionState === 'waitingSecond' && this.state.point1
+      ? this.state.point1.seriesId
+      : undefined;
+    const nearestPoint = this.findNearestPoint(pixelX, pixelY, plotArea, bounds, seriesFilter);
     this.state.hoveredPoint = nearestPoint;
     this.renderOverlay();
   }
@@ -447,7 +451,11 @@ export class DeltaTool {
     }
 
     // Find nearest data point
-    const nearestPoint = this.findNearestPoint(pixelX, pixelY, plotArea, bounds);
+    // When waiting for second point, only look for points from the same series
+    const seriesFilter = this.state.selectionState === 'waitingSecond' && this.state.point1
+      ? this.state.point1.seriesId
+      : undefined;
+    const nearestPoint = this.findNearestPoint(pixelX, pixelY, plotArea, bounds, seriesFilter);
 
     if (!nearestPoint) return;
 
@@ -461,6 +469,12 @@ export class DeltaTool {
       this.state.selectionState = 'waitingSecond';
       this.state.lastMeasurement = null;
     } else if (this.state.selectionState === 'waitingSecond') {
+      // For peak integration, both points MUST be on the same series
+      if (this.state.point1 && nearestPoint.seriesId !== this.state.point1.seriesId) {
+        // Ignore - user clicked on a different series
+        return;
+      }
+
       // Select second point
       this.state.point2 = nearestPoint;
       this.state.selectionState = 'complete';
@@ -487,7 +501,8 @@ export class DeltaTool {
     pixelX: number,
     pixelY: number,
     plotArea: { x: number; y: number; width: number; height: number },
-    bounds: Bounds
+    bounds: Bounds,
+    seriesIdFilter?: string
   ): DataPoint | null {
     if (!this.ctx.getSeries) return null;
 
@@ -496,6 +511,9 @@ export class DeltaTool {
     let minDistance = this.options.snapRadius;
 
     for (const s of series) {
+      // If filtering by series ID, skip other series
+      if (seriesIdFilter && s.id !== seriesIdFilter) continue;
+
       const xData = s.x;
       const yData = s.y;
       const len = Math.min(xData.length, yData.length);
@@ -537,28 +555,95 @@ export class DeltaTool {
     return nearestPoint;
   }
 
-  private calculateMeasurement(): DeltaMeasurement {
+  private calculateMeasurement(): PeakMeasurement {
     const p1 = this.state.point1!;
     const p2 = this.state.point2!;
+    const seriesList = this.ctx.getSeries ? this.ctx.getSeries() : [];
+    const series = seriesList.find(s => s.id === p1.seriesId);
 
-    const deltaX = p2.x - p1.x;
-    const deltaY = p2.y - p1.y;
-    const slope = deltaX !== 0 ? deltaY / deltaX : Infinity;
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    if (!series) {
+      return {
+        x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y,
+        area: 0, integral: 0, baselineSlope: 0, baselineIntercept: 0,
+        peakHeight: 0, peakX: 0, peakY: 0,
+        pixelX1: p1.pixelX, pixelY1: p1.pixelY, pixelX2: p2.pixelX, pixelY2: p2.pixelY
+      };
+    }
+
+    const xData = series.x;
+    const yData = series.y;
+    const idx1 = Math.min(p1.index, p2.index);
+    const idx2 = Math.max(p1.index, p2.index);
+
+    // Baseline detection using linear regression on windows around p1 and p2 (noise segments)
+    const win = this.options.baselineWindow;
+    const baselinePointsX: number[] = [];
+    const baselinePointsY: number[] = [];
+
+    // Window around idx1
+    for (let i = Math.max(0, idx1 - Math.floor(win / 2)); i <= Math.min(xData.length - 1, idx1 + Math.floor(win / 2)); i++) {
+      baselinePointsX.push(xData[i]);
+      baselinePointsY.push(yData[i]);
+    }
+    // Window around idx2
+    for (let i = Math.max(0, idx2 - Math.floor(win / 2)); i <= Math.min(xData.length - 1, idx2 + Math.floor(win / 2)); i++) {
+      baselinePointsX.push(xData[i]);
+      baselinePointsY.push(yData[i]);
+    }
+
+    // Linear regression: y = mx + b
+    const n = baselinePointsX.length;
+    let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+    for (let i = 0; i < n; i++) {
+      sumX += baselinePointsX[i];
+      sumY += baselinePointsY[i];
+      sumXY += baselinePointsX[i] * baselinePointsY[i];
+      sumXX += baselinePointsX[i] * baselinePointsX[i];
+    }
+    const baselineSlope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+    const baselineIntercept = (sumY - baselineSlope * sumX) / n;
+
+    // Numerical integration (trapezoidal rule)
+    let area = 0;
+    let integral = 0;
+    let peakHeight = -Infinity;
+    let peakX = 0;
+    let peakY = 0;
+
+    for (let i = idx1; i < idx2; i++) {
+      const x_a = xData[i];
+      const y_a = yData[i];
+      const x_b = xData[i + 1];
+      const y_b = yData[i + 1];
+
+      const dx = x_b - x_a;
+      const avgY = (y_a + y_b) / 2;
+
+      integral += avgY * dx;
+
+      // Baseline value at these points
+      const bl_a = baselineSlope * x_a + baselineIntercept;
+      const bl_b = baselineSlope * x_b + baselineIntercept;
+      const avgBL = (bl_a + bl_b) / 2;
+
+      area += (avgY - avgBL) * dx;
+
+      // Find maximum elevation above baseline
+      const h_a = y_a - bl_a;
+      if (h_a > peakHeight) {
+        peakHeight = h_a;
+        peakX = x_a;
+        peakY = y_a;
+      }
+    }
 
     return {
-      x1: p1.x,
-      y1: p1.y,
-      x2: p2.x,
-      y2: p2.y,
-      deltaX,
-      deltaY,
-      slope,
-      distance,
-      pixelX1: p1.pixelX,
-      pixelY1: p1.pixelY,
-      pixelX2: p2.pixelX,
-      pixelY2: p2.pixelY,
+      x1: p1.x, y1: p1.y,
+      x2: p2.x, y2: p2.y,
+      area, integral, baselineSlope, baselineIntercept,
+      peakHeight, peakX, peakY,
+      pixelX1: p1.pixelX, pixelY1: p1.pixelY,
+      pixelX2: p2.pixelX, pixelY2: p2.pixelY
     };
   }
 
@@ -690,35 +775,75 @@ export class DeltaTool {
       this.drawPointLabel(ctx, p2.pixelX, p2.pixelY - opts.highlightSize - 8, 'P2', '#4ade80');
     }
 
-    // Draw measurement line between points
-    if (this.state.point1 && this.state.point2) {
+    // Draw baseline and area
+    if (this.state.point1 && this.state.point2 && this.state.lastMeasurement) {
       const p1 = this.state.point1;
       const p2 = this.state.point2;
+      const m = this.state.lastMeasurement;
+      const plotArea = this.ctx.getPlotArea();
+      const bounds = this.ctx.getViewBounds();
 
-      // Dashed line connecting points
+      // Draw area fill
+      const seriesList = this.ctx.getSeries ? this.ctx.getSeries() : [];
+      const series = seriesList.find(s => s.id === p1.seriesId);
+      if (series) {
+        const xData = series.x;
+        const yData = series.y;
+        const idx1 = Math.min(p1.index, p2.index);
+        const idx2 = Math.max(p1.index, p2.index);
+
+        // Get correct Y bounds for this series
+        const seriesYBounds = this.ctx.getYBounds
+          ? this.ctx.getYBounds(series.yAxisId)
+          : { yMin: bounds.yMin, yMax: bounds.yMax };
+
+        ctx.beginPath();
+        // Start from first point on baseline
+        ctx.moveTo(p1.pixelX, p1.pixelY);
+
+        // Trace the peak curve
+        for (let i = idx1; i <= idx2; i++) {
+          const px = plotArea.x + ((xData[i] - bounds.xMin) / (bounds.xMax - bounds.xMin)) * plotArea.width;
+          const py = plotArea.y + (1 - (yData[i] - seriesYBounds.yMin) / (seriesYBounds.yMax - seriesYBounds.yMin)) * plotArea.height;
+          ctx.lineTo(px, py);
+        }
+
+        // Close back along baseline
+        ctx.lineTo(p2.pixelX, p2.pixelY);
+        ctx.closePath();
+
+        ctx.fillStyle = opts.areaFill;
+        ctx.fill();
+      }
+
+      // Draw baseline (straight line from regression)
       ctx.beginPath();
       ctx.moveTo(p1.pixelX, p1.pixelY);
       ctx.lineTo(p2.pixelX, p2.pixelY);
       ctx.strokeStyle = opts.lineColor;
-      ctx.lineWidth = opts.lineWidth;
-      ctx.setLineDash([6, 4]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // Delta lines (horizontal and vertical)
-      ctx.beginPath();
-      ctx.moveTo(p1.pixelX, p1.pixelY);
-      ctx.lineTo(p2.pixelX, p1.pixelY);
-      ctx.lineTo(p2.pixelX, p2.pixelY);
-      ctx.strokeStyle = 'rgba(255, 107, 107, 0.4)';
       ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
+      ctx.stroke();
+
+      // Peak height indicator - use correct Y bounds
+      const peakYBounds = this.ctx.getYBounds
+        ? this.ctx.getYBounds(p1.yAxisId)
+        : { yMin: bounds.yMin, yMax: bounds.yMax };
+      const peakPX = plotArea.x + ((m.peakX - bounds.xMin) / (bounds.xMax - bounds.xMin)) * plotArea.width;
+      const peakPY = plotArea.y + (1 - (m.peakY - peakYBounds.yMin) / (peakYBounds.yMax - peakYBounds.yMin)) * plotArea.height;
+      const baselineAtPeak = m.baselineSlope * m.peakX + m.baselineIntercept;
+      const basePY = plotArea.y + (1 - (baselineAtPeak - peakYBounds.yMin) / (peakYBounds.yMax - peakYBounds.yMin)) * plotArea.height;
+
+      ctx.beginPath();
+      ctx.moveTo(peakPX, peakPY);
+      ctx.lineTo(peakPX, basePY);
+      ctx.strokeStyle = opts.lineColor;
+      ctx.setLineDash([2, 2]);
       ctx.stroke();
       ctx.setLineDash([]);
 
       // Draw measurement label
-      if (opts.showLabels && this.state.lastMeasurement) {
-        this.drawMeasurementLabel(ctx, p1, p2, this.state.lastMeasurement);
+      if (opts.showLabels) {
+        this.drawMeasurementLabel(ctx, p1, p2, m);
       }
     }
 
@@ -792,25 +917,17 @@ export class DeltaTool {
     ctx: CanvasRenderingContext2D,
     p1: DataPoint,
     p2: DataPoint,
-    m: DeltaMeasurement
+    m: PeakMeasurement
   ): void {
     const opts = this.options;
     const midX = (p1.pixelX + p2.pixelX) / 2;
     const midY = (p1.pixelY + p2.pixelY) / 2;
 
     const lines: string[] = [];
-
-    if (opts.showDelta) {
-      lines.push(`ΔX: ${this.formatValue(m.deltaX)}`);
-      lines.push(`ΔY: ${this.formatValue(m.deltaY)}`);
-    }
-
-    if (opts.showSlope && isFinite(m.slope)) {
-      lines.push(`Slope: ${this.formatValue(m.slope)}`);
-    }
-
-    if (opts.showDistance) {
-      lines.push(`Distance: ${this.formatValue(m.distance)}`);
+    if (opts.showPeak) {
+      lines.push(`Peak Area: ${this.formatValue(m.area)}`);
+      lines.push(`Peak Height: ${this.formatValue(m.peakHeight)}`);
+      lines.push(`Integral: ${this.formatValue(m.integral)}`);
     }
 
     const lineHeight = opts.labelFontSize + 4;
@@ -935,11 +1052,11 @@ export class DeltaTool {
 // ============================================
 
 /**
- * Create a delta tool for a chart context
+ * Create a peak tool for a chart context
  */
-export function createDeltaTool(
-  context: DeltaToolContext,
-  options?: DeltaToolOptions
-): DeltaTool {
-  return new DeltaTool(context, options);
+export function createPeakTool(
+  context: PeakToolContext,
+  options?: PeakToolOptions
+): PeakTool {
+  return new PeakTool(context, options);
 }

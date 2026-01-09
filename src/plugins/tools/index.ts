@@ -9,9 +9,9 @@
  * @module plugins/tools
  */
 
-import { DeltaTool } from "./src/delta-tool";
-import { PeakTool } from "./src/peak-tool";
-import { TooltipManager } from "./src/tooltip";
+import { DeltaTool } from "./delta-tool";
+import { PeakTool } from "./peak-tool";
+import { TooltipManager } from "./tooltip";
 import type { PluginManifest, ChartPlugin, PluginContext } from "../types";
 
 export interface PluginToolsConfig {
@@ -37,6 +37,10 @@ const manifestTools: PluginManifest = {
  * Adds specialized tools for scientific data analysis and interaction.
  */
 export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<PluginToolsConfig> {
+    let deltaTool: DeltaTool | null = null;
+    let peakTool: PeakTool | null = null;
+    let tooltipManager: TooltipManager | null = null;
+
     return {
         manifest: manifestTools,
 
@@ -61,6 +65,8 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
                 peakTool = new PeakTool(toolContext);
             }
             if (_config.useEnhancedTooltips ?? true) {
+                // Safely access internal properties for bridge
+                const chart = ctx.chart as any;
                 tooltipManager = new TooltipManager({
                     overlayCtx: ctx.render.ctx2d!,
                     chartTheme: ctx.ui.theme,
@@ -68,21 +74,18 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
                     getSeries: () => ctx.data.getAllSeries() as any,
                     pixelToDataX: (px) => ctx.coords.pixelToDataX(px),
                     pixelToDataY: (py) => ctx.coords.pixelToDataY(py),
-                    getXScale: () => (ctx.chart as any).xScale,
-                    getYScales: () => (ctx.chart as any).yScales,
+                    getXScale: () => chart.xScale,
+                    getYScales: () => chart.yScales,
                     getViewBounds: () => ctx.data.getViewBounds(),
-                    options: (ctx.chart as any).initialOptions.tooltip,
+                    options: chart.initialOptions?.tooltip,
                 });
             }
         },
 
         onInteraction(_ctx, event) {
             // Forward relevant events to tools if they don't have their own listeners
-            // (Current tools have their own listeners on the container)
             if (event.type === 'mousemove') {
                 tooltipManager?.handleCursorMove(event.pixelX, event.pixelY);
-            } else if (event.type === 'mouseup' || event.type === 'mousedown') {
-                // ...
             }
         },
 
@@ -91,6 +94,9 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
             deltaTool?.destroy();
             peakTool?.destroy();
             tooltipManager?.destroy();
+            deltaTool = null;
+            peakTool = null;
+            tooltipManager = null;
         },
 
         api: {
@@ -107,10 +113,6 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
         }
     };
 }
-
-let deltaTool: DeltaTool | null = null;
-let peakTool: PeakTool | null = null;
-let tooltipManager: TooltipManager | null = null;
 
 export { DeltaTool, PeakTool, TooltipManager };
 export default PluginTools;

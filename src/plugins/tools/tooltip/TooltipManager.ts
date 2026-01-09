@@ -11,9 +11,9 @@
  * @module tooltip/TooltipManager
  */
 
-import type { PlotArea, Bounds } from "../../../../types";
-import type { Scale } from "../../../../scales";
-import type { Series } from "../../../../core/Series";
+import type { PlotArea, Bounds } from "../../../types";
+import type { Scale } from "../../../scales";
+import type { Series } from "../../../core/Series";
 import type {
   TooltipData,
   DataPointTooltip,
@@ -25,7 +25,7 @@ import type {
   ShowTooltipOptions,
   TooltipEventMap,
 } from "./types";
-import { EventEmitter } from "../../../../core/EventEmitter";
+import { EventEmitter } from "../../../core/EventEmitter";
 import { TooltipPositioner } from "./TooltipPositioner";
 import { TooltipRenderer } from "./TooltipRenderer";
 import {
@@ -44,7 +44,7 @@ import {
   getBuiltinTemplate,
   getDefaultTemplateForType,
 } from "./templates";
-import type { ChartTheme } from "../../../../theme";
+import type { ChartTheme } from "../../../theme";
 
 // ============================================
 // Types for TooltipManager

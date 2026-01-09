@@ -361,7 +361,7 @@ export interface ChartOptions {
   /** Show statistics panel (default: false) */
   showStatistics?: boolean;
   /** Tooltip configuration */
-  tooltip?: import("./core/tooltip/types").TooltipOptions;
+  tooltip?: import("./plugins/tools/tooltip/types").TooltipOptions;
   /** Animation configuration */
   animations?: import("./core/animation").ChartAnimationConfig | boolean;
   /** Responsive design configuration */

@@ -11,29 +11,157 @@
  * @module plugins/analysis
  */
 
-export {
-    formatWithPrefix,
-    formatValue,
-    formatScientific,
-    getBestPrefix,
-    detectCycles,
-    generateCycleColors,
-    detectPeaks,
-    validateData,
-    calculateStats,
-    movingAverage,
-    downsampleLTTB,
-} from "./src";
-
-export * from "./src/indicators";
-export * from "./src/fft";
-export * from "./src/filters";
-export * from "./src/fitting";
-export * from "./src/contours";
-export * from "./src/statistics";
-export * from "./src/math";
-
 import type { PluginManifest, ChartPlugin, PluginContext } from "../types";
+import { addFitLine } from "./SeriesFit";
+import { fft } from "./fft";
+
+// ============================================
+// Core Exports (Utilities)
+// ============================================
+
+export {
+  formatWithPrefix,
+  formatValue,
+  formatScientific,
+  getBestPrefix,
+  detectCycles,
+  generateCycleColors,
+  detectPeaks,
+  validateData,
+  calculateStats,
+  movingAverage,
+  downsampleLTTB,
+  subtractBaseline,
+} from './utils';
+
+export {
+  solveLinearSystem,
+  calculateR2,
+  integrate,
+  derivative,
+  cumulativeIntegral,
+} from './math';
+
+export {
+  fitData,
+} from './fitting';
+
+export type {
+  CycleInfo,
+  Peak,
+  PrefixInfo,
+  ValidationResult,
+  DataStats,
+} from './utils';
+
+export type {
+  FitType,
+  FitOptions,
+  FitResult,
+} from './fitting';
+
+export * from './contours';
+
+// ============================================
+// Advanced Analysis (FFT, Filters, Statistics)
+// ============================================
+
+export {
+  fft,
+  ifft,
+  analyzeSpectrum,
+  powerSpectrum,
+  dominantFrequency,
+  hanningWindow,
+  hammingWindow,
+  blackmanWindow,
+  nextPowerOf2,
+  analyzeComplexSpectrum,
+  fftFromComplexInput,
+  complexToArrays,
+  arraysToComplex,
+  ifftFromArrays,
+  ifftComplex,
+  getPositiveFrequencies,
+} from './fft';
+
+export type {
+  Complex,
+  FFTResult,
+  ComplexFFTResult,
+  PowerSpectrumResult,
+} from './fft';
+
+export {
+  lowPassFilter,
+  highPassFilter,
+  bandPassFilter,
+  bandStopFilter,
+  butterworth,
+  exponentialMovingAverage,
+  gaussianSmooth,
+  savitzkyGolay,
+  medianFilter,
+} from './filters';
+
+export type {
+  FilterType,
+  FilterOptions,
+  ButterworthOptions,
+} from './filters';
+
+export {
+  crossCorrelation,
+  autoCorrelation,
+  detectAnomalies,
+  trapezoidalIntegration,
+  simpsonsIntegration,
+  cumulativeIntegration as cumulativeIntegral2,
+  tTest,
+} from './statistics';
+
+export type {
+  CorrelationResult,
+  AnomalyResult,
+  AnomalyOptions,
+  TTestResult,
+} from './statistics';
+
+// ============================================
+// Technical/Financial Indicators
+// ============================================
+
+export {
+  sma,
+  ema,
+  wma,
+  dema,
+  tema,
+  rsi,
+  macd,
+  stochastic,
+  roc,
+  momentum,
+  bollingerBands,
+  atr,
+  standardDeviation,
+  vwap,
+  obv,
+  adx,
+  aroon,
+  percentChange,
+  cumsum,
+  normalize,
+} from './indicators';
+
+export type {
+  IndicatorResult,
+  OHLCData,
+} from './indicators';
+
+// ============================================
+// Plugin Definition
+// ============================================
 
 export interface PluginAnalysisConfig {
     /** Enable worker-based off-main-thread processing */
@@ -49,8 +177,6 @@ const manifestAnalysis: PluginManifest = {
     provides: ["analysis"],
     tags: ["fft", "filters", "statistics", "math"],
 };
-
-import { addFitLine } from "./src/SeriesFit";
 
 /**
  * SciChart Analysis Plugin
@@ -74,12 +200,9 @@ export function PluginAnalysis(_config: PluginAnalysisConfig = {}): ChartPlugin<
 
         api: {
             addFitLine(seriesId: string, type: any, options?: any) {
-                // Bridge between PluginContext and the internal context addFitLine expects
                 return addFitLine(_ctx.chart, seriesId, type, options);
             },
-            // Re-export other utilities for programmatic access
             fft: (data: any) => {
-                const { fft } = require("./src/fft");
                 return fft(data);
             },
         }

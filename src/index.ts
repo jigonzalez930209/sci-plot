@@ -143,11 +143,11 @@ export type {
 // ============================================
 // Tooltip System
 // ============================================
-export {
+  export {
   TooltipManager,
   TOOLTIP_THEMES,
   getTooltipThemeForChartTheme,
-} from "./core/tooltip";
+} from "./plugins/tools/tooltip";
 
 export type {
   TooltipData,
@@ -158,7 +158,7 @@ export type {
   DataPointTooltip,
   CrosshairTooltip,
   HeatmapTooltip,
-} from "./core/tooltip";
+} from "./plugins/tools/tooltip";
 
 // ============================================
 // Downsampling
@@ -189,7 +189,7 @@ export {
   type PrefixInfo,
   type ValidationResult,
   type DataStats,
-} from "./plugins/analysis/src";
+} from "./plugins/analysis";
 
 // ============================================
 // Streaming utilities
@@ -462,7 +462,7 @@ export {
   normalize,
   type IndicatorResult,
   type OHLCData,
-} from "./plugins/analysis/src/indicators";
+} from "./plugins/analysis";
 
 // ============================================
 // Plugin System

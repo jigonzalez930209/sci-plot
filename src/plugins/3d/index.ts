@@ -10,39 +10,33 @@
  * @module plugins/3d
  */
 
-// Re-export all 3D functionality from core
-export {
-    // Renderers
-    Area3DRenderer,
-    Bubble3DRenderer,
-    Impulse3DRenderer,
-    Line3DRenderer,
-    PointCloud3DRenderer,
-    Ribbon3DRenderer,
-    SurfaceBar3DRenderer,
-    SurfaceMesh3DRenderer,
-    VectorField3DRenderer,
-    Voxel3DRenderer,
-    Waterfall3DRenderer,
+// Re-export all 3D functionality
+export * from "./Area3DRenderer";
+export * from "./Bubble3DRenderer";
+export * from "./Impulse3DRenderer";
+export * from "./Line3DRenderer";
+export * from "./PointCloud3DRenderer";
+export * from "./Ribbon3DRenderer";
+export * from "./SurfaceBar3DRenderer";
+export * from "./SurfaceMesh3DRenderer";
+export * from "./VectorField3DRenderer";
+export * from "./Voxel3DRenderer";
+export * from "./Waterfall3DRenderer";
+export * from "./Axes3D";
+export * from "./Tooltip3D";
+export * from "./Raycaster3D";
 
-    // Axes and utilities
-    Axes3D,
-    createRayFromScreen,
-    Tooltip3D,
+// Math
+export * from "./math";
 
-    // Math
-    Mat4,
-    Vec3,
+// Camera & Controls
+export * from "./camera";
+export * from "./controls";
 
-    // Camera & Controls
-    OrbitCamera,
-    OrbitController,
-} from "./src";
-
-export * from "./src/colorThemes";
+export * from "./colorThemes";
 
 // Re-export series
-export * from "./src/series";
+export * from "./series";
 
 import type { PluginManifest, ChartPlugin, PluginContext } from "../types";
 
