@@ -6,7 +6,7 @@
  */
 
 import { createChart } from "./index";
-import { formatWithPrefix, detectCycles, analyzeSpectrum } from "./analysis";
+import { formatWithPrefix, detectCycles, analyzeSpectrum } from "./plugins/analysis";
 
 /**
  * Example: Basic CV Plot
@@ -291,7 +291,7 @@ export function exampleMultiCycle() {
   // Add each cycle as separate series
   const colors = ["#ff0055", "#00ff88", "#00aaff"];
 
-  cycles.forEach((cycle, idx) => {
+  cycles.forEach((cycle: any, idx: number) => {
     const cycleX = x.slice(cycle.startIndex, cycle.endIndex + 1);
     const cycleY = y.slice(cycle.startIndex, cycle.endIndex + 1);
 
