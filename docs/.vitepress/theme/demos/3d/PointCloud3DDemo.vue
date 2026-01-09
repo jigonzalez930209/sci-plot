@@ -2,7 +2,7 @@
 import BaseChart3D from './BaseChart3D.vue'
 
 async function onInit({ canvas, backgroundColor, onReady }: any) {
-  const { PointCloud3DRenderer } = await import('@src/core/3d')
+  const { PointCloud3DRenderer } = await import('@src/plugins/3d')
   
   const count = 100000
   const positions = new Float32Array(count * 3), colors = new Float32Array(count * 4), sizes = new Float32Array(count)

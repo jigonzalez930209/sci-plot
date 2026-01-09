@@ -2,7 +2,7 @@
 import BaseChart3D from './BaseChart3D.vue'
 
 async function onInit({ canvas, backgroundColor, onReady }: any) {
-  const { SurfaceBar3DRenderer } = await import('@src/core/3d')
+  const { SurfaceBar3DRenderer } = await import('@src/plugins/3d')
   
   const rows = 15, cols = 15, count = rows * cols
   const heights = new Float32Array(count), colors = new Float32Array(count * 3)

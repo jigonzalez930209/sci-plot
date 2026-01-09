@@ -103,7 +103,7 @@ async function updateChart() {
         })
       })
     } else {
-      const { analyzeSpectrum } = await import('@src/analysis')
+      const { analyzeSpectrum } = await import('@src/plugins/analysis')
 
       freqs.forEach((freq, idx) => {
         const y = generateWaveform(waveform.value, freq, t)

@@ -133,7 +133,7 @@ async function updateChart() {
       })
 
     } else {
-      const { analyzeSpectrum } = await import('@src/analysis')
+      const { analyzeSpectrum } = await import('@src/plugins/analysis')
 
       FREQUENCIES.forEach((freq, idx) => {
         const y = generateSquareWave(freq, t)
