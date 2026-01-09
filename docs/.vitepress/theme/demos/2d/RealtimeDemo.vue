@@ -11,6 +11,7 @@ const chartContainer = ref<HTMLElement | null>(null)
 const fps = ref(0)
 const pointCount = ref(0)
 const isRunning = ref(false)
+const hasStarted = ref(false)
 const windowSize = ref<number | null>(50000)
 
 const windowSizeOptions = [
@@ -43,11 +44,38 @@ onMounted(async () => {
     fps.value = Math.round(e.fps)
   })
 
-  startRealtime()
+  // No longer auto-starts - user must click "Start" button
 })
+
+const pointsPerFrame = 25
+
+function animate() {
+  if (!chart || !isRunning.value) return
+  
+  const batchX = new Float32Array(pointsPerFrame)
+  const batchY = new Float32Array(pointsPerFrame)
+  
+  for (let i = 0; i < pointsPerFrame; i++) {
+    batchX[i] = tRef
+    const phase = Math.floor(tRef / 100) % 4
+    let signal: number
+    if (phase === 0) signal = Math.sin(tRef * 0.1)
+    else if (phase === 1) signal = Math.sin(tRef * 0.1) + Math.sin(tRef * 0.3) / 3
+    else if (phase === 2) signal = ((tRef * 0.05) % (2 * Math.PI)) / Math.PI - 1
+    else signal = Math.sin(tRef * 0.1 + Math.sin(tRef * 0.01) * 3)
+    
+    batchY[i] = signal + Math.random() * 0.05
+    tRef += 0.01
+  }
+
+  chart.appendData('stream', batchX, batchY)
+  pointCount.value = chart.getSeries('stream').getPointCount()
+  animationId = requestAnimationFrame(animate)
+}
 
 function startRealtime() {
   isRunning.value = true
+  hasStarted.value = true
   tRef = 0
   
   const seriesOptions: any = {
@@ -64,54 +92,33 @@ function startRealtime() {
   chart.addSeries(seriesOptions)
   chart.setAutoScroll(true)
   
-  const pointsPerFrame = 25
-  const animate = () => {
-    if (!chart || !isRunning.value) return
-    
-    const batchX = new Float32Array(pointsPerFrame)
-    const batchY = new Float32Array(pointsPerFrame)
-    
-    for (let i = 0; i < pointsPerFrame; i++) {
-      batchX[i] = tRef
-      const phase = Math.floor(tRef / 100) % 4
-      let signal: number
-      if (phase === 0) signal = Math.sin(tRef * 0.1)
-      else if (phase === 1) signal = Math.sin(tRef * 0.1) + Math.sin(tRef * 0.3) / 3
-      else if (phase === 2) signal = ((tRef * 0.05) % (2 * Math.PI)) / Math.PI - 1
-      else signal = Math.sin(tRef * 0.1 + Math.sin(tRef * 0.01) * 3)
-      
-      batchY[i] = signal + Math.random() * 0.05
-      tRef += 0.01
-    }
-
-    chart.appendData('stream', batchX, batchY)
-    pointCount.value = chart.getSeries('stream').getPointCount()
-    animationId = requestAnimationFrame(animate)
-  }
   animationId = requestAnimationFrame(animate)
 }
 
 function toggleRealtime() {
   if (isRunning.value) {
+    // Pause
     isRunning.value = false
     if (animationId) cancelAnimationFrame(animationId)
   } else {
-    isRunning.value = true
-    animationId = requestAnimationFrame(() => {
-        // Continue from where it was
-    })
-    // Actually the logic above reinits tRef in startRealtime. 
-    // Let's adjust to resume.
+    // Start or Resume
+    if (!hasStarted.value) {
+      startRealtime()
+    } else {
+      isRunning.value = true
+      animationId = requestAnimationFrame(animate)
+    }
   }
 }
 
 function resetDemo() {
   if (animationId) cancelAnimationFrame(animationId)
   isRunning.value = false
+  hasStarted.value = false
   if (chart) {
     chart.getAllSeries().forEach((s: any) => chart.removeSeries(s.getId()))
-    startRealtime()
   }
+  pointCount.value = 0
 }
 
 onUnmounted(() => {
@@ -145,7 +152,7 @@ watch(isDark, (val) => {
         </span>
       </div>
       <div class="chart-controls">
-        <button @click="isRunning = !isRunning" class="btn btn-primary">
+        <button @click="toggleRealtime" class="btn btn-primary">
           {{ isRunning ? '⏸ Pause' : '▶ Start' }}
         </button>
         <select v-model="windowSize" @change="resetDemo" class="btn select" :disabled="isRunning">
