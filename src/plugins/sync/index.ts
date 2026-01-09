@@ -1,0 +1,51 @@
+/**
+ * SciChart Engine - Chart Sync Plugin
+ * 
+ * Provides synchronization between multiple chart instances.
+ * 
+ * @module plugins/sync
+ */
+
+export * from "../../core/sync";
+
+import type { PluginManifest, ChartPlugin, PluginContext } from "../types";
+
+export interface PluginSyncConfig {
+    /** Group ID to join */
+    groupId?: string;
+    /** Sync axes: 'x' | 'y' | 'both' */
+    syncAxes?: "x" | "y" | "both";
+}
+
+const manifestSync: PluginManifest = {
+    name: "scichart-sync",
+    version: "1.0.0",
+    description: "Multi-chart synchronization for scichart-engine",
+    provides: ["interaction"],
+    tags: ["sync", "multi-chart", "coordination"],
+};
+
+/**
+ * SciChart Sync Plugin
+ * 
+ * Enables smooth coordination and synchronization between separate chart instances.
+ */
+export function PluginSync(config: PluginSyncConfig = {}): ChartPlugin<PluginSyncConfig> {
+    void config;
+    return {
+        manifest: manifestSync,
+
+        onInit(ctx: PluginContext) {
+            ctx.log.info("SciChart Sync Plugin Initialized");
+            if (config.groupId) {
+                // Join the specified group
+            }
+        },
+
+        onDestroy(ctx: PluginContext) {
+            ctx.log.info("SciChart Sync Plugin Destroyed");
+        }
+    };
+}
+
+export default PluginSync;
