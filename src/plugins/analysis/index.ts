@@ -23,15 +23,15 @@ export {
     calculateStats,
     movingAverage,
     downsampleLTTB,
-} from "../../analysis";
+} from "./src";
 
-export * from "../../analysis/indicators";
-export * from "../../analysis/fft";
-export * from "../../analysis/filters";
-export * from "../../analysis/fitting";
-export * from "../../analysis/contours";
-export * from "../../analysis/statistics";
-export * from "../../analysis/math";
+export * from "./src/indicators";
+export * from "./src/fft";
+export * from "./src/filters";
+export * from "./src/fitting";
+export * from "./src/contours";
+export * from "./src/statistics";
+export * from "./src/math";
 
 import type { PluginManifest, ChartPlugin, PluginContext } from "../types";
 
@@ -50,21 +50,38 @@ const manifestAnalysis: PluginManifest = {
     tags: ["fft", "filters", "statistics", "math"],
 };
 
+import { addFitLine } from "../../core/chart/series/SeriesFit";
+
 /**
  * SciChart Analysis Plugin
  * 
  * Adds comprehensive data analysis capabilities to the chart.
  */
 export function PluginAnalysis(_config: PluginAnalysisConfig = {}): ChartPlugin<PluginAnalysisConfig> {
+    let _ctx: PluginContext;
+
     return {
         manifest: manifestAnalysis,
 
         onInit(ctx: PluginContext) {
+            _ctx = ctx;
             ctx.log.info("SciChart Analysis Plugin Initialized");
         },
 
         onDestroy(ctx: PluginContext) {
             ctx.log.info("SciChart Analysis Plugin Destroyed");
+        },
+
+        api: {
+            addFitLine(seriesId: string, type: any, options?: any) {
+                // Bridge between PluginContext and the internal context addFitLine expects
+                return addFitLine(_ctx.chart, seriesId, type, options);
+            },
+            // Re-export other utilities for programmatic access
+            fft: (data: any) => {
+                const { fft } = require("./src/fft");
+                return fft(data);
+            },
         }
     };
 }
