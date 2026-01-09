@@ -1,7 +1,7 @@
 /**
  * Series Curve Fitting Support
  */
-import { fitData, type FitType, type FitOptions } from "../../../analysis";
+import { fitData, type FitType, type FitOptions } from "./index";
 
 export function addFitLine(
   ctx: any,
