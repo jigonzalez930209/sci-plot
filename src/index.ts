@@ -284,3 +284,183 @@ export type {
   GpuComputeOptions,
 } from "./gpu";
 
+// ============================================
+// Internationalization (i18n)
+// ============================================
+export {
+  setGlobalLocale,
+  getGlobalLocale,
+  getLocale,
+  registerLocale,
+  createLocaleFormatter,
+  LOCALE_EN_US,
+  LOCALE_ES_ES,
+  LOCALE_DE_DE,
+  LOCALE_FR_FR,
+  LOCALE_PT_BR,
+  LOCALE_ZH_CN,
+  LOCALE_JA_JP,
+  type LocaleConfig,
+  type LocaleFormatter,
+} from "./core/locale";
+
+// ============================================
+// Keyboard Shortcuts
+// ============================================
+export {
+  KeyBindingManager,
+  DEFAULT_KEY_BINDINGS,
+  createKeyBinding,
+  parseShortcut,
+  type KeyAction,
+  type KeyBinding,
+  type KeyBindingCallbacks,
+  type KeyBindingManagerOptions,
+} from "./core/keybindings";
+
+// ============================================
+// Clipboard
+// ============================================
+export {
+  ClipboardManager,
+  getClipboardManager,
+  copyToClipboard,
+  formatData,
+  type ClipboardFormat,
+  type ClipboardOptions,
+  type ClipboardDataPoint,
+  type ClipboardResult,
+} from "./core/clipboard";
+
+// ============================================
+// Debug Overlay
+// ============================================
+export {
+  DebugOverlay,
+  createDebugOverlay,
+  enableDebugMode,
+  type DebugStats,
+  type DebugOverlayOptions,
+} from "./core/debug";
+
+// ============================================
+// Loading Indicators
+// ============================================
+export {
+  LoadingIndicator,
+  createLoadingIndicator,
+  showLoading,
+  showProgress,
+  type LoadingIndicatorType,
+  type LoadingIndicatorOptions,
+  type LoadingState,
+} from "./core/loading";
+
+// ============================================
+// Testing Utilities (for test environments)
+// ============================================
+export {
+  // Data generators
+  generateSineWave,
+  generateSquareWave,
+  generateSawtoothWave,
+  generateTriangleWave,
+  generateRandomData,
+  generateCVData,
+  generateNyquistData,
+  
+  // Benchmarking
+  benchmarkRender,
+  assertPerformance,
+  
+  // Snapshots
+  createSnapshot,
+  compareSnapshots,
+  
+  // Utilities
+  waitForFrames,
+  waitFor,
+  
+  // Types
+  type MockChartOptions,
+  type WaveformOptions,
+  type RandomDataOptions,
+  type BenchmarkResult as TestBenchmarkResult,
+  type BenchmarkOptions as TestBenchmarkOptions,
+  type SnapshotOptions,
+  type ChartSnapshot,
+} from "./testing";
+
+// ============================================
+// Chart Synchronization
+// ============================================
+export {
+  ChartGroup,
+  createChartGroup,
+  linkCharts,
+  createMasterSlave,
+  type SyncAxis,
+  type SyncOptions,
+  type ChartLike,
+  type SyncEvent,
+} from "./core/sync";
+
+// ============================================
+// Theme Editor
+// ============================================
+export {
+  ThemeEditor,
+  createThemeEditor,
+  getPresetTheme,
+  getPresetNames,
+  THEME_PRESETS,
+  type EditorTheme,
+  type ThemeEditorOptions,
+  type ThemePreset,
+  type ColorGroup,
+  type ColorProperty,
+} from "./core/theme-editor";
+
+// ============================================
+// Streaming Backpressure
+// ============================================
+export {
+  BackpressureManager,
+  CircularBuffer,
+  createBackpressureManager,
+  createRealtimeBackpressure,
+  createLosslessBackpressure,
+  type OverflowStrategy,
+  type BackpressureConfig,
+  type PressureStats,
+  type BufferHealth,
+} from "./streaming/backpressure";
+
+// ============================================
+// Financial/Technical Indicators
+// ============================================
+export {
+  sma,
+  ema,
+  wma,
+  dema,
+  tema,
+  rsi,
+  macd,
+  stochastic,
+  roc,
+  momentum,
+  bollingerBands,
+  atr,
+  standardDeviation,
+  vwap,
+  obv,
+  adx,
+  aroon,
+  percentChange,
+  cumsum,
+  normalize,
+  type IndicatorResult,
+  type OHLCData,
+} from "./analysis/indicators";
+

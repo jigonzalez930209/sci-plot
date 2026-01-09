@@ -116,3 +116,46 @@ export type {
   AnomalyOptions,
   TTestResult,
 } from './statistics';
+
+// ============================================
+// Technical/Financial Indicators
+// ============================================
+
+export {
+  // Moving Averages
+  sma,
+  ema,
+  wma,
+  dema,
+  tema,
+  
+  // Momentum
+  rsi,
+  macd,
+  stochastic,
+  roc,
+  momentum,
+  
+  // Volatility
+  bollingerBands,
+  atr,
+  standardDeviation,
+  
+  // Volume
+  vwap,
+  obv,
+  
+  // Trend
+  adx,
+  aroon,
+  
+  // Utilities
+  percentChange,
+  cumsum,
+  normalize,
+} from './indicators';
+
+export type {
+  IndicatorResult,
+  OHLCData,
+} from './indicators';

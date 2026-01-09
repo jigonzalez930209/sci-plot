@@ -366,6 +366,36 @@ export interface ChartOptions {
   animations?: import("./core/animation").ChartAnimationConfig | boolean;
   /** Responsive design configuration */
   responsive?: import("./core/responsive").ResponsiveConfig | boolean;
+  
+  // ============================================
+  // Interaction Options
+  // ============================================
+  
+  /** Read-only mode: disable all interactions (default: false) */
+  readOnly?: boolean;
+  /** Enable debug overlay showing FPS, memory, etc. (default: false) */
+  debug?: boolean | import("./core/debug").DebugOverlayOptions;
+  
+  // ============================================
+  // Internationalization Options
+  // ============================================
+  
+  /** Locale configuration for number/date formatting (default: 'en-US') */
+  locale?: string | import("./core/locale").LocaleConfig;
+  
+  // ============================================
+  // Keyboard Shortcuts Options
+  // ============================================
+  
+  /** Enable keyboard shortcuts (default: true if not readOnly) */
+  keyBindings?: boolean | import("./core/keybindings").KeyBinding[];
+  
+  // ============================================
+  // Clipboard Options
+  // ============================================
+  
+  /** Enable clipboard operations (default: true) */
+  clipboard?: boolean | import("./core/clipboard").ClipboardOptions;
 }
 
 // ============================================
