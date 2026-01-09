@@ -213,7 +213,7 @@ export function renderOverlay(
   const rect = ctx.container.getBoundingClientRect();
   if (rect.width === 0 || rect.height === 0) {
     console.warn(
-      "[SciChart] Container has zero size in render, skipping overlay"
+      "[SciChartEngine] Container has zero size in render, skipping overlay"
     );
     return;
   }

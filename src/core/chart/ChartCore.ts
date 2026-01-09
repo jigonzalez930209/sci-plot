@@ -191,7 +191,7 @@ export class ChartImpl implements Chart {
         typeof (globalThis as any).navigator !== "undefined" &&
         typeof (globalThis as any).navigator.gpu !== "undefined";
       console.warn(
-        `[SciChart] 'renderer: "webgpu"' requested but WebGPU renderer is experimental and not yet implemented. ` +
+        `[SciChartEngine] 'renderer: "webgpu"' requested but WebGPU renderer is experimental and not yet implemented. ` +
         `Falling back to WebGL. WebGPU supported: ${isSupported}`
       );
     }
@@ -424,7 +424,7 @@ export class ChartImpl implements Chart {
           cmd.fn();
         } catch (err) {
           console.error(
-            `[SciChart] Error executing queued command '${cmd.name}':`,
+            `[SciChartEngine] Error executing queued command '${cmd.name}':`,
             err
           );
         }
@@ -632,7 +632,7 @@ export class ChartImpl implements Chart {
     if (api && api.addFitLine) {
       return api.addFitLine(seriesId, type, options);
     }
-    console.warn("[SciChart] addFitLine requires scichart-analysis plugin");
+    console.warn("[SciChartEngine] addFitLine requires scichart-analysis plugin");
     return "";
   }
   getSeries(id: string): Series | undefined {
@@ -676,7 +676,7 @@ export class ChartImpl implements Chart {
         animation.promise.catch((err) => {
           // Ignore cancellation errors
           if (err.message !== "Animation cancelled") {
-            console.error("[SciChart] Animation error:", err);
+            console.error("[SciChartEngine] Animation error:", err);
           }
         });
       }
@@ -706,7 +706,7 @@ export class ChartImpl implements Chart {
           animation.promise.catch((err) => {
             // Ignore cancellation errors
             if (err.message !== "Animation cancelled") {
-              console.error("[SciChart] Animation error:", err);
+              console.error("[SciChartEngine] Animation error:", err);
             }
           });
         }
@@ -744,7 +744,7 @@ export class ChartImpl implements Chart {
       animation.promise.catch((err) => {
         // Ignore cancellation errors
         if (err.message !== "Animation cancelled") {
-          console.error("[SciChart] Animation error:", err);
+          console.error("[SciChartEngine] Animation error:", err);
         }
       });
     }
@@ -866,7 +866,7 @@ export class ChartImpl implements Chart {
     const id = options.id || `y${existingIds.length}`;
 
     if (this.yAxisOptionsMap.has(id)) {
-      console.warn(`[SciChart] Y axis with id '${id}' already exists`);
+      console.warn(`[SciChartEngine] Y axis with id '${id}' already exists`);
       return id;
     }
 
@@ -895,7 +895,7 @@ export class ChartImpl implements Chart {
    */
   removeYAxis(id: string): boolean {
     if (id === this.primaryYAxisId) {
-      console.warn(`[SciChart] Cannot remove primary Y axis '${id}'`);
+      console.warn(`[SciChartEngine] Cannot remove primary Y axis '${id}'`);
       return false;
     }
 
@@ -924,7 +924,7 @@ export class ChartImpl implements Chart {
   updateYAxis(id: string, options: Partial<AxisOptions>): void {
     const existing = this.yAxisOptionsMap.get(id);
     if (!existing) {
-      console.warn(`[SciChart] Y axis '${id}' not found`);
+      console.warn(`[SciChartEngine] Y axis '${id}' not found`);
       return;
     }
 
@@ -1048,13 +1048,13 @@ export class ChartImpl implements Chart {
         toolsApi.setMode(mode);
       } else {
         // Plugin not yet loaded - retry after a short delay
-        console.info(`[SciChart] Tools plugin not ready, retrying setMode('${mode}')...`);
+        console.info(`[SciChartEngine] Tools plugin not ready, retrying setMode('${mode}')...`);
         setTimeout(() => {
           const api = this.getPluginAPI<any>("scichart-tools");
           if (api) {
             api.setMode(mode);
           } else {
-            console.warn(`[SciChart] Tools plugin still not available for mode '${mode}'`);
+            console.warn(`[SciChartEngine] Tools plugin still not available for mode '${mode}'`);
           }
         }, 100);
       }
