@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Debug Overlay Plugin
+ * SciChartEngine Engine - Debug Overlay Plugin
  * 
  * Provides performance metrics and debugging information.
  * 
@@ -28,7 +28,7 @@ import { DebugOverlay, DebugOverlayOptions } from "../../core/debug";
 import { ChartStatistics } from "../../core/ChartStatistics";
 
 /**
- * SciChart Debug Plugin
+ * SciChartEngine Debug Plugin
  * 
  * Adds a useful overlay with real-time performance metrics and debugging info.
  */
@@ -101,7 +101,7 @@ export function PluginDebug(config: PluginDebugConfig = {}): ChartPlugin<PluginD
         },
 
         onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChart Debug Plugin Destroyed");
+            ctx.log.info("SciChartEngine Debug Plugin Destroyed");
             if (overlay) {
                 overlay.destroy();
                 overlay = null;

@@ -26,7 +26,7 @@ const manifestThemeEditor: PluginManifest = {
 };
 
 /**
- * SciChart Theme Editor Plugin
+ * SciChartEngine Theme Editor Plugin
  * 
  * Adds a visual panel to customize chart colors and styles.
  */
@@ -37,14 +37,14 @@ export function PluginThemeEditor(_config: PluginThemeEditorConfig = {}): ChartP
         manifest: manifestThemeEditor,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChart Theme Editor Plugin Initialized");
+            ctx.log.info("SciChartEngine Theme Editor Plugin Initialized");
 
             // theme-editor typically creates a UI panel
             // editor = new ThemeEditor(ctx.ui.container, ctx.chart);
         },
 
         onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChart Theme Editor Plugin Destroyed");
+            ctx.log.info("SciChartEngine Theme Editor Plugin Destroyed");
             if (editor) {
                 // editor.destroy();
             }

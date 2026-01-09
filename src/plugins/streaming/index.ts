@@ -49,7 +49,7 @@ const manifestStreaming: PluginManifest = {
 };
 
 /**
- * SciChart Streaming Plugin
+ * SciChartEngine Streaming Plugin
  * 
  * Enables seamless integration with real-time data sources.
  */
@@ -58,11 +58,11 @@ export function PluginStreaming(_config: PluginStreamingConfig = {}): ChartPlugi
         manifest: manifestStreaming,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChart Streaming Plugin Initialized");
+            ctx.log.info("SciChartEngine Streaming Plugin Initialized");
         },
 
         onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChart Streaming Plugin Destroyed");
+            ctx.log.info("SciChartEngine Streaming Plugin Destroyed");
         }
     };
 }

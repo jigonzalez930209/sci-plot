@@ -485,7 +485,7 @@ export async function benchmarkRender(
         };
 
         if (opts.verbose) {
-          console.log('[SciChart Benchmark]', result);
+          console.log('[SciChartEngine Benchmark]', result);
         }
 
         resolve(result);

@@ -26,7 +26,7 @@ const manifestAnnotations: PluginManifest = {
 };
 
 /**
- * SciChart Annotations Plugin
+ * SciChartEngine Annotations Plugin
  * 
  * Adds support for drawing lines, shapes, and labels on the chart.
  */

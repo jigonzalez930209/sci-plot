@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Data Analysis Plugin
+ * SciChartEngine Engine - Data Analysis Plugin
  * 
  * Provides mathematical and statistical tools including:
  * - FFT (Fast Fourier Transform)
@@ -179,7 +179,7 @@ const manifestAnalysis: PluginManifest = {
 };
 
 /**
- * SciChart Analysis Plugin
+ * SciChartEngine Analysis Plugin
  * 
  * Adds comprehensive data analysis capabilities to the chart.
  */
@@ -191,11 +191,11 @@ export function PluginAnalysis(_config: PluginAnalysisConfig = {}): ChartPlugin<
 
         onInit(ctx: PluginContext) {
             _ctx = ctx;
-            ctx.log.info("SciChart Analysis Plugin Initialized");
+            ctx.log.info("SciChartEngine Analysis Plugin Initialized");
         },
 
         onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChart Analysis Plugin Destroyed");
+            ctx.log.info("SciChartEngine Analysis Plugin Destroyed");
         },
 
         api: {

@@ -30,13 +30,13 @@ class PluginRegistryImpl implements PluginRegistry {
 
         if (this.entries.has(name)) {
             console.warn(
-                `[SciChart Registry] Plugin "${name}" is already registered, overwriting`
+                `[SciChartEngine Registry] Plugin "${name}" is already registered, overwriting`
             );
         }
 
         this.entries.set(name, entry);
         console.info(
-            `[SciChart Registry] Registered plugin "${name}" v${entry.manifest.version}`
+            `[SciChartEngine Registry] Registered plugin "${name}" v${entry.manifest.version}`
         );
     }
 
@@ -47,7 +47,7 @@ class PluginRegistryImpl implements PluginRegistry {
         const existed = this.entries.has(name);
         this.entries.delete(name);
         if (existed) {
-            console.info(`[SciChart Registry] Unregistered plugin "${name}"`);
+            console.info(`[SciChartEngine Registry] Unregistered plugin "${name}"`);
         }
         return existed;
     }
@@ -184,7 +184,7 @@ export async function loadPlugin<TConfig = unknown>(
 ): Promise<import("./types").ChartPlugin<TConfig> | undefined> {
     const factory = getPluginRegistry().get(name);
     if (!factory) {
-        console.warn(`[SciChart] Plugin "${name}" not found in registry`);
+        console.warn(`[SciChartEngine] Plugin "${name}" not found in registry`);
         return undefined;
     }
     return factory(config) as import("./types").ChartPlugin<TConfig>;

@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Clipboard Plugin
+ * SciChartEngine Engine - Clipboard Plugin
  * 
  * Provides clipboard integration for copying chart data and images.
  * 
@@ -24,7 +24,7 @@ const manifestClipboard: PluginManifest = {
 };
 
 /**
- * SciChart Clipboard Plugin
+ * SciChartEngine Clipboard Plugin
  * 
  * Adds support for copying data and screenshots to the clipboard.
  */
@@ -33,11 +33,11 @@ export function PluginClipboard(_config: PluginClipboardConfig = {}): ChartPlugi
         manifest: manifestClipboard,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChart Clipboard Plugin Initialized");
+            ctx.log.info("SciChartEngine Clipboard Plugin Initialized");
         },
 
         onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChart Clipboard Plugin Destroyed");
+            ctx.log.info("SciChartEngine Clipboard Plugin Destroyed");
         },
 
         api: {

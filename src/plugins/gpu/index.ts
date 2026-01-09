@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - GPU Abstraction Plugin
+ * SciChartEngine Engine - GPU Abstraction Plugin
  * 
  * Provides WebGPU and WebGL2 backend support, GPU compute capabilities,
  * and performance benchmarking tools.
@@ -52,7 +52,7 @@ const manifestGpu: PluginManifest = {
 };
 
 /**
- * SciChart GPU Plugin
+ * SciChartEngine GPU Plugin
  * 
  * Enables high-performance GPU-accelerated rendering and compute.
  */
@@ -61,13 +61,13 @@ export function PluginGpu(_config: PluginGpuConfig = {}): ChartPlugin<PluginGpuC
         manifest: manifestGpu,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChart GPU Plugin Initialized");
+            ctx.log.info("SciChartEngine GPU Plugin Initialized");
 
             // Register GPU backends with the engine
         },
 
         onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChart GPU Plugin Destroyed");
+            ctx.log.info("SciChartEngine GPU Plugin Destroyed");
         }
     };
 }

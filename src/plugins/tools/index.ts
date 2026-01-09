@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Interactive Tools Plugin
+ * SciChartEngine Engine - Interactive Tools Plugin
  * 
  * Provides specialized interaction tools:
  * - Delta Tool: Measurement between two points
@@ -32,7 +32,7 @@ const manifestTools: PluginManifest = {
 };
 
 /**
- * SciChart Tools Plugin
+ * SciChartEngine Tools Plugin
  * 
  * Adds specialized tools for scientific data analysis and interaction.
  */
@@ -45,7 +45,7 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
         manifest: manifestTools,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChart Tools Plugin Initialized");
+            ctx.log.info("SciChartEngine Tools Plugin Initialized");
 
             // Bridge between PluginContext and DeltaTool/PeakTool context
             const toolContext = {
@@ -113,7 +113,7 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
         },
 
         onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChart Tools Plugin Destroyed");
+            ctx.log.info("SciChartEngine Tools Plugin Destroyed");
             deltaTool?.destroy();
             peakTool?.destroy();
             tooltipManager?.destroy();

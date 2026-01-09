@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Chart Sync Plugin
+ * SciChartEngine Engine - Chart Sync Plugin
  * 
  * Provides synchronization between multiple chart instances.
  * 
@@ -26,7 +26,7 @@ const manifestSync: PluginManifest = {
 };
 
 /**
- * SciChart Sync Plugin
+ * SciChartEngine Sync Plugin
  * 
  * Enables smooth coordination and synchronization between separate chart instances.
  */
@@ -36,14 +36,14 @@ export function PluginSync(config: PluginSyncConfig = {}): ChartPlugin<PluginSyn
         manifest: manifestSync,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChart Sync Plugin Initialized");
+            ctx.log.info("SciChartEngine Sync Plugin Initialized");
             if (config.groupId) {
                 // Join the specified group
             }
         },
 
         onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChart Sync Plugin Destroyed");
+            ctx.log.info("SciChartEngine Sync Plugin Destroyed");
         }
     };
 }

@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Internationalization (i18n) Plugin
+ * SciChartEngine Engine - Internationalization (i18n) Plugin
  * 
  * Provides localization support for dates, numbers, and strings.
  * 
@@ -27,7 +27,7 @@ const manifestI18n: PluginManifest = {
 };
 
 /**
- * SciChart i18n Plugin
+ * SciChartEngine i18n Plugin
  * 
  * Adds support for multiple languages and local data formatting.
  */
@@ -36,14 +36,14 @@ export function PluginI18n(config: PluginI18nConfig = {}): ChartPlugin<PluginI18
         manifest: manifestI18n,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChart i18n Plugin Initialized");
+            ctx.log.info("SciChartEngine i18n Plugin Initialized");
             if (config.locale) {
                 setGlobalLocale(config.locale);
             }
         },
 
         onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChart i18n Plugin Destroyed");
+            ctx.log.info("SciChartEngine i18n Plugin Destroyed");
         }
     };
 }

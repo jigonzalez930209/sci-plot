@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - 3D Visualization Plugin
+ * SciChartEngine Engine - 3D Visualization Plugin
  * 
  * This plugin provides 3D rendering capabilities including:
  * - Line3D, Area3D, Bubble3D, Impulse3D renderers
@@ -66,7 +66,7 @@ const manifest3D: PluginManifest = {
 };
 
 /**
- * SciChart 3D Plugin
+ * SciChartEngine 3D Plugin
  * 
  * Provides interactive 3D charts, surfaces, and meshes.
  */
@@ -75,7 +75,7 @@ export function Plugin3D(config: Plugin3DConfig = {}): ChartPlugin<Plugin3DConfi
         manifest: manifest3D,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChart 3D Plugin Initialized");
+            ctx.log.info("SciChartEngine 3D Plugin Initialized");
 
             // Store configuration for later use
             ctx.storage.set("config", config);
@@ -86,7 +86,7 @@ export function Plugin3D(config: Plugin3DConfig = {}): ChartPlugin<Plugin3DConfi
         },
 
         onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChart 3D Plugin Destroyed");
+            ctx.log.info("SciChartEngine 3D Plugin Destroyed");
         }
     };
 }

@@ -84,7 +84,7 @@ class PluginLoggerImpl implements PluginLogger {
     private enabled: boolean;
 
     constructor(pluginName: string, enabled = true) {
-        this.prefix = `[SciChart:${pluginName}]`;
+        this.prefix = `[SciChartEngine:${pluginName}]`;
         this.enabled = enabled;
     }
 
@@ -151,7 +151,7 @@ class EventContextImpl implements EventContext {
                 try {
                     handler(data);
                 } catch (e) {
-                    console.error(`[SciChart] Error in plugin event handler for "${event}":`, e);
+                    console.error(`[SciChartEngine] Error in plugin event handler for "${event}":`, e);
                 }
             });
         }
