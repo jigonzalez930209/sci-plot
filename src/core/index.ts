@@ -10,7 +10,6 @@ export { InteractionManager, type InteractionMode } from './InteractionManager';
 export * from './annotations';
 export * from './selection';
 export * from './responsive';
-export * from './delta-tool';
 export * from './loading';
 export * from './locale';
 export * from './keybindings';
