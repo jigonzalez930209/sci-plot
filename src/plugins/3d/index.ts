@@ -37,12 +37,12 @@ export {
     // Camera & Controls
     OrbitCamera,
     OrbitController,
-} from "../../core/3d";
+} from "./src";
 
-export * from "../../core/3d/colorThemes";
+export * from "./src/colorThemes";
 
 // Re-export series
-export * from "../../core/3d/series";
+export * from "./src/series";
 
 import type { PluginManifest, ChartPlugin, PluginContext } from "../types";
 
