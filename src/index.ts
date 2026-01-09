@@ -189,7 +189,7 @@ export {
   type PrefixInfo,
   type ValidationResult,
   type DataStats,
-} from "./analysis";
+} from "./plugins/analysis/src";
 
 // ============================================
 // Streaming utilities
@@ -368,19 +368,19 @@ export {
   generateRandomData,
   generateCVData,
   generateNyquistData,
-  
+
   // Benchmarking
   benchmarkRender,
   assertPerformance,
-  
+
   // Snapshots
   createSnapshot,
   compareSnapshots,
-  
+
   // Utilities
   waitForFrames,
   waitFor,
-  
+
   // Types
   type MockChartOptions,
   type WaveformOptions,
@@ -462,5 +462,80 @@ export {
   normalize,
   type IndicatorResult,
   type OHLCData,
-} from "./analysis/indicators";
+} from "./plugins/analysis/src/indicators";
+
+// ============================================
+// Plugin System
+// ============================================
+export {
+  // Core functionality
+  createPluginContext,
+  PluginManagerImpl,
+
+  // Registry
+  getPluginRegistry,
+  registerPlugin,
+  definePlugin,
+  defineAndRegister,
+  loadPlugin,
+  listPluginsByCategory,
+  validateManifest,
+  checkPluginCompatibility,
+
+  // Helpers
+  createPlugin,
+  createConfigurablePlugin,
+
+  // Built-in plugins
+  CrosshairPlugin,
+  StatsPlugin,
+  WatermarkPlugin,
+  GridHighlightPlugin,
+  DataLoggerPlugin,
+  BuiltinPlugins,
+} from "./plugins";
+
+export type {
+  // Manifest & Metadata
+  PluginVersion,
+  PluginCapability,
+  PluginManifest,
+
+  // Context Types
+  PluginContext,
+  RenderContext,
+  CoordinateContext,
+  DataContext,
+  UIContext as PluginUIContext,
+  EventContext as PluginEventContext,
+  PluginStorage,
+  PluginLogger,
+  OverlayOptions,
+  NotificationOptions,
+  PickResult,
+
+  // Hook Event Types
+  BeforeRenderEvent,
+  AfterRenderEvent,
+  InteractionEvent,
+  ViewChangeEvent,
+  SeriesChangeEvent,
+  DataUpdateEvent,
+
+  // Plugin Types
+  ChartPlugin,
+  PluginFactory,
+  TypedPlugin,
+  PluginManager,
+  PluginRegistry,
+  PluginRegistryEntry,
+  ContextDependencies,
+
+  // Built-in plugin configs
+  CrosshairPluginConfig,
+  StatsPluginConfig,
+  WatermarkPluginConfig,
+  GridHighlightConfig,
+  DataLoggerConfig,
+} from "./plugins";
 

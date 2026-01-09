@@ -21,6 +21,7 @@ export interface UIContext {
   setPanMode: (active: boolean) => void;
   setMode: (mode: InteractionMode) => void;
   onLegendMove: (x: number, y: number) => void;
+  onToggleSmoothing: () => void;
   toggleLegend: () => void;
 }
 
@@ -62,7 +63,7 @@ export function initControls(ctx: UIContext): ChartControls | null {
       ctx.requestRender();
     },
     onToggleLegend: () => {
-       ctx.toggleLegend();
+      ctx.toggleLegend();
     },
   });
 }

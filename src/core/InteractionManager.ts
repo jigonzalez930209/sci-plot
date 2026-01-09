@@ -43,6 +43,8 @@ export interface InteractionCallbacks {
   onDragStart?: () => void;
   /** Called when any drag operation ends */
   onDragEnd?: () => void;
+  /** Called for all raw interaction events for plugin processing */
+  onInteraction?: (event: import("../plugins/types").InteractionEvent) => void;
 }
 
 export interface PlotAreaGetter {
@@ -285,6 +287,16 @@ export class InteractionManager {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    this.callbacks.onInteraction?.({
+      type: "mousedown",
+      pixelX: mouseX,
+      pixelY: mouseY,
+      inPlotArea: mouseX >= plotArea.x && mouseX <= plotArea.x + plotArea.width && mouseY >= plotArea.y && mouseY <= plotArea.y + plotArea.height,
+      originalEvent: e,
+      preventDefault: () => e.preventDefault(),
+      defaultPrevented: e.defaultPrevented,
+    });
+
     // Check if mouse is in axis area for dragging
     const axes = this.getAxesLayout();
     for (const axis of axes) {
@@ -353,6 +365,16 @@ export class InteractionManager {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    this.callbacks.onInteraction?.({
+      type: "mousemove",
+      pixelX: mouseX,
+      pixelY: mouseY,
+      inPlotArea: true, // simplified for now
+      originalEvent: e,
+      preventDefault: () => e.preventDefault(),
+      defaultPrevented: e.defaultPrevented,
+    });
+
     // Update cursor position
     this.callbacks.onCursorMove(mouseX, mouseY);
 
@@ -380,6 +402,16 @@ export class InteractionManager {
     const rect = this.container.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
+
+    this.callbacks.onInteraction?.({
+      type: "mouseup",
+      pixelX: mouseX,
+      pixelY: mouseY,
+      inPlotArea: true, // simplified
+      originalEvent: e,
+      preventDefault: () => e.preventDefault(),
+      defaultPrevented: e.defaultPrevented,
+    });
 
     if (this.isBoxZooming) {
       const x = Math.min(this.selectionStart.x, mouseX);

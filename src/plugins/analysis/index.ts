@@ -50,7 +50,7 @@ const manifestAnalysis: PluginManifest = {
     tags: ["fft", "filters", "statistics", "math"],
 };
 
-import { addFitLine } from "../../core/chart/series/SeriesFit";
+import { addFitLine } from "./src/SeriesFit";
 
 /**
  * SciChart Analysis Plugin

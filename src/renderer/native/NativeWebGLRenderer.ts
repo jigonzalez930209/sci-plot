@@ -60,6 +60,10 @@ export class NativeWebGLRenderer {
     return this.buffers.updateBuffer(id, data, offsetInBytes);
   }
 
+  getGL(): WebGLRenderingContext {
+    return this.gl;
+  }
+
   getBuffer(id: string): WebGLBuffer | undefined {
     return this.buffers.getBuffer(id);
   }

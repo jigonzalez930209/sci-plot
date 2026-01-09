@@ -9,9 +9,9 @@
  * @module plugins/tools
  */
 
-import { DeltaTool } from "../../core/delta-tool";
-import { PeakTool } from "../../core/peak-tool";
-import { TooltipManager } from "../../core/tooltip";
+import { DeltaTool } from "./src/delta-tool";
+import { PeakTool } from "./src/peak-tool";
+import { TooltipManager } from "./src/tooltip";
 import type { PluginManifest, ChartPlugin, PluginContext } from "../types";
 
 export interface PluginToolsConfig {
@@ -76,7 +76,7 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
             }
         },
 
-        onInteraction(ctx, event) {
+        onInteraction(_ctx, event) {
             // Forward relevant events to tools if they don't have their own listeners
             // (Current tools have their own listeners on the container)
             if (event.type === 'mousemove') {

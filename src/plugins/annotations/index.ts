@@ -73,6 +73,15 @@ export function PluginAnnotations(_config: PluginAnnotationsConfig = {}): ChartP
             remove(id: string) {
                 return annotationManager.remove(id);
             },
+            update(id: string, updates: Partial<Annotation>) {
+                return annotationManager.update(id, updates);
+            },
+            get(id: string) {
+                return annotationManager.get(id);
+            },
+            getAll() {
+                return annotationManager.getAll();
+            },
             clear() {
                 annotationManager.clear();
             }

@@ -13,8 +13,6 @@ import type {
 } from "../../renderer/NativeWebGLRenderer";
 import type { OverlayRenderer } from "../OverlayRenderer";
 import type { PlotArea, CursorState, ChartEventMap } from "../../types";
-import type { AnnotationManager } from "../annotations";
-import type { ChartStatistics } from "../ChartStatistics";
 import type { EventEmitter } from "../EventEmitter";
 import type { SelectionManager } from "../selection";
 
@@ -32,19 +30,15 @@ export interface RenderContext {
   primaryYAxisId: string;
   renderer: NativeWebGLRenderer;
   overlay: OverlayRenderer;
-  annotationManager: AnnotationManager;
   backgroundColor: [number, number, number, number];
   cursorOptions: CursorOptions | null;
   cursorPosition: { x: number; y: number } | null;
   selectionRect: { x: number; y: number; width: number; height: number } | null;
-  stats: ChartStatistics | null;
-  showStatistics: boolean;
   events: EventEmitter<ChartEventMap>;
   updateSeriesBuffer: (s: Series) => void;
   getPlotArea: () => PlotArea;
   pixelToDataX: (px: number) => number;
   pixelToDataY: (py: number) => number;
-  tooltip: import("../tooltip").TooltipManager;
   selectionManager: SelectionManager;
 }
 
@@ -275,46 +269,26 @@ export function renderOverlay(
     ctx.overlay.drawSelectionRect(ctx.selectionRect);
   }
 
-  // Draw Annotations
-  if (ctx.annotationManager.count > 0) {
-    ctx.annotationManager.render(ctx.overlayCtx, plotArea, ctx.viewBounds);
-  }
-
   // Draw Selection Highlights
   ctx.selectionManager.render(ctx.overlayCtx, plotArea);
 
   // Cursor
   if (ctx.cursorOptions?.enabled && ctx.cursorPosition) {
-    // Use legacy tooltip only if new tooltip system doesn't have an active tooltip
-    const skipLegacyTooltip = ctx.tooltip?.hasActiveTooltip?.();
-
     const cursor: CursorState = {
       enabled: true,
       x: ctx.cursorPosition.x,
       y: ctx.cursorPosition.y,
       crosshair: ctx.cursorOptions.crosshair ?? false,
-      tooltipText: skipLegacyTooltip
-        ? undefined
-        : ctx.cursorOptions.formatter
+      tooltipText: ctx.cursorOptions.formatter
         ? ctx.cursorOptions.formatter(
-            ctx.pixelToDataX(ctx.cursorPosition.x),
-            ctx.pixelToDataY(ctx.cursorPosition.y),
-            ""
-          )
+          ctx.pixelToDataX(ctx.cursorPosition.x),
+          ctx.pixelToDataY(ctx.cursorPosition.y),
+          ""
+        )
         : `X: ${ctx.pixelToDataX(ctx.cursorPosition.x).toFixed(3)}\nY: ${ctx
-            .pixelToDataY(ctx.cursorPosition.y)
-            .toExponential(2)}`,
+          .pixelToDataY(ctx.cursorPosition.y)
+          .toExponential(2)}`,
     };
     ctx.overlay.drawCursor(plotArea, cursor);
-  }
-
-  // Draw new tooltips
-  if (ctx.tooltip) {
-    ctx.tooltip.render();
-  }
-
-  // Statistics Panel
-  if (ctx.stats && ctx.showStatistics) {
-    ctx.stats.update(ctx.viewBounds);
   }
 }

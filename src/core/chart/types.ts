@@ -15,10 +15,10 @@ import type {
   AxisOptions,
 } from "../../types";
 import type { Series } from "../Series";
-import type { FitType, FitOptions } from "../../analysis";
 import type { Annotation } from "../annotations";
 import type { ChartAnimationConfig } from "../animation";
-import * as analysis from "../../analysis";
+
+// Analysis types moved to plugin
 
 // ============================================
 // Chart Interface
@@ -39,7 +39,7 @@ export interface Chart {
   ): void;
   setAutoScroll(enabled: boolean): void;
   setMaxPoints(id: string, maxPoints: number): void;
-  addFitLine(seriesId: string, type: FitType, options?: FitOptions): string;
+  addFitLine(seriesId: string, type: any, options?: any): string;
   zoom(options: ZoomOptions & { animate?: boolean }): void;
   pan(deltaX: number, deltaY: number): void;
   resetZoom(): void;
@@ -61,7 +61,9 @@ export interface Chart {
   autoScale(animate?: boolean): void;
   setTheme(theme: string | object): void;
   /** Access to data analysis utilities */
-  readonly analysis: typeof analysis;
+  readonly theme: any;
+  readonly analysis: any;
+  readonly animations: any;
 
   // Annotation methods
   addAnnotation(annotation: Annotation): string;
@@ -78,8 +80,8 @@ export interface Chart {
   /** Attach a plugin to extend chart functionality */
   use(plugin: ChartPlugin): void;
 
-  /** Access to the tooltip system */
-  readonly tooltip: import("../tooltip").TooltipManager;
+  /** Access to the tooltip system if the plugin is loaded */
+  readonly tooltip?: any;
 
   // ============================================
   // Animation API
@@ -123,24 +125,24 @@ export interface Chart {
   /** Select data points programmatically */
   selectPoints(
     points: Array<{ seriesId: string; indices: number[] }>,
-    mode?: import("../selection").SelectionMode
+    mode?: any
   ): void;
   /** Get all currently selected points */
-  getSelectedPoints(): import("../selection").SelectedPoint[];
+  getSelectedPoints(): any[];
   /** Clear all selections */
   clearSelection(): void;
   /** Hit-test at a pixel coordinate */
   hitTest(
     pixelX: number,
     pixelY: number
-  ): import("../selection").HitTestResult | null;
+  ): any | null;
   /** Check if a specific point is selected */
   isPointSelected(seriesId: string, index: number): boolean;
   /** Get selection count */
   getSelectionCount(): number;
   /** Configure selection behavior */
   configureSelection(
-    config: Partial<import("../selection").SelectionConfig>
+    config: any
   ): void;
 
   // ============================================
@@ -152,27 +154,27 @@ export interface Chart {
    * @deprecated Use setMode('pan') or setMode('select') instead
    */
   setPanMode(enabled: boolean): void;
-  
+
   /**
    * Set the interaction mode
    * @param mode - 'pan' for pan/drag, 'boxZoom' for rectangle zoom, 'select' for point selection
    */
   setMode(mode: 'pan' | 'boxZoom' | 'select' | 'delta' | 'peak'): void;
-  
+
   /**
    * Get the current interaction mode
    */
   getMode(): 'pan' | 'boxZoom' | 'select' | 'delta' | 'peak';
-  
+
   /**
    * Get the Delta Tool instance for advanced measurements
    */
-  getDeltaTool(): import("../delta-tool").DeltaTool | null;
+  getDeltaTool(): any | null;
 
   /**
    * Get the Peak Tool instance for peak integration
    */
-  getPeakTool(): import("../peak-tool").PeakTool | null;
+  getPeakTool(): any | null;
 
   // ============================================
   // Responsive Design
@@ -211,14 +213,9 @@ export interface Chart {
   destroy(): void;
 }
 
-export interface ChartPlugin {
-  name: string;
-  init?: (chart: Chart) => void;
-  onBeforeRender?: (chart: Chart) => void;
-  onAfterRender?: (chart: Chart) => void;
-  onSeriesAdded?: (series: Series) => void;
-  destroy?: () => void;
-}
+import { ChartPlugin } from "../../plugins/types";
+
+export type { ChartPlugin };
 
 /** Options for data export */
 export interface ExportOptions {
