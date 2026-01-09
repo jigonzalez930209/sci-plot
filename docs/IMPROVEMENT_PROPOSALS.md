@@ -787,3 +787,313 @@ createChart({
 
 *Documento generado automáticamente. Última actualización: 2026-01-08*
 
+---
+
+## Próximas Mejoras - Análisis Científico Avanzado
+
+Las siguientes mejoras están planificadas para futuras versiones, enfocadas en características clave para análisis científico profesional:
+
+---
+
+### 21. 🔬 Filtro Savitzky-Golay (Suavizado Inteligente)
+
+| Atributo | Valor |
+|----------|-------|
+| **Complejidad** | ⭐⭐⭐ (3/5) |
+| **Impacto** | ALTO |
+| **Beneficio** | Preserva forma de picos mientras elimina ruido |
+
+**Descripción:**  
+El ruido es el enemigo #1 en señales científicas. El suavizado simple (Media Móvil) destruye la altura de los picos, lo cual es fatal para análisis cuantitativo.
+
+**Killer Feature:**  
+El filtro Savitzky-Golay ajusta un polinomio local a una ventana de puntos en lugar de promediar. Elimina ruido preservando la forma, ancho y altura de los picos.
+
+**Casos de uso:**
+- Espectroscopía (IR, UV-Vis, Raman)
+- Cromatografía (HPLC, GC)
+- Señales electroquímicas ruidosas
+
+**Implementación sugerida:**
+```typescript
+// src/analysis/smoothing.ts
+export function savitzkyGolay(
+  data: Float32Array,
+  windowSize: number,
+  polynomialOrder: number
+): Float32Array;
+
+// Uso
+const smoothed = savitzkyGolay(rawSignal, 11, 3); // Ventana 11 puntos, polinomio orden 3
+```
+
+---
+
+### 22. 📉 Corrección de Línea Base (Baseline Correction)
+
+| Atributo | Valor |
+|----------|-------|
+| **Complejidad** | ⭐⭐⭐⭐ (4/5) |
+| **Impacto** | ALTO |
+| **Beneficio** | Picos limpios sobre cero para integración precisa |
+
+**Descripción:**  
+En electroquímica y cromatografía, la señal casi siempre tiene "drift" (inclinación) u "offset" debido a capacitancia o cambios de temperatura.
+
+**Métodos:**
+- **Simple:** Resta lineal entre punto inicial y final
+- **Pro:** Asymmetric Least Squares (ALS) - Algoritmo iterativo que encuentra la línea base automáticamente
+
+**Implementación sugerida:**
+```typescript
+// src/analysis/baseline.ts
+export function subtractBaseline(
+  data: Float32Array,
+  method: 'linear' | 'polynomial' | 'als'
+): { corrected: Float32Array; baseline: Float32Array };
+
+export function alsBaseline(
+  data: Float32Array,
+  lambda?: number,    // Smoothness (default: 1e6)
+  p?: number,         // Asymmetry (default: 0.01)
+  iterations?: number // Max iterations (default: 10)
+): Float32Array;
+```
+
+---
+
+### 23. 🎯 Peak Picking Avanzado (Detección de Picos)
+
+| Atributo | Valor |
+|----------|-------|
+| **Complejidad** | ⭐⭐⭐ (3/5) |
+| **Impacto** | ALTO |
+| **Beneficio** | Tabla automática de picos sin intervención manual |
+
+**Descripción:**  
+El usuario no quiere buscar picos con el mouse; quiere una tabla con los picos detectados automáticamente.
+
+**No es solo max():** Necesita algoritmo que detecte picos basados en:
+- **Prominencia:** Altura respecto a valles vecinos (ignora ruido)
+- **FWHM:** Ancho a media altura (filtra ruido eléctrico o drift)
+- **Umbral:** Mínima señal para considerarse pico
+
+**Implementación sugerida:**
+```typescript
+// src/analysis/peaks.ts (extensión)
+export interface PeakResult {
+  index: number;
+  x: number;
+  y: number;
+  prominence: number;
+  fwhm: number;           // Full Width at Half Maximum
+  leftBase: number;
+  rightBase: number;
+  area?: number;          // Si se integra
+}
+
+export function findPeaksAdvanced(
+  x: Float32Array,
+  y: Float32Array,
+  options: {
+    minProminence?: number;
+    minWidth?: number;
+    maxWidth?: number;
+    threshold?: number;
+    calculateArea?: boolean;
+  }
+): PeakResult[];
+```
+
+---
+
+### 24. ∫ Integración Numérica (Área bajo la curva)
+
+| Atributo | Valor |
+|----------|-------|
+| **Complejidad** | ⭐⭐ (2/5) |
+| **Impacto** | ALTO |
+| **Beneficio** | Cálculo de carga total (Coulombs) o concentración |
+
+**Descripción:**  
+Para un electroquímico, el área bajo el pico representa la carga total (Q = ∫I dt) o concentración real, más importante que la altura.
+
+**Funcionalidad:**
+- Selección de ROI (Region of Interest)
+- Integración con regla del trapecio o Simpson
+- Resta automática de línea base antes de integrar
+
+**Implementación sugerida:**
+```typescript
+// src/analysis/integration.ts
+export function integrate(
+  x: Float32Array,
+  y: Float32Array,
+  method?: 'trapezoid' | 'simpson'
+): number;
+
+export function integrateRange(
+  x: Float32Array,
+  y: Float32Array,
+  xStart: number,
+  xEnd: number,
+  options?: {
+    subtractBaseline?: boolean;
+    baselineMethod?: 'linear' | 'als';
+  }
+): { area: number; baseline: Float32Array };
+```
+
+---
+
+### 25. 📐 Derivadas (Primera y Segunda)
+
+| Atributo | Valor |
+|----------|-------|
+| **Complejidad** | ⭐⭐ (2/5) |
+| **Impacto** | MEDIO |
+| **Beneficio** | Detección de puntos de inflexión y cambios de pendiente |
+
+**Descripción:**  
+A veces el cambio de pendiente es más importante que el valor absoluto (ej. puntos de inflexión en titulación o voltamperometría cíclica).
+
+**Aplicaciones:**
+- **1ra derivada:** Transforma señal confusa en picos claros donde la pendiente cambia
+- **2da derivada:** Encuentra puntos de inflexión exactos
+
+**Implementación sugerida:**
+```typescript
+// src/analysis/derivatives.ts
+export function derivative(
+  x: Float32Array,
+  y: Float32Array,
+  order?: 1 | 2,
+  smoothing?: number  // Aplicar Savitzky-Golay antes
+): Float32Array;
+
+// Uso
+const dy = derivative(x, y, 1);      // Primera derivada
+const d2y = derivative(x, y, 2, 5);  // Segunda derivada con suavizado
+```
+
+---
+
+### 26. 📊 LTTB Downsampling Visual
+
+| Atributo | Valor |
+|----------|-------|
+| **Complejidad** | ⭐⭐⭐ (3/5) |
+| **Impacto** | ALTO |
+| **Beneficio** | Rendimiento extremo sin perder picos visuales |
+
+**Descripción:**  
+Vital para Web Performance. Si renderizas 1 millón de puntos, el navegador explota.
+
+**Largest-Triangle-Three-Buckets (LTTB):**
+- Algoritmo estándar de la industria
+- Reduce 100,000 puntos a 1,000 visualmente idénticos
+- **Diferencia con promediar:** LTTB mantiene extremos (picos y valles)
+
+**Implementación sugerida:**
+```typescript
+// src/analysis/downsampling.ts
+export function lttb(
+  x: Float32Array,
+  y: Float32Array,
+  targetPoints: number
+): { x: Float32Array; y: Float32Array };
+
+// Auto-downsample basado en ancho de canvas
+export function autoDownsample(
+  x: Float32Array,
+  y: Float32Array,
+  canvasWidth: number,
+  oversampleFactor?: number // Default: 2x
+): { x: Float32Array; y: Float32Array };
+```
+
+---
+
+### 27. 📏 Delta Tool (Herramienta de Cursores)
+
+| Atributo | Valor |
+|----------|-------|
+| **Complejidad** | ⭐⭐⭐ (3/5) |
+| **Impacto** | MEDIO |
+| **Beneficio** | Medición manual de distancias y pendientes |
+
+**Descripción:**  
+Más allá de ver el valor (x, y), el científico necesita medir distancias entre puntos.
+
+**Funcionalidad:**
+- Click y arrastrar para medir ΔX, ΔY
+- Calcular pendiente (m = ΔY/ΔX)
+- Útil para constantes de tiempo, anchos de banda, etc.
+
+**Implementación sugerida:**
+```typescript
+// src/core/tools/DeltaTool.ts
+export interface DeltaMeasurement {
+  x1: number; y1: number;
+  x2: number; y2: number;
+  deltaX: number;
+  deltaY: number;
+  slope: number;        // ΔY/ΔX
+  distance: number;     // Euclidean distance
+}
+
+export class DeltaTool {
+  enable(): void;
+  disable(): void;
+  getMeasurement(): DeltaMeasurement | null;
+  onMeasure(callback: (m: DeltaMeasurement) => void): void;
+}
+
+// En Chart API
+chart.enableDeltaTool();
+chart.onDeltaMeasure((m) => {
+  console.log(`ΔX: ${m.deltaX}, ΔY: ${m.deltaY}, Slope: ${m.slope}`);
+});
+```
+
+---
+
+## Matriz de Priorización - Nuevas Mejoras
+
+| # | Mejora | Impacto | Complejidad | Prioridad |
+|---|--------|---------|-------------|-----------|
+| 21 | Savitzky-Golay | 🔴 Alto | 3/5 | **P1** |
+| 22 | Corrección Línea Base | 🔴 Alto | 4/5 | **P1** |
+| 23 | Peak Picking Avanzado | 🔴 Alto | 3/5 | **P1** |
+| 24 | Integración Numérica | 🔴 Alto | 2/5 | **P1** |
+| 25 | Derivadas | 🟡 Medio | 2/5 | **P2** |
+| 26 | LTTB Downsampling | 🔴 Alto | 3/5 | **P1** |
+| 27 | Delta Tool | 🟡 Medio | 3/5 | **P2** |
+
+---
+
+## Roadmap Q2 2027
+
+### Sprint 1: Procesamiento de Señal
+- [ ] Mejora #21: Savitzky-Golay Filter
+- [ ] Mejora #25: Derivadas (1ra y 2da)
+
+### Sprint 2: Análisis de Picos
+- [ ] Mejora #22: Baseline Correction (ALS)
+- [ ] Mejora #23: Peak Picking Avanzado
+- [ ] Mejora #24: Integración Numérica (ROI)
+
+### Sprint 3: Performance & Tools
+- [ ] Mejora #26: LTTB Downsampling
+- [ ] Mejora #27: Delta Tool
+- [ ] Fix: Responsive design improvements
+
+---
+
+## Notas de Desarrollo
+
+### fix: responsive design issues
+- Reducir tamaño de fuente en cada iteración de responsive
+- Aumentar grosor de ejes para mejor visibilidad en pantallas pequeñas
+- Mejorar legibilidad en dispositivos móviles
+
