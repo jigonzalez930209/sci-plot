@@ -75,18 +75,14 @@ export function Plugin3D(config: Plugin3DConfig = {}): ChartPlugin<Plugin3DConfi
         manifest: manifest3D,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine 3D Plugin Initialized");
-
             // Store configuration for later use
             ctx.storage.set("config", config);
         },
 
-        onConfigChange(ctx: PluginContext, newConfig: Plugin3DConfig) {
-            ctx.log.info("3D Plugin configuration updated", newConfig);
+        onConfigChange(_ctx: PluginContext, _newConfig: Plugin3DConfig) {
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine 3D Plugin Destroyed");
+        onDestroy(_ctx: PluginContext) {
         }
     };
 }

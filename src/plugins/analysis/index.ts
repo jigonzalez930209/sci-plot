@@ -190,12 +190,10 @@ export function PluginAnalysis(_config: PluginAnalysisConfig = {}): ChartPlugin<
         manifest: manifestAnalysis,
 
         onInit(ctx: PluginContext) {
-            _ctx = ctx;
-            ctx.log.info("SciChartEngine Analysis Plugin Initialized");
+            _ctx = ctx; 
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Analysis Plugin Destroyed");
+        onDestroy(_ctx: PluginContext) {
         },
 
         api: {

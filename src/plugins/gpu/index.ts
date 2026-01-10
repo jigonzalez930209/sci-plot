@@ -60,14 +60,10 @@ export function PluginGpu(_config: PluginGpuConfig = {}): ChartPlugin<PluginGpuC
     return {
         manifest: manifestGpu,
 
-        onInit(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine GPU Plugin Initialized");
-
-            // Register GPU backends with the engine
+        onInit(_ctx: PluginContext) {
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine GPU Plugin Destroyed");
+        onDestroy(_ctx: PluginContext) {
         }
     };
 }
