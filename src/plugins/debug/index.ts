@@ -43,7 +43,6 @@ export function PluginDebug(config: PluginDebugConfig = {}): ChartPlugin<PluginD
 
         onInit(pCtx: PluginContext) {
             ctx = pCtx;
-            ctx.log.info("SciChartEngine Debug Plugin Initialized");
 
             // Initialize FPS/Performance overlay
             if (config.showFPS !== false) {
@@ -100,9 +99,8 @@ export function PluginDebug(config: PluginDebugConfig = {}): ChartPlugin<PluginD
             }
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Debug Plugin Destroyed");
-            if (overlay) {
+        onDestroy(_ctx: PluginContext) {
+                if (overlay) {
                 overlay.destroy();
                 overlay = null;
             }

@@ -35,9 +35,6 @@ class PluginRegistryImpl implements PluginRegistry {
         }
 
         this.entries.set(name, entry);
-        console.info(
-            `[SciChartEngine Registry] Registered plugin "${name}" v${entry.manifest.version}`
-        );
     }
 
     /**
@@ -46,9 +43,6 @@ class PluginRegistryImpl implements PluginRegistry {
     unregister(name: string): boolean {
         const existed = this.entries.has(name);
         this.entries.delete(name);
-        if (existed) {
-            console.info(`[SciChartEngine Registry] Unregistered plugin "${name}"`);
-        }
         return existed;
     }
 

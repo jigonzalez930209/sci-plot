@@ -35,15 +35,13 @@ export function PluginSync(config: PluginSyncConfig = {}): ChartPlugin<PluginSyn
     return {
         manifest: manifestSync,
 
-        onInit(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Sync Plugin Initialized");
+        onInit(_ctx: PluginContext) {   
             if (config.groupId) {
                 // Join the specified group
             }
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Sync Plugin Destroyed");
+        onDestroy(_ctx: PluginContext) {
         }
     };
 }

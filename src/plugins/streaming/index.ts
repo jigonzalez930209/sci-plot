@@ -57,12 +57,10 @@ export function PluginStreaming(_config: PluginStreamingConfig = {}): ChartPlugi
     return {
         manifest: manifestStreaming,
 
-        onInit(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Streaming Plugin Initialized");
+        onInit(_ctx: PluginContext) {
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Streaming Plugin Destroyed");
+        onDestroy(_ctx: PluginContext) {
         }
     };
 }

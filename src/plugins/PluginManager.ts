@@ -122,7 +122,6 @@ export class PluginManagerImpl implements PluginManager {
                 await initResult;
             }
             instance.initialized = true;
-            console.info(`[SciChartEngine] Plugin "${name}" v${plugin.manifest.version} initialized`);
         } catch (e) {
             console.error(`[SciChartEngine] Failed to initialize plugin "${name}":`, e);
             this.plugins.delete(name);
@@ -162,7 +161,6 @@ export class PluginManagerImpl implements PluginManager {
         this.plugins.delete(name);
         this.rebuildHookCaches();
 
-        console.info(`[SciChartEngine] Plugin "${name}" removed`);
         return true;
     }
 

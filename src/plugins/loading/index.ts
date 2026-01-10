@@ -29,22 +29,13 @@ const manifestLoading: PluginManifest = {
  * Adds sleek loading indicators and progress trackers to the chart.
  */
 export function PluginLoading(_config: PluginLoadingConfig = {}): ChartPlugin<PluginLoadingConfig> {
-    let indicator: LoadingIndicator | null = null;
-
     return {
         manifest: manifestLoading,
 
-        onInit(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Loading Plugin Initialized");
-
-            // indicator = new LoadingIndicator(ctx.ui.container, config);
+        onInit(_ctx: PluginContext) {   
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Loading Plugin Destroyed");
-            if (indicator) {
-                // indicator.destroy();
-            }
+        onDestroy(_ctx: PluginContext) {
         },
 
         api: {

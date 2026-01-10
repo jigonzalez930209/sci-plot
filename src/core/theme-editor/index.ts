@@ -611,9 +611,7 @@ export class ThemeEditor {
     // Export button
     this.element.querySelector('.export-btn')?.addEventListener('click', () => {
       const json = this.exportTheme();
-      // Copy to clipboard and show notification
       navigator.clipboard?.writeText(json).then(() => {
-        console.log('[ThemeEditor] Theme copied to clipboard');
       });
     });
 

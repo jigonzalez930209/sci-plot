@@ -45,7 +45,6 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
         manifest: manifestTools,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Tools Plugin Initialized");
 
             // Bridge between PluginContext and DeltaTool/PeakTool context
             const toolContext = {
@@ -112,8 +111,7 @@ export function PluginTools(_config: PluginToolsConfig = {}): ChartPlugin<Plugin
             peakTool?.renderOverlay();
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Tools Plugin Destroyed");
+        onDestroy(_ctx: PluginContext) {
             deltaTool?.destroy();
             peakTool?.destroy();
             tooltipManager?.destroy();

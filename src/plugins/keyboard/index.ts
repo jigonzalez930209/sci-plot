@@ -29,23 +29,13 @@ const manifestKeyboard: PluginManifest = {
  * Adds support for keyboard shortcuts and hotkeys.
  */
 export function PluginKeyboard(_config: PluginKeyboardConfig = {}): ChartPlugin<PluginKeyboardConfig> {
-    let manager: KeyBindingManager | null = null;
-
     return {
         manifest: manifestKeyboard,
 
-        onInit(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Keyboard Plugin Initialized");
-
-            // In a real implementation, this would attach to the chart
-            // manager = new KeyBindingManager(ctx.chart, config);
+        onInit(_ctx: PluginContext) {
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Keyboard Plugin Destroyed");
-            if (manager) {
-                // manager.destroy();
-            }
+        onDestroy(_ctx: PluginContext) {
         }
     };
 }

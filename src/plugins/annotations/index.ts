@@ -37,7 +37,6 @@ export function PluginAnnotations(_config: PluginAnnotationsConfig = {}): ChartP
         manifest: manifestAnnotations,
 
         onInit(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Annotations Plugin Initialized");
             annotationManager = new AnnotationManager();
 
             // In a real implementation, we would register this manager in the context
@@ -58,8 +57,7 @@ export function PluginAnnotations(_config: PluginAnnotationsConfig = {}): ChartP
             );
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Annotations Plugin Destroyed");
+        onDestroy(_ctx: PluginContext) {
             annotationManager.clear();
         },
 

@@ -169,16 +169,6 @@ export class DeltaTool {
     this.attachListeners();
     this.ctx.container.style.cursor = 'crosshair';
     
-    // Debug: verify series data is available
-    const series = this.ctx.getSeries ? this.ctx.getSeries() : [];
-    console.log('[DeltaTool] Enabled - Series count:', series.length);
-    if (series.length > 0) {
-      console.log('[DeltaTool] First series:', {
-        id: series[0].id,
-        xLength: series[0].x?.length,
-        yLength: series[0].y?.length
-      });
-    }
   }
 
   /**

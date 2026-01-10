@@ -32,12 +32,10 @@ export function PluginClipboard(_config: PluginClipboardConfig = {}): ChartPlugi
     return {
         manifest: manifestClipboard,
 
-        onInit(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Clipboard Plugin Initialized");
+        onInit(_ctx: PluginContext) {
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine Clipboard Plugin Destroyed");
+        onDestroy(_ctx: PluginContext) {
         },
 
         api: {

@@ -35,15 +35,13 @@ export function PluginI18n(config: PluginI18nConfig = {}): ChartPlugin<PluginI18
     return {
         manifest: manifestI18n,
 
-        onInit(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine i18n Plugin Initialized");
+        onInit(_ctx: PluginContext) {
             if (config.locale) {
                 setGlobalLocale(config.locale);
             }
         },
 
-        onDestroy(ctx: PluginContext) {
-            ctx.log.info("SciChartEngine i18n Plugin Destroyed");
+        onDestroy(_ctx: PluginContext) {
         }
     };
 }
