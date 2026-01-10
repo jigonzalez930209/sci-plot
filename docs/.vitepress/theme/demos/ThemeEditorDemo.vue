@@ -122,6 +122,13 @@ function applyPreset(preset: { name: string }) {
 function updateChartTheme() {
   if (!chart) return
   
+  // Update background and plot area colors
+  chart.setTheme({
+    ...chart.theme,
+    backgroundColor: currentTheme.background,
+    plotAreaBackground: currentTheme.plotArea,
+  })
+
   const series = chart.getAllSeries()
   const colors = [currentTheme.series1, currentTheme.series2, currentTheme.series3]
   series.forEach((s: any, i: number) => {
