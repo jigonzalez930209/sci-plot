@@ -13,6 +13,7 @@ import { MARGINS } from "./types";
 export interface SetupResult {
   theme: ChartTheme;
   backgroundColor: [number, number, number, number];
+  plotAreaColor: [number, number, number, number];
   showLegend: boolean;
   showControls: boolean;
   autoScroll: boolean;
@@ -46,6 +47,10 @@ export function initializeChart(
 
   const bgColor = parseColor(options.background ?? theme.backgroundColor);
   const backgroundColor: [number, number, number, number] = [bgColor[0], bgColor[1], bgColor[2], bgColor[3]];
+  
+  const paColor = parseColor(theme.plotAreaBackground);
+  const plotAreaColor: [number, number, number, number] = [paColor[0], paColor[1], paColor[2], paColor[3]];
+
   const showLegend = options.showLegend ?? theme.legend.visible;
   const showControls = options.showControls ?? false;
   const autoScroll = options.autoScroll ?? false;
@@ -98,6 +103,7 @@ export function initializeChart(
   return {
     theme,
     backgroundColor,
+    plotAreaColor,
     showLegend,
     showControls,
     autoScroll,

@@ -114,6 +114,7 @@ export class ChartImpl implements Chart {
   private primaryYAxisId: string;
   private dpr: number;
   private backgroundColor: [number, number, number, number];
+  private plotAreaBackground: [number, number, number, number];
   private renderer: NativeWebGLRenderer;
   private overlay: OverlayRenderer;
   private interaction: InteractionManager;
@@ -141,6 +142,8 @@ export class ChartImpl implements Chart {
   private frameCount = 0;
   private lastRenderTime = performance.now();
   private commandQueue: Array<{ fn: () => void; name: string }> = [];
+  private annotationQueue: any[] = [];
+  private annotationIdCounter = 0;
 
   /** Whether the chart has been destroyed */
   get isDestroyed(): boolean {
@@ -198,6 +201,7 @@ export class ChartImpl implements Chart {
 
     this.theme = setup.theme;
     this.backgroundColor = setup.backgroundColor;
+    this.plotAreaBackground = setup.plotAreaColor;
     this.showLegend = setup.showLegend;
     this.showControls = setup.showControls;
     this.autoScroll = setup.autoScroll;
@@ -402,6 +406,11 @@ export class ChartImpl implements Chart {
       this.use(PluginAnalysis());
     });
 
+    // Auto-load annotations plugin
+    import("../../plugins/annotations").then(({ PluginAnnotations }) => {
+      this.use(PluginAnnotations());
+    });
+
     // NOTE: resize() and startRenderLoop() are now called by startInit()
     // This allows the queue system to control when rendering actually begins
   }
@@ -486,6 +495,18 @@ export class ChartImpl implements Chart {
         this.events.emit("legendMove", { x, y }),
       onToggleSmoothing: () => this.toggleSmoothing(),
       toggleLegend: () => this.toggleLegend(),
+      onInteractionStart: () => {
+        if (this.tooltip) this.tooltip.setSuspended(true);
+      },
+      onInteractionEnd: () => {
+        if (this.tooltip) this.tooltip.setSuspended(false);
+      },
+      onHoverStart: () => {
+        if (this.tooltip) this.tooltip.setSuspended(true);
+      },
+      onHoverEnd: () => {
+        if (this.tooltip) this.tooltip.setSuspended(false);
+      },
     });
   }
 
@@ -519,6 +540,18 @@ export class ChartImpl implements Chart {
           this.events.emit("legendMove", { x, y }),
         onToggleSmoothing: () => this.toggleSmoothing(),
         toggleLegend: () => this.toggleLegend(),
+        onInteractionStart: () => {
+          if (this.tooltip) this.tooltip.setSuspended(true);
+        },
+        onInteractionEnd: () => {
+          if (this.tooltip) this.tooltip.setSuspended(false);
+        },
+        onHoverStart: () => {
+          if (this.tooltip) this.tooltip.setSuspended(true);
+        },
+        onHoverEnd: () => {
+          if (this.tooltip) this.tooltip.setSuspended(false);
+        },
       },
       options
     );
@@ -528,6 +561,10 @@ export class ChartImpl implements Chart {
     this.theme = typeof theme === "string" ? getThemeByName(theme) : theme;
     const bgColor = parseColor(this.theme.backgroundColor);
     this.backgroundColor = [bgColor[0], bgColor[1], bgColor[2], bgColor[3]];
+    
+    const paColor = parseColor(this.theme.plotAreaBackground);
+    this.plotAreaBackground = [paColor[0], paColor[1], paColor[2], paColor[3]];
+
     this.container.style.backgroundColor = this.theme.backgroundColor;
 
     this.overlay.setTheme(this.theme);
@@ -802,14 +839,18 @@ export class ChartImpl implements Chart {
   }
 
   // Annotations
-  addAnnotation(annotation: Annotation): string {
+  addAnnotation(annotation: any): string {
+    const id = annotation.id || `annotation-${++this.annotationIdCounter}`;
+    const annWithId = { ...annotation, id };
+
     const api = this.getPluginAPI<any>("scichart-annotations");
     if (api) {
-      const id = api.add(annotation);
+      api.add(annWithId);
       this.requestOverlayRender();
-      return id;
+    } else {
+      this.annotationQueue.push(annWithId);
     }
-    return "";
+    return id;
   }
 
   removeAnnotation(id: string): boolean {
@@ -1282,6 +1323,14 @@ export class ChartImpl implements Chart {
 
   use(plugin: any): void {
     this.pluginManager.use(plugin);
+
+    // If annotations plugin was just added, process queued annotations
+    const annotationsApi = this.getPluginAPI<any>("scichart-annotations");
+    if (annotationsApi && this.annotationQueue.length > 0) {
+      this.annotationQueue.forEach((a) => annotationsApi.add(a));
+      this.annotationQueue = [];
+      this.requestOverlayRender();
+    }
   }
 
   // Rendering
@@ -1370,6 +1419,7 @@ export class ChartImpl implements Chart {
       this.renderer.render(seriesData, {
         bounds: this.viewBounds,
         backgroundColor: this.backgroundColor,
+        plotAreaBackground: this.plotAreaBackground,
         plotArea,
       });
       renderOverlay(renderCtx, plotArea, this.yScale);

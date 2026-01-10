@@ -496,6 +496,7 @@ export {
   DataLoggerPlugin,
   PluginTools,
   PluginAnalysis,
+  PluginAnnotations,
   BuiltinPlugins,
 } from "./plugins";
 
@@ -543,5 +544,6 @@ export type {
   DataLoggerConfig,
   PluginToolsConfig,
   PluginAnalysisConfig,
+  PluginAnnotationsConfig,
 } from "./plugins";
 
