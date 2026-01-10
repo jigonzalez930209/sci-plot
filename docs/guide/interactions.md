@@ -21,20 +21,58 @@ Scroll the mouse wheel to zoom in/out centered on the cursor position.
 - **Shift + Scroll**: Zoom X-axis only
 - **Ctrl + Scroll**: Zoom Y-axis only
 
+### Interaction Modes
+
+SciChart Engine uses a mode-based interaction system. You can switch between different modes depending on the desired user interaction:
+
+| Mode | Action | Best For |
+|------|--------|----------|
+| `pan` | Click & Drag to pan | Default navigation |
+| `boxZoom` | Draw a rectangle to zoom | Deep diving into data |
+| `select` | Click or Drag to select points | Data exploration & export |
+| `delta` | Click two points to measure | Signal measurements |
+| `peak` | Click two points to integrate | Peak analysis (area, height) |
+
+```typescript
+// Set the interaction mode
+chart.setMode('boxZoom');
+
+// Get current mode
+const mode = chart.getMode(); // 'boxZoom'
+```
+
 ### Pan (Drag)
 
-Click and drag with the left mouse button to pan the view.
-
-```
-Left-click + Drag → Pan in any direction
-```
+When in `pan` mode (default), click and drag with the left mouse button to pan the view.
 
 ### Box Zoom
 
-Right-click and drag to draw a selection rectangle. The view will zoom to fit the selected area.
+When in `boxZoom` mode, click and drag to draw a selection rectangle. The view will zoom to fit the selected area.
+Alternatively, you can always **Right-click + Drag** to perform a box zoom regardless of the current mode.
 
+### Point Selection
+
+When in `select` mode, you can click on individual points to select them, or drag to create a selection region.
+
+```typescript
+chart.setMode('select');
+
+chart.on('pointSelect', ({ seriesId, index }) => {
+  console.log(`Selected point ${index} in series ${seriesId}`);
+});
 ```
-Right-click + Drag → Draw selection box → Release to zoom
+
+### Advanced Tools (Delta & Peak)
+
+- **Delta Tool**: Measures the difference (ΔX, ΔY, distance, slope) between two points.
+- **Peak Tool**: Performs peak analysis between two points, automatically detecting a linear baseline and calculating the integrated area, peak height, and center.
+
+```typescript
+chart.setMode('delta');
+
+chart.on('deltaMeasure', (measurement) => {
+  console.log(`Measured ΔY: ${measurement.deltaY}`);
+});
 ```
 
 ### Double-click Reset
@@ -156,6 +194,48 @@ When the chart is focused:
 | `-` | Zoom out |
 | Arrow keys | Pan |
 | `Home` | Reset view |
+
+## Toolbar Configuration
+
+The chart toolbar (modebar) can be customized with specific buttons and interaction behavior.
+
+```typescript
+const chart = createChart({
+  container,
+  toolbar: {
+    show: true,
+    pinnable: true, // Enable hover-to-expand behavior (default: true)
+    buttons: {
+      reset: true,    // Enable reset zoom button (disabled by default)
+      select: false,  // Disable point selection button
+      export: true,
+    }
+  }
+})
+```
+
+### Pinnable Behavior (Menu Mode)
+
+By default, the toolbar is **pinnable**. This translates to a "menu-like" behavior:
+- **Collapsed**: Only the "Pin" icon is visible.
+- **Hover**: Hovering over the pin icon expands the full toolbar.
+- **Click**: Clicking the pin icon "locks" the toolbar in place so it stays visible even when the mouse leaves.
+
+### Available Buttons
+
+| Button | ID | Default | Description |
+|--------|----|---------|-------------|
+| Pan | `pan` | `true` | Standard drag-to-pan mode |
+| Box Zoom | `boxZoom` | `true` | Rectangle selection zoom |
+| Select | `select` | `true` | Data point selection |
+| Delta | `delta` | `true` | Measurement tool |
+| Peak | `peak` | `true` | Peak analysis tool |
+| **Reset** | `reset` | **`false`** | Immediate reset to auto-scale |
+| Auto Scale | `autoscale` | `true` | Scale axes to fit data |
+| Type Switch | `type` | `true` | Toggle between line/scatter |
+| Smoothing | `smooth` | `true` | Toggle signal smoothing |
+| Export | `export` | `true` | Export as PNG |
+| Legend | `legend` | `true` | Toggle legend visibility |
 
 ## Disabling Interactions
 

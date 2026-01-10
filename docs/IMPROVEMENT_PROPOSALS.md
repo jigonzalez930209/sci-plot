@@ -1118,14 +1118,9 @@ La demo incluye botones dinámicos para:
 
 ## Notas de Desarrollo
 
-### fix: responsive design issues
-- Reducir tamaño de fuente en cada iteración de responsive
-- Aumentar grosor de ejes para mejor visibilidad en pantallas pequeñas
-- Mejorar legibilidad en dispositivos móviles
-
-
 ### ✅ Completado
 - Todas las funciones matemáticas avanzadas (#21-#27)
+- **Mejora del diseño responsivo**: Reducción de fuente por breakpoint, aumento de grosor de ejes y nueva resolución `smallMobile` (≤360px).
 - Indicadores de carga con LoadingIndicator
 - Sistema de Plugins Robusto con hooks completos, contexto, registro global y plugins built-in
 - Delta Tool para mediciones interactivas

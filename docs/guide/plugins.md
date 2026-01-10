@@ -26,6 +26,7 @@ const chart = createChart({
 // Accessing auto-loaded plugins
 const tools = chart.getPluginAPI('scichart-tools');
 const analysis = chart.getPluginAPI('scichart-analysis');
+const annotations = chart.getPluginAPI('scichart-annotations');
 
 // Example: setting a measurement tool
 tools.setMode('delta');
@@ -65,9 +66,7 @@ export const MyCustomPlugin = definePlugin({
       ctx2d.fillRect(50, 50, 100, 100);
     },
 
-    onDestroy(ctx: PluginContext) {
-      // Cleanup happens automatically for overlays created via ctx.ui
-      ctx.log.info("Plugin destroyed");
+    onDestroy(_ctx: PluginContext) {
     }
   };
 });

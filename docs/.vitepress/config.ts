@@ -13,7 +13,7 @@ export default defineConfig({
     "Open-source high-performance WebGL2 scientific charting engine for real-time visualization of millions of data points at 60 FPS. Supports 2D and 3D charts with zero-copy architecture.",
   ignoreDeadLinks: true,
   head: [
-    ['link', { rel: 'icon', href: `${base}favicon.svg` }],
+    ['link', { rel: 'icon', href: `${base}favicon.ico` }],
     ['meta', { name: 'theme-color', content: '#00f2ff' }],
   ],
   vite: {

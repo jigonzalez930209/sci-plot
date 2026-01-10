@@ -106,8 +106,9 @@ const myTheme = createTheme({
   
   legend: {
     visible: true,
-    backgroundColor: 'rgba(30,30,46,0.9)',
-    borderColor: '#45475a',
+    backgroundColor: 'rgba(30,30,46,0.2)',
+    borderColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 6,
     textColor: '#cdd6f4',
     font: '12px Inter, sans-serif',
   },
@@ -121,12 +122,10 @@ const myTheme = createTheme({
     tooltipFont: '12px monospace',
   },
   
-  controls: {
-    backgroundColor: 'rgba(30,30,46,0.8)',
-    borderColor: '#45475a',
-    iconColor: '#cdd6f4',
-    hoverColor: '#89b4fa',
-    activeColor: '#a6e3a1',
+  toolbar: {
+    backgroundColor: 'rgba(30,30,46,0.2)',
+    borderColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 8,
   },
 })
 
@@ -160,42 +159,52 @@ const customDark = createTheme({
 interface ChartTheme {
   name: string
   backgroundColor: string
+  plotAreaBackground: string
+  plotBorderColor: string
   
   grid: {
-    color: string      // Grid line color
-    width: number      // Grid line width
+    visible: boolean
+    majorColor: string
+    minorColor: string
+    majorWidth: number
+    minorWidth: number
+    majorDash: number[]
+    minorDash: number[]
+    showMinor: boolean
+    minorDivisions: number
   }
   
-  axis: {
-    color: string      // Axis line color
-    labelColor: string // Label text color
-    tickColor: string  // Tick mark color
-    labelFont: string  // CSS font string
-  }
+  xAxis: AxisTheme
+  yAxis: AxisTheme
   
   legend: {
     visible: boolean
+    position: "top-left" | "top-right" | "bottom-left" | "bottom-right"
     backgroundColor: string
     borderColor: string
+    borderRadius: number
     textColor: string
-    font: string
+    fontSize: number
+    fontFamily: string
+    padding: number
+    itemGap: number
+    swatchSize: number
   }
   
   cursor: {
     lineColor: string
     lineWidth: number
+    lineDash: number[]
     tooltipBackground: string
     tooltipBorder: string
-    tooltipTextColor: string
-    tooltipFont: string
+    tooltipColor: string
+    tooltipSize: number
   }
   
-  controls: {
+  toolbar: {
     backgroundColor: string
     borderColor: string
-    iconColor: string
-    hoverColor: string
-    activeColor: string
+    borderRadius: number
   }
 }
 ```

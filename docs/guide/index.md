@@ -81,5 +81,6 @@ chart.addSeries({
 - [Quick Start](/guide/quick-start) - Create your first chart
 - [Core Concepts](/guide/concepts) - Understand the architecture
 - [React Integration](/guide/react) - Use SciChart with React
-- [Performance Optimization](/api/responsive) - Handle millions of points
+- [Performance Optimization](/guide/performance) - Handle millions of points
+- [Responsive Design](/guide/responsive) - Mobile-first visualization
 - [Scientific Analysis](/guide/analysis) - Professional data tools

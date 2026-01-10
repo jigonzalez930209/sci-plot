@@ -303,6 +303,65 @@ chart.addSeries({
 })
 ```
 
+## Multiple Y-Axes
+
+SciChart Engine supports multiple Y-axes. This is useful for comparing series with different units (e.g., Current and Potential).
+
+### 1. Register Additional Axis
+
+```typescript
+const chart = createChart({
+  container,
+  xAxis: { label: 'Time / s' },
+  yAxis: [
+    { id: 'primary', label: 'Current / µA', position: 'left' },
+    { id: 'secondary', label: 'Potential / V', position: 'right' }
+  ]
+})
+```
+
+### 2. Link Series to Axis
+
+Use the `yAxisId` property to specify which axis a series belongs to:
+
+```typescript
+chart.addSeries({
+  id: 'current',
+  yAxisId: 'primary',
+  data: { x, y: currentData },
+  style: { color: '#00f2ff' }
+})
+
+chart.addSeries({
+  id: 'potential',
+  yAxisId: 'secondary',
+  data: { x, y: potentialData },
+  style: { color: '#ff6b6b' }
+})
+```
+
+### 3. Dynamic Axis Management
+
+You can add or remove axes at runtime:
+
+```typescript
+// Add a new axis
+chart.addYAxis({
+  id: 'dynamic-axis',
+  label: 'New Unit',
+  position: 'right',
+  offset: 50 // Push axis further to the right
+});
+
+// Update an existing axis
+chart.updateYAxis('primary', {
+  label: 'Updated Label',
+  auto: false,
+  min: 0,
+  max: 100
+});
+```
+
 ## Series Bounds
 
 Each series calculates its data bounds:
