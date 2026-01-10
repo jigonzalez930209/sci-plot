@@ -497,6 +497,7 @@ export {
   PluginTools,
   PluginAnalysis,
   PluginAnnotations,
+  PluginLoading,
   BuiltinPlugins,
 } from "./plugins";
 
@@ -545,5 +546,6 @@ export type {
   PluginToolsConfig,
   PluginAnalysisConfig,
   PluginAnnotationsConfig,
+  PluginLoadingConfig,
 } from "./plugins";
 

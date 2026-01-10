@@ -36,6 +36,84 @@ export function parseColor(color: string): [number, number, number, number] {
   return [1, 0, 1, 1];
 }
 
+export function brightenColor(color: string, isDarkTheme: boolean = true): string {
+  const [r, g, b, a] = parseColor(color);
+  const [h, s, l] = rgbToHsl(r, g, b);
+  
+  /**
+   * Smart Contrast Algorithm:
+   * 1. Shift Hue (H): Rotate by 43° (0.12) to make it distinct.
+   * 2. Boost Saturation (S): Force high vibrance (+0.4) so it looks "active".
+   * 3. Intelligent Luminance (L):
+   *    - On DARK backgrounds: If original is dark, jump to bright (0.8). If light, keep it light.
+   *    - On LIGHT backgrounds: If original is light, jump to deep (0.25). If dark, keep it dark/intense.
+   */
+  const newH = (h + 0.12) % 1.0;
+  const newS = Math.min(1.0, s + 0.4);
+  
+  let newL;
+  if (isDarkTheme) {
+    // Dark mode -> High brightness
+    newL = l < 0.4 ? 0.8 : Math.min(0.95, l + 0.2);
+  } else {
+    // Light mode -> High depth
+    newL = l > 0.6 ? 0.25 : Math.max(0.1, l - 0.2);
+  }
+
+  // Ensure reasonable limits
+  newL = Math.max(0.15, Math.min(0.9, newL));
+
+  const [nr, ng, nb] = hslToRgb(newH, newS, newL);
+  
+  const ri = Math.round(nr * 255);
+  const gi = Math.round(ng * 255);
+  const bi = Math.round(nb * 255);
+  
+  return a < 1 
+    ? `rgba(${ri}, ${gi}, ${bi}, ${a})` 
+    : `rgb(${ri}, ${gi}, ${bi})`;
+}
+
+function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0, s = 0, l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return [h, s, l];
+}
+
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  let r, g, b;
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const hue2rgb = (p: number, q: number, t: number) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1/3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1/3);
+  }
+  return [r, g, b];
+}
+
 export function interleaveData(
   x: Float32Array | Float64Array | number[],
   y: Float32Array | Float64Array | number[]

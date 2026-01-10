@@ -108,6 +108,8 @@ export interface ToolbarTheme {
 export interface ChartTheme {
   /** Theme name */
   name: string;
+  /** Whether the theme is dark */
+  isDark: boolean;
   /** Background color */
   backgroundColor: string;
   /** Plot area background color */
@@ -192,6 +194,7 @@ const DEFAULT_CURSOR_THEME: CursorTheme = {
 
 export const DARK_THEME: ChartTheme = {
   name: "dark",
+  isDark: true,
   backgroundColor: "#0b0e14",
   plotAreaBackground: "#0b0e14",
   plotBorderColor: "#444c56",
@@ -221,6 +224,7 @@ export const DARK_THEME: ChartTheme = {
 
 export const MIDNIGHT_THEME: ChartTheme = {
   name: "midnight",
+  isDark: true,
   backgroundColor: "#05050a",
   plotAreaBackground: "#070715",
   plotBorderColor: "#3a3a5a",
@@ -262,6 +266,7 @@ export const MIDNIGHT_THEME: ChartTheme = {
 /** Light theme - Clean white background */
 export const LIGHT_THEME: ChartTheme = {
   name: "light",
+  isDark: false,
   backgroundColor: "#ffffff",
   plotAreaBackground: "#ffffff",
   plotBorderColor: "#cccccc",
@@ -305,6 +310,7 @@ export const LIGHT_THEME: ChartTheme = {
 /** Electrochemistry theme - Professional blue tones */
 export const ELECTROCHEM_THEME: ChartTheme = {
   name: "electrochemistry",
+  isDark: true,
   backgroundColor: "#0a1628",
   plotAreaBackground: "#0d1b2e",
   plotBorderColor: "#1e3a5f",

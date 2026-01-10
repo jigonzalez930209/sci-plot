@@ -101,7 +101,8 @@ export function renderFrame(
         s.buffer,
         s.count,
         seriesUniforms,
-        color
+        color,
+        (s.style.width ?? 1) * dpr
       );
     } else if (s.type === "line+scatter") {
       renderLine(
@@ -110,7 +111,8 @@ export function renderFrame(
         s.buffer,
         s.count,
         seriesUniforms,
-        color
+        color,
+        (s.style.width ?? 1) * dpr
       );
       renderPoints(
         gl,
@@ -130,7 +132,8 @@ export function renderFrame(
           s.stepBuffer,
           s.stepCount,
           seriesUniforms,
-          color
+          color,
+          (s.style.width ?? 1) * dpr
         );
       } else {
         renderLine(
@@ -139,7 +142,8 @@ export function renderFrame(
           s.buffer,
           s.count,
           seriesUniforms,
-          color
+          color,
+          (s.style.width ?? 1) * dpr
         );
       }
 

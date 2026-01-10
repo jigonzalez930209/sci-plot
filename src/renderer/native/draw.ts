@@ -27,9 +27,11 @@ export function renderLine(
   buffer: WebGLBuffer,
   count: number,
   uniforms: { scale: [number, number]; translate: [number, number] },
-  color: [number, number, number, number]
+  color: [number, number, number, number],
+  width: number = 1
 ): void {
   gl.useProgram(prog.program);
+  gl.lineWidth(width);
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.enableVertexAttribArray(prog.attributes.position);
   gl.vertexAttribPointer(prog.attributes.position, 2, gl.FLOAT, false, 0, 0);

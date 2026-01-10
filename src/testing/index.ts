@@ -484,10 +484,6 @@ export async function benchmarkRender(
           throughput: Math.round((totalPoints * avgFps) / 1000) * 1000,
         };
 
-        if (opts.verbose) {
-          console.log('[SciChartEngine Benchmark]', result);
-        }
-
         resolve(result);
         return;
       }

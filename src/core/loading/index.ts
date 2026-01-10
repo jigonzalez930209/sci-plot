@@ -83,7 +83,7 @@ export class LoadingIndicator {
       size: 'medium',
       className: 'scichart-loading',
       autoHide: true,
-      hideDelay: 300,
+      hideDelay: 200,
       ...options,
     };
     this.state.message = this.options.message;
@@ -111,8 +111,13 @@ export class LoadingIndicator {
    * Hide the loading indicator
    */
   hide(): void {
+    if (!this.state.isLoading) return;
     this.state.isLoading = false;
     
+    if (this.element) {
+      this.element.style.opacity = '0';
+    }
+
     if (this.options.autoHide) {
       setTimeout(() => {
         this.destroyElement();

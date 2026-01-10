@@ -356,6 +356,8 @@ export interface ChartOptions {
   legendPosition?: { x: number; y: number };
   /** Show in-chart controls (default: false) */
   showControls?: boolean;
+  /** Detailed toolbar configuration */
+  toolbar?: ToolbarOptions;
   /** Automatically follow new data (default: false) */
   autoScroll?: boolean;
   /** Show statistics panel (default: false) */
@@ -366,6 +368,8 @@ export interface ChartOptions {
   animations?: import("./core/animation").ChartAnimationConfig | boolean;
   /** Responsive design configuration */
   responsive?: import("./core/responsive").ResponsiveConfig | boolean;
+  /** Loading indicator configuration */
+  loading?: boolean | import("./plugins/loading").PluginLoadingConfig;
   
   // ============================================
   // Interaction Options
@@ -396,6 +400,29 @@ export interface ChartOptions {
   
   /** Enable clipboard operations (default: true) */
   clipboard?: boolean | import("./core/clipboard").ClipboardOptions;
+}
+
+export interface ToolbarButtons {
+  pan?: boolean;
+  boxZoom?: boolean;
+  select?: boolean;
+  delta?: boolean;
+  peak?: boolean;
+  reset?: boolean;
+  autoscale?: boolean;
+  type?: boolean;
+  smooth?: boolean;
+  export?: boolean;
+  legend?: boolean;
+}
+
+export interface ToolbarOptions {
+  /** Show the toolbar (default: true if showControls is true) */
+  show?: boolean;
+  /** Buttons to show in the toolbar */
+  buttons?: ToolbarButtons;
+  /** Whether the toolbar can be pinned (default: true) */
+  pinnable?: boolean;
 }
 
 // ============================================

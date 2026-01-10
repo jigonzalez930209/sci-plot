@@ -19,6 +19,7 @@ export {
   interleaveData,
   interleaveStepData,
   parseColor,
+  brightenColor,
 } from "./native/utils";
 
 export type { NativeRenderOptions, NativeSeriesRenderData } from "./native/types";

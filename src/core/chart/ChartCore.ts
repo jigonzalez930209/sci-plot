@@ -93,6 +93,7 @@ import {
 import {
   markInitComplete,
 } from "../ChartInitQueue";
+import { PluginLoading } from "../../plugins/loading";
 // ============================================
 // Chart Implementation
 // ============================================
@@ -199,6 +200,18 @@ export class ChartImpl implements Chart {
     };
   }
 
+  get loading(): any {
+    const api = this.getPluginAPI<any>("scichart-loading");
+    if (api) return api;
+    
+    return {
+      show: () => {},
+      hide: () => {},
+      setProgress: () => {},
+      setMessage: () => {}
+    };
+  }
+
   get deltaTool(): any {
     return this.getPluginAPI<any>("scichart-tools")?.getDeltaTool() ?? null;
   }
@@ -210,18 +223,9 @@ export class ChartImpl implements Chart {
   constructor(options: ChartOptions) {
     this.initialOptions = options;
     this.container = options.container;
-    const setup = setupChart(this.container, options);
 
-    const requestedRenderer = options.renderer ?? "webgl";
-    if (requestedRenderer === "webgpu") {
-      const isSupported =
-        typeof (globalThis as any).navigator !== "undefined" &&
-        typeof (globalThis as any).navigator.gpu !== "undefined";
-      console.warn(
-        `[SciChartEngine] 'renderer: "webgpu"' requested but WebGPU renderer is experimental and not yet implemented. ` +
-        `Falling back to WebGL. WebGPU supported: ${isSupported}`
-      );
-    }
+    // 1. Initialize DOM and Theme so we can show UI (like loading) immediately
+    const setup = setupChart(this.container, options);
 
     this.baseTheme = setup.theme;
     this.theme = setup.theme;
@@ -242,6 +246,55 @@ export class ChartImpl implements Chart {
     this.overlayCanvas = setup.overlayCanvas;
     this.overlayCtx = setup.overlayCtx;
 
+    // 2. Initialize Plugin Manager with full bridge (getters handle uninit state)
+    this.pluginManager = new PluginManagerImpl({
+      chart: this,
+      container: this.container,
+      theme: this.theme,
+      getGL: () => this.renderer?.getGL(),
+      get2DContext: () => this.overlayCtx,
+      getPixelRatio: () => this.dpr,
+      getCanvasSize: () => ({ 
+        width: this.webglCanvas?.width || 0, 
+        height: this.webglCanvas?.height || 0 
+      }),
+      getPlotArea: () => this.getPlotArea(),
+      getViewBounds: () => this.viewBounds,
+      getYAxisBounds: (yAxisId) => {
+        const s = this.yScales?.get(yAxisId || this.primaryYAxisId);
+        return { yMin: s?.domain[0] ?? 0, yMax: s?.domain[1] ?? 1 };
+      },
+      dataToPixelX: (x) => this.xScale?.transform(x) ?? 0,
+      dataToPixelY: (y, yAxisId) => (this.yScales?.get(yAxisId || this.primaryYAxisId) || this.yScale)?.transform(y) ?? 0,
+      pixelToDataX: (px) => this.pixelToDataX(px),
+      pixelToDataY: (py, yAxisId) => this.pixelToDataY(py, yAxisId),
+      findNearestPoint: (px, py, radius) => this.selectionManager?.hitTest(px, py, radius) ?? null,
+      getPlugin: (name) => this.pluginManager?.get(name) as any
+    });
+
+    // 3. Show loading indicator INSTANTLY if enabled
+    if (options.loading !== false) {
+      const loadingConfig = typeof options.loading === 'object' ? options.loading : {
+        message: 'Loading SciChart...',
+        overlayOpacity: 0.1,
+      };
+      this.use(PluginLoading({
+        ...loadingConfig,
+        autoShow: true // Ensure it shows immediately
+      }));
+    }
+
+    const requestedRenderer = options.renderer ?? "webgl";
+    if (requestedRenderer === "webgpu") {
+      const isSupported =
+        typeof (globalThis as any).navigator !== "undefined" &&
+        typeof (globalThis as any).navigator.gpu !== "undefined";
+      console.warn(
+        `[SciChartEngine] 'renderer: "webgpu"' requested but WebGPU renderer is experimental and not yet implemented. ` +
+        `Falling back to WebGL. WebGPU supported: ${isSupported}`
+      );
+    }
+
     this.renderer = new NativeWebGLRenderer(this.webglCanvas);
     this.renderer.setDPR(this.dpr);
     this.overlay = new OverlayRenderer(this.overlayCtx, this.theme);
@@ -255,29 +308,6 @@ export class ChartImpl implements Chart {
       getPrimaryYAxisId: () => this.primaryYAxisId,
       events: this.events as any, // SelectionEventMap is a subset of ChartEventMap
       requestRender: () => this.requestRender(),
-    });
-
-    // Initialize the NEW PluginManager with all necessary dependencies
-    this.pluginManager = new PluginManagerImpl({
-      chart: this,
-      container: this.container,
-      theme: this.theme,
-      getGL: () => this.renderer.getGL(),
-      get2DContext: () => this.overlayCtx,
-      getPixelRatio: () => this.dpr,
-      getCanvasSize: () => ({ width: this.webglCanvas.width, height: this.webglCanvas.height }),
-      getPlotArea: () => this.getPlotArea(),
-      getViewBounds: () => this.viewBounds,
-      getYAxisBounds: (yAxisId) => {
-        const s = this.yScales.get(yAxisId || this.primaryYAxisId);
-        return { yMin: s?.domain[0] ?? 0, yMax: s?.domain[1] ?? 1 };
-      },
-      dataToPixelX: (x) => this.xScale.transform(x),
-      dataToPixelY: (y, yAxisId) => (this.yScales.get(yAxisId || this.primaryYAxisId) || this.yScale).transform(y),
-      pixelToDataX: (px) => this.pixelToDataX(px),
-      pixelToDataY: (py, yAxisId) => this.pixelToDataY(py, yAxisId),
-      findNearestPoint: (px, py, radius) => this.selectionManager.hitTest(px, py, radius),
-      getPlugin: (name) => this.pluginManager.get(name) as any
     });
 
     // Initialize animation system
@@ -430,6 +460,11 @@ export class ChartImpl implements Chart {
     // Auto-load analysis plugin for curve fitting and analysis features
     import("../../plugins/analysis").then(({ PluginAnalysis }) => {
       this.use(PluginAnalysis());
+    });
+
+    // Auto-load annotations plugin
+    import("../../plugins/annotations").then(({ PluginAnnotations }) => {
+      this.use(PluginAnnotations());
     });
 
     // Auto-load annotations plugin
