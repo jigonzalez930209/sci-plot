@@ -77,7 +77,7 @@ const THEME_COLOR_GROUPS: ColorGroup[] = [
     label: "Background & Canvas",
     description: "Chart background and canvas colors",
     colors: [
-      { key: "background", label: "Background", value: "", description: "Main chart background" },
+      { key: "backgroundColor", label: "Background", value: "", description: "Main chart background" },
       { key: "plotAreaBackground", label: "Plot Area", value: "", description: "Data plotting area background" },
     ],
   },
@@ -114,7 +114,7 @@ const THEME_COLOR_GROUPS: ColorGroup[] = [
     label: "Legend",
     description: "Legend styling",
     colors: [
-      { key: "legend.background", label: "Legend Background", value: "", description: "Legend panel background" },
+      { key: "legend.backgroundColor", label: "Legend Background", value: "", description: "Legend panel background" },
       { key: "legend.textColor", label: "Legend Text", value: "", description: "Legend text color" },
       { key: "legend.borderColor", label: "Legend Border", value: "", description: "Legend border color" },
     ],
@@ -151,7 +151,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     previewColors: ["#1a1a2e", "#00f2ff", "#4ecdc4"],
     tags: ["dark", "default"],
     theme: {
-      background: "#1a1a2e",
+      backgroundColor: "#1a1a2e",
       plotAreaBackground: "#16213e",
       axis: {
         color: "#4a5568",
@@ -184,7 +184,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     previewColors: ["#ffffff", "#2563eb", "#4f46e5"],
     tags: ["light", "publication"],
     theme: {
-      background: "#ffffff",
+      backgroundColor: "#ffffff",
       plotAreaBackground: "#f8fafc",
       axis: {
         color: "#94a3b8",
@@ -198,7 +198,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         opacity: 0.3,
       },
       legend: {
-        background: "rgba(255, 255, 255, 0.95)",
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
         textColor: "#1e293b",
         borderColor: "rgba(0, 0, 0, 0.1)",
       },
@@ -217,7 +217,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     previewColors: ["#0f172a", "#3b82f6", "#8b5cf6"],
     tags: ["dark", "blue"],
     theme: {
-      background: "#0f172a",
+      backgroundColor: "#0f172a",
       plotAreaBackground: "#1e293b",
       axis: {
         color: "#475569",
@@ -231,7 +231,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         opacity: 0.25,
       },
       legend: {
-        background: "rgba(15, 23, 42, 0.95)",
+        backgroundColor: "rgba(15, 23, 42, 0.95)",
         textColor: "#f1f5f9",
         borderColor: "rgba(255, 255, 255, 0.08)",
       },
@@ -250,7 +250,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     previewColors: ["#fafafa", "#1f2937", "#059669"],
     tags: ["light", "scientific", "publication"],
     theme: {
-      background: "#fafafa",
+      backgroundColor: "#fafafa",
       plotAreaBackground: "#ffffff",
       axis: {
         color: "#374151",
@@ -264,7 +264,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         opacity: 0.4,
       },
       legend: {
-        background: "#ffffff",
+        backgroundColor: "#ffffff",
         textColor: "#111827",
         borderColor: "#e5e7eb",
       },
@@ -283,7 +283,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     previewColors: ["#0d1117", "#00f2ff", "#ff6b6b"],
     tags: ["dark", "scientific", "electrochemistry"],
     theme: {
-      background: "#0d1117",
+      backgroundColor: "#0d1117",
       plotAreaBackground: "#161b22",
       axis: {
         color: "#30363d",
@@ -297,7 +297,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         opacity: 0.5,
       },
       legend: {
-        background: "rgba(13, 17, 23, 0.95)",
+        backgroundColor: "rgba(13, 17, 23, 0.95)",
         textColor: "#c9d1d9",
         borderColor: "rgba(48, 54, 61, 0.8)",
       },
@@ -316,7 +316,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     previewColors: ["#000000", "#ffffff", "#ffff00"],
     tags: ["dark", "accessibility", "high-contrast"],
     theme: {
-      background: "#000000",
+      backgroundColor: "#000000",
       plotAreaBackground: "#0a0a0a",
       axis: {
         color: "#ffffff",
@@ -330,7 +330,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         opacity: 0.2,
       },
       legend: {
-        background: "#000000",
+        backgroundColor: "#000000",
         textColor: "#ffffff",
         borderColor: "#ffffff",
       },

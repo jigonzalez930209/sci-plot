@@ -13,6 +13,45 @@ pnpm add scichart-engine
 yarn add scichart-engine
 ```
 
+## Imports
+
+### ES Modules
+
+```typescript
+// Core API
+import { createChart } from 'scichart-engine';
+
+// Specialized Plugins (Auto-loaded by default)
+import { PluginTools, PluginAnalysis } from 'scichart-engine';
+
+// React components
+import { SciChart, useSciChart } from 'scichart-engine';
+
+// Built-in Themes
+import { MIDNIGHT_THEME, DARK_THEME, LIGHT_THEME } from 'scichart-engine';
+```
+
+### TypeScript Usage
+
+SciChart Engine is written in TypeScript and includes full type definitions.
+
+```typescript
+import { 
+  createChart, 
+  type Chart, 
+  type ChartOptions,
+  type SeriesData 
+} from 'scichart-engine';
+
+const options: ChartOptions = {
+  container: document.getElementById('chart')!,
+  xAxis: { label: 'Time (s)', auto: true },
+  yAxis: { label: 'Voltage (mV)', auto: true },
+};
+
+const chart: Chart = createChart(options);
+```
+
 ## Peer Dependencies
 
 For React usage, ensure you have React 16.8+ installed:
@@ -21,70 +60,6 @@ For React usage, ensure you have React 16.8+ installed:
 npm install react react-dom
 ```
 
-## Imports
-
-### ES Modules
-
-```typescript
-// Core API
-import { createChart } from 'scichart-engine'
-
-// React components
-import { SciChart, useSciChart } from 'scichart-engine/react'
-
-// Analysis utilities
-import { detectPeaks, detectCycles } from 'scichart-engine'
-
-// Themes
-import { DARK_THEME, MIDNIGHT_THEME } from 'scichart-engine'
-```
-
-### CommonJS
-
-```javascript
-const { createChart } = require('scichart-engine')
-```
-
-## CDN Usage
-
-For quick prototyping, you can use a CDN:
-
-```html
-<script type="module">
-  import { createChart } from 'https://esm.sh/scichart-engine'
-  
-  const chart = createChart({
-    container: document.getElementById('chart'),
-  })
-</script>
-```
-
-## TypeScript
-
-SciChart Engine is written in TypeScript and includes full type definitions. No additional `@types` package is needed.
-
-```typescript
-import { createChart, type Chart, type ChartOptions } from 'scichart-engine'
-
-const options: ChartOptions = {
-  container: document.getElementById('chart')!,
-  xAxis: { label: 'X', auto: true },
-  yAxis: { label: 'Y', auto: true },
-}
-
-const chart: Chart = createChart(options)
-```
-
-## Bundle Size
-
-SciChart Engine is designed to be lightweight:
-
-| Import | Size (gzip) |
-|--------|-------------|
-| Core only | ~30KB |
-| With React | ~35KB |
-| Full bundle | ~50KB |
-
 ## Browser Support
 
 - Chrome 80+
@@ -92,8 +67,10 @@ SciChart Engine is designed to be lightweight:
 - Safari 14+
 - Edge 80+
 
-WebGL 2.0 is required. Most modern browsers support this.
+WebGL 2.0 or WebGPU is required for hardware acceleration. Most modern browsers support this out of the box.
 
 ## Next Steps
 
-- [Quick Start](/guide/quick-start) - Create your first chart
+- **[Quick Start](/guide/quick-start)** - Create your first interactive chart.
+- **[Plugin System](/guide/plugins)** - Learn how to extend the chart with tools.
+- **[Advanced Analysis](/examples/analysis-advanced)** - Deep dive into scientific features.

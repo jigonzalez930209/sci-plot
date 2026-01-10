@@ -27,19 +27,19 @@ export interface ChartControlsCallbacks {
 // ============================================
 
 const ICONS = {
-  PAN: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path></svg>`,
-  BOX_ZOOM: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"></rect><circle cx="9" cy="9" r="3"></circle><line x1="21" y1="21" x2="15" y2="15"></line></svg>`,
-  SELECT: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1" stroke-dasharray="4 2"></rect><circle cx="8" cy="10" r="1.5" fill="currentColor"></circle><circle cx="12" cy="14" r="1.5" fill="currentColor"></circle><circle cx="16" cy="9" r="1.5" fill="currentColor"></circle></svg>`,
-  DELTA: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="4" stroke-dasharray="4 2"></line><circle cx="4" cy="20" r="2" fill="currentColor"></circle><circle cx="20" cy="4" r="2" fill="currentColor"></circle><path d="M8 16h8M16 16v-8" stroke-width="1" opacity="0.5"></path></svg>`,
-  RESET: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`,
-  LINE: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>`,
-  SCATTER: `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><circle cx="7" cy="14" r="2"></circle><circle cx="11" cy="10" r="2"></circle><circle cx="15" cy="13" r="2"></circle><circle cx="19" cy="8" r="2"></circle><path d="M3 3v18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`,
-  BOTH: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path><circle cx="7" cy="14.3" r="1" fill="currentColor"></circle><circle cx="10.8" cy="10.5" r="1" fill="currentColor"></circle><circle cx="13.6" cy="13.2" r="1" fill="currentColor"></circle><circle cx="18.7" cy="8" r="1" fill="currentColor"></circle></svg>`,
-  SMOOTH: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c.5 0 .9-.3 1.2-.7l1.6-2.6c.3-.4.7-.7 1.2-.7h2c.5 0 .9.3 1.2.7l1.6 2.6c.3.4.7.7 1.2.7h2c.5 0 .9-.3 1.2-.7l1.6-2.6c.3-.4.7-.7 1.2-.7h2"></path></svg>`,
-  AUTOSCALE: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>`,
-  EXPORT: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`,
-  LEGEND: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>`,
-  INTEGRATE: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16c3-9 15-9 18 0"></path><line x1="3" y1="16" x2="21" y2="16"></line><path d="M7 16v-4M12 16V9M17 16v-4" stroke-width="1" opacity="0.5"></path></svg>`
+  PAN: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path></svg>`,
+  BOX_ZOOM: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"></rect><circle cx="9" cy="9" r="3"></circle><line x1="21" y1="21" x2="15" y2="15"></line></svg>`,
+  SELECT: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1" stroke-dasharray="4 2"></rect><circle cx="8" cy="10" r="1.5" fill="currentColor"></circle><circle cx="12" cy="14" r="1.5" fill="currentColor"></circle><circle cx="16" cy="9" r="1.5" fill="currentColor"></circle></svg>`,
+  DELTA: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="4" stroke-dasharray="4 2"></line><circle cx="4" cy="20" r="2" fill="currentColor"></circle><circle cx="20" cy="4" r="2" fill="currentColor"></circle><path d="M8 16h8M16 16v-8" stroke-width="1" opacity="0.5"></path></svg>`,
+  RESET: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`,
+  LINE: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>`,
+  SCATTER: `<svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><circle cx="7" cy="14" r="2"></circle><circle cx="11" cy="10" r="2"></circle><circle cx="15" cy="13" r="2"></circle><circle cx="19" cy="8" r="2"></circle><path d="M3 3v18h18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>`,
+  BOTH: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path><circle cx="7" cy="14.3" r="1" fill="currentColor"></circle><circle cx="10.8" cy="10.5" r="1" fill="currentColor"></circle><circle cx="13.6" cy="13.2" r="1" fill="currentColor"></circle><circle cx="18.7" cy="8" r="1" fill="currentColor"></circle></svg>`,
+  SMOOTH: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c.5 0 .9-.3 1.2-.7l1.6-2.6c.3-.4.7-.7 1.2-.7h2c.5 0 .9.3 1.2.7l1.6 2.6c.3.4.7.7 1.2.7h2c.5 0 .9-.3 1.2-.7l1.6-2.6c.3-.4.7-.7 1.2-.7h2"></path></svg>`,
+  AUTOSCALE: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>`,
+  EXPORT: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`,
+  LEGEND: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>`,
+  INTEGRATE: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16c3-9 15-9 18 0"></path><line x1="3" y1="16" x2="21" y2="16"></line><path d="M7 16v-4M12 16V9M17 16v-4" stroke-width="1" opacity="0.5"></path></svg>`
 };
 
 export class ChartControls {
@@ -66,7 +66,7 @@ export class ChartControls {
       position: absolute;
       top: 8px;
       right: 8px;
-      z-index: 100;
+      z-index: 1;
       pointer-events: auto;
       display: flex;
       flex-direction: column;
@@ -95,25 +95,42 @@ export class ChartControls {
   private updateToolbarStyle(): void {
     const isDark = this.isDarkTheme();
 
-    const bg = this.theme.legend.backgroundColor; // Use legend background for consistency
-    const borderColor = this.theme.legend.borderColor;
     const shadow = isDark
       ? "0 4px 12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1)"
       : "0 4px 12px rgba(0, 0, 0, 0.15)";
 
+    const glassBg = this.theme.toolbar.backgroundColor;
+    const glassBorder = `1px solid ${this.theme.toolbar.borderColor}`;
+    const borderRadius = `${this.theme.toolbar.borderRadius}px`;
+
     this.toolbar.style.cssText = `
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px;
-      background: ${bg};
-      backdrop-filter: blur(12px) saturate(180%);
-      -webkit-backdrop-filter: blur(12px) saturate(180%);
-      border: 1px solid ${borderColor};
-      border-radius: 8px;
+      gap: 2px;
+      padding: 2px;
+      background: ${glassBg};
+      backdrop-filter: blur(2px) saturate(180%);
+      -webkit-backdrop-filter: blur(2px) saturate(180%);
+      border: ${glassBorder};
+      border-radius: ${borderRadius};
       box-shadow: ${shadow};
       transition: all 0.3s cubic-bezier(0.4, 0, 0.4, 1);
     `;
+
+    this.toolbar.onmouseenter = () => {
+      this.toolbar.style.backdropFilter = "blur(10px) saturate(180%)";
+      (this.toolbar.style as any).webkitBackdropFilter = "blur(10px) saturate(180%)";
+    };
+    this.toolbar.onmouseleave = () => {
+      this.toolbar.style.backdropFilter = "blur(2px) saturate(180%)";
+      (this.toolbar.style as any).webkitBackdropFilter = "blur(2px) saturate(180%)";
+    };
+
+    // Stop propagation to prevent tooltips from the chart below
+    this.toolbar.addEventListener("mousemove", (e) => e.stopPropagation());
+    this.toolbar.addEventListener("mousedown", (e) => e.stopPropagation());
+    this.toolbar.addEventListener("pointermove", (e) => e.stopPropagation());
+    this.toolbar.addEventListener("pointerdown", (e) => e.stopPropagation());
   }
 
   private createButtons(): void {
@@ -193,13 +210,6 @@ export class ChartControls {
       "autoscale"
     );
 
-    // Separator
-    const sep = document.createElement("div");
-    const isDark = this.isDarkTheme();
-    sep.style.cssText = `width: 1px; height: 20px; background: ${
-      isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.2)"
-    }; margin: 0 6px;`;
-    this.toolbar.appendChild(sep);
 
     // Type Switcher
     this.createButton(
@@ -231,12 +241,6 @@ export class ChartControls {
       "smooth"
     );
 
-    // Separator
-    const sep2 = document.createElement("div");
-    sep2.style.cssText = `width: 1px; height: 20px; background: ${
-      isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.2)"
-    }; margin: 0 6px;`;
-    this.toolbar.appendChild(sep2);
 
     // Export Image
     this.createButton(
@@ -246,12 +250,6 @@ export class ChartControls {
       "export"
     );
 
-    // Separator
-    const sep3 = document.createElement("div");
-    sep3.style.cssText = `width: 1px; height: 20px; background: ${
-      this.isDarkTheme() ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.2)"
-    }; margin: 0 6px;`;
-    this.toolbar.appendChild(sep3);
 
     // Toggle Legend
     this.createButton(

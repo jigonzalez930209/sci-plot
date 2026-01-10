@@ -7,10 +7,16 @@ import { Series } from "./Series";
 
 export interface ChartLegendCallbacks {
   onMove: (x: number, y: number) => void;
+  onResize?: (width: number) => void;
+  onInteractionStart?: () => void;
+  onInteractionEnd?: () => void;
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
 }
 
 export class ChartLegend {
   private container: HTMLDivElement;
+  private visualContainer: HTMLDivElement;
   private header: HTMLDivElement;
   private content: HTMLDivElement;
   private theme: ChartTheme;
@@ -18,19 +24,20 @@ export class ChartLegend {
   private callbacks: ChartLegendCallbacks;
 
   private isDragging = false;
-  private startX = 0;
-  private startY = 0;
-  private initialX = 0;
-  private initialY = 0;
+  private isResizing = false;
+  private dragOffsetX = 0;
+  private dragOffsetY = 0;
 
   constructor(
     parent: HTMLElement,
     theme: ChartTheme,
-    options: { x?: number; y?: number },
+    options: { x?: number; y?: number; width?: number },
     callbacks: ChartLegendCallbacks
   ) {
     this.theme = theme;
     this.callbacks = callbacks;
+
+    const width = options.width ?? 120;
 
     this.container = document.createElement("div");
     this.container.className = "scichart-legend";
@@ -43,17 +50,24 @@ export class ChartLegend {
 
     this.container.style.cssText = `
       position: absolute;
-      left: ${x}px;
-      top: ${y}px;
+      left: ${x - 4}px;
+      top: ${y - 4}px;
       z-index: 90;
       pointer-events: auto;
-      min-width: 120px;
+      padding: 4px;
+      user-select: none;
+    `;
+
+    this.visualContainer = document.createElement("div");
+    this.visualContainer.style.cssText = `
+      width: ${width}px;
       border-radius: ${theme.legend.borderRadius}px;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      user-select: none;
       transition: box-shadow 0.2s ease;
+      position: relative;
     `;
+    this.container.appendChild(this.visualContainer);
 
     this.updateStyle();
 
@@ -69,11 +83,26 @@ export class ChartLegend {
     this.content = document.createElement("div");
     this.content.style.padding = `${theme.legend.padding}px`;
 
-    this.container.appendChild(this.header);
-    this.container.appendChild(this.content);
+    this.visualContainer.appendChild(this.header);
+    this.visualContainer.appendChild(this.content);
+    
+    // Resize handle
+    const resizeHandle = document.createElement("div");
+    resizeHandle.style.cssText = `
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      cursor: ew-resize;
+      background: transparent;
+      z-index: 10;
+    `;
+    this.visualContainer.appendChild(resizeHandle);
+
     parent.appendChild(this.container);
 
-    this.initDragging();
+    this.initDragging(resizeHandle);
   }
 
   private updateStyle(): void {
@@ -82,108 +111,148 @@ export class ChartLegend {
       this.theme.name.toLowerCase().includes("midnight") ||
       this.theme.name.toLowerCase().includes("electro");
 
-    this.container.style.background = this.theme.legend.backgroundColor;
-    this.container.style.backdropFilter = "blur(12px) saturate(180%)";
-    (this.container.style as any).webkitBackdropFilter =
-      "blur(12px) saturate(180%)";
-    this.container.style.border = `1px solid ${this.theme.legend.borderColor}`;
-    this.container.style.boxShadow = isDark
+    const glassBg = this.theme.legend.backgroundColor;
+    const glassBorder = `1px solid ${this.theme.legend.borderColor}`;
+
+    this.visualContainer.style.background = glassBg;
+    this.visualContainer.style.backdropFilter = "blur(2px) saturate(180%)";
+    (this.visualContainer.style as any).webkitBackdropFilter =
+      "blur(2px) saturate(180%)";
+    this.visualContainer.style.border = glassBorder;
+    this.visualContainer.style.boxShadow = isDark
       ? "0 4px 12px rgba(0, 0, 0, 0.6)"
       : "0 4px 12px rgba(0, 0, 0, 0.15)";
+
+    this.container.onmouseenter = () => {
+      this.visualContainer.style.backdropFilter = "blur(10px) saturate(180%)";
+      (this.visualContainer.style as any).webkitBackdropFilter = "blur(10px) saturate(180%)";
+      if (this.callbacks.onHoverStart) this.callbacks.onHoverStart();
+    };
+    this.container.onmouseleave = () => {
+      this.visualContainer.style.backdropFilter = "blur(2px) saturate(180%)";
+      (this.visualContainer.style as any).webkitBackdropFilter = "blur(2px) saturate(180%)";
+      if (this.callbacks.onHoverEnd) this.callbacks.onHoverEnd();
+    };
   }
 
-  private initDragging(): void {
+  private initDragging(resizeHandle: HTMLDivElement): void {
     let rafId: number | null = null;
+    let currentX = 0;
+    let currentY = 0;
 
     const onMouseDown = (e: MouseEvent) => {
-      // Only handle left click
       if (e.button !== 0) return;
-
       e.stopPropagation();
       e.preventDefault();
 
+      const rect = this.container.getBoundingClientRect();
+      this.dragOffsetX = e.clientX - rect.left;
+      this.dragOffsetY = e.clientY - rect.top;
       this.isDragging = true;
-      this.startX = e.clientX;
-      this.startY = e.clientY;
-      this.initialX = this.container.offsetLeft;
-      this.initialY = this.container.offsetTop;
+      if (this.callbacks.onInteractionStart) this.callbacks.onInteractionStart();
 
       this.container.style.transition = "none";
-      this.container.style.willChange = "transform";
-      this.container.style.boxShadow = "0 8px 24px rgba(0,0,0,0.3)";
+      this.container.style.willChange = "left, top";
+      this.visualContainer.style.boxShadow = "0 8px 24px rgba(0,0,0,0.3)";
       this.container.style.cursor = "grabbing";
 
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
     };
 
-    const updatePosition = (clientX: number, clientY: number) => {
-      const dx = clientX - this.startX;
-      const dy = clientY - this.startY;
+    const onResizeMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return;
+      e.stopPropagation();
+      e.preventDefault();
 
-      let newX = this.initialX + dx;
-      let newY = this.initialY + dy;
+      this.isResizing = true;
+      this.dragOffsetX = e.clientX; // Store initial mouse X
+      this.dragOffsetY = this.visualContainer.clientWidth; // Store initial width
+      if (this.callbacks.onInteractionStart) this.callbacks.onInteractionStart();
 
-      const parent = this.container.parentElement;
-      if (parent) {
-        newX = Math.max(
-          0,
-          Math.min(newX, parent.clientWidth - this.container.clientWidth)
-        );
-        newY = Math.max(
-          0,
-          Math.min(newY, parent.clientHeight - this.container.clientHeight)
-        );
+      this.container.style.transition = "none";
+      this.container.style.cursor = "ew-resize";
+      document.body.style.cursor = "ew-resize";
+
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
+    };
+
+    const updatePosition = () => {
+      const parentRect = this.container.parentElement?.getBoundingClientRect();
+      if (!parentRect) return;
+
+      if (this.isDragging) {
+        let newX = currentX - parentRect.left - this.dragOffsetX;
+        let newY = currentY - parentRect.top - this.dragOffsetY;
+
+        newX = Math.max(0, Math.min(newX, parentRect.width - this.container.clientWidth));
+        newY = Math.max(0, Math.min(newY, parentRect.height - this.container.clientHeight));
+
+        this.container.style.left = `${newX}px`;
+        this.container.style.top = `${newY}px`;
+      } else if (this.isResizing) {
+        const deltaX = currentX - this.dragOffsetX;
+        const newWidth = Math.max(80, Math.min(600, this.dragOffsetY + deltaX));
+        this.visualContainer.style.width = `${newWidth}px`;
+        if (this.callbacks.onResize) this.callbacks.onResize(newWidth);
       }
-
-      // Use transform for better performance (no layout recalc)
-      const tx = newX - this.initialX;
-      const ty = newY - this.initialY;
-      this.container.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+      rafId = null;
     };
 
     const onMouseMove = (e: MouseEvent) => {
-      if (!this.isDragging) return;
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => updatePosition(e.clientX, e.clientY));
+      if (!this.isDragging && !this.isResizing) return;
+      currentX = e.clientX;
+      currentY = e.clientY;
+      if (!rafId) {
+        rafId = requestAnimationFrame(updatePosition);
+      }
     };
 
     const onMouseUp = () => {
-      if (this.isDragging) {
-        this.isDragging = false;
+      if (this.isDragging || this.isResizing) {
         if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
 
-        // Finalize position and commit to left/top (to keep it there)
-        const rect = this.container.getBoundingClientRect();
-        const parentRect =
-          this.container.parentElement?.getBoundingClientRect();
-        if (parentRect) {
-          const finalX = rect.left - parentRect.left;
-          const finalY = rect.top - parentRect.top;
-
-          this.container.style.transform = "none";
-          this.container.style.left = `${finalX}px`;
-          this.container.style.top = `${finalY}px`;
-
-          this.callbacks.onMove(finalX, finalY);
+        if (this.isDragging) {
+          const rect = this.container.getBoundingClientRect();
+          const parentRect = this.container.parentElement?.getBoundingClientRect();
+          if (parentRect) {
+            this.callbacks.onMove(rect.left - parentRect.left, rect.top - parentRect.top);
+          }
         }
 
+        this.isDragging = false;
+        this.isResizing = false;
+        if (this.callbacks.onInteractionEnd) this.callbacks.onInteractionEnd();
         this.container.style.willChange = "auto";
         this.container.style.transition = "box-shadow 0.2s ease";
-        this.container.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+        this.visualContainer.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
         this.container.style.cursor = "auto";
+        document.body.style.cursor = "auto";
       }
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
     };
 
-    this.container.addEventListener("mousedown", onMouseDown);
+    this.header.addEventListener("mousedown", onMouseDown);
+    resizeHandle.addEventListener("mousedown", onResizeMouseDown);
 
     // Block events from reaching the chart while over the legend
+    // but ALLOW propagation when dragging/resizing so the document listeners work
     this.container.addEventListener("wheel", (e) => e.stopPropagation());
     this.container.addEventListener("click", (e) => e.stopPropagation());
     this.container.addEventListener("dblclick", (e) => e.stopPropagation());
-    // Note: mousemove/mouseup on container MUST bubble to document during drag
+    
+    const stopIfNoDrag = (e: Event) => {
+      if (!this.isDragging && !this.isResizing) {
+        e.stopPropagation();
+      }
+    };
+
+    this.container.addEventListener("mousemove", stopIfNoDrag);
+    this.container.addEventListener("pointermove", stopIfNoDrag);
+    this.container.addEventListener("pointerdown", stopIfNoDrag);
   }
 
   public update(series: Series[]): void {
@@ -206,6 +275,8 @@ export class ChartLegend {
         font-family: ${legend.fontFamily};
         font-size: ${legend.fontSize}px;
         color: ${legend.textColor};
+        width: 100%;
+        overflow: hidden;
       `;
 
       // Use a canvas for the swatch to support symbols
@@ -268,6 +339,13 @@ export class ChartLegend {
 
       const label = document.createElement("span");
       label.textContent = s.getName();
+      label.title = s.getName(); // Tooltip on hover
+      label.style.cssText = `
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+      `;
 
       item.appendChild(swatch);
       item.appendChild(label);
@@ -445,6 +523,10 @@ export class ChartLegend {
     this.theme = theme;
     this.updateStyle();
     this.render();
+  }
+
+  public setWidth(width: number): void {
+    this.visualContainer.style.width = `${width}px`;
   }
 
   public setVisible(visible: boolean): void {

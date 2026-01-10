@@ -120,7 +120,7 @@ async function applyTransformPipeline() {
   
   // 1. Downsampling first (if active)
   if (transforms.downsampled) {
-    const { downsampleLTTB } = await import('@src/analysis')
+    const { downsampleLTTB } = await import('@src/plugins/analysis')
     const result = downsampleLTTB(currentX, currentY, 300)
     currentX = result.x
     currentY = result.y
@@ -128,13 +128,13 @@ async function applyTransformPipeline() {
   
   // 2. Smoothing
   if (transforms.smoothing) {
-    const { savitzkyGolay } = await import('@src/analysis')
+    const { savitzkyGolay } = await import('@src/plugins/analysis')
     currentY = savitzkyGolay(currentY, 15, 3)
   }
   
   // 3. Baseline correction
   if (transforms.baseline) {
-    const { subtractBaseline } = await import('@src/analysis')
+    const { subtractBaseline } = await import('@src/plugins/analysis')
     currentY = subtractBaseline(
       Array.from(currentX), 
       Array.from(currentY), 
@@ -155,7 +155,7 @@ async function applyTransformPipeline() {
   // 4. Show derivative as overlay
   if (transforms.derivative) {
     try { chart.removeSeries('derivative') } catch {}
-    const { derivative } = await import('@src/analysis')
+    const { derivative } = await import('@src/plugins/analysis')
     const dy = derivative(currentX, currentY, 1)
     
     // Scale to fit
@@ -181,7 +181,7 @@ async function applyTransformPipeline() {
   // 5. Detect peaks
   if (transforms.peaks) {
     try { chart.removeSeries('peaks') } catch {}
-    const { detectPeaks } = await import('@src/analysis')
+    const { detectPeaks } = await import('@src/plugins/analysis')
     const peaks = detectPeaks(currentX, currentY, { 
       minProminence: 0.3, 
       type: 'max' 
@@ -215,7 +215,7 @@ async function toggleTransform(key: keyof typeof transforms) {
 
 async function calculateArea() {
   if (!chart) return
-  const { integrate } = await import('@src/analysis')
+  const { integrate } = await import('@src/plugins/analysis')
   const series = chart.getSeries('main')
   const data = series?.getData()
   if (!data) return

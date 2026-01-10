@@ -87,6 +87,8 @@ export type {
   ErrorBarStyle,
   ErrorBarDirection,
   ScatterSymbol,
+  DeltaMeasurement,
+  PeakMeasurement,
 } from "./types";
 
 // ============================================
@@ -143,11 +145,11 @@ export type {
 // ============================================
 // Tooltip System
 // ============================================
-export {
+  export {
   TooltipManager,
   TOOLTIP_THEMES,
   getTooltipThemeForChartTheme,
-} from "./core/tooltip";
+} from "./plugins/tools/tooltip";
 
 export type {
   TooltipData,
@@ -158,7 +160,7 @@ export type {
   DataPointTooltip,
   CrosshairTooltip,
   HeatmapTooltip,
-} from "./core/tooltip";
+} from "./plugins/tools/tooltip";
 
 // ============================================
 // Downsampling
@@ -189,7 +191,7 @@ export {
   type PrefixInfo,
   type ValidationResult,
   type DataStats,
-} from "./analysis";
+} from "./plugins/analysis";
 
 // ============================================
 // Streaming utilities
@@ -368,19 +370,19 @@ export {
   generateRandomData,
   generateCVData,
   generateNyquistData,
-  
+
   // Benchmarking
   benchmarkRender,
   assertPerformance,
-  
+
   // Snapshots
   createSnapshot,
   compareSnapshots,
-  
+
   // Utilities
   waitForFrames,
   waitFor,
-  
+
   // Types
   type MockChartOptions,
   type WaveformOptions,
@@ -462,5 +464,86 @@ export {
   normalize,
   type IndicatorResult,
   type OHLCData,
-} from "./analysis/indicators";
+} from "./plugins/analysis";
+
+// ============================================
+// Plugin System
+// ============================================
+export {
+  // Core functionality
+  createPluginContext,
+  PluginManagerImpl,
+
+  // Registry
+  getPluginRegistry,
+  registerPlugin,
+  definePlugin,
+  defineAndRegister,
+  loadPlugin,
+  listPluginsByCategory,
+  validateManifest,
+  checkPluginCompatibility,
+
+  // Helpers
+  createPlugin,
+  createConfigurablePlugin,
+
+  // Built-in plugins
+  CrosshairPlugin,
+  StatsPlugin,
+  WatermarkPlugin,
+  GridHighlightPlugin,
+  DataLoggerPlugin,
+  PluginTools,
+  PluginAnalysis,
+  PluginAnnotations,
+  BuiltinPlugins,
+} from "./plugins";
+
+export type {
+  // Manifest & Metadata
+  PluginVersion,
+  PluginCapability,
+  PluginManifest,
+
+  // Context Types
+  PluginContext,
+  RenderContext,
+  CoordinateContext,
+  DataContext,
+  UIContext as PluginUIContext,
+  EventContext as PluginEventContext,
+  PluginStorage,
+  PluginLogger,
+  OverlayOptions,
+  NotificationOptions,
+  PickResult,
+
+  // Hook Event Types
+  BeforeRenderEvent,
+  AfterRenderEvent,
+  InteractionEvent,
+  ViewChangeEvent,
+  SeriesChangeEvent,
+  DataUpdateEvent,
+
+  // Plugin Types
+  ChartPlugin,
+  PluginFactory,
+  TypedPlugin,
+  PluginManager,
+  PluginRegistry,
+  PluginRegistryEntry,
+  ContextDependencies,
+
+  // Built-in plugin configs
+  CrosshairPluginConfig,
+  StatsPluginConfig,
+  WatermarkPluginConfig,
+  GridHighlightConfig,
+  DataLoggerConfig,
+  PluginToolsConfig,
+  PluginAnalysisConfig,
+  PluginAnnotationsConfig,
+} from "./plugins";
 

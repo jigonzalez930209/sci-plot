@@ -21,7 +21,12 @@ export interface UIContext {
   setPanMode: (active: boolean) => void;
   setMode: (mode: InteractionMode) => void;
   onLegendMove: (x: number, y: number) => void;
+  onToggleSmoothing: () => void;
   toggleLegend: () => void;
+  onInteractionStart?: () => void;
+  onInteractionEnd?: () => void;
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
 }
 
 export function initControls(ctx: UIContext): ChartControls | null {
@@ -62,7 +67,7 @@ export function initControls(ctx: UIContext): ChartControls | null {
       ctx.requestRender();
     },
     onToggleLegend: () => {
-       ctx.toggleLegend();
+      ctx.toggleLegend();
     },
   });
 }
@@ -75,6 +80,10 @@ export function initLegend(ctx: UIContext, options: ChartOptions): ChartLegend |
     options.legendPosition || {},
     {
       onMove: (x, y) => ctx.onLegendMove(x, y),
+      onInteractionStart: () => ctx.onInteractionStart?.(),
+      onInteractionEnd: () => ctx.onInteractionEnd?.(),
+      onHoverStart: () => ctx.onHoverStart?.(),
+      onHoverEnd: () => ctx.onHoverEnd?.(),
     }
   );
   legend.update(Array.from(ctx.series.values()));

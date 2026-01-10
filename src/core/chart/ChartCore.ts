@@ -16,8 +16,6 @@ import type {
   ChartEventMap,
   Bounds,
 } from "../../types";
-import * as analysis from "../../analysis";
-import type { FitType, FitOptions } from "../../analysis";
 import { EventEmitter } from "../EventEmitter";
 import { Series } from "../Series";
 import {
@@ -30,9 +28,7 @@ import { OverlayRenderer } from "../OverlayRenderer";
 import { InteractionManager } from "../InteractionManager";
 import { ChartControls } from "../ChartControls";
 import { ChartLegend } from "../ChartLegend";
-import { ChartStatistics } from "../ChartStatistics";
-import { AnnotationManager, type Annotation } from "../annotations";
-import { TooltipManager } from "../tooltip";
+import type { Annotation } from "../annotations";
 import {
   SelectionManager,
   type SelectedPoint,
@@ -80,7 +76,6 @@ import {
   updateSeriesBuffer,
   appendData as appendDataImpl,
   setMaxPoints as setMaxPointsImpl,
-  addFitLine as addFitLineImpl,
 } from "./ChartSeries";
 import {
   initializeChart as setupChart,
@@ -88,9 +83,8 @@ import {
   getAxesLayout,
   resizeCanvases,
   pixelToDataX as pxToDataX,
-  pixelToDataY as pxToDataY,
 } from "./ChartSetup";
-import { PluginManagerImpl } from "./plugins/PluginManager";
+import { PluginManagerImpl } from "../../plugins";
 import {
   initControls as createControls,
   initLegend as createLegend,
@@ -98,9 +92,6 @@ import {
 import {
   markInitComplete,
 } from "../ChartInitQueue";
-import { DeltaTool } from "../delta-tool";
-import { PeakTool } from "../peak-tool";
-
 // ============================================
 // Chart Implementation
 // ============================================
@@ -123,6 +114,7 @@ export class ChartImpl implements Chart {
   private primaryYAxisId: string;
   private dpr: number;
   private backgroundColor: [number, number, number, number];
+  private plotAreaBackground: [number, number, number, number];
   private renderer: NativeWebGLRenderer;
   private overlay: OverlayRenderer;
   private interaction: InteractionManager;
@@ -132,7 +124,7 @@ export class ChartImpl implements Chart {
     return (this.yScales.get(this.primaryYAxisId) ||
       this.yScales.values().next().value) as Scale;
   }
-  private theme: ChartTheme;
+  public theme: ChartTheme;
   private cursorOptions: CursorOptions | null = null;
   private cursorPosition: { x: number; y: number } | null = null;
   private showLegend: boolean;
@@ -145,10 +137,13 @@ export class ChartImpl implements Chart {
   private _isDestroyed = false;
   private autoScroll = false;
   private showStatistics = false;
-  private stats: ChartStatistics | null = null;
   private initQueueId: string | null = null;
   private initStarted = false;
+  private frameCount = 0;
+  private lastRenderTime = performance.now();
   private commandQueue: Array<{ fn: () => void; name: string }> = [];
+  private annotationQueue: any[] = [];
+  private annotationIdCounter = 0;
 
   /** Whether the chart has been destroyed */
   get isDestroyed(): boolean {
@@ -161,17 +156,32 @@ export class ChartImpl implements Chart {
     width: number;
     height: number;
   } | null = null;
-  private annotationManager: AnnotationManager = new AnnotationManager();
-  public readonly tooltip: TooltipManager;
   private pluginManager: PluginManagerImpl;
   private initialOptions: ChartOptions;
-  public readonly analysis = analysis;
+
+  get analysis(): any {
+    return this.getPluginAPI<any>("scichart-analysis") ?? null;
+  }
+
   private animationEngine: AnimationEngine;
   private animationConfig: ChartAnimationConfig;
+  get animations(): ChartAnimationConfig {
+    return this.animationConfig;
+  }
   private selectionManager: SelectionManager;
   private responsiveManager: ResponsiveManager;
-  private deltaTool: DeltaTool | null = null;
-  private peakTool: PeakTool | null = null;
+
+  get tooltip(): any {
+    return this.getPluginAPI<any>("scichart-tools")?.getTooltipManager() ?? null;
+  }
+
+  get deltaTool(): any {
+    return this.getPluginAPI<any>("scichart-tools")?.getDeltaTool() ?? null;
+  }
+
+  get peakTool(): any {
+    return this.getPluginAPI<any>("scichart-tools")?.getPeakTool() ?? null;
+  }
 
   constructor(options: ChartOptions) {
     this.initialOptions = options;
@@ -184,13 +194,14 @@ export class ChartImpl implements Chart {
         typeof (globalThis as any).navigator !== "undefined" &&
         typeof (globalThis as any).navigator.gpu !== "undefined";
       console.warn(
-        `[SciChart] 'renderer: "webgpu"' requested but WebGPU renderer is experimental and not yet implemented. ` +
+        `[SciChartEngine] 'renderer: "webgpu"' requested but WebGPU renderer is experimental and not yet implemented. ` +
         `Falling back to WebGL. WebGPU supported: ${isSupported}`
       );
     }
 
     this.theme = setup.theme;
     this.backgroundColor = setup.backgroundColor;
+    this.plotAreaBackground = setup.plotAreaColor;
     this.showLegend = setup.showLegend;
     this.showControls = setup.showControls;
     this.autoScroll = setup.autoScroll;
@@ -208,16 +219,8 @@ export class ChartImpl implements Chart {
     this.renderer = new NativeWebGLRenderer(this.webglCanvas);
     this.renderer.setDPR(this.dpr);
     this.overlay = new OverlayRenderer(this.overlayCtx, this.theme);
-    this.pluginManager = new PluginManagerImpl(this);
 
-    // Initialize animation system
-    this.animationEngine = new AnimationEngine();
-    this.animationConfig =
-      typeof options.animations === "boolean"
-        ? { ...DEFAULT_ANIMATION_CONFIG, enabled: options.animations }
-        : mergeAnimationConfig(options.animations);
-
-    // Initialize selection manager
+    // Initialize selection manager EARLY so plugins can use it for hit-testing
     this.selectionManager = new SelectionManager({
       getSeries: () => this.series,
       getPlotArea: () => this.getPlotArea(),
@@ -227,6 +230,36 @@ export class ChartImpl implements Chart {
       events: this.events as any, // SelectionEventMap is a subset of ChartEventMap
       requestRender: () => this.requestRender(),
     });
+
+    // Initialize the NEW PluginManager with all necessary dependencies
+    this.pluginManager = new PluginManagerImpl({
+      chart: this,
+      container: this.container,
+      theme: this.theme,
+      getGL: () => this.renderer.getGL(),
+      get2DContext: () => this.overlayCtx,
+      getPixelRatio: () => this.dpr,
+      getCanvasSize: () => ({ width: this.webglCanvas.width, height: this.webglCanvas.height }),
+      getPlotArea: () => this.getPlotArea(),
+      getViewBounds: () => this.viewBounds,
+      getYAxisBounds: (yAxisId) => {
+        const s = this.yScales.get(yAxisId || this.primaryYAxisId);
+        return { yMin: s?.domain[0] ?? 0, yMax: s?.domain[1] ?? 1 };
+      },
+      dataToPixelX: (x) => this.xScale.transform(x),
+      dataToPixelY: (y, yAxisId) => (this.yScales.get(yAxisId || this.primaryYAxisId) || this.yScale).transform(y),
+      pixelToDataX: (px) => this.pixelToDataX(px),
+      pixelToDataY: (py, yAxisId) => this.pixelToDataY(py, yAxisId),
+      findNearestPoint: (px, py, radius) => this.selectionManager.hitTest(px, py, radius),
+      getPlugin: (name) => this.pluginManager.get(name) as any
+    });
+
+    // Initialize animation system
+    this.animationEngine = new AnimationEngine();
+    this.animationConfig =
+      typeof options.animations === "boolean"
+        ? { ...DEFAULT_ANIMATION_CONFIG, enabled: options.animations }
+        : mergeAnimationConfig(options.animations);
 
     // Initialize responsive manager
     const responsiveConfig =
@@ -245,9 +278,18 @@ export class ChartImpl implements Chart {
     this.interaction = new InteractionManager(
       this.container,
       {
-        onZoom: (b, axisId) =>
-          this.zoom({ x: [b.xMin, b.xMax], y: [b.yMin, b.yMax], axisId }),
-        onPan: (dx, dy, axisId) => this.pan(dx, dy, axisId),
+        onZoom: (b, axisId) => {
+          this.zoom({ x: [b.xMin, b.xMax], y: [b.yMin, b.yMax], axisId });
+          // Refresh tool overlays so points follow the zoom
+          if (this.deltaTool) this.deltaTool.renderOverlay();
+          if (this.peakTool) this.peakTool.renderOverlay();
+        },
+        onPan: (dx, dy, axisId) => {
+          this.pan(dx, dy, axisId);
+          // Refresh tool overlays so points follow the pan
+          if (this.deltaTool) this.deltaTool.renderOverlay();
+          if (this.peakTool) this.peakTool.renderOverlay();
+        },
         onBoxZoom: (rect) => this.handleBoxZoom(rect),
         onCursorMove: (x, y) => {
           this.cursorPosition = { x, y };
@@ -326,75 +368,47 @@ export class ChartImpl implements Chart {
             this.tooltip.setSuspended(false);
           }
         },
+        onInteraction: (event) => {
+          this.pluginManager.notify("onInteraction", event);
+        },
       },
       () => this.getPlotArea(),
       (axisId) => this.getInteractedBounds(axisId),
       () => getAxesLayout(this.yAxisOptionsMap as any)
     );
 
-    this.tooltip = new TooltipManager({
-      overlayCtx: this.overlayCtx,
-      chartTheme: this.theme,
-      getPlotArea: () => this.getPlotArea(),
-      getSeries: () => this.getAllSeries(),
-      pixelToDataX: (px) => this.pixelToDataX(px),
-      pixelToDataY: (py) => this.pixelToDataY(py),
-      getXScale: () => this.xScale,
-      getYScales: () => this.yScales,
-      getViewBounds: () => this.viewBounds,
-      options: options.tooltip,
-    });
-
     new ResizeObserver(() => !this.isDestroyed && this.resize()).observe(
       this.container
     );
     this.initControls();
     this.initLegend(options);
-    if (this.showStatistics) {
-      this.stats = new ChartStatistics(this.container, this.theme, this.series);
+
+    // Auto-load debug plugin if requested
+    if (options.debug || options.showStatistics) {
+      import("../../plugins/debug").then(({ PluginDebug }) => {
+        const config = typeof options.debug === 'object' ? options.debug : {};
+        if (options.showStatistics) (config as any).showDataStats = true;
+        this.use(PluginDebug(config));
+      });
     }
 
-    // Initialize Delta Tool for measurement mode
-    this.deltaTool = new DeltaTool({
-      container: this.container,
-      getPlotArea: () => this.getPlotArea(),
-      getViewBounds: () => this.viewBounds,
-      requestRender: () => this.render(),
-      getSeries: () => {
-        // Convert series to simple data format for delta tool
-        const result: Array<{ id: string; x: Float32Array | Float64Array | number[]; y: Float32Array | Float64Array | number[] }> = [];
-        this.series.forEach((s, id) => {
-          const data = s.getData();
-          if (data.x && data.y) {
-            result.push({ id, x: data.x, y: data.y });
-          }
-        });
-        return result;
-      },
-      onMeasure: (measurement) => {
-        this.events.emit('deltaMeasure', measurement);
-      },
+    // Auto-load tools plugin for delta/peak measurement and tooltips
+    import("../../plugins/tools").then(({ PluginTools }) => {
+      this.use(PluginTools({
+        enableDeltaTool: true,
+        enablePeakTool: true,
+        useEnhancedTooltips: true,
+      }));
     });
 
-    // Initialize Peak Tool for integration mode
-    this.peakTool = new PeakTool({
-      container: this.container,
-      getPlotArea: () => this.getPlotArea(),
-      getViewBounds: () => this.viewBounds,
-      requestRender: () => this.render(),
-      getSeries: () => {
-        const result: Array<{ id: string; x: Float32Array | Float64Array | number[]; y: Float32Array | Float64Array | number[] }> = [];
-        this.series.forEach((s, id) => {
-          const data = s.getData();
-          if (data.x && data.y) {
-            result.push({ id, x: data.x, y: data.y });
-          }
-        });
-        return result;
-      },
-      onMeasure: (measurement) => {
-        this.events.emit('peakMeasure', measurement as any);
-      },
+    // Auto-load analysis plugin for curve fitting and analysis features
+    import("../../plugins/analysis").then(({ PluginAnalysis }) => {
+      this.use(PluginAnalysis());
+    });
+
+    // Auto-load annotations plugin
+    import("../../plugins/annotations").then(({ PluginAnnotations }) => {
+      this.use(PluginAnnotations());
     });
 
     // NOTE: resize() and startRenderLoop() are now called by startInit()
@@ -419,7 +433,7 @@ export class ChartImpl implements Chart {
           cmd.fn();
         } catch (err) {
           console.error(
-            `[SciChart] Error executing queued command '${cmd.name}':`,
+            `[SciChartEngine] Error executing queued command '${cmd.name}':`,
             err
           );
         }
@@ -475,11 +489,24 @@ export class ChartImpl implements Chart {
       resetZoom: () => this.resetZoom(),
       requestRender: () => this.requestRender(),
       exportImage: () => this.exportImage(),
-      setPanMode: (active) => this.interaction.setPanMode(active),
-      setMode: (mode) => this.setMode(mode),
+      setPanMode: (active: boolean) => this.interaction.setPanMode(active),
+      setMode: (mode: 'pan' | 'boxZoom' | 'select' | 'delta' | 'peak') => this.setMode(mode),
       onLegendMove: (x: number, y: number) =>
         this.events.emit("legendMove", { x, y }),
+      onToggleSmoothing: () => this.toggleSmoothing(),
       toggleLegend: () => this.toggleLegend(),
+      onInteractionStart: () => {
+        if (this.tooltip) this.tooltip.setSuspended(true);
+      },
+      onInteractionEnd: () => {
+        if (this.tooltip) this.tooltip.setSuspended(false);
+      },
+      onHoverStart: () => {
+        if (this.tooltip) this.tooltip.setSuspended(true);
+      },
+      onHoverEnd: () => {
+        if (this.tooltip) this.tooltip.setSuspended(false);
+      },
     });
   }
 
@@ -511,7 +538,20 @@ export class ChartImpl implements Chart {
         setMode: (mode) => this.setMode(mode),
         onLegendMove: (x: number, y: number) =>
           this.events.emit("legendMove", { x, y }),
+        onToggleSmoothing: () => this.toggleSmoothing(),
         toggleLegend: () => this.toggleLegend(),
+        onInteractionStart: () => {
+          if (this.tooltip) this.tooltip.setSuspended(true);
+        },
+        onInteractionEnd: () => {
+          if (this.tooltip) this.tooltip.setSuspended(false);
+        },
+        onHoverStart: () => {
+          if (this.tooltip) this.tooltip.setSuspended(true);
+        },
+        onHoverEnd: () => {
+          if (this.tooltip) this.tooltip.setSuspended(false);
+        },
       },
       options
     );
@@ -521,13 +561,16 @@ export class ChartImpl implements Chart {
     this.theme = typeof theme === "string" ? getThemeByName(theme) : theme;
     const bgColor = parseColor(this.theme.backgroundColor);
     this.backgroundColor = [bgColor[0], bgColor[1], bgColor[2], bgColor[3]];
+    
+    const paColor = parseColor(this.theme.plotAreaBackground);
+    this.plotAreaBackground = [paColor[0], paColor[1], paColor[2], paColor[3]];
+
     this.container.style.backgroundColor = this.theme.backgroundColor;
 
     this.overlay.setTheme(this.theme);
     this.tooltip.updateChartTheme(this.theme);
     if (this.controls) this.controls.updateTheme(this.theme);
     if (this.legend) this.legend.updateTheme(this.theme);
-    if (this.stats) this.stats.updateTheme(this.theme);
 
     this.requestRender();
   }
@@ -582,7 +625,7 @@ export class ChartImpl implements Chart {
   addSeries(options: SeriesOptions | HeatmapOptions): void {
     addSeriesImpl(this.getSeriesContext() as any, options as any);
     const series = this.series.get((options as any).id);
-    if (series) this.pluginManager.notify("onSeriesAdded", series);
+    if (series) this.pluginManager.notify("onSeriesAdd", series);
   }
   addBar(options: Omit<SeriesOptions, "type">): void {
     this.addSeries({ ...options, type: "bar" } as SeriesOptions);
@@ -595,6 +638,7 @@ export class ChartImpl implements Chart {
   }
   updateSeries(id: string, data: SeriesUpdateData): void {
     updateSeriesImpl(this.getSeriesContext(), id, data);
+    this.recalculateTools();
   }
   appendData(
     id: string,
@@ -602,6 +646,14 @@ export class ChartImpl implements Chart {
     y: number[] | Float32Array
   ): void {
     appendDataImpl(this.getSeriesContext(), id, x, y);
+    this.recalculateTools();
+    const series = this.series.get(id);
+    if (series) {
+      this.pluginManager.notify("onDataUpdate", {
+        seriesId: id,
+        data: series.getData(),
+      });
+    }
   }
   setAutoScroll(enabled: boolean): void {
     this.autoScroll = enabled;
@@ -609,12 +661,16 @@ export class ChartImpl implements Chart {
   setMaxPoints(id: string, maxPoints: number): void {
     setMaxPointsImpl(this.getSeriesContext(), id, maxPoints);
   }
-  addFitLine(
-    seriesId: string,
-    type: FitType,
-    options: FitOptions = {}
-  ): string {
-    return addFitLineImpl(this.getSeriesContext(), seriesId, type, options);
+  /**
+   * Add a line of best fit to a series
+   */
+  addFitLine(seriesId: string, type: any, options?: any): string {
+    const api = this.getPluginAPI<any>("scichart-analysis");
+    if (api && api.addFitLine) {
+      return api.addFitLine(seriesId, type, options);
+    }
+    console.warn("[SciChartEngine] addFitLine requires scichart-analysis plugin");
+    return "";
   }
   getSeries(id: string): Series | undefined {
     return this.series.get(id);
@@ -657,7 +713,7 @@ export class ChartImpl implements Chart {
         animation.promise.catch((err) => {
           // Ignore cancellation errors
           if (err.message !== "Animation cancelled") {
-            console.error("[SciChart] Animation error:", err);
+            console.error("[SciChartEngine] Animation error:", err);
           }
         });
       }
@@ -687,7 +743,7 @@ export class ChartImpl implements Chart {
           animation.promise.catch((err) => {
             // Ignore cancellation errors
             if (err.message !== "Animation cancelled") {
-              console.error("[SciChart] Animation error:", err);
+              console.error("[SciChartEngine] Animation error:", err);
             }
           });
         }
@@ -725,7 +781,7 @@ export class ChartImpl implements Chart {
       animation.promise.catch((err) => {
         // Ignore cancellation errors
         if (err.message !== "Animation cancelled") {
-          console.error("[SciChart] Animation error:", err);
+          console.error("[SciChartEngine] Animation error:", err);
         }
       });
     }
@@ -783,29 +839,52 @@ export class ChartImpl implements Chart {
   }
 
   // Annotations
-  addAnnotation(annotation: Annotation): string {
-    const id = this.annotationManager.add(annotation);
-    this.requestOverlayRender();
+  addAnnotation(annotation: any): string {
+    const id = annotation.id || `annotation-${++this.annotationIdCounter}`;
+    const annWithId = { ...annotation, id };
+
+    const api = this.getPluginAPI<any>("scichart-annotations");
+    if (api) {
+      api.add(annWithId);
+      this.requestOverlayRender();
+    } else {
+      this.annotationQueue.push(annWithId);
+    }
     return id;
   }
+
   removeAnnotation(id: string): boolean {
-    const result = this.annotationManager.remove(id);
-    this.requestOverlayRender();
-    return result;
+    const api = this.getPluginAPI<any>("scichart-annotations");
+    if (api) {
+      const result = api.remove(id);
+      this.requestOverlayRender();
+      return result;
+    }
+    return false;
   }
+
   updateAnnotation(id: string, updates: Partial<Annotation>): void {
-    this.annotationManager.update(id, updates);
+    const api = this.getPluginAPI<any>("scichart-annotations");
+    api?.update?.(id, updates);
     this.requestOverlayRender();
   }
+
   getAnnotation(id: string): Annotation | undefined {
-    return this.annotationManager.get(id);
+    return this.getPluginAPI<any>("scichart-annotations")?.get(id);
   }
+
   getAnnotations(): Annotation[] {
-    return this.annotationManager.getAll();
+    return this.getPluginAPI<any>("scichart-annotations")?.getAll() ?? [];
   }
+
   clearAnnotations(): void {
-    this.annotationManager.clear();
+    this.getPluginAPI<any>("scichart-annotations")?.clear();
     this.requestOverlayRender();
+  }
+
+  private getPluginAPI<T>(name: string): T | null {
+    const plugin = this.pluginManager.get(name) as any;
+    return plugin ? plugin.api : null;
   }
 
   // Export
@@ -828,7 +907,7 @@ export class ChartImpl implements Chart {
     const id = options.id || `y${existingIds.length}`;
 
     if (this.yAxisOptionsMap.has(id)) {
-      console.warn(`[SciChart] Y axis with id '${id}' already exists`);
+      console.warn(`[SciChartEngine] Y axis with id '${id}' already exists`);
       return id;
     }
 
@@ -857,7 +936,7 @@ export class ChartImpl implements Chart {
    */
   removeYAxis(id: string): boolean {
     if (id === this.primaryYAxisId) {
-      console.warn(`[SciChart] Cannot remove primary Y axis '${id}'`);
+      console.warn(`[SciChartEngine] Cannot remove primary Y axis '${id}'`);
       return false;
     }
 
@@ -886,7 +965,7 @@ export class ChartImpl implements Chart {
   updateYAxis(id: string, options: Partial<AxisOptions>): void {
     const existing = this.yAxisOptionsMap.get(id);
     if (!existing) {
-      console.warn(`[SciChart] Y axis '${id}' not found`);
+      console.warn(`[SciChartEngine] Y axis '${id}' not found`);
       return;
     }
 
@@ -997,24 +1076,35 @@ export class ChartImpl implements Chart {
    * @param mode - 'pan' for pan/drag, 'boxZoom' for rectangle zoom, 'select' for point selection, 'delta' for measurements
    */
   setMode(mode: 'pan' | 'boxZoom' | 'select' | 'delta' | 'peak'): void {
-    // Disable active tool if switching away
     const currentMode = this.getMode();
-    if (currentMode === 'delta' && mode !== 'delta' && this.deltaTool) {
-      this.deltaTool.disable();
+    if (currentMode === mode) return;
+
+    // Always clear point selection when changing tool
+    this.selectionManager.clearSelection();
+
+    // Delegate to tools plugin if available
+    const toolsApi = this.getPluginAPI<any>("scichart-tools");
+    if (mode === 'delta' || mode === 'peak') {
+      if (toolsApi) {
+        toolsApi.setMode(mode);
+      } else {
+        // Plugin not yet loaded - retry after a short delay
+        console.info(`[SciChartEngine] Tools plugin not ready, retrying setMode('${mode}')...`);
+        setTimeout(() => {
+          const api = this.getPluginAPI<any>("scichart-tools");
+          if (api) {
+            api.setMode(mode);
+          } else {
+            console.warn(`[SciChartEngine] Tools plugin still not available for mode '${mode}'`);
+          }
+        }, 100);
+      }
+    } else if (toolsApi) {
+      // Disable tools when switching to non-tool modes
+      toolsApi.setMode('none');
     }
-    if (currentMode === 'peak' && mode !== 'peak' && this.peakTool) {
-      this.peakTool.disable();
-    }
-    
+
     this.interaction.setMode(mode);
-    
-    // Enable new tool
-    if (mode === 'delta' && this.deltaTool) {
-      this.deltaTool.enable();
-    }
-    if (mode === 'peak' && this.peakTool) {
-      this.peakTool.enable();
-    }
   }
 
   /**
@@ -1023,19 +1113,19 @@ export class ChartImpl implements Chart {
   getMode(): 'pan' | 'boxZoom' | 'select' | 'delta' | 'peak' {
     return this.interaction.getMode();
   }
-  
+
   /**
    * Get the Delta Tool instance for advanced measurements
    */
-  getDeltaTool(): DeltaTool | null {
-    return this.deltaTool;
+  getDeltaTool(): any | null {
+    return this.getPluginAPI<any>("scichart-tools")?.getDeltaTool() ?? null;
   }
 
   /**
    * Get the Peak Tool instance for peak integration
    */
-  getPeakTool(): PeakTool | null {
-    return this.peakTool;
+  getPeakTool(): any | null {
+    return this.getPluginAPI<any>("scichart-tools")?.getPeakTool() ?? null;
   }
 
   // ============================================
@@ -1143,7 +1233,7 @@ export class ChartImpl implements Chart {
           }
           : { x: "", y: "" },
       })),
-      annotations: includeAnnotations ? this.annotationManager.getAll() : [],
+      annotations: includeAnnotations ? this.getAnnotations() : [],
       options: {
         showLegend: this.showLegend,
         showControls: this.showControls,
@@ -1199,8 +1289,8 @@ export class ChartImpl implements Chart {
 
     // Restore annotations
     if (!skipAnnotations && state.annotations) {
-      this.annotationManager.clear();
-      state.annotations.forEach((a) => this.annotationManager.add(a));
+      this.clearAnnotations();
+      state.annotations.forEach((a) => this.addAnnotation(a));
     }
 
     // Restore UI options
@@ -1233,6 +1323,14 @@ export class ChartImpl implements Chart {
 
   use(plugin: any): void {
     this.pluginManager.use(plugin);
+
+    // If annotations plugin was just added, process queued annotations
+    const annotationsApi = this.getPluginAPI<any>("scichart-annotations");
+    if (annotationsApi && this.annotationQueue.length > 0) {
+      this.annotationQueue.forEach((a) => annotationsApi.add(a));
+      this.annotationQueue = [];
+      this.requestOverlayRender();
+    }
   }
 
   // Rendering
@@ -1275,7 +1373,7 @@ export class ChartImpl implements Chart {
     const plotArea = this.getPlotArea();
     if (this.webglCanvas.width === 0 || this.webglCanvas.height === 0) return;
 
-    const ctx = {
+    const renderCtx = {
       webglCanvas: this.webglCanvas,
       overlayCanvas: this.overlayCanvas,
       overlayCtx: this.overlayCtx,
@@ -1289,41 +1387,56 @@ export class ChartImpl implements Chart {
       primaryYAxisId: this.primaryYAxisId,
       renderer: this.renderer,
       overlay: this.overlay,
-      annotationManager: this.annotationManager,
       backgroundColor: this.backgroundColor,
       cursorOptions: this.cursorOptions,
       cursorPosition: this.cursorPosition,
       selectionRect: this.selectionRect,
-      stats: this.stats,
-      showStatistics: this.showStatistics,
       events: this.events,
       updateSeriesBuffer: (s: Series) =>
         updateSeriesBuffer(this.getSeriesContext(), s),
       getPlotArea: () => plotArea,
       pixelToDataX: (px: number) => this.pixelToDataX(px),
       pixelToDataY: (py: number) => this.pixelToDataY(py),
-      tooltip: this.tooltip,
       selectionManager: this.selectionManager,
     };
 
+    const now = performance.now();
+    const beforeEvent = {
+      timestamp: now,
+      deltaTime: now - this.lastRenderTime,
+      frameNumber: ++this.frameCount,
+      first: !this.initStarted,
+      forced: full
+    };
+    this.lastRenderTime = now;
+
+    if (!this.pluginManager.notifyBeforeRender(beforeEvent)) {
+      return; // Plugin requested to skip render
+    }
+
     if (full) {
-      const seriesData = prepareSeriesData(ctx, plotArea);
-      this.pluginManager.notify("onBeforeRender", this);
+      const seriesData = prepareSeriesData(renderCtx, plotArea);
       this.renderer.render(seriesData, {
         bounds: this.viewBounds,
         backgroundColor: this.backgroundColor,
+        plotAreaBackground: this.plotAreaBackground,
         plotArea,
       });
-      renderOverlay(ctx, plotArea, this.yScale);
-      this.pluginManager.notify("onAfterRender", this);
+      renderOverlay(renderCtx, plotArea, this.yScale);
     } else {
       // Overlay only render
-      renderOverlay(ctx, plotArea, this.yScale);
+      renderOverlay(renderCtx, plotArea, this.yScale);
     }
 
+    const renderTime = performance.now() - start;
+    const afterEvent = { ...beforeEvent, renderTime };
+
+    this.pluginManager.notifyAfterRender(afterEvent);
+    this.pluginManager.notifyRenderOverlay(afterEvent);
+
     this.events.emit("render", {
-      fps: 1000 / (performance.now() - start),
-      frameTime: performance.now() - start,
+      fps: 1000 / renderTime,
+      frameTime: renderTime,
     });
   }
 
@@ -1331,8 +1444,9 @@ export class ChartImpl implements Chart {
     return pxToDataX(px, this.getPlotArea(), this.viewBounds);
   }
 
-  private pixelToDataY(py: number): number {
-    return pxToDataY(py, this.getPlotArea(), this.viewBounds);
+  private pixelToDataY(py: number, yAxisId?: string): number {
+    const scale = this.yScales.get(yAxisId || this.primaryYAxisId) || this.yScale;
+    return scale.invert(py);
   }
 
   private startRenderLoop(): void {
@@ -1392,9 +1506,41 @@ export class ChartImpl implements Chart {
     this.renderer.destroy();
     if (this.controls) this.controls.destroy();
     if (this.legend) this.legend.destroy();
-    if (this.tooltip) this.tooltip.destroy();
+    this.pluginManager.destroy(); // Destroy all plugins!
     while (this.container.firstChild)
       this.container.removeChild(this.container.firstChild);
+  }
+
+  private toggleSmoothing(): void {
+    this.series.forEach((s) => {
+      const style = s.getStyle();
+      s.setStyle({ smoothing: (style.smoothing || 0) === 0 ? 0.5 : 0 });
+    });
+    this.recalculateTools();
+    this.requestRender();
+  }
+
+  private async recalculateTools(): Promise<void> {
+    // Clear point selection as indices might be desynced or invalid after data change
+    this.selectionManager.clearSelection();
+
+    // Wait for ongoing animations (like auto-scale) to finish 
+    // We wait two frames to give triggered animations a chance to start and register in the engine.
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    if (this.animationEngine.isAnimating()) {
+      await this.animationEngine.waitForIdle();
+    }
+
+    // Refresh measurement tools (Delta and Peak Integration)
+    if (this.deltaTool) {
+      this.deltaTool.recalculate();
+    }
+    if (this.peakTool) {
+      this.peakTool.recalculate();
+    }
+
+    this.requestOverlayRender();
   }
 }
 

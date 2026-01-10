@@ -144,10 +144,8 @@ interface PluginManifest {
 }
 
 // Plugins oficiales propuestos:
-// - @scichart/plugin-fft (Fast Fourier Transform)
-// - @scichart/plugin-kalman (Kalman filtering)
-// - @scichart/plugin-regression (Polynomial, exponential fits)
-// - @scichart/plugin-electrochemistry (CV, DPV, SWV specific)
+// - scichart-engine/plugins/analysis (FFT, Kalman, Regression)
+// - scichart-engine/plugins/electrochemistry (CV, DPV, SWV specific)
 ```
 
 ---
@@ -719,7 +717,7 @@ createChart({
 |---|--------|---------|-------------|--------|
 | 1 | Animaciones y Transiciones | 🔴 Alto | 4/5 | ✅ **Done** |
 | 2 | Multi-Eje Avanzado | 🔴 Alto | 4/5 | ✅ **Done** |
-| 3 | Sistema de Plugins | 🔴 Alto | 5/5 | 🏗️ **En Progreso** |
+| 3 | Sistema de Plugins | 🔴 Alto | 5/5 | ✅ **Done** |
 | 4 | Hit-Testing Mejorado | 🔴 Alto | 3/5 | ✅ **Done** |
 | 5 | Responsive Design | 🔴 Alto | 3/5 | ✅ **Done** |
 | 6 | Serialización | 🔴 Alto | 3/5 | ✅ **Done** |
@@ -1129,11 +1127,12 @@ La demo incluye botones dinámicos para:
 ### ✅ Completado
 - Todas las funciones matemáticas avanzadas (#21-#27)
 - Indicadores de carga con LoadingIndicator
+- Sistema de Plugins Robusto con hooks completos, contexto, registro global y plugins built-in
 - Delta Tool para mediciones interactivas
 - Exportación SVG vectorial
 - Sistema de eventos dataLoading y deltaMeasure
 
 ### 🏗️ En Progreso  
-- Mejora #3: Sistema de Plugins Robusto (Hot-reload, Marketplace)
+- (Ninguno actualmente)
 
 ---

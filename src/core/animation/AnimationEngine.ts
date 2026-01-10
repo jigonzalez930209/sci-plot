@@ -379,8 +379,8 @@ export interface ChartAnimationConfig {
 export const DEFAULT_ANIMATION_CONFIG: ChartAnimationConfig = {
   enabled: true,
   zoom: {
-    enabled: true,
-    duration: 100,  // Was 200
+    enabled: false, // Disabled for more responsive feel
+    duration: 100,
     easing: 'easeOutCubic',
   },
   pan: {

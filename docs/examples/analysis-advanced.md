@@ -1,135 +1,125 @@
-# Análisis Científico Avanzado
+# Advanced Scientific Analysis
 
-SciChart Engine incluye un completo conjunto de funciones matemáticas para análisis científico profesional. Todas las funciones están optimizadas para trabajar con grandes datasets y están disponibles directamente desde la instancia del chart.
+SciChart Engine includes a comprehensive set of mathematical functions for professional scientific analysis. All functions are optimized for large datasets and are available directly from the chart instance.
 
 <script setup>
 import AdvancedMathDemo from '../.vitepress/theme/demos/2d/AdvancedMathDemo.vue'
 </script>
 
-## Demo Interactivo
+## Interactive Demo
 
-Experimenta con las funciones de análisis en tiempo real:
+Experiment with real-time analysis functions:
 
 <AdvancedMathDemo />
 
 ---
 
-## Funciones Disponibles
+## Available Functions
 
-### 📈 Savitzky-Golay (Suavizado Inteligente)
+### 📈 Savitzky-Golay (Smart Smoothing)
 
-El filtro Savitzky-Golay ajusta un polinomio local a una ventana de puntos, eliminando ruido mientras preserva la forma, ancho y altura de los picos.
+The Savitzky-Golay filter fits a local polynomial to a window of points, removing noise while preserving the shape, width, and height of peaks.
 
 ```typescript
-import { savitzkyGolay } from 'scichart-engine/analysis';
+import { PluginAnalysis } from 'scichart-engine';
 
-// Suavizar señal con ventana de 15 puntos y polinomio de orden 3
-const smoothed = savitzkyGolay(data, 15, 3);
-
-// Desde el chart
-const smoothed = chart.analysis.savitzkyGolay(rawSignal, 11, 3);
+// Using the analysis plugin
+const analysis = chart.getPluginAPI('scichart-analysis');
+const smoothed = analysis.savitzkyGolay(rawSignal, 11, 3);
 ```
 
-**Parámetros:**
-- `data`: Array de datos a suavizar
-- `windowSize`: Tamaño de ventana (debe ser impar)
-- `polynomialOrder`: Orden del polinomio (típicamente 2-4)
+**Parameters:**
+- `data`: Data array to smooth.
+- `windowSize`: Window size (must be odd).
+- `polynomialOrder`: Polynomial order (typically 2-4).
 
 ---
 
-### 📉 Corrección de Línea Base
+### 📉 Baseline Correction
 
-Elimina drift lineal o desplazamientos de la señal para aislar los picos verdaderos.
+Eliminates linear drift or signal shifts to isolate true peaks.
 
 ```typescript
-import { subtractBaseline } from 'scichart-engine/analysis';
+import { subtractBaseline } from 'scichart-engine';
 
-// Restar línea base lineal entre x=0 y x=10
+// Subtract linear baseline between x=0 and x=10
 const corrected = subtractBaseline(x, y, 0, 10);
 ```
 
-**Uso típico:**
-- Señales electroquímicas con drift capacitivo
-- Espectros con inclinación de fondo
-- Cromatogramas con línea base variable
+**Typical Use:**
+- Electrochemical signals with capacitive drift.
+- Spectra with background tilt.
+- Chromatograms with varying baseline.
 
 ---
 
-### 🎯 Detección de Picos
+### 🎯 Peak Detection
 
-Detecta automáticamente picos locales con filtrado por prominencia.
+Automatically detects local peaks with prominence filtering.
 
 ```typescript
-import { detectPeaks } from 'scichart-engine/analysis';
-
-const peaks = detectPeaks(x, y, {
-  minProminence: 0.5,  // Prominencia mínima
-  type: 'max'          // 'max', 'min', o 'both'
+const peaks = chart.analysis.detectPeaks(x, y, {
+  minProminence: 0.5,  // Minimum prominence
+  type: 'max'          // 'max', 'min', or 'both'
 });
 
-// Resultado
+// Result
 peaks.forEach(peak => {
-  console.log(`Pico en x=${peak.x}, y=${peak.y}, prominencia=${peak.prominence}`);
+  console.log(`Peak at x=${peak.x}, y=${peak.y}, prominence=${peak.prominence}`);
 });
 ```
 
-**Opciones:**
-- `minProminence`: Altura mínima respecto a valles vecinos
-- `type`: Tipo de extremos a detectar
+**Options:**
+- `minProminence`: Minimum height relative to neighboring valleys.
+- `type`: Type of extrema to detect.
 
 ---
 
-### ∫ Integración Numérica
+### ∫ Numerical Integration
 
-Calcula el área bajo la curva usando la regla del trapecio.
+Calculates the area under the curve using the trapezoidal rule.
 
 ```typescript
-import { integrate } from 'scichart-engine/analysis';
+// Total Area
+const totalArea = chart.analysis.integrate(x, y);
 
-// Área total
-const totalArea = integrate(x, y);
-
-// Área en rango específico
-const partialArea = integrate(x, y, { xMin: 2, xMax: 5 });
+// Area in specific range
+const partialArea = chart.analysis.integrate(x, y, { xMin: 2, xMax: 5 });
 ```
 
-**Aplicaciones:**
-- Carga total (Q = ∫I dt) en electroquímica
-- Concentración en cromatografía
-- Energía en señales de potencia
+**Applications:**
+- Total charge (Q = ∫I dt) in electrochemistry.
+- Concentration in chromatography.
+- Energy in power signals.
 
 ---
 
-### 📐 Derivadas Numéricas
+### 📐 Numerical Derivatives
 
-Calcula la primera o segunda derivada de los datos.
+Calculates the first or second derivative of the data.
 
 ```typescript
-import { derivative } from 'scichart-engine/analysis';
+// First derivative
+const dy = chart.analysis.derivative(x, y, 1);
 
-// Primera derivada
-const dy = derivative(x, y, 1);
-
-// Segunda derivada con suavizado previo
-const d2y = derivative(x, y, 2, 5);
+// Second derivative with prior smoothing
+const d2y = chart.analysis.derivative(x, y, 2, 5);
 ```
 
-**Usos:**
-- Encontrar puntos de inflexión
-- Detectar cambios de pendiente
-- Análisis de titulación
+**Uses:**
+- Finding inflection points.
+- Detecting slope changes.
+- Titration analysis.
 
 ---
 
 ### 🔍 LTTB Downsampling
 
-Reduce el número de puntos preservando la forma visual (Largest-Triangle-Three-Buckets).
+Reduces the number of points while preserving visual shape (Largest-Triangle-Three-Buckets).
 
 ```typescript
-import { downsampleLTTB } from 'scichart-engine/analysis';
-
-// Reducir 100,000 puntos a 1,000
-const downsampled = downsampleLTTB(x, y, 1000);
+// Reduce 100,000 points to 1,000
+const downsampled = chart.analysis.downsampleLTTB(x, y, 1000);
 
 chart.addSeries({
   id: 'optimized',
@@ -138,146 +128,120 @@ chart.addSeries({
 });
 ```
 
-**Beneficios:**
-- Rendimiento extremo con grandes datasets
-- Preserva picos y valles (a diferencia de promediado)
-- Visualización idéntica con 100x menos puntos
+**Benefits:**
+- Extreme performance with large datasets.
+- Preserves peaks and valleys (unlike averaging).
+- Identical visualization with 100x fewer points.
 
 ---
 
-### 📏 Delta Tool (Herramienta de Medición)
+### 📏 Delta Tool (Measurement Tool)
 
-Mide distancias, deltas y pendientes entre dos puntos en el gráfico.
+Measures distances, deltas, and slopes between two points on the chart.
 
 ```typescript
-import { DeltaTool } from 'scichart-engine';
+// Enable Delta Tool (auto-loaded)
+chart.setMode('delta');
 
-const deltaTool = new DeltaTool({
-  container: chartContainer,
-  getPlotArea: () => chart.getPlotArea(),
-  getViewBounds: () => chart.getViewBounds(),
-  onMeasure: (measurement) => {
-    console.log(`ΔX: ${measurement.deltaX}`);
-    console.log(`ΔY: ${measurement.deltaY}`);
-    console.log(`Slope: ${measurement.slope}`);
-    console.log(`Distance: ${measurement.distance}`);
-  }
+// Listen for measurements
+chart.on('measure', (measurement) => {
+  console.log(`ΔX: ${measurement.deltaX}`);
+  console.log(`ΔY: ${measurement.deltaY}`);
+  console.log(`Slope: ${measurement.slope}`);
 });
-
-// Activar/desactivar
-deltaTool.enable();
-deltaTool.disable();
 ```
 
 ---
 
-## FFT y Filtros Digitales
+## FFT and Digital Filters
 
-### Transformada de Fourier
+### Fourier Transform
 
 ```typescript
-import { fft, ifft, fftFrequencies } from 'scichart-engine/analysis';
+// Calculate frequency spectrum
+const spectrum = chart.analysis.fft(timeDomainData);
+console.log(spectrum.magnitude); // Amplitude
+console.log(spectrum.phase);     // Phase
 
-// Calcular espectro de frecuencias
-const spectrum = fft(timeDomainData);
-console.log(spectrum.magnitude); // Amplitud
-console.log(spectrum.phase);     // Fase
-
-// Transformada inversa
-const reconstructed = ifft(spectrum);
+// Inverse transform
+const reconstructed = chart.analysis.ifft(spectrum);
 ```
 
-### Filtros FIR
+### FIR Filters
 
 ```typescript
-import { lowPassFilter, highPassFilter, bandPassFilter } from 'scichart-engine/analysis';
+// Low-pass filter at 100 Hz with sample rate 1000 Hz
+const filtered = chart.analysis.lowPassFilter(data, 100, 1000);
 
-// Filtro paso bajo a 100 Hz con sample rate 1000 Hz
-const filtered = lowPassFilter(data, 100, 1000);
+// High-pass filter
+const highPassed = chart.analysis.highPassFilter(data, 50, 1000);
 
-// Filtro paso alto
-const highPassed = highPassFilter(data, 50, 1000);
-
-// Filtro paso banda
-const bandPassed = bandPassFilter(data, 50, 200, 1000);
+// Band-pass filter
+const bandPassed = chart.analysis.bandPassFilter(data, 50, 200, 1000);
 ```
 
-### Filtro Butterworth
+### Butterworth Filter
 
 ```typescript
-import { butterworth } from 'scichart-engine/analysis';
-
-// Butterworth de orden 4 con frecuencia de corte 0.1 (normalizada)
-const filtered = butterworth(data, 4, 0.1);
+// Order 4 Butterworth with cutoff frequency 0.1 (normalized)
+const filtered = chart.analysis.butterworth(data, 4, 0.1);
 ```
 
 ---
 
-## Indicadores Financieros
+## Financial Indicators
 
 ```typescript
-import { 
-  sma, ema, macd, rsi, 
-  bollingerBands, atr, vwap, adx 
-} from 'scichart-engine/analysis';
+// Simple Moving Average (20 periods)
+const ma20 = chart.analysis.sma(closeData, 20);
 
-// Media móvil simple de 20 períodos
-const ma20 = sma(closeData, 20);
-
-// Media móvil exponencial
-const ema12 = ema(closeData, 12);
+// Exponential Moving Average
+const ema12 = chart.analysis.ema(closeData, 12);
 
 // MACD
-const macdResult = macd(closeData, 12, 26, 9);
-// macdResult.macdLine, macdResult.signalLine, macdResult.histogram
+const macdResult = chart.analysis.macd(closeData, 12, 26, 9);
 
 // RSI
-const rsiValues = rsi(closeData, 14);
+const rsiValues = chart.analysis.rsi(closeData, 14);
 
 // Bollinger Bands
-const bands = bollingerBands(closeData, 20, 2);
-// bands.upper, bands.middle, bands.lower
+const bands = chart.analysis.bollingerBands(closeData, 20, 2);
 ```
 
 ---
 
-## Estadísticas y Detección de Anomalías
+## Statistics and Anomaly Detection
 
 ```typescript
-import { 
-  crossCorrelation, 
-  anomalyDetection,
-  tTest 
-} from 'scichart-engine/analysis';
+// Cross-correlation between two signals
+const correlation = chart.analysis.crossCorrelation(signal1, signal2);
 
-// Correlación cruzada entre dos señales
-const correlation = crossCorrelation(signal1, signal2);
-
-// Detección de anomalías con Z-score
-const anomalies = anomalyDetection(data, {
+// Anomaly detection with Z-score
+const anomalies = chart.analysis.detectAnomalies(data, {
   method: 'zscore',
   threshold: 3
 });
 
-// T-test de dos muestras
-const result = tTest(sample1, sample2);
-console.log(`p-value: ${result.pValue}, significativo: ${result.significant}`);
+// Two-sample T-test
+const result = chart.analysis.tTest(sample1, sample2);
+console.log(`p-value: ${result.pValue}, significant: ${result.significant}`);
 ```
 
 ---
 
-## Acceso desde el Chart
+## Accessing from the Chart
 
-Todas las funciones están disponibles directamente en la instancia del chart:
+Most analysis functions are available directly via the `PluginAnalysis` (auto-loaded in ChartCore):
 
 ```typescript
 const chart = createChart({ container });
 
-// Acceder al módulo de análisis
-chart.analysis.savitzkyGolay(data, 11, 3);
-chart.analysis.fft(signal);
-chart.analysis.sma(prices, 20);
-chart.analysis.detectPeaks(x, y, { minProminence: 0.1 });
+// Access analysis via plugin API
+const analysis = chart.getPluginAPI('scichart-analysis');
+
+analysis.savitzkyGolay(data, 11, 3);
+analysis.fft(signal);
+analysis.sma(prices, 20);
 ```
 
-Esto permite realizar análisis sin necesidad de imports adicionales y con acceso directo a los datos del chart.
+This ensures you can perform complex analysis without additional imports, with direct access to chart features.

@@ -54,6 +54,16 @@ export function renderFrame(
   gl.enable(gl.SCISSOR_TEST);
   gl.scissor(pa.x, pa.y, pa.width, pa.height);
 
+  if (options.plotAreaBackground) {
+    gl.clearColor(
+      options.plotAreaBackground[0],
+      options.plotAreaBackground[1],
+      options.plotAreaBackground[2],
+      options.plotAreaBackground[3]
+    );
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }
+
   const uniforms = calculateUniforms(bounds);
 
   for (const s of series) {

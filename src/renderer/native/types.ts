@@ -35,6 +35,7 @@ export interface NativeRenderOptions {
   bounds: Bounds;
   backgroundColor?: [number, number, number, number];
   plotArea?: { x: number; y: number; width: number; height: number };
+  plotAreaBackground?: [number, number, number, number];
 }
 
 export interface ShaderProgram {

@@ -93,7 +93,7 @@ async function updateChart() {
     seriesList.forEach((s: any) => chart.removeSeries(s.getId()))
     chart.clearAnnotations?.()
 
-    const { analyzeComplexSpectrum, fftFromComplexInput, ifftComplex, arraysToComplex, getPositiveFrequencies } = await import('@src/analysis')
+    const { analyzeComplexSpectrum, fftFromComplexInput, ifftComplex, arraysToComplex, getPositiveFrequencies } = await import('@src/plugins/analysis')
     
     const signal = generateSignal()
     

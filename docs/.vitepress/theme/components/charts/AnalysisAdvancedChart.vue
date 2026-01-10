@@ -162,7 +162,7 @@ async function updateChart() {
       }
 
     } else {
-      const { analyzeSpectrum, powerSpectrum } = await import('@src/analysis')
+      const { analyzeSpectrum, powerSpectrum } = await import('@src/plugins/analysis')
       processed = applyWindow(processed, windowFunction.value)
       
       if (mode.value === 'fft') {

@@ -1,9 +1,23 @@
 /**
- * Data Analysis module exports
- *
- * General-purpose utilities for data formatting, cycle detection,
- * peak detection, data validation, FFT, filters, and statistics.
+ * SciChartEngine Engine - Data Analysis Plugin
+ * 
+ * Provides mathematical and statistical tools including:
+ * - FFT (Fast Fourier Transform)
+ * - Digital Filters (Kalman, Low-pass, etc.)
+ * - Curve Fitting and Regression
+ * - Peak and Contour Detection
+ * - Financial Indicators (SMA, EMA, RSI, etc.)
+ * 
+ * @module plugins/analysis
  */
+
+import type { PluginManifest, ChartPlugin, PluginContext } from "../types";
+import { addFitLine } from "./SeriesFit";
+import { fft } from "./fft";
+
+// ============================================
+// Core Exports (Utilities)
+// ============================================
 
 export {
   formatWithPrefix,
@@ -53,7 +67,6 @@ export * from './contours';
 // ============================================
 
 export {
-  // FFT
   fft,
   ifft,
   analyzeSpectrum,
@@ -63,7 +76,6 @@ export {
   hammingWindow,
   blackmanWindow,
   nextPowerOf2,
-  // Complex FFT functions
   analyzeComplexSpectrum,
   fftFromComplexInput,
   complexToArrays,
@@ -81,7 +93,6 @@ export type {
 } from './fft';
 
 export {
-  // Filters
   lowPassFilter,
   highPassFilter,
   bandPassFilter,
@@ -100,7 +111,6 @@ export type {
 } from './filters';
 
 export {
-  // Statistics
   crossCorrelation,
   autoCorrelation,
   detectAnomalies,
@@ -122,34 +132,23 @@ export type {
 // ============================================
 
 export {
-  // Moving Averages
   sma,
   ema,
   wma,
   dema,
   tema,
-  
-  // Momentum
   rsi,
   macd,
   stochastic,
   roc,
   momentum,
-  
-  // Volatility
   bollingerBands,
   atr,
   standardDeviation,
-  
-  // Volume
   vwap,
   obv,
-  
-  // Trend
   adx,
   aroon,
-  
-  // Utilities
   percentChange,
   cumsum,
   normalize,
@@ -159,3 +158,55 @@ export type {
   IndicatorResult,
   OHLCData,
 } from './indicators';
+
+// ============================================
+// Plugin Definition
+// ============================================
+
+export interface PluginAnalysisConfig {
+    /** Enable worker-based off-main-thread processing */
+    useWorkers?: boolean;
+    /** Precision for statistical calculations */
+    precision?: number;
+}
+
+const manifestAnalysis: PluginManifest = {
+    name: "scichart-analysis",
+    version: "1.0.0",
+    description: "Data analysis and signal processing for scichart-engine",
+    provides: ["analysis"],
+    tags: ["fft", "filters", "statistics", "math"],
+};
+
+/**
+ * SciChartEngine Analysis Plugin
+ * 
+ * Adds comprehensive data analysis capabilities to the chart.
+ */
+export function PluginAnalysis(_config: PluginAnalysisConfig = {}): ChartPlugin<PluginAnalysisConfig> {
+    let _ctx: PluginContext;
+
+    return {
+        manifest: manifestAnalysis,
+
+        onInit(ctx: PluginContext) {
+            _ctx = ctx;
+            ctx.log.info("SciChartEngine Analysis Plugin Initialized");
+        },
+
+        onDestroy(ctx: PluginContext) {
+            ctx.log.info("SciChartEngine Analysis Plugin Destroyed");
+        },
+
+        api: {
+            addFitLine(seriesId: string, type: any, options?: any) {
+                return addFitLine(_ctx.chart, seriesId, type, options);
+            },
+            fft: (data: any) => {
+                return fft(data);
+            },
+        }
+    };
+}
+
+export default PluginAnalysis;

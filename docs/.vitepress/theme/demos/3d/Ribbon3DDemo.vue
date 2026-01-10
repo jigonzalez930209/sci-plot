@@ -2,7 +2,7 @@
 import BaseChart3D from './BaseChart3D.vue'
 
 async function onInit({ canvas, backgroundColor, onReady }: any) {
-  const { Ribbon3DRenderer } = await import('@src/core/3d')
+  const { Ribbon3DRenderer } = await import('@src/plugins/3d')
   
   const seriesCount = 5, pointsCount = 150, series: any[] = []
   for (let s = 0; s < seriesCount; s++) {

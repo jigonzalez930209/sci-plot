@@ -2,7 +2,7 @@
 import BaseChart3D from './BaseChart3D.vue'
 
 async function onInit({ canvas, backgroundColor, onReady }: any) {
-  const { Voxel3DRenderer } = await import('@src/core/3d')
+  const { Voxel3DRenderer } = await import('@src/plugins/3d')
   
   const size = 25, values = new Float32Array(size * size * size)
   for (let z = 0; z < size; z++) {

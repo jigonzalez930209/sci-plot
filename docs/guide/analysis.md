@@ -1,6 +1,6 @@
 # Scientific Analysis Guide
 
-SciChart Engine is more than just a renderer; it includes a suite of high-performance tools for scientific and engineering data analysis.
+SciChart Engine is more than just a renderer; it includes a suite of high-performance tools for scientific and engineering data analysis. Most features are available via the **PluginAnalysis** module, which is loaded by default.
 
 ## Core Modules
 
@@ -15,19 +15,22 @@ Analysis tools are divided into four main categories:
 
 ## Signal Smoothing
 
-The most common task is removing noise from experimental data. For real-time data, the **Exponential Moving Average (EMA)** is highly recommended.
+The most common task is removing noise from experimental data. The **Savitzky-Golay** filter is highly recommended for scientific data as it preserves peak heights better than moving averages.
 
 ```typescript
-import { exponentialMovingAverage } from 'scichart-engine/analysis'
+import { createChart } from 'scichart-engine';
 
-// Smooth a noisy signal
-const smoothedY = exponentialMovingAverage(noisyY, 0.2) // alpha=0.2
+const chart = createChart({ container });
+const analysis = chart.getPluginAPI('scichart-analysis');
+
+// Smooth a noisy signal using 15-point window and 3rd order polynomial
+const smoothedY = analysis.savitzkyGolay(noisyY, 15, 3);
 
 chart.addSeries({
   id: 'smoothed',
   data: { x, y: smoothedY },
   style: { color: '#00f2ff', width: 2 }
-})
+});
 ```
 
 ## Frequency Analysis (FFT)
@@ -35,69 +38,81 @@ chart.addSeries({
 Transform time-domain data into frequency-domain to identify dominant frequencies.
 
 ```typescript
-import { fft, powerSpectrum } from 'scichart-engine/analysis'
+const analysis = chart.getPluginAPI('scichart-analysis');
 
 // 1. Calculate FFT
-const spectrum = fft(timeData)
+const spectrum = analysis.fft(timeData);
 
-// 2. Get Power Spectrum for visualization
-const power = powerSpectrum(spectrum)
+// 2. Get Magnitude for visualization
+const power = spectrum.magnitude;
 
 chart.addSeries({
-  id: 'psd',
+  id: 'spectrum',
   type: 'line',
   data: { x: frequencies, y: power }
-})
+});
 ```
 
-## Quantification with Integration
+## Automatic Curve Fitting
 
-Calculate the area under a curve, essential for techniques like chromatography or cyclic voltammetry ($Q = \int I dt$).
+The engine can automatically calculate and display regression lines (Linear, Polynomial, Exponential, Power).
 
 ```typescript
-import { integrate } from 'scichart-engine/analysis'
-
-// Calculate area between two cursors
-const area = integrate(x, y, cursorMinX, cursorMaxX)
-
-console.log(`Peak Area: ${area} units²`)
+// Add a 2nd order polynomial fit line to an existing series
+chart.addFitLine('sensor-1', {
+  order: 2,
+  color: '#ff00ff',
+  width: 2,
+  showEquation: true
+});
 ```
 
-## Numerical Scaling & Prefixes
+## Numerical Integration
 
-Scientific data often spans many orders of magnitude. The engine provides utilities to format these labels automatically.
+Calculates the area under a curve, essential for techniques like chromatography or cyclic voltammetry ($Q = \int I dt$).
 
 ```typescript
-import { formatScientific, getBestPrefix } from 'scichart-engine/analysis'
+const analysis = chart.getPluginAPI('scichart-analysis');
 
-// Format 0.00000123 as "1.23 µ"
-const label = formatScientific(0.00000123, 'A') // "1.23 µA"
+// Calculate area under the entire curve
+const totalArea = analysis.integrate(x, y);
+
+// Calculate area between two X values
+const peakArea = analysis.integrate(x, y, { xMin: 2.5, xMax: 4.0 });
+
+console.log(`Peak Area: ${peakArea.toFixed(4)} units²`);
 ```
 
 ## Integrated Workflow Example
 
 Most scientific applications follow this pipeline:
 
-1. **Acqusition**: Collect raw data via WebSocket or File.
-2. **Preprocessing**: Apply `lowPassFilter` or `savitzkyGolay`.
-3. **Analysis**: Run `detectPeaks` or `fitData`.
-4. **Visualization**: Add data to `Chart` and highlight results with `Annotations`.
+1. **Acqusition**: Collect raw data.
+2. **Preprocessing**: Apply `savitzkyGolay`.
+3. **Analysis**: Run `detectPeaks` or `addFitLine`.
+4. **Visualization**: Add data to `Chart` and highlight results.
 
 ```typescript
-// Example: Complete Peak Analysis
-const filteredY = lowPassFilter(rawY, sampleRate, 10);
-const peaks = detectPeaks(x, filteredY, { minProminence: 0.5 });
-const area = integrate(x, filteredY, peaks[0].x - 1, peaks[0].x + 1);
+const analysis = chart.getPluginAPI('scichart-analysis');
 
+// Process
+const filteredY = analysis.lowPassFilter(rawY, sampleRate, 10);
+const peaks = analysis.detectPeaks(x, filteredY, { minProminence: 0.5 });
+
+// Render
 chart.addSeries({ id: 'signal', data: { x, y: filteredY } });
-chart.addAnnotation({
-  type: 'text',
-  x: peaks[0].x,
-  y: peaks[0].y,
-  text: `Area: ${area.toFixed(4)}`
+
+// Annotate result
+peaks.forEach(peak => {
+    chart.addAnnotation({
+      type: 'text',
+      x: peak.x,
+      y: peak.y,
+      text: `Peak: ${peak.y.toFixed(2)}`
+    });
 });
 ```
 
 ## Performance Note
 
-All analysis functions are optimized for `Float32Array`. When processing long signals (>100k points), these utilities are significantly faster than native JavaScript array methods.
+All analysis functions are optimized for `Float32Array` or `Float64Array`. When processing long signals (>1M points), the engine uses vectorized operations and Web Workers where applicable to prevent UI stuttering.

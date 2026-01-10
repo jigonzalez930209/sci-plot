@@ -2,7 +2,7 @@
 import BaseChart3D from './BaseChart3D.vue'
 
 async function onInit({ canvas, backgroundColor, onReady }: any) {
-  const { SurfaceMesh3DRenderer } = await import('@src/core/3d')
+  const { SurfaceMesh3DRenderer } = await import('@src/plugins/3d')
   
   const cols = 50
   const rows = 50

@@ -96,11 +96,22 @@ export interface CursorTheme {
   tooltipSize: number;
 }
 
+export interface ToolbarTheme {
+  /** Toolbar background color */
+  backgroundColor: string;
+  /** Border color */
+  borderColor: string;
+  /** Border radius */
+  borderRadius: number;
+}
+
 export interface ChartTheme {
   /** Theme name */
   name: string;
   /** Background color */
   backgroundColor: string;
+  /** Plot area background color */
+  plotAreaBackground: string;
   /** Plot area border color */
   plotBorderColor: string;
   /** Grid theme */
@@ -113,6 +124,8 @@ export interface ChartTheme {
   legend: LegendTheme;
   /** Cursor theme */
   cursor: CursorTheme;
+  /** Toolbar theme */
+  toolbar: ToolbarTheme;
 }
 
 // ============================================
@@ -146,7 +159,7 @@ const DEFAULT_GRID_THEME: GridTheme = {
 const DEFAULT_LEGEND_THEME: LegendTheme = {
   visible: true,
   position: "top-right",
-  backgroundColor: "rgba(20, 20, 30, 0.9)",
+  backgroundColor: "rgba(15, 23, 42, 0.2)",
   borderColor: "rgba(255, 255, 255, 0.15)",
   borderRadius: 6,
   textColor: "#ffffff",
@@ -155,6 +168,12 @@ const DEFAULT_LEGEND_THEME: LegendTheme = {
   padding: 5,
   itemGap: 3,
   swatchSize: 12,
+};
+
+const DEFAULT_TOOLBAR_THEME: ToolbarTheme = {
+  backgroundColor: "rgba(15, 23, 42, 0.2)",
+  borderColor: "rgba(255, 255, 255, 0.08)",
+  borderRadius: 8,
 };
 
 const DEFAULT_CURSOR_THEME: CursorTheme = {
@@ -174,6 +193,7 @@ const DEFAULT_CURSOR_THEME: CursorTheme = {
 export const DARK_THEME: ChartTheme = {
   name: "dark",
   backgroundColor: "#0b0e14",
+  plotAreaBackground: "#0b0e14",
   plotBorderColor: "#444c56",
   grid: {
     ...DEFAULT_GRID_THEME,
@@ -196,11 +216,13 @@ export const DARK_THEME: ChartTheme = {
   },
   legend: DEFAULT_LEGEND_THEME,
   cursor: DEFAULT_CURSOR_THEME,
+  toolbar: DEFAULT_TOOLBAR_THEME,
 };
 
 export const MIDNIGHT_THEME: ChartTheme = {
   name: "midnight",
   backgroundColor: "#05050a",
+  plotAreaBackground: "#070715",
   plotBorderColor: "#3a3a5a",
   grid: {
     ...DEFAULT_GRID_THEME,
@@ -223,8 +245,13 @@ export const MIDNIGHT_THEME: ChartTheme = {
   },
   legend: {
     ...DEFAULT_LEGEND_THEME,
-    backgroundColor: "rgba(15, 15, 30, 0.95)",
+    backgroundColor: "rgba(5, 5, 15, 0.2)",
     borderColor: "rgba(100, 100, 255, 0.4)",
+  },
+  toolbar: {
+    ...DEFAULT_TOOLBAR_THEME,
+    backgroundColor: "rgba(5, 5, 15, 0.2)",
+    borderColor: "rgba(100, 100, 255, 0.2)",
   },
   cursor: {
     ...DEFAULT_CURSOR_THEME,
@@ -236,6 +263,7 @@ export const MIDNIGHT_THEME: ChartTheme = {
 export const LIGHT_THEME: ChartTheme = {
   name: "light",
   backgroundColor: "#ffffff",
+  plotAreaBackground: "#ffffff",
   plotBorderColor: "#cccccc",
   grid: {
     ...DEFAULT_GRID_THEME,
@@ -258,9 +286,14 @@ export const LIGHT_THEME: ChartTheme = {
   },
   legend: {
     ...DEFAULT_LEGEND_THEME,
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     borderColor: "rgba(0, 0, 0, 0.15)",
     textColor: "#222222",
+  },
+  toolbar: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderColor: "rgba(0, 0, 0, 0.05)",
+    borderRadius: 8,
   },
   cursor: {
     ...DEFAULT_CURSOR_THEME,
@@ -273,6 +306,7 @@ export const LIGHT_THEME: ChartTheme = {
 export const ELECTROCHEM_THEME: ChartTheme = {
   name: "electrochemistry",
   backgroundColor: "#0a1628",
+  plotAreaBackground: "#0d1b2e",
   plotBorderColor: "#1e3a5f",
   grid: {
     ...DEFAULT_GRID_THEME,
@@ -297,8 +331,13 @@ export const ELECTROCHEM_THEME: ChartTheme = {
   },
   legend: {
     ...DEFAULT_LEGEND_THEME,
-    backgroundColor: "rgba(10, 22, 40, 0.95)",
+    backgroundColor: "rgba(10, 22, 40, 0.2)",
     borderColor: "rgba(30, 136, 229, 0.3)",
+  },
+  toolbar: {
+    ...DEFAULT_TOOLBAR_THEME,
+    backgroundColor: "rgba(10, 22, 40, 0.2)",
+    borderColor: "rgba(30, 136, 229, 0.15)",
   },
   cursor: {
     ...DEFAULT_CURSOR_THEME,
@@ -325,6 +364,7 @@ export function createTheme(
     yAxis: { ...base.yAxis, ...overrides.yAxis },
     legend: { ...base.legend, ...overrides.legend },
     cursor: { ...base.cursor, ...overrides.cursor },
+    toolbar: { ...base.toolbar, ...overrides.toolbar },
   };
 }
 

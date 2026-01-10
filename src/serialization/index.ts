@@ -211,18 +211,18 @@ export function urlHashToState(hash: string, compressed: boolean = true): ChartS
     
     // Validate version
     if (typeof state.version !== 'number') {
-      console.warn('[SciChart] Invalid state: missing version');
+      console.warn('[SciChartEngine] Invalid state: missing version');
       return null;
     }
     
     // Migration could happen here for future versions
     if (state.version > SERIALIZATION_VERSION) {
-      console.warn('[SciChart] State version is newer than supported');
+      console.warn('[SciChartEngine] State version is newer than supported');
     }
     
     return state;
   } catch (e) {
-    console.error('[SciChart] Failed to parse URL hash:', e);
+    console.error('[SciChartEngine] Failed to parse URL hash:', e);
     return null;
   }
 }

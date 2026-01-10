@@ -405,7 +405,7 @@ export function createDebugOverlay(
 export function enableDebugMode(options?: DebugOverlayOptions): DebugOverlay | null {
   const container = document.querySelector('.scichart-container') as HTMLElement;
   if (!container) {
-    console.warn('[SciChart] No chart container found for debug overlay');
+    console.warn('[SciChartEngine] No chart container found for debug overlay');
     return null;
   }
   

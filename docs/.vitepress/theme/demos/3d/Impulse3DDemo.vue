@@ -2,7 +2,7 @@
 import BaseChart3D from './BaseChart3D.vue'
 
 async function onInit({ canvas, backgroundColor, onReady }: any) {
-  const { Impulse3DRenderer } = await import('@src/core/3d')
+  const { Impulse3DRenderer } = await import('@src/plugins/3d')
   
   const rows = 15, cols = 15, count = rows * cols
   const x = new Float32Array(count), y = new Float32Array(count), z = new Float32Array(count), colors = new Float32Array(count * 3)

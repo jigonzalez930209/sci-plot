@@ -1,6 +1,6 @@
 {
   "name": "scichart-engine",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "author": "jigonzalez930209",
   "license": "MIT",
   "repository": {
@@ -18,14 +18,69 @@
   ],
   "description": "A high-performance scientific charting engine for web applications.",
   "type": "module",
-  "main": "./dist/scichart-engine.umd.js",
-  "module": "./dist/scichart-engine.es.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/scichart-engine.js",
+  "module": "./dist/scichart-engine.js",
+  "types": "./dist/index.core.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.core.d.ts",
+      "import": "./dist/scichart-engine.js"
+    },
+    "./full": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/scichart-engine.es.js",
-      "require": "./dist/scichart-engine.umd.js"
+      "import": "./dist/scichart-engine.full.js"
+    },
+    "./plugins/3d": {
+      "types": "./dist/plugins/3d.d.ts",
+      "import": "./dist/plugins/3d.js"
+    },
+    "./plugins/gpu": {
+      "types": "./dist/plugins/gpu.d.ts",
+      "import": "./dist/plugins/gpu.js"
+    },
+    "./plugins/analysis": {
+      "types": "./dist/plugins/analysis.d.ts",
+      "import": "./dist/plugins/analysis.js"
+    },
+    "./plugins/tools": {
+      "types": "./dist/plugins/tools.d.ts",
+      "import": "./dist/plugins/tools.js"
+    },
+    "./plugins/annotations": {
+      "types": "./dist/plugins/annotations.d.ts",
+      "import": "./dist/plugins/annotations.js"
+    },
+    "./plugins/streaming": {
+      "types": "./dist/plugins/streaming.d.ts",
+      "import": "./dist/plugins/streaming.js"
+    },
+    "./plugins/theme-editor": {
+      "types": "./dist/plugins/theme-editor.d.ts",
+      "import": "./dist/plugins/theme-editor.js"
+    },
+    "./plugins/i18n": {
+      "types": "./dist/plugins/i18n.d.ts",
+      "import": "./dist/plugins/i18n.js"
+    },
+    "./plugins/keyboard": {
+      "types": "./dist/plugins/keyboard.d.ts",
+      "import": "./dist/plugins/keyboard.js"
+    },
+    "./plugins/clipboard": {
+      "types": "./dist/plugins/clipboard.d.ts",
+      "import": "./dist/plugins/clipboard.js"
+    },
+    "./plugins/sync": {
+      "types": "./dist/plugins/sync.d.ts",
+      "import": "./dist/plugins/sync.js"
+    },
+    "./plugins/debug": {
+      "types": "./dist/plugins/debug.d.ts",
+      "import": "./dist/plugins/debug.js"
+    },
+    "./plugins/loading": {
+      "types": "./dist/plugins/loading.d.ts",
+      "import": "./dist/plugins/loading.js"
     }
   },
   "files": [

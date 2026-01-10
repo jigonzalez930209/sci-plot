@@ -7,7 +7,7 @@
 
 import { ChartTheme } from "../theme";
 import { Series } from "./Series";
-import { calculateStats, integrate } from "../analysis";
+import { calculateStats, integrate } from "../plugins/analysis";
 import { Bounds } from "../types";
 
 export class ChartStatistics {
