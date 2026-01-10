@@ -21,6 +21,7 @@ import { Series } from "../Series";
 import {
   NativeWebGLRenderer,
   parseColor,
+  brightenColor,
 } from "../../renderer/NativeWebGLRenderer";
 import { LinearScale, LogScale, type Scale } from "../../scales";
 import { getThemeByName, type ChartTheme } from "../../theme";
@@ -125,11 +126,14 @@ export class ChartImpl implements Chart {
       this.yScales.values().next().value) as Scale;
   }
   public theme: ChartTheme;
+  private baseTheme: ChartTheme;
   private cursorOptions: CursorOptions | null = null;
   private cursorPosition: { x: number; y: number } | null = null;
   private showLegend: boolean;
   private legend: ChartLegend | null = null;
+  private originalSeriesStyles = new Map<string, any>();
   private showControls: boolean;
+  private toolbarOptions?: import("../../types").ToolbarOptions;
   private controls: ChartControls | null = null;
   private animationFrameId: number | null = null;
   private needsFullRender = false;
@@ -144,6 +148,8 @@ export class ChartImpl implements Chart {
   private commandQueue: Array<{ fn: () => void; name: string }> = [];
   private annotationQueue: any[] = [];
   private annotationIdCounter = 0;
+  private tooltipConfigQueue: any[] = [];
+  private fitLineQueue: any[] = [];
 
   /** Whether the chart has been destroyed */
   get isDestroyed(): boolean {
@@ -160,7 +166,18 @@ export class ChartImpl implements Chart {
   private initialOptions: ChartOptions;
 
   get analysis(): any {
-    return this.getPluginAPI<any>("scichart-analysis") ?? null;
+    const api = this.getPluginAPI<any>("scichart-analysis");
+    if (api) return api;
+    
+    // Fallback object to prevent crashes while plugin is loading
+    return {
+      integrate: () => 0,
+      detectPeaks: () => [],
+      detectCycles: () => [],
+      movingAverage: (data: any) => data,
+      sma: () => [],
+      ema: () => [],
+    };
   }
 
   private animationEngine: AnimationEngine;
@@ -172,7 +189,14 @@ export class ChartImpl implements Chart {
   private responsiveManager: ResponsiveManager;
 
   get tooltip(): any {
-    return this.getPluginAPI<any>("scichart-tools")?.getTooltipManager() ?? null;
+    const manager = this.getPluginAPI<any>("scichart-tools")?.getTooltipManager();
+    if (manager) return manager;
+    
+    return {
+      configure: (config: any) => {
+        this.tooltipConfigQueue.push(config);
+      }
+    };
   }
 
   get deltaTool(): any {
@@ -199,11 +223,13 @@ export class ChartImpl implements Chart {
       );
     }
 
+    this.baseTheme = setup.theme;
     this.theme = setup.theme;
     this.backgroundColor = setup.backgroundColor;
     this.plotAreaBackground = setup.plotAreaColor;
     this.showLegend = setup.showLegend;
     this.showControls = setup.showControls;
+    this.toolbarOptions = options.toolbar;
     this.autoScroll = setup.autoScroll;
     this.showStatistics = setup.showStatistics;
     this.dpr = setup.dpr;
@@ -483,6 +509,7 @@ export class ChartImpl implements Chart {
       container: this.container,
       theme: this.theme,
       showControls: this.showControls,
+      toolbar: this.toolbarOptions,
       showLegend: this.showLegend,
       series: this.series,
       autoScale: () => this.autoScale(),
@@ -552,13 +579,40 @@ export class ChartImpl implements Chart {
         onHoverEnd: () => {
           if (this.tooltip) this.tooltip.setSuspended(false);
         },
+        onSeriesHoverStart: (s) => {
+          const original = s.getStyle();
+          this.originalSeriesStyles.set(s.getId(), { ...original });
+          
+          const newColor = brightenColor(original.color || "#ff0055", this.theme.isDark);
+          s.setStyle({ 
+            color: newColor 
+          });
+          this.legend?.updateSeriesStyle(s);
+          this.requestRender();
+        },
+        onSeriesHoverEnd: (s) => {
+          const original = this.originalSeriesStyles.get(s.getId());
+          if (original) {
+            s.setStyle(original);
+            this.originalSeriesStyles.delete(s.getId());
+            this.legend?.updateSeriesStyle(s);
+            this.requestRender();
+          }
+        },
+        onToggleVisibility: (s) => {
+          s.setVisible(!s.isVisible());
+          this.legend?.updateSeriesStyle(s);
+          this.requestRender();
+        },
       },
       options
     );
   }
 
   setTheme(theme: string | ChartTheme): void {
-    this.theme = typeof theme === "string" ? getThemeByName(theme) : theme;
+    this.baseTheme = typeof theme === "string" ? getThemeByName(theme) : theme;
+    this.theme = this.responsiveManager.scaleTheme(this.baseTheme);
+    
     const bgColor = parseColor(this.theme.backgroundColor);
     this.backgroundColor = [bgColor[0], bgColor[1], bgColor[2], bgColor[3]];
     
@@ -669,8 +723,11 @@ export class ChartImpl implements Chart {
     if (api && api.addFitLine) {
       return api.addFitLine(seriesId, type, options);
     }
-    console.warn("[SciChartEngine] addFitLine requires scichart-analysis plugin");
-    return "";
+    
+    // Queue the fit line request if plugin not yet loaded
+    const id = `fit-${Math.random().toString(36).substr(2, 9)}`;
+    this.fitLineQueue.push({ id, seriesId, type, options });
+    return id;
   }
   getSeries(id: string): Series | undefined {
     return this.series.get(id);
@@ -1136,8 +1193,8 @@ export class ChartImpl implements Chart {
    * Handle responsive state changes
    */
   private handleResponsiveChange(state: ResponsiveState): void {
-    // Update theme with scaled values
-    this.theme = this.responsiveManager.scaleTheme(this.theme);
+    // Update theme with scaled values from base theme to avoid cumulative scaling
+    this.theme = this.responsiveManager.scaleTheme(this.baseTheme);
     this.overlay.setTheme(this.theme);
 
     // Update selection hit radius
@@ -1330,6 +1387,25 @@ export class ChartImpl implements Chart {
       this.annotationQueue.forEach((a) => annotationsApi.add(a));
       this.annotationQueue = [];
       this.requestOverlayRender();
+    }
+
+    // Process queued tooltip configurations
+    const toolsApi = this.getPluginAPI<any>("scichart-tools");
+    if (toolsApi && this.tooltipConfigQueue.length > 0) {
+      const manager = toolsApi.getTooltipManager();
+      if (manager) {
+        this.tooltipConfigQueue.forEach((cfg) => manager.configure(cfg));
+        this.tooltipConfigQueue = [];
+      }
+    }
+
+    // Process queued fit lines
+    const analysisApi = this.getPluginAPI<any>("scichart-analysis");
+    if (analysisApi && this.fitLineQueue.length > 0) {
+      this.fitLineQueue.forEach((q) => {
+        analysisApi.addFitLine(q.seriesId, q.type, { ...q.options, id: q.id });
+      });
+      this.fitLineQueue = [];
     }
   }
 

@@ -52,7 +52,7 @@ export function initializeChart(
   const plotAreaColor: [number, number, number, number] = [paColor[0], paColor[1], paColor[2], paColor[3]];
 
   const showLegend = options.showLegend ?? theme.legend.visible;
-  const showControls = options.showControls ?? false;
+  const showControls = options.toolbar?.show ?? options.showControls ?? false;
   const autoScroll = options.autoScroll ?? false;
   const showStatistics = options.showStatistics ?? false;
 

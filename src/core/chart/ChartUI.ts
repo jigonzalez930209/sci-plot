@@ -12,6 +12,7 @@ export interface UIContext {
   container: HTMLDivElement;
   theme: ChartTheme;
   showControls: boolean;
+  toolbar?: import("../../types").ToolbarOptions;
   showLegend: boolean;
   series: Map<string, Series>;
   autoScale: () => void;
@@ -27,6 +28,9 @@ export interface UIContext {
   onInteractionEnd?: () => void;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
+  onSeriesHoverStart?: (series: Series) => void;
+  onSeriesHoverEnd?: (series: Series) => void;
+  onToggleVisibility?: (series: Series) => void;
 }
 
 export function initControls(ctx: UIContext): ChartControls | null {
@@ -69,7 +73,9 @@ export function initControls(ctx: UIContext): ChartControls | null {
     onToggleLegend: () => {
       ctx.toggleLegend();
     },
-  });
+    onHoverStart: () => ctx.onHoverStart?.(),
+    onHoverEnd: () => ctx.onHoverEnd?.(),
+  }, ctx.toolbar);
 }
 
 export function initLegend(ctx: UIContext, options: ChartOptions): ChartLegend | null {
@@ -84,6 +90,9 @@ export function initLegend(ctx: UIContext, options: ChartOptions): ChartLegend |
       onInteractionEnd: () => ctx.onInteractionEnd?.(),
       onHoverStart: () => ctx.onHoverStart?.(),
       onHoverEnd: () => ctx.onHoverEnd?.(),
+      onSeriesHoverStart: (s) => ctx.onSeriesHoverStart?.(s),
+      onSeriesHoverEnd: (s) => ctx.onSeriesHoverEnd?.(s),
+      onToggleVisibility: (s) => ctx.onToggleVisibility?.(s),
     }
   );
   legend.update(Array.from(ctx.series.values()));

@@ -12,6 +12,9 @@ export interface ChartLegendCallbacks {
   onInteractionEnd?: () => void;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
+  onSeriesHoverStart?: (series: Series) => void;
+  onSeriesHoverEnd?: (series: Series) => void;
+  onToggleVisibility?: (series: Series) => void;
 }
 
 export class ChartLegend {
@@ -22,6 +25,7 @@ export class ChartLegend {
   private theme: ChartTheme;
   private series: Series[] = [];
   private callbacks: ChartLegendCallbacks;
+  private swatchCanvases = new Map<string, HTMLCanvasElement>();
 
   private isDragging = false;
   private isResizing = false;
@@ -57,6 +61,12 @@ export class ChartLegend {
       padding: 4px;
       user-select: none;
     `;
+    
+    // Stop pointer events from reaching the chart, but ALLOW release events to bubble to document for drag logic
+    const stopPropagation = (e: Event) => e.stopPropagation();
+    ["mousedown", "mousemove", "pointerdown", "pointermove", "wheel", "touchstart", "touchmove"].forEach(
+      (evt) => this.container.addEventListener(evt, stopPropagation)
+    );
 
     this.visualContainer = document.createElement("div");
     this.visualContainer.style.cssText = `
@@ -156,8 +166,8 @@ export class ChartLegend {
       this.visualContainer.style.boxShadow = "0 8px 24px rgba(0,0,0,0.3)";
       this.container.style.cursor = "grabbing";
 
-      document.addEventListener("mousemove", onMouseMove);
-      document.addEventListener("mouseup", onMouseUp);
+      document.addEventListener("mousemove", onMouseMove, { capture: true });
+      document.addEventListener("mouseup", onMouseUp, { capture: true });
     };
 
     const onResizeMouseDown = (e: MouseEvent) => {
@@ -174,8 +184,8 @@ export class ChartLegend {
       this.container.style.cursor = "ew-resize";
       document.body.style.cursor = "ew-resize";
 
-      document.addEventListener("mousemove", onMouseMove);
-      document.addEventListener("mouseup", onMouseUp);
+      document.addEventListener("mousemove", onMouseMove, { capture: true });
+      document.addEventListener("mouseup", onMouseUp, { capture: true });
     };
 
     const updatePosition = () => {
@@ -231,8 +241,8 @@ export class ChartLegend {
         this.container.style.cursor = "auto";
         document.body.style.cursor = "auto";
       }
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("mousemove", onMouseMove, { capture: true });
+      document.removeEventListener("mouseup", onMouseUp, { capture: true });
     };
 
     this.header.addEventListener("mousedown", onMouseDown);
@@ -263,80 +273,51 @@ export class ChartLegend {
   private render(): void {
     this.content.innerHTML = "";
     const legend = this.theme.legend;
-    const dpr = window.devicePixelRatio || 1;
 
     this.series.forEach((s) => {
       const item = document.createElement("div");
       item.style.cssText = `
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: ${legend.itemGap}px;
+        gap: 6px;
+        margin-bottom: ${legend.itemGap * 0.5}px;
         font-family: ${legend.fontFamily};
         font-size: ${legend.fontSize}px;
         color: ${legend.textColor};
         width: 100%;
         overflow: hidden;
+        cursor: pointer;
+        padding: 2px 4px;
+        border-radius: 4px;
+        transition: all 0.1s ease;
       `;
+
+      item.onmouseenter = () => {
+        item.style.background = "rgba(128, 128, 128, 0.1)";
+        item.style.transform = "translateX(2px)";
+        if (this.callbacks.onSeriesHoverStart) {
+          this.callbacks.onSeriesHoverStart(s);
+        }
+      };
+      item.onmouseleave = () => {
+        item.style.background = "transparent";
+        item.style.transform = "none";
+        if (this.callbacks.onSeriesHoverEnd) {
+          this.callbacks.onSeriesHoverEnd(s);
+        }
+      };
+
+      item.onclick = (e) => {
+        e.stopPropagation();
+        if (this.callbacks.onToggleVisibility) {
+          this.callbacks.onToggleVisibility(s);
+        }
+      };
 
       // Use a canvas for the swatch to support symbols
       const swatch = document.createElement("canvas");
-      const size = legend.swatchSize;
-      swatch.width = size * dpr;
-      swatch.height = size * dpr;
-      swatch.style.width = `${size}px`;
-      swatch.style.height = `${size}px`;
-
-      const ctx = swatch.getContext('2d');
-      if (ctx) {
-        ctx.scale(dpr, dpr);
-        const style = s.getStyle();
-        const color = style.color || "#ff0055";
-        const type = s.getType();
-        const symbol = style.symbol || 'circle';
-        
-        ctx.fillStyle = color;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        
-        const centerX = size / 2;
-        const centerY = size / 2;
-
-        const typeStr = String(type).toLowerCase();
-        const isScatter = typeStr === 'scatter' || typeStr === '1' || (typeStr === 'line' && !!style.symbol);
-        const isLineScatter = typeStr.includes('scatter') || typeStr === '2';
-        const isArea = typeStr === 'area' || typeStr === 'band';
-
-        if (isScatter) {
-          this.drawSymbol(ctx, symbol, centerX, centerY, size * 0.8);
-        } else if (isLineScatter) {
-          ctx.beginPath();
-          ctx.moveTo(0, centerY);
-          ctx.lineTo(size, centerY);
-          ctx.stroke();
-          this.drawSymbol(ctx, symbol, centerX, centerY, size * 0.6);
-        } else if (isArea) {
-          ctx.globalAlpha = 0.6;
-          ctx.fillRect(0, size * 0.2, size, size * 0.6);
-          ctx.globalAlpha = 1.0;
-          ctx.strokeRect(0, size * 0.2, size, size * 0.6);
-        } else if (typeStr === 'candlestick') {
-          const bullColor = (style as any).bullishColor || '#26a69a';
-          ctx.fillStyle = bullColor;
-          ctx.fillRect(size * 0.3, size * 0.2, size * 0.4, size * 0.6);
-          ctx.beginPath();
-          ctx.moveTo(size * 0.5, 0);
-          ctx.lineTo(size * 0.5, size);
-          ctx.strokeStyle = bullColor;
-          ctx.stroke();
-        } else {
-          ctx.beginPath();
-          ctx.moveTo(0, centerY);
-          ctx.lineTo(size, centerY);
-          ctx.stroke();
-        }
-      }
-
+      this.swatchCanvases.set(s.getId(), swatch);
+      this.paintSwatch(swatch, s);
       const label = document.createElement("span");
       label.textContent = s.getName();
       label.title = s.getName(); // Tooltip on hover
@@ -350,7 +331,105 @@ export class ChartLegend {
       item.appendChild(swatch);
       item.appendChild(label);
       this.content.appendChild(item);
+
+      // Initial state sync
+      if (!s.isVisible()) {
+        item.style.opacity = "0.5";
+        label.style.color = "#888888";
+      }
     });
+  }
+
+  public updateSeriesStyle(s: Series): void {
+    const swatch = this.swatchCanvases.get(s.getId());
+    if (swatch) {
+      this.paintSwatch(swatch, s);
+    }
+    
+    // Also update item look
+    this.series.forEach((series, i) => {
+      if (series.getId() === s.getId()) {
+        const item = this.content.children[i] as HTMLDivElement;
+        if (item) {
+          const label = item.querySelector("span");
+          if (s.isVisible()) {
+            item.style.opacity = "1";
+            if (label) label.style.color = this.theme.legend.textColor;
+          } else {
+            item.style.opacity = "0.5";
+            if (label) label.style.color = "#888888";
+          }
+        }
+      }
+    });
+  }
+
+  private paintSwatch(swatch: HTMLCanvasElement, s: Series): void {
+    const legend = this.theme.legend;
+    const dpr = window.devicePixelRatio || 1;
+    const size = legend.swatchSize;
+
+    swatch.width = size * dpr;
+    swatch.height = size * dpr;
+    swatch.style.width = `${size}px`;
+    swatch.style.height = `${size}px`;
+
+    const ctx = swatch.getContext("2d");
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, swatch.width, swatch.height);
+    ctx.scale(dpr, dpr);
+
+    const style = s.getStyle();
+    const isVisible = s.isVisible();
+    const color = isVisible ? (style.color || "#ff0055") : "#888888";
+    const type = s.getType();
+    const symbol = style.symbol || "circle";
+
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = isVisible ? 1 : 0.6;
+    ctx.lineWidth = 2;
+
+    const centerX = size / 2;
+    const centerY = size / 2;
+
+    const typeStr = String(type).toLowerCase();
+    const isScatter =
+      typeStr === "scatter" ||
+      typeStr === "1" ||
+      (typeStr === "line" && !!style.symbol);
+    const isLineScatter = typeStr.includes("scatter") || typeStr === "2";
+    const isArea = typeStr === "area" || typeStr === "band";
+
+    if (isScatter) {
+      this.drawSymbol(ctx, symbol, centerX, centerY, size * 0.8);
+    } else if (isLineScatter) {
+      ctx.beginPath();
+      ctx.moveTo(0, centerY);
+      ctx.lineTo(size, centerY);
+      ctx.stroke();
+      this.drawSymbol(ctx, symbol, centerX, centerY, size * 0.6);
+    } else if (isArea) {
+      ctx.globalAlpha = 0.6;
+      ctx.fillRect(0, size * 0.2, size, size * 0.6);
+      ctx.globalAlpha = 1.0;
+      ctx.strokeRect(0, size * 0.2, size, size * 0.6);
+    } else if (typeStr === "candlestick") {
+      const bullColor = (style as any).bullishColor || "#26a69a";
+      ctx.fillStyle = bullColor;
+      ctx.fillRect(size * 0.3, size * 0.2, size * 0.4, size * 0.6);
+      ctx.beginPath();
+      ctx.moveTo(size * 0.5, 0);
+      ctx.lineTo(size * 0.5, size);
+      ctx.strokeStyle = bullColor;
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(0, centerY);
+      ctx.lineTo(size, centerY);
+      ctx.stroke();
+    }
   }
 
   /**

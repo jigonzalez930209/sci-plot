@@ -255,7 +255,7 @@ export function applyAnimatedAutoScale(
   if (ctx.xAxisOptions.auto) {
     let xRange = xMax - xMin;
     if (xRange <= 0 || !isFinite(xRange)) xRange = Math.abs(xMin) * 0.1 || 1;
-    const xPad = Math.min(xRange * 0.05, 1e10);
+    const xPad = Math.min(xRange * 0.005, 1e10);
     targetXMin = Math.max(MIN_VAL, xMin - xPad);
     targetXMax = Math.min(MAX_VAL, xMax + xPad);
   }
@@ -266,7 +266,7 @@ export function applyAnimatedAutoScale(
   if (primaryBounds && primaryOpts?.auto && primaryBounds.min !== Infinity) {
     let yRange = primaryBounds.max - primaryBounds.min;
     if (yRange <= 0 || !isFinite(yRange)) yRange = Math.abs(primaryBounds.min) * 0.1 || 1;
-    const yPad = Math.min(yRange * 0.05, 1e10);
+    const yPad = Math.min(yRange * 0.005, 1e10);
     targetYMin = Math.max(MIN_VAL, primaryBounds.min - yPad);
     targetYMax = Math.min(MAX_VAL, primaryBounds.max + yPad);
   }
@@ -294,7 +294,7 @@ export function applyAnimatedAutoScale(
       if (bounds && opts?.auto && bounds.min !== Infinity) {
         let yRange = bounds.max - bounds.min;
         if (yRange <= 0 || !isFinite(yRange)) yRange = Math.abs(bounds.min) * 0.1 || 1;
-        const yPad = Math.min(yRange * 0.05, 1e10);
+        const yPad = Math.min(yRange * 0.005, 1e10);
         scale.setDomain(
           Math.max(MIN_VAL, bounds.min - yPad),
           Math.min(MAX_VAL, bounds.max + yPad)
@@ -322,7 +322,7 @@ export function applyAnimatedAutoScale(
     if (bounds && opts?.auto && bounds.min !== Infinity) {
       let yRange = bounds.max - bounds.min;
       if (yRange <= 0 || !isFinite(yRange)) yRange = Math.abs(bounds.min) * 0.1 || 1;
-      const yPad = Math.min(yRange * 0.05, 1e10);
+      const yPad = Math.min(yRange * 0.005, 1e10);
       targetScaleDomains.set(id, [
         Math.max(MIN_VAL, bounds.min - yPad),
         Math.min(MAX_VAL, bounds.max + yPad)

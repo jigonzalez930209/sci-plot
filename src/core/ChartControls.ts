@@ -10,6 +10,7 @@
 
 import { ChartTheme } from "../theme";
 import type { InteractionMode } from "./InteractionManager";
+import { ToolbarOptions, ToolbarButtons } from "../types";
 
 export interface ChartControlsCallbacks {
   onResetZoom: () => void;
@@ -20,6 +21,8 @@ export interface ChartControlsCallbacks {
   onExport: () => void;
   onAutoScale: () => void;
   onToggleLegend: (visible: boolean) => void;
+  onHoverStart: () => void;
+  onHoverEnd: () => void;
 }
 
 // ============================================
@@ -39,34 +42,47 @@ const ICONS = {
   AUTOSCALE: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>`,
   EXPORT: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`,
   LEGEND: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>`,
-  INTEGRATE: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16c3-9 15-9 18 0"></path><line x1="3" y1="16" x2="21" y2="16"></line><path d="M7 16v-4M12 16V9M17 16v-4" stroke-width="1" opacity="0.5"></path></svg>`
+  INTEGRATE: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16c3-9 15-9 18 0"></path><line x1="3" y1="16" x2="21" y2="16"></line><path d="M7 16v-4M12 16V9M17 16v-4" stroke-width="1" opacity="0.5"></path></svg>`,
+  PIN: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6a3 3 0 0 0-6 0v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"></path></svg>`,
+  PIN_OFF: `<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="2" x2="22" y2="22"></line><line x1="12" y1="17" x2="12" y2="22"></line><path d="M9 10.76V6a3 3 0 0 1 1.43-2.54m2.68.74A3 3 0 0 1 15 6v4.76a2 2 0 0 0 1.11 1.79l1.78.9A2 2 0 0 1 19 15.24V17h-2"></path><path d="M5 17h8"></path></svg>`
 };
 
 export class ChartControls {
   private container: HTMLDivElement;
   private toolbar: HTMLDivElement;
+  private buttonsWrapper: HTMLDivElement;
   private callbacks: ChartControlsCallbacks;
   private theme: ChartTheme;
+  private options: ToolbarOptions;
 
   private isSmoothing = false;
   private currentMode: InteractionMode = 'pan';
   private isLegendVisible = true;
   private currentType: "line" | "scatter" | "line+scatter" = "line";
+  private isPinned = false;
+  private isExpanded = false;
 
   constructor(
     parent: HTMLElement,
     theme: ChartTheme,
-    callbacks: ChartControlsCallbacks
+    callbacks: ChartControlsCallbacks,
+    options?: ToolbarOptions
   ) {
+    this.callbacks = callbacks;
+    this.theme = theme;
+    this.options = options || {};
+
+    this.isPinned = this.options.pinnable === false;
+    this.isExpanded = this.isPinned;
     this.callbacks = callbacks;
     this.theme = theme;
 
     this.container = document.createElement("div");
     this.container.style.cssText = `
       position: absolute;
-      top: 8px;
-      right: 8px;
-      z-index: 1;
+      top: 2px;
+      right: 2px;
+      z-index: 100;
       pointer-events: auto;
       display: flex;
       flex-direction: column;
@@ -76,11 +92,29 @@ export class ChartControls {
 
     this.toolbar = document.createElement("div");
     this.toolbar.className = "scichart-modebar";
+    
+    this.buttonsWrapper = document.createElement("div");
+    this.buttonsWrapper.style.cssText = `
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    `;
+
     this.updateToolbarStyle();
 
     this.createButtons();
+    this.toolbar.appendChild(this.buttonsWrapper);
+    
+    if (this.options.pinnable !== false) {
+      this.createPinButton();
+    }
+
     this.container.appendChild(this.toolbar);
     parent.appendChild(this.container);
+    
+    this.updateVisibility();
   }
 
   private isDarkTheme(): boolean {
@@ -98,6 +132,12 @@ export class ChartControls {
     const shadow = isDark
       ? "0 4px 12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1)"
       : "0 4px 12px rgba(0, 0, 0, 0.15)";
+    
+    // Stop pointer events from reaching the chart, but ALLOW release events
+    const stopPropagation = (e: Event) => e.stopPropagation();
+    ["mousedown", "mousemove", "pointerdown", "pointermove", "wheel", "touchstart", "touchmove"].forEach(
+      (evt) => this.container.addEventListener(evt, stopPropagation)
+    );
 
     const glassBg = this.theme.toolbar.backgroundColor;
     const glassBorder = `1px solid ${this.theme.toolbar.borderColor}`;
@@ -107,7 +147,7 @@ export class ChartControls {
       display: flex;
       align-items: center;
       gap: 2px;
-      padding: 2px;
+      padding: 0;
       background: ${glassBg};
       backdrop-filter: blur(2px) saturate(180%);
       -webkit-backdrop-filter: blur(2px) saturate(180%);
@@ -120,150 +160,205 @@ export class ChartControls {
     this.toolbar.onmouseenter = () => {
       this.toolbar.style.backdropFilter = "blur(10px) saturate(180%)";
       (this.toolbar.style as any).webkitBackdropFilter = "blur(10px) saturate(180%)";
+      
+      this.callbacks.onHoverStart();
+      
+      if (this.options.pinnable !== false) {
+        this.isExpanded = true;
+        this.updateVisibility();
+      }
     };
     this.toolbar.onmouseleave = () => {
       this.toolbar.style.backdropFilter = "blur(2px) saturate(180%)";
       (this.toolbar.style as any).webkitBackdropFilter = "blur(2px) saturate(180%)";
+      
+      this.callbacks.onHoverEnd();
+      
+      if (this.options.pinnable !== false) {
+        this.isExpanded = false;
+        this.updateVisibility();
+      }
     };
 
-    // Stop propagation to prevent tooltips from the chart below
-    this.toolbar.addEventListener("mousemove", (e) => e.stopPropagation());
-    this.toolbar.addEventListener("mousedown", (e) => e.stopPropagation());
-    this.toolbar.addEventListener("pointermove", (e) => e.stopPropagation());
-    this.toolbar.addEventListener("pointerdown", (e) => e.stopPropagation());
+  }
+
+  private updateVisibility(): void {
+    if (this.options.pinnable === false) return;
+
+    const visible = this.isExpanded || this.isPinned;
+    this.buttonsWrapper.style.maxWidth = visible ? "500px" : "0px";
+    this.buttonsWrapper.style.opacity = visible ? "1" : "0";
+    this.buttonsWrapper.style.pointerEvents = visible ? "auto" : "none";
+    this.buttonsWrapper.style.marginRight = visible ? "4px" : "0px";
   }
 
   private createButtons(): void {
+    const b = this.options.buttons || {};
+    const show = (id: keyof ToolbarButtons, def = true) => b[id] ?? def;
+
     // Pan Mode
-    this.createButton(
-      ICONS.PAN,
-      "Pan Mode (drag to move)",
-      () => {
-        this.currentMode = 'pan';
-        this.updateButtonStates();
-        this.callbacks.onSetMode('pan');
-      },
-      "pan"
-    );
+    if (show('pan')) {
+      this.createButton(
+        ICONS.PAN,
+        "Pan Mode (drag to move)",
+        () => {
+          this.currentMode = 'pan';
+          this.updateButtonStates();
+          this.callbacks.onSetMode('pan');
+        },
+        "pan"
+      );
+    }
 
     // Box Zoom Mode
-    this.createButton(
-      ICONS.BOX_ZOOM,
-      "Box Zoom (drag to zoom)",
-      () => {
-        this.currentMode = 'boxZoom';
-        this.updateButtonStates();
-        this.callbacks.onSetMode('boxZoom');
-      },
-      "boxZoom"
-    );
+    if (show('boxZoom')) {
+      this.createButton(
+        ICONS.BOX_ZOOM,
+        "Box Zoom (drag to zoom)",
+        () => {
+          this.currentMode = 'boxZoom';
+          this.updateButtonStates();
+          this.callbacks.onSetMode('boxZoom');
+        },
+        "boxZoom"
+      );
+    }
 
     // Selection Mode
-    this.createButton(
-      ICONS.SELECT,
-      "Select Points (drag to select)",
-      () => {
-        this.currentMode = 'select';
-        this.updateButtonStates();
-        this.callbacks.onSetMode('select');
-      },
-      "select"
-    );
+    if (show('select')) {
+      this.createButton(
+        ICONS.SELECT,
+        "Select Points (drag to select)",
+        () => {
+          this.currentMode = 'select';
+          this.updateButtonStates();
+          this.callbacks.onSetMode('select');
+        },
+        "select"
+      );
+    }
 
     // Delta Tool Mode
-    this.createButton(
-      ICONS.DELTA,
-      "Delta Tool (measure distances)",
-      () => {
-        this.currentMode = 'delta';
-        this.updateButtonStates();
-        this.callbacks.onSetMode('delta');
-      },
-      "delta"
-    );
+    if (show('delta')) {
+      this.createButton(
+        ICONS.DELTA,
+        "Delta Tool (measure distances)",
+        () => {
+          this.currentMode = 'delta';
+          this.updateButtonStates();
+          this.callbacks.onSetMode('delta');
+        },
+        "delta"
+      );
+    }
 
     // Peak integration Mode
-    this.createButton(
-      ICONS.INTEGRATE,
-      "Peak Integration (detect baseline & calculate area)",
-      () => {
-        this.currentMode = 'peak';
-        this.updateButtonStates();
-        this.callbacks.onSetMode('peak');
-      },
-      "peak"
-    );
+    if (show('peak')) {
+      this.createButton(
+        ICONS.INTEGRATE,
+        "Peak Integration (detect baseline & calculate area)",
+        () => {
+          this.currentMode = 'peak';
+          this.updateButtonStates();
+          this.callbacks.onSetMode('peak');
+        },
+        "peak"
+      );
+    }
 
     // Reset Zoom
-    this.createButton(
-      ICONS.RESET,
-      "Reset Zoom",
-      () => this.callbacks.onResetZoom(),
-      "reset"
-    );
+    if (show('reset', false)) {
+      this.createButton(
+        ICONS.RESET,
+        "Reset Zoom",
+        () => this.callbacks.onResetZoom(),
+        "reset"
+      );
+    }
 
     // Auto Scale
-    this.createButton(
-      ICONS.AUTOSCALE,
-      "Auto Scale",
-      () => this.callbacks.onAutoScale(),
-      "autoscale"
-    );
-
+    if (show('autoscale')) {
+      this.createButton(
+        ICONS.AUTOSCALE,
+        "Auto Scale",
+        () => this.callbacks.onAutoScale(),
+        "autoscale"
+      );
+    }
 
     // Type Switcher
-    this.createButton(
-      ICONS.LINE,
-      "Toggle Line/Scatter/Both",
-      () => {
-        const types: ("line" | "scatter" | "line+scatter")[] = [
-          "line",
-          "scatter",
-          "line+scatter",
-        ];
-        const nextIdx = (types.indexOf(this.currentType) + 1) % types.length;
-        this.currentType = types[nextIdx];
-        this.callbacks.onSetType(this.currentType);
-        this.updateButtonStates();
-      },
-      "type"
-    );
+    if (show('type')) {
+      this.createButton(
+        ICONS.LINE,
+        "Toggle Line/Scatter/Both",
+        () => {
+          const types: ("line" | "scatter" | "line+scatter")[] = [
+            "line",
+            "scatter",
+            "line+scatter",
+          ];
+          const nextIdx = (types.indexOf(this.currentType) + 1) % types.length;
+          this.currentType = types[nextIdx];
+          this.callbacks.onSetType(this.currentType);
+          this.updateButtonStates();
+        },
+        "type"
+      );
+    }
 
     // Smoothing
-    this.createButton(
-      ICONS.SMOOTH,
-      "Automated Smoothing",
-      () => {
-        this.isSmoothing = !this.isSmoothing;
-        this.updateButtonStates();
-        this.callbacks.onToggleSmoothing();
-      },
-      "smooth"
-    );
-
+    if (show('smooth')) {
+      this.createButton(
+        ICONS.SMOOTH,
+        "Automated Smoothing",
+        () => {
+          this.isSmoothing = !this.isSmoothing;
+          this.updateButtonStates();
+          this.callbacks.onToggleSmoothing();
+        },
+        "smooth"
+      );
+    }
 
     // Export Image
-    this.createButton(
-      ICONS.EXPORT,
-      "Export as PNG",
-      () => this.callbacks.onExport(),
-      "export"
-    );
-
+    if (show('export')) {
+      this.createButton(
+        ICONS.EXPORT,
+        "Export as PNG",
+        () => this.callbacks.onExport(),
+        "export"
+      );
+    }
 
     // Toggle Legend
-    this.createButton(
-      ICONS.LEGEND,
-      "Toggle Legend",
-      () => {
-        this.isLegendVisible = !this.isLegendVisible;
-        this.updateButtonStates();
-        this.callbacks.onToggleLegend(this.isLegendVisible);
-      },
-      "legend"
-    );
+    if (show('legend')) {
+      this.createButton(
+        ICONS.LEGEND,
+        "Toggle Legend",
+        () => {
+          this.isLegendVisible = !this.isLegendVisible;
+          this.updateButtonStates();
+          this.callbacks.onToggleLegend(this.isLegendVisible);
+        },
+        "legend"
+      );
+    }
+  }
 
-    this.updateButtonStates();
+  private createPinButton(): void {
+    const btn = this.createButton(
+      this.isPinned ? ICONS.PIN : ICONS.PIN_OFF,
+      this.isPinned ? "Unpin Toolbar" : "Pin Toolbar",
+      () => {
+        this.isPinned = !this.isPinned;
+        btn.innerHTML = `<span class="scichart-control-icon">${this.isPinned ? ICONS.PIN : ICONS.PIN_OFF}</span>`;
+        this.enforceSVGVisibility(btn);
+        this.updateVisibility();
+      },
+      "pin",
+      this.toolbar
+    );
+    btn.style.marginLeft = "2px";
   }
 
   private enforceSVGVisibility(btn: HTMLButtonElement): void {
@@ -296,7 +391,8 @@ export class ChartControls {
     svg: string,
     title: string,
     onClick: () => void,
-    id: string
+    id: string,
+    parent: HTMLElement = this.buttonsWrapper
   ): HTMLButtonElement {
     const btn = document.createElement("button");
     btn.innerHTML = `<span class="scichart-control-icon">${svg}</span>`;
@@ -341,7 +437,7 @@ export class ChartControls {
     // Force SVG visibility
     this.enforceSVGVisibility(btn);
 
-    this.toolbar.appendChild(btn);
+    parent.appendChild(btn);
     return btn;
   }
 

@@ -41,6 +41,7 @@ export interface ResponsiveBreakpoint {
 
 /** Preset breakpoints */
 export interface ResponsiveBreakpoints {
+  smallMobile?: ResponsiveBreakpoint;
   mobile?: ResponsiveBreakpoint;
   tablet?: ResponsiveBreakpoint;
   desktop?: ResponsiveBreakpoint;
@@ -67,7 +68,7 @@ export interface ResponsiveState {
   /** Current container height */
   height: number;
   /** Active breakpoint name */
-  breakpoint: 'mobile' | 'tablet' | 'desktop';
+  breakpoint: 'smallMobile' | 'mobile' | 'tablet' | 'desktop';
   /** Whether touch is optimized */
   touchOptimized: boolean;
   /** Whether reduced motion is enabled */
@@ -97,13 +98,24 @@ export interface ResponsiveContext {
 // ============================================
 
 const DEFAULT_BREAKPOINTS: Required<ResponsiveBreakpoints> = {
+  smallMobile: {
+    maxWidth: 360,
+    fontScale: 0.7,
+    xTickCount: 4,
+    yTickCount: 3,
+    pointScale: 1.3,
+    lineScale: 1.5, // Thicker axes for tiny screens
+    hitRadiusScale: 1.8,
+    showLegend: false,
+  },
   mobile: {
+    minWidth: 361,
     maxWidth: 480,
     fontScale: 0.8,
     xTickCount: 5,
     yTickCount: 4,
     pointScale: 1.2, // Larger for touch
-    lineScale: 1.2,
+    lineScale: 1.3,
     hitRadiusScale: 1.5,
     showLegend: false,
   },
@@ -172,6 +184,7 @@ export class ResponsiveManager {
     return {
       enabled: config.enabled ?? DEFAULT_CONFIG.enabled,
       breakpoints: {
+        smallMobile: { ...DEFAULT_BREAKPOINTS.smallMobile, ...config.breakpoints?.smallMobile },
         mobile: { ...DEFAULT_BREAKPOINTS.mobile, ...config.breakpoints?.mobile },
         tablet: { ...DEFAULT_BREAKPOINTS.tablet, ...config.breakpoints?.tablet },
         desktop: { ...DEFAULT_BREAKPOINTS.desktop, ...config.breakpoints?.desktop },
@@ -259,10 +272,14 @@ export class ResponsiveManager {
     };
   }
 
-  private getActiveBreakpoint(width: number): 'mobile' | 'tablet' | 'desktop' {
-    const { mobile, tablet, desktop } = this.config.breakpoints;
+  private getActiveBreakpoint(width: number): 'smallMobile' | 'mobile' | 'tablet' | 'desktop' {
+    const { smallMobile, mobile, tablet, desktop } = this.config.breakpoints;
     
-    if (mobile?.maxWidth && width <= mobile.maxWidth) {
+    if (smallMobile?.maxWidth && width <= smallMobile.maxWidth) {
+      return 'smallMobile';
+    }
+    
+    if (mobile?.minWidth && mobile?.maxWidth && width >= mobile.minWidth && width <= mobile.maxWidth) {
       return 'mobile';
     }
     
@@ -275,6 +292,7 @@ export class ResponsiveManager {
     }
     
     // Fallback based on width thresholds
+    if (width <= 360) return 'smallMobile';
     if (width <= 480) return 'mobile';
     if (width <= 768) return 'tablet';
     return 'desktop';

@@ -56,7 +56,7 @@ export function autoScaleAll(ctx: NavigationContext): void {
   if (ctx.xAxisOptions.auto) {
      let xRange = xMax - xMin;
      if (xRange <= 0 || !isFinite(xRange)) xRange = Math.abs(xMin) * 0.1 || 1;
-     const xPad = Math.min(xRange * 0.05, 1e10);
+     const xPad = Math.min(xRange * 0.005, 1e10);
      ctx.viewBounds.xMin = Math.max(MIN_VAL, xMin - xPad);
      ctx.viewBounds.xMax = Math.min(MAX_VAL, xMax + xPad);
   }
@@ -68,7 +68,7 @@ export function autoScaleAll(ctx: NavigationContext): void {
       if (opts && opts.auto && scale) {
           let yRange = bounds.max - bounds.min;
           if (yRange <= 0 || !isFinite(yRange)) yRange = Math.abs(bounds.min) * 0.1 || 1;
-          const yPad = Math.min(yRange * 0.05, 1e10);
+          const yPad = Math.min(yRange * 0.005, 1e10);
           
           let newMin = Math.max(MIN_VAL, bounds.min - yPad);
           const newMax = Math.min(MAX_VAL, bounds.max + yPad);
