@@ -29,15 +29,6 @@ const results = reactive({
   peakCount: 0,
 })
 
-// Delta Tool state
-const deltaMode = ref(false)
-const deltaCoords = reactive({
-  x: 0,
-  y: 0,
-  visible: false,
-  clickedPoint: null as { x: number; y: number } | null
-})
-
 const chartTheme = computed(() => isDark.value ? 'midnight' : 'light')
 
 onMounted(async () => {
@@ -107,8 +98,11 @@ function resetTransforms() {
   transforms.downsampled = false
   results.area = null
   results.peakCount = 0
-  deltaMode.value = false
-  deltaCoords.clickedPoint = null
+  if (chart) {
+     try { chart.removeSeries('area-fill') } catch {}
+     try { chart.removeSeries('peaks') } catch {}
+     try { chart.removeSeries('derivative') } catch {}
+  }
 }
 
 // Apply all active transforms in sequence
@@ -183,7 +177,7 @@ async function applyTransformPipeline() {
     try { chart.removeSeries('peaks') } catch {}
     const { detectPeaks } = await import('@src/plugins/analysis')
     const peaks = detectPeaks(currentX, currentY, { 
-      minProminence: 0.3, 
+      minProminence: 0.2, 
       type: 'max' 
     })
     
@@ -195,7 +189,11 @@ async function applyTransformPipeline() {
           x: new Float32Array(peaks.map(p => p.x)), 
           y: new Float32Array(peaks.map(p => p.y)) 
         },
-        style: { color: '#ff6b6b', pointSize: 10 },
+        style: { 
+          color: '#ff0000', // Bright red
+          pointSize: 12, 
+          symbol: 'triangle' 
+        },
         name: 'Peaks'
       })
       results.peakCount = peaks.length
@@ -213,67 +211,46 @@ async function toggleTransform(key: keyof typeof transforms) {
   await applyTransformPipeline()
 }
 
+const showArea = ref(false)
+
 async function calculateArea() {
   if (!chart) return
+  
+  showArea.value = !showArea.value
+  
+  if (!showArea.value) {
+    try { chart.removeSeries('area-fill') } catch {}
+    results.area = null
+    return
+  }
+
   const { integrate } = await import('@src/plugins/analysis')
   const series = chart.getSeries('main')
   const data = series?.getData()
   if (!data) return
+  
   results.area = integrate(data.x, data.y)
-}
-
-// Delta Tool functions
-function toggleDeltaMode() {
-  deltaMode.value = !deltaMode.value
-  deltaCoords.clickedPoint = null
   
-  if (deltaMode.value) {
-    chartContainer.value?.addEventListener('mousemove', handleDeltaMouseMove)
-    chartContainer.value?.addEventListener('mouseleave', handleDeltaMouseLeave)
-    chartContainer.value?.addEventListener('click', handleDeltaClick)
-  } else {
-    chartContainer.value?.removeEventListener('mousemove', handleDeltaMouseMove)
-    chartContainer.value?.removeEventListener('mouseleave', handleDeltaMouseLeave)
-    chartContainer.value?.removeEventListener('click', handleDeltaClick)
-    deltaCoords.visible = false
-  }
-}
+  // Create a zero-line for the band fill
+  const y2 = new Float32Array(data.x.length)
+  // If baseline corrected, fill to 0. If not, fill to min y or 0? 
+  // Let's assume filling to 0 is good for standard "area under curve" visualization
+  // unless min is far above 0.
+  const minY = Math.min(...data.y)
+  const fillBase = minY < 0 ? minY : 0
+  y2.fill(fillBase)
 
-function handleDeltaMouseMove(e: MouseEvent) {
-  if (!chart || !deltaMode.value) return
-  
-  const rect = chartContainer.value!.getBoundingClientRect()
-  const bounds = chart.getViewBounds()
-  const plotArea = getPlotArea()
-  
-  const pixelX = e.clientX - rect.left
-  const pixelY = e.clientY - rect.top
-  
-  // Check if inside plot area
-  if (pixelX >= plotArea.x && 
-      pixelX <= plotArea.x + plotArea.width &&
-      pixelY >= plotArea.y && 
-      pixelY <= plotArea.y + plotArea.height) {
-    
-    // Convert to data coordinates
-    const dataX = bounds.xMin + ((pixelX - plotArea.x) / plotArea.width) * (bounds.xMax - bounds.xMin)
-    const dataY = bounds.yMin + (1 - (pixelY - plotArea.y) / plotArea.height) * (bounds.yMax - bounds.yMin)
-    
-    deltaCoords.x = dataX
-    deltaCoords.y = dataY
-    deltaCoords.visible = true
-  } else {
-    deltaCoords.visible = false
-  }
-}
-
-function handleDeltaMouseLeave() {
-  deltaCoords.visible = false
-}
-
-function handleDeltaClick(e: MouseEvent) {
-  if (!deltaMode.value || !deltaCoords.visible) return
-  deltaCoords.clickedPoint = { x: deltaCoords.x, y: deltaCoords.y }
+  chart.addSeries({
+    id: 'area-fill',
+    type: 'band',
+    data: { x: data.x, y: data.y, y2 },
+    style: { 
+      color: '#00f2ff', 
+      opacity: 0.3,
+      stroke: 'transparent'
+    },
+    order: 0 // Draw behind line
+  })
 }
 
 function getPlotArea() {
@@ -304,11 +281,6 @@ function resetDemo() {
 }
 
 onUnmounted(() => {
-  if (deltaMode.value) {
-    chartContainer.value?.removeEventListener('mousemove', handleDeltaMouseMove)
-    chartContainer.value?.removeEventListener('mouseleave', handleDeltaMouseLeave)
-    chartContainer.value?.removeEventListener('click', handleDeltaClick)
-  }
   if (chart) chart.destroy()
 })
 
@@ -378,24 +350,19 @@ watch(isDark, () => {
           title="Show Derivative"
         >📐 d/dx</button>
         
-        <button @click="calculateArea" class="mini-btn" title="Calculate Area">
+        <button 
+          @click="calculateArea" 
+          class="mini-btn" 
+          :class="{ active: showArea }"
+          title="Calculate & Visualise Area"
+        >
           ∫ Area
         </button>
       </div>
       
-      <div class="toolbar-group">
-        <span class="group-label">Tools</span>
-        <button 
-          @click="toggleDeltaMode" 
-          class="mini-btn delta-btn"
-          :class="{ active: deltaMode }"
-          title="Delta Measurement Tool"
-        >📏 Delta</button>
-        
-        <button @click="resetDemo" class="mini-btn reset-btn" title="Reset All">
+      <button @click="resetTransforms" class="mini-btn reset-btn" title="Reset All">
           ↻ Reset
         </button>
-      </div>
     </div>
 
     <!-- Results Panel -->
@@ -403,63 +370,16 @@ watch(isDark, () => {
       <span class="result">∫ Area = <b>{{ results.area.toFixed(4) }}</b></span>
     </div>
 
-    <!-- Chart Container with Delta Overlay -->
+    <!-- Chart Container -->
     <div 
       ref="chartContainer" 
       class="chart-container" 
-      :class="{ 'delta-mode': deltaMode }"
       :style="{ height: height || '450px' }"
     >
-      <!-- Delta Tool Overlay -->
-      <svg v-if="deltaMode && deltaCoords.visible" class="delta-overlay">
-        <!-- Vertical line to X axis -->
-        <line 
-          :x1="75 + (deltaCoords.x - (chart?.getViewBounds()?.xMin || 0)) / ((chart?.getViewBounds()?.xMax || 10) - (chart?.getViewBounds()?.xMin || 0)) * getPlotArea().width"
-          :y1="20"
-          :x2="75 + (deltaCoords.x - (chart?.getViewBounds()?.xMin || 0)) / ((chart?.getViewBounds()?.xMax || 10) - (chart?.getViewBounds()?.xMin || 0)) * getPlotArea().width"
-          :y2="getPlotArea().height + 20"
-          class="crosshair-line"
-        />
-        <!-- Horizontal line to Y axis -->
-        <line 
-          :x1="75"
-          :y1="20 + (1 - (deltaCoords.y - (chart?.getViewBounds()?.yMin || 0)) / ((chart?.getViewBounds()?.yMax || 5) - (chart?.getViewBounds()?.yMin || 0))) * getPlotArea().height"
-          :x2="getPlotArea().width + 75"
-          :y2="20 + (1 - (deltaCoords.y - (chart?.getViewBounds()?.yMin || 0)) / ((chart?.getViewBounds()?.yMax || 5) - (chart?.getViewBounds()?.yMin || 0))) * getPlotArea().height"
-          class="crosshair-line"
-        />
-        <!-- Center point -->
-        <circle 
-          :cx="75 + (deltaCoords.x - (chart?.getViewBounds()?.xMin || 0)) / ((chart?.getViewBounds()?.xMax || 10) - (chart?.getViewBounds()?.xMin || 0)) * getPlotArea().width"
-          :cy="20 + (1 - (deltaCoords.y - (chart?.getViewBounds()?.yMin || 0)) / ((chart?.getViewBounds()?.yMax || 5) - (chart?.getViewBounds()?.yMin || 0))) * getPlotArea().height"
-          r="5"
-          class="crosshair-point"
-        />
-      </svg>
-      
-      <!-- Clicked Point Values -->
-      <div 
-        v-if="deltaMode && deltaCoords.clickedPoint" 
-        class="delta-values"
-        :style="{ right: '40px', top: '30px' }"
-      >
-        <div class="delta-label">📍 Selected Point</div>
-        <div class="delta-coord">X: <b>{{ formatValue(deltaCoords.clickedPoint.x) }}</b></div>
-        <div class="delta-coord">Y: <b>{{ formatValue(deltaCoords.clickedPoint.y) }}</b></div>
-      </div>
-      
-      <!-- Hover Coordinates -->
-      <div 
-        v-if="deltaMode && deltaCoords.visible" 
-        class="hover-coords"
-      >
-        X: {{ formatValue(deltaCoords.x) }} | Y: {{ formatValue(deltaCoords.y) }}
-      </div>
     </div>
     
     <p class="chart-hint">
       Las transformaciones son <b>acumulativas</b>: activa varias para combinarlas.
-      <span v-if="deltaMode">Click en el gráfico para fijar un punto.</span>
     </p>
   </div>
 </template>

@@ -127,7 +127,7 @@ export class ChartImpl implements Chart {
       this.yScales.values().next().value) as Scale;
   }
   public theme: ChartTheme;
-  private baseTheme: ChartTheme;
+  public baseTheme: ChartTheme;
   private cursorOptions: CursorOptions | null = null;
   private cursorPosition: { x: number; y: number } | null = null;
   private showLegend: boolean;
@@ -460,11 +460,6 @@ export class ChartImpl implements Chart {
     // Auto-load analysis plugin for curve fitting and analysis features
     import("../../plugins/analysis").then(({ PluginAnalysis }) => {
       this.use(PluginAnalysis());
-    });
-
-    // Auto-load annotations plugin
-    import("../../plugins/annotations").then(({ PluginAnnotations }) => {
-      this.use(PluginAnnotations());
     });
 
     // Auto-load annotations plugin

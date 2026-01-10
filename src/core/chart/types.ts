@@ -61,7 +61,10 @@ export interface Chart {
   autoScale(animate?: boolean): void;
   setTheme(theme: string | object): void;
   /** Access to data analysis utilities */
+  /** Access to the current active theme (scaled for responsiveness) */
   readonly theme: any;
+  /** Access to the base theme (unscaled) */
+  readonly baseTheme: any;
   readonly analysis: any;
   readonly animations: any;
 

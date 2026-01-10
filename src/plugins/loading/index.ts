@@ -50,7 +50,7 @@ export function PluginLoading(_config: PluginLoadingConfig = {}): ChartPlugin<Pl
             // Optional: Auto-hide on first successful render WITH data
             if (_config.autoHide !== false) {
                 const off = ctx.events.on('render', () => {
-                   const hasData = ctx.data.getAllSeries().some(s => s.getData().x.length > 0);
+                   const hasData = ctx.data.getAllSeries().some(s => s.getPointCount() > 0);
                    if (hasData) {
                        indicator?.hide();
                        off();

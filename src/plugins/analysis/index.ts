@@ -14,6 +14,14 @@
 import type { PluginManifest, ChartPlugin, PluginContext } from "../types";
 import { addFitLine } from "./SeriesFit";
 import { fft } from "./fft";
+import { integrate, derivative } from "./math";
+import { fitData } from "./fitting";
+import { 
+    calculateStats, validateData, detectPeaks, detectCycles, 
+    movingAverage, subtractBaseline, downsampleLTTB, 
+    formatWithPrefix, generateCycleColors 
+} from "./utils";
+import { sma, ema, rsi } from "./indicators";
 
 // ============================================
 // Core Exports (Utilities)
@@ -200,9 +208,31 @@ export function PluginAnalysis(_config: PluginAnalysisConfig = {}): ChartPlugin<
             addFitLine(seriesId: string, type: any, options?: any) {
                 return addFitLine(_ctx.chart, seriesId, type, options);
             },
-            fft: (data: any) => {
-                return fft(data);
-            },
+            // Math & Stats
+            integrate,
+            derivative,
+            calculateStats,
+            validateData,
+            
+            // Signal Processing
+            fft: (data: any) => fft(data),
+            detectPeaks,
+            detectCycles,
+            movingAverage,
+            subtractBaseline,
+            downsampleLTTB,
+            
+            // Fitting
+            fitData,
+            
+            // Indicators
+            sma,
+            ema,
+            rsi,
+            
+            // Utils
+            formatWithPrefix,
+            generateCycleColors
         }
     };
 }

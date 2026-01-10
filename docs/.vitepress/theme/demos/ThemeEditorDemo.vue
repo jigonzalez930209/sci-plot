@@ -124,7 +124,7 @@ function updateChartTheme() {
   
   // Update background and plot area colors
   chart.setTheme({
-    ...chart.theme,
+    ...chart.baseTheme,
     backgroundColor: currentTheme.background,
     plotAreaBackground: currentTheme.plotArea,
   })
