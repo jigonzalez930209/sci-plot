@@ -37,7 +37,8 @@ onMounted(async () => {
     xAxis: { label: 'Time (s)', auto: true },
     yAxis: { label: 'Value', auto: true },
     theme: chartTheme.value,
-    showControls: true
+    showControls: true,
+    loading: false
   })
 
   chart.on('render', (e: any) => {
