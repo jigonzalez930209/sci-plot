@@ -26,10 +26,15 @@ const chart = createChart({
 // Accessing auto-loaded plugins
 const tools = chart.getPluginAPI('scichart-tools');
 const analysis = chart.getPluginAPI('scichart-analysis');
+const loading = chart.getPluginAPI('scichart-loading');
 const annotations = chart.getPluginAPI('scichart-annotations');
 
 // Example: setting a measurement tool
 tools.setMode('delta');
+
+// Example: controlling loading indicator
+loading.show("Downloading data...");
+loading.setProgress(25);
 ```
 
 ## Creating a Custom Plugin

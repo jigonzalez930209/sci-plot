@@ -11,6 +11,10 @@ The Curve Fitting system allows you to mathematically analyze data series and vi
 
 The most common way to use curve fitting is via the `addFitLine` method on the `Chart` instance.
 
+::: tip Async Safe
+You can call `addFitLine` immediately after creating the chart. If the analysis plugin hasn't finished loading yet, the request will be queued and applied automatically as soon as the plugin is ready.
+:::
+
 ### Signature
 ```typescript
 chart.addFitLine(seriesId: string, type: FitType, options?: FitOptions): string;

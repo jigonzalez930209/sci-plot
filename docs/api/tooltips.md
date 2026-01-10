@@ -114,7 +114,8 @@ chart.tooltip.show({
 // Hide all tooltips
 chart.tooltip.hideAll();
 
-// Change configuration
+// Change configuration (SAFE: can be called immediately after createChart, 
+// settings are queued and applied once the plugin is active)
 chart.tooltip.configure({ theme: 'midnight' });
 ```
 

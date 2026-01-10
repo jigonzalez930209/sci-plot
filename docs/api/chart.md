@@ -26,6 +26,9 @@ function createChart(options: ChartOptions): Chart
 | `showLegend` | `boolean` | `false` | Show series legend |
 | `legendPosition` | `{ x: number, y: number }` | `{ x: 10, y: 10 }` | Legend position |
 | `devicePixelRatio` | `number` | `window.devicePixelRatio` | Pixel ratio for rendering |
+| `loading` | `boolean \| LoadingConfig` | `true` | Show loading indicator on init |
+| `animations` | `boolean \| AnimationConfig` | `true` | Enable navigation animations |
+| `responsive` | `boolean \| ResponsiveConfig` | `true` | Auto-resize on container change |
 
 ### AxisOptions
 
@@ -85,9 +88,24 @@ chart.resetZoom()
 // Force auto-scale
 chart.autoScale()
 
-// Get current view bounds
-const bounds = chart.getViewBounds()
 // { xMin: 0, xMax: 100, yMin: -1, yMax: 1 }
+
+// NOTE: Auto-scale now uses a 0.5% padding by default for scientific precision.
+```
+
+### Loading State
+
+Control the built-in loading indicator (enabled by default).
+
+```typescript
+// Show with custom message
+chart.loading.show("Processing large dataset...")
+
+// Update progress (0-100)
+chart.loading.setProgress(45)
+
+// Hide manually
+chart.loading.hide()
 ```
 
 ### Cursor
