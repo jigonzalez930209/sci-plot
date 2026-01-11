@@ -118,7 +118,7 @@ The debug overlay shows:
 - **Draw Calls** - Number of WebGL draw calls
 - **Memory** - Estimated GPU memory usage
 - **View Bounds** - Current X/Y axis ranges
-- **Renderer** - WebGL/WebGPU info and GPU name
+- **Renderer** - WebGL info and GPU name
 
 ## Internationalization (i18n)
 

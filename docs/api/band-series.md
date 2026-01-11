@@ -124,7 +124,7 @@ chart.addSeries({
 
 ## Rendering Details
 
-Band series use WebGL `TRIANGLE_STRIP` for efficient GPU rendering. The data is interleaved as:
+Band series use WebGL `TRIANGLE_STRIP` for efficient hardware-accelerated rendering. The data is interleaved as:
 
 ```
 [x₀, y₀, x₀, y2₀, x₁, y₁, x₁, y2₁, ...]

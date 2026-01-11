@@ -146,7 +146,7 @@ errorBars: {
 
 ### Scatter Symbols
 
-Multiple marker shapes for scatter plots, rendered via GPU shaders.
+Multiple marker shapes for scatter plots, rendered via optimized shaders.
 
 **Supported Shapes:**
 - `circle` (default), `square`, `diamond`

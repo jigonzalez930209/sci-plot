@@ -67,7 +67,7 @@ npm install react react-dom
 - Safari 14+
 - Edge 80+
 
-WebGL 2.0 or WebGPU is required for hardware acceleration. Most modern browsers support this out of the box.
+WebGL 2.0 is required for hardware acceleration. Most modern browsers support this out of the box.
 
 ## Next Steps
 

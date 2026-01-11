@@ -22,7 +22,7 @@ Pushing the limits of web-based data visualization. This demo renders **10 milli
 
 ## How it's possible?
 
-SciChart Engine uses a highly optimized **WebGPU/WebGL pipeline** combined with intelligent **Level of Detail (LOD)** and **Hardware Acceleration**. 
+SciChart Engine uses a highly optimized **WebGL pipeline** combined with intelligent **Level of Detail (LOD)** and **Hardware Acceleration**. 
 
 1. **GPU Data Residency**: Data is uploaded once to the GPU.
 2. **Fast Downsampling**: Our custom LTTB worker handles massive data processing without blocking the UI.
