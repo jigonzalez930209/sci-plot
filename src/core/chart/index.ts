@@ -11,7 +11,7 @@ export {
   applyZoom, 
   applyPan, 
 } from './ChartNavigation';
-export { autoScaleAll, handleBoxZoom } from './ChartScaling';
+export { autoScaleAll, autoScaleYOnly, handleBoxZoom } from './ChartScaling';
 export type { NavigationContext } from './ChartNavigation';
 export {
   prepareSeriesData,

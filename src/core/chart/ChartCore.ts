@@ -56,7 +56,7 @@ import {
 import type { Chart, ExportOptions } from "./types";
 import { exportToCSV, exportToJSON, exportToImage } from "./ChartExporter";
 import { applyZoom, applyPan, type NavigationContext } from "./ChartNavigation";
-import { autoScaleAll, handleBoxZoom } from "./ChartScaling";
+import { autoScaleAll, autoScaleYOnly, handleBoxZoom } from "./ChartScaling";
 import {
   AnimationEngine,
   mergeAnimationConfig,
@@ -694,6 +694,7 @@ export class ChartImpl implements Chart {
       renderer: this.renderer,
       viewBounds: this.viewBounds,
       autoScale: () => this.autoScale(),
+      autoScaleYOnly: () => this.autoScaleYOnly(),
       requestRender: () => this.requestRender(),
       addAnnotation: (a: Annotation) => this.addAnnotation(a),
       xAxisOptions: this.xAxisOptions,
@@ -839,6 +840,15 @@ export class ChartImpl implements Chart {
       }
       this.requestRender();
     });
+  }
+
+  /**
+   * Auto-scale only Y-axes (keeps X-axis stable)
+   * Used during streaming to prevent X-axis shifting
+   */
+  autoScaleYOnly(): void {
+    autoScaleYOnly(this.getNavContext());
+    this.requestRender();
   }
 
   /**

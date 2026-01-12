@@ -84,6 +84,63 @@ export function autoScaleAll(ctx: NavigationContext): void {
 }
 
 /**
+ * Auto-scale only Y-axes to fit data (keeps X-axis stable)
+ * Used during streaming to prevent X-axis shifting
+ */
+export function autoScaleYOnly(ctx: NavigationContext): void {
+  if (ctx.series.size === 0) return;
+
+  // Track bounds per Y-axis
+  const yAxisBounds = new Map<string, { min: number, max: number }>();
+  ctx.yScales.forEach((_, id) => {
+    yAxisBounds.set(id, { min: Infinity, max: -Infinity });
+  });
+
+  let hasValidData = false;
+
+  ctx.series.forEach((s) => {
+    if (!s.isVisible()) return;
+
+    const b = s.getBounds();
+    if (b && isFinite(b.yMin) && isFinite(b.yMax)) {
+      const axisId = s.getYAxisId() || ctx.primaryYAxisId;
+      const yBounds = yAxisBounds.get(axisId);
+      if (yBounds) {
+        yBounds.min = Math.min(yBounds.min, b.yMin);
+        yBounds.max = Math.max(yBounds.max, b.yMax);
+      }
+      hasValidData = true;
+    }
+  });
+
+  if (!hasValidData) return;
+
+  const MAX_VAL = 1e15;
+  const MIN_VAL = -1e15;
+
+  yAxisBounds.forEach((bounds, id) => {
+    if (bounds.min === Infinity) return;
+    const opts = ctx.yAxisOptionsMap.get(id);
+    const scale = ctx.yScales.get(id);
+    if (opts && opts.auto && scale) {
+      let yRange = bounds.max - bounds.min;
+      if (yRange <= 0 || !isFinite(yRange)) yRange = Math.abs(bounds.min) * 0.1 || 1;
+      const yPad = Math.min(yRange * 0.005, 1e10);
+      
+      let newMin = Math.max(MIN_VAL, bounds.min - yPad);
+      const newMax = Math.min(MAX_VAL, bounds.max + yPad);
+      scale.setDomain(newMin, newMax);
+      
+      if (id === ctx.primaryYAxisId) {
+        ctx.viewBounds.yMin = newMin;
+        ctx.viewBounds.yMax = newMax;
+      }
+    }
+  });
+  ctx.requestRender();
+}
+
+/**
  * Handle box zoom selection
  */
 export function handleBoxZoom(

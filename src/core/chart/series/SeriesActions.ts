@@ -74,13 +74,29 @@ export function appendData(
       }
     }
     if (Array.from(ctx.yAxisOptionsMap.values()).some((o: any) => o.auto)) {
-      ctx.autoScale(false);
+      ctx.autoScaleYOnly();
     }
-  } else if (
-    ctx.xAxisOptions.auto ||
-    Array.from(ctx.yAxisOptionsMap.values()).some((o: any) => o.auto)
-  ) {
-    ctx.autoScale(false);
+  } else {
+    // During streaming (not autoscroll), only auto-scale Y to prevent X-axis shift
+    if (Array.from(ctx.yAxisOptionsMap.values()).some((o: any) => o.auto)) {
+      ctx.autoScaleYOnly();
+    }
+    // Only auto-scale X if explicitly enabled and data bounds changed significantly
+    if (ctx.xAxisOptions.auto) {
+      const newBounds = s.getBounds();
+      if (newBounds) {
+        const currentXRange = ctx.viewBounds.xMax - ctx.viewBounds.xMin;
+        const dataXRange = newBounds.xMax - newBounds.xMin;
+        // Only update X-axis if data extends significantly beyond current view
+        if (newBounds.xMax > ctx.viewBounds.xMax || 
+            newBounds.xMin < ctx.viewBounds.xMin ||
+            Math.abs(dataXRange - currentXRange) / currentXRange > 0.1) {
+          const xPad = Math.min(dataXRange * 0.005, 1e10);
+          ctx.viewBounds.xMin = Math.max(-1e15, newBounds.xMin - xPad);
+          ctx.viewBounds.xMax = Math.min(1e15, newBounds.xMax + xPad);
+        }
+      }
+    }
   }
   ctx.requestRender();
 }
