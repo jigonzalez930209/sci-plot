@@ -12,12 +12,14 @@ export * from "./stats";
 export * from "./watermark";
 export * from "./grid-highlight";
 export * from "./data-logger";
+export * from "./direction-indicator";
 
 import { CrosshairPlugin } from "./crosshair";
 import { StatsPlugin } from "./stats";
 import { WatermarkPlugin } from "./watermark";
 import { GridHighlightPlugin } from "./grid-highlight";
 import { DataLoggerPlugin } from "./data-logger";
+import { DirectionIndicatorPlugin } from "./direction-indicator";
 
 /**
  * Plugin collection for easy registration
@@ -28,4 +30,5 @@ export const BuiltinPlugins = {
     Watermark: WatermarkPlugin,
     GridHighlight: GridHighlightPlugin,
     DataLogger: DataLoggerPlugin,
+    DirectionIndicator: DirectionIndicatorPlugin,
 };

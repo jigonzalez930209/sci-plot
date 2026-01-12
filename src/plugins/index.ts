@@ -88,6 +88,7 @@ export {
     WatermarkPlugin,
     GridHighlightPlugin,
     DataLoggerPlugin,
+    DirectionIndicatorPlugin,
 
     // Plugin collection
     BuiltinPlugins,
@@ -98,6 +99,7 @@ export {
     type WatermarkPluginConfig,
     type GridHighlightConfig,
     type DataLoggerConfig,
+    type DirectionIndicatorConfig,
 } from "./builtins";
 
 // ============================================

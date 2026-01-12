@@ -17,6 +17,7 @@ Configure the number of cycles and watch the CV curve being drawn in real-time. 
 
 - **Stable X-axis**: No visual shifting during data streaming
 - **Auto-scaling Y-axis**: Smoothly adjusts to current values
+- **Direction indicator**: Visual arrow showing the streaming direction and trend
 - **Configurable cycles**: Run 1, 5, 10 cycles or infinite mode
 - **Realistic simulation**: Includes peak currents and hysteresis
 - **High performance**: Smooth 60 FPS rendering during acquisition
@@ -145,6 +146,31 @@ const peaks = chart.analysis.findPeaks('cv', {
 console.log('Anodic peak:', peaks[0]);
 console.log('Cathodic peak:', peaks[1]);
 ```
+
+### Direction Indicator Plugin
+
+The demo includes a **DirectionIndicator** plugin that **replaces the last data point** with an arrow indicating the **continuous direction** of the streaming data. The arrow renders every frame for smooth, jump-free visualization of the data trend.
+
+```typescript
+import { DirectionIndicatorPlugin } from '@scichart/engine/plugins';
+
+// Add the direction indicator plugin
+await chart.use(DirectionIndicatorPlugin({
+  seriesId: 'cv',           // Series to track
+  sampleSize: 15,           // Number of recent points to analyze
+  color: '#FF9800',         // Arrow color (orange)
+  size: 25,                 // Triangle size in pixels
+  minVelocity: 0.1          // Minimum velocity to show arrow (pixels/point)
+}));
+```
+
+**Key features:**
+- **Smoothed position**: Uses moving average of last 30 points for fluid movement
+- **Smoothed angle**: Both position and direction are smoothed to eliminate jitter
+- **Continuous direction**: Uses the actual calculated angle (not discretized into 8 directions)
+- **Ultra-smooth rendering**: Updates every frame with no jumping or stuttering
+- **Real-time tracking**: Follows the data as it streams, showing forward/reverse sweeps
+- **Linear regression**: Calculates direction from the last N points in pixel space for accurate representation
 
 ### Export CV Data
 

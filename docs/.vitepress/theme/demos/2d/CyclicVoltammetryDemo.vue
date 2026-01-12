@@ -44,6 +44,7 @@ const chartTheme = computed(() => isDark.value ? 'midnight' : 'light')
 onMounted(async () => {
   if (typeof window === 'undefined' || !chartContainer.value) return
   const { createChart } = await import('@src/index')
+  const { DirectionIndicatorPlugin } = await import('@src/plugins')
   
   chart = createChart({
     container: chartContainer.value,
@@ -59,6 +60,15 @@ onMounted(async () => {
     showControls: true,
     loading: false
   })
+
+  // Add direction indicator plugin - triangle arrow replaces last point
+  await chart.use(DirectionIndicatorPlugin({
+    seriesId: 'cv',
+    sampleSize: 15,
+    color: '#FF9800',
+    size: 25,
+    minVelocity: 0.1
+  }))
 
   chart.addSeries({
     id: 'cv',
