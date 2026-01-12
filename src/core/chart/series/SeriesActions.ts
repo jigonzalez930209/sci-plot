@@ -73,12 +73,13 @@ export function appendData(
         ctx.viewBounds.xMin = ctx.viewBounds.xMax - xRange;
       }
     }
-  }
-  if (
+    if (Array.from(ctx.yAxisOptionsMap.values()).some((o: any) => o.auto)) {
+      ctx.autoScale(false);
+    }
+  } else if (
     ctx.xAxisOptions.auto ||
     Array.from(ctx.yAxisOptionsMap.values()).some((o: any) => o.auto)
   ) {
-    // Don't animate autoscale when appending data to avoid animation conflicts
     ctx.autoScale(false);
   }
   ctx.requestRender();
