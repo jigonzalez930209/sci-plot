@@ -196,6 +196,7 @@ export default defineConfig({
           text: "Extreme Performance",
           items: [
             { text: "Real-time Streaming", link: "/examples/realtime" },
+            { text: "Cyclic Voltammetry", link: "/examples/cyclic-voltammetry" },
             { text: "Large Datasets (1M)", link: "/examples/large-datasets" },
             { text: "30M Points Challenge", link: "/examples/10m-points" },
           ],

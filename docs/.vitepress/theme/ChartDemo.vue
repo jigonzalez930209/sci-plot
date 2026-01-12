@@ -26,6 +26,7 @@ import TooltipsDemo from './demos/2d/TooltipsDemo.vue'
 import ResponsiveDemo from './demos/2d/ResponsiveDemo.vue'
 import PersistenceDemo from './demos/2d/PersistenceDemo.vue'
 import SelectionDemo from './demos/2d/SelectionDemo.vue'
+import CyclicVoltammetryDemo from './demos/2d/CyclicVoltammetryDemo.vue'
 
 const props = defineProps<{
   type: string
@@ -67,6 +68,8 @@ const demoComponent = computed(() => {
     case 'responsive': return ResponsiveDemo
     case 'persistence': return PersistenceDemo
     case 'selection': return SelectionDemo
+    case 'cyclic-voltammetry':
+    case 'cv': return CyclicVoltammetryDemo
     default: return BasicDemo
   }
 })

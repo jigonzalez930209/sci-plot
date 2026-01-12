@@ -30,6 +30,16 @@ Continuous data streaming with varying waveforms.
 
 ---
 
+### Cyclic Voltammetry
+
+Real-time CV simulation with stable X-axis during streaming.
+
+<ChartDemo type="cyclic-voltammetry" height="300px" />
+
+[View full example →](/examples/cyclic-voltammetry)
+
+---
+
 ### Large Datasets
 
 1 million points rendered at 60 FPS.
@@ -104,6 +114,7 @@ Professional tooltips with themes, animations, and scientific notation.
 |---------|-------------|-------------|
 | [Basic Chart](/examples/basic) | Simple line chart | Core API usage |
 | [Real-time](/examples/realtime) | Streaming data | `requestAnimationFrame` |
+| [Cyclic Voltammetry](/examples/cyclic-voltammetry) | CV simulation | Stable X-axis streaming |
 | [Large Datasets](/examples/large-datasets) | 1M+ points | WebGL performance |
 | [React](/examples/react) | React integration | Components & hooks |
 | [Curve Fitting](/examples/curve-fitting) | Regression analysis | Trend lines & labels |
