@@ -111,6 +111,7 @@ export default defineConfig({
           text: "Visual Elements & UI",
           items: [
             { text: "Tooltip System", link: "/api/tooltips" },
+            { text: "Interactive Tools", link: "/api/interactive-tools" },
             { text: "Annotations", link: "/api/annotations" },
             { text: "Statistics Panel", link: "/api/statistics-panel" },
             { text: "Multi-Axis Support", link: "/api/multi-axis" },
