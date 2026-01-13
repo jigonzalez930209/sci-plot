@@ -5,65 +5,115 @@ description: Extend SciChart Engine through its powerful plugin system, allowing
 
 # Plugins API
 
-The Plugin System allows you to hook into the SciChart Engine lifecycle.
+The SciChart Engine provides a powerful, extensible plugin system that allows you to hook into every aspect of the chart's lifecycle.
 
-## ChartPlugin Interface
+## Plugin Interface
 
-All plugins must implement the following interface:
+All plugins must implement the `ChartPlugin` interface or be created via a `PluginFactory`.
 
 ```typescript
-interface ChartPlugin {
-  /** Unique name for the plugin */
-  name: string;
-  
-  /** Called when chart.use(plugin) is called */
-  init?(chart: Chart): void;
-  
-  /** Called at the beginning of the render loop */
-  onBeforeRender?(chart: Chart): void;
-  
-  /** Called after all rendering is complete */
-  onAfterRender?(chart: Chart, ctx: RenderContext): void;
-  
-  /** Called when a new series is successfully added */
-  onSeriesAdded?(series: Series): void;
-  
-  /** Called when the chart is destroyed */
-  destroy?(): void;
+export interface ChartPlugin<TConfig = unknown> {
+    /** Unique metadata and capabilities */
+    readonly manifest: PluginManifest;
+
+    /** Called when attached to chart. Use for setup and subscriptions. */
+    onInit?(ctx: PluginContext, config?: TConfig): void | Promise<void>;
+
+    /** Called when configuration is updated via chart.pluginManager.configure() */
+    onConfigChange?(ctx: PluginContext, newConfig: TConfig, oldConfig: TConfig): void;
+
+    /** Prepare or skip current frame */
+    onBeforeRender?(ctx: PluginContext, event: BeforeRenderEvent): boolean | void;
+
+    /** Direct WebGL rendering */
+    onRenderWebGL?(ctx: PluginContext, event: AfterRenderEvent): void;
+
+    /** Custom 2D canvas drawing on overlay */
+    onRenderOverlay?(ctx: PluginContext, event: AfterRenderEvent): void;
+
+    /** Respond to data changes */
+    onDataUpdate?(ctx: PluginContext, event: DataUpdateEvent): void;
+
+    /** Respond to zoom/pan */
+    onViewChange?(ctx: PluginContext, event: ViewChangeEvent): void;
+
+    /** Clean up resources */
+    onDestroy?(ctx: PluginContext): void;
+
+    /** Optional public API exposed to other plugins */
+    readonly api?: Record<string, any>;
 }
 ```
 
-## Chart.use()
+## Plugin Context (`ctx`)
 
-Registers and initializes a plugin.
+Plugins receive a rich context providing safe access to chart internals:
+
+- `ctx.chart`: The full [Chart API](/api/chart).
+- `ctx.render`: WebGL context, 2D overlay context, and canvas dimensions.
+- `ctx.coords`: Utilities for data-to-pixel and pixel-to-data conversion.
+- `ctx.data`: Read-only access to all series, annotations, and bounds.
+- `ctx.ui`: Manager for adding/removing HTML overlays and notifications.
+- `ctx.events`: Unified event bus for chart and custom plugin events.
+- `ctx.storage`: Persistent key-value storage synced with chart state.
+
+## Loading Plugins
+
+Plugins are loaded using the `chart.use()` method. Note that from version 1.5.0, many features like **Tooltips**, **Analysis**, and **Annotations** must be explicitly loaded as plugins.
 
 ```typescript
+import { createChart } from 'scichart-engine';
+import { PluginTools, PluginAnalysis, PluginAnnotations } from 'scichart-engine/plugins';
+
 const chart = createChart({ container });
-chart.use(myPlugin);
+
+// Enable core features
+await chart.use(PluginTools({ useEnhancedTooltips: true }));
+await chart.use(PluginAnalysis());
+await chart.use(PluginAnnotations());
 ```
 
-## Hook Details
+## Creating a Custom Plugin
 
-### `init(chart: Chart)`
-Use this hook to:
-- Access the `chart.container` to add DOM elements (tooltips, overlays).
-- Store a reference to the chart for later use.
-- Setup internal plugin state.
+The recommended way to create a plugin is using the `createPlugin` or `createConfigurablePlugin` helpers.
 
-### `onBeforeRender(chart: Chart)`
-Called before any WebGL or Canvas drawing occurs. Useful for state synchronization or pre-calculation.
+```typescript
+import { createConfigurablePlugin } from 'scichart-engine/plugins';
 
-### `onAfterRender(chart: Chart, ctx: RenderContext)`
-Called after the `OverlayRenderer` has finished drawing. 
-- The `RenderContext` contains the current `plotArea` dimensions.
-- Useful for drawing custom elements on top of the chart using the canvas or DOM.
+interface MyPluginConfig {
+  color: string;
+}
 
-### `onSeriesAdded(series: Series)`
-Called every time `addSeries`, `addBar`, or `addHeatmap` is executed.
-- Useful for plugins that need to wrap or track individual series.
+const MyPlugin = createConfigurablePlugin<MyPluginConfig>(
+  {
+    name: "my-custom-plugin",
+    version: "1.0.0",
+    provides: ["visualization"]
+  },
+  (config) => ({
+    onInit(ctx) {
+      ctx.log.info("My plugin initialized with color:", config?.color);
+    },
+    
+    onRenderOverlay(ctx) {
+      const { ctx2d, plotArea } = ctx.render;
+      ctx2d.fillStyle = config?.color || 'red';
+      ctx2d.fillRect(plotArea.x, plotArea.y, 50, 50);
+    }
+  })
+);
 
-### `destroy()`
-Crucial for preventing memory leaks. You must:
-- Remove any DOM elements added in `init`.
-- Clear any `setInterval` or `requestAnimationFrame` owned by the plugin.
-- Remove event listeners.
+// Usage
+chart.use(MyPlugin({ color: 'blue' }));
+```
+
+## Built-in Plugins
+
+The engine provides several built-in plugins in the `@src/plugins` module:
+
+- `PluginTools`: Tooltips, delta tool, peak tool.
+- `PluginAnalysis`: FFT, regressions, statistics.
+- `PluginAnnotations`: Text, lines, shapes.
+- `PluginLoading`: Custom loading indicators.
+- `DirectionIndicatorPlugin`: Real-time data trend arrows.
+- `StatsPlugin`: FPS and performance monitoring.

@@ -7,14 +7,35 @@ description: Real-time statistical analysis of visible data
 
 The Statistics Panel provides real-time statistical calculations for all visible series within the current view bounds. It's perfect for quick data inspection and quality control.
 
-## Enabling the Statistics Panel
+## Requirement
+
+The Statistics Panel is provided by the `StatsPlugin`. You must load this plugin to see the panel.
+
+```typescript
+import { createChart } from 'scichart-engine';
+import { StatsPlugin } from 'scichart-engine/plugins';
+
+const chart = createChart({
+  container: document.getElementById('chart'),
+  showControls: true,    // Enable controls for full UI
+});
+
+// Load the statistics plugin
+await chart.use(StatsPlugin({
+  collapsed: false,      // Start expanded
+  precision: 3           // Number of decimals
+}));
+```
+
+Alternatively, if you provide `showStatistics: true` during `createChart`, it will be automatically enabled as soon as the `StatsPlugin` is loaded via `chart.use()`.
 
 ```typescript
 const chart = createChart({
-  container: document.getElementById('chart'),
-  showStatistics: true,  // Enable the statistics panel
-  showControls: true,    // Also enable controls for full UI
+  container,
+  showStatistics: true   // Queued until plugin is loaded
 });
+
+await chart.use(StatsPlugin()); // Panel appears now
 ```
 
 ## Features
@@ -110,7 +131,7 @@ chart.setTheme('light');
 You can access statistics programmatically using the analysis utilities:
 
 ```typescript
-import { calculateStats, integrate } from 'scichart-engine/analysis';
+import { calculateStats, integrate } from 'scichart-engine';
 
 const series = chart.getSeries('my-data');
 const data = series.getData();

@@ -24,12 +24,15 @@ function createChart(options: ChartOptions): Chart
 | `background` | `string` | Theme default | Background color |
 | `showControls` | `boolean` | `false` | Show toolbar controls |
 | `showLegend` | `boolean` | `false` | Show series legend |
-| `legendPosition` | `{ x: number, y: number }` | `{ x: 10, y: 10 }` | Legend position |
+| `showStatistics` | `boolean` | `false` | Enable stats panel (requires `StatsPlugin`) |
 | `devicePixelRatio` | `number` | `window.devicePixelRatio` | Pixel ratio for rendering |
 | `loading` | `boolean \| LoadingConfig` | `true` | Show loading indicator on init |
 | `animations` | `boolean \| AnimationConfig` | `true` | Enable navigation animations |
 | `responsive` | `boolean \| ResponsiveConfig` | `true` | Auto-resize on container change |
 
+::: tip Modular Architecture
+From version 1.5.0, SciChart Engine uses a highly modular plugin-based architecture. To maintain a small core bundle, advanced features like **Tooltips**, **Analysis**, and **Annotations** must be explicitly loaded using `chart.use()`.
+:::
 ### AxisOptions
 
 ```typescript

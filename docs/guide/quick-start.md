@@ -112,7 +112,22 @@ function App() {
 
 ## Adding Interactivity
 
+### Enable Tooltips & Tools
+
+To enable advanced interactions like tooltips or the delta tool, you must load the `PluginTools`.
+
+```typescript
+import { PluginTools } from 'scichart-engine';
+
+await chart.use(PluginTools());
+
+// Now you can configure tooltips
+chart.tooltip.configure({ theme: 'glass' });
+```
+
 ### Enable Cursor
+
+Basic cursor functionality is built-in:
 
 ```typescript
 chart.enableCursor({

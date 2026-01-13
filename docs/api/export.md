@@ -1,11 +1,11 @@
 ---
 title: Data Export
-description: Export chart data to CSV, JSON, PNG and SVG formats
+description: Export chart data to CSV, JSON and PNG formats
 ---
 
 # Data Export
 
-SciChart Engine provides built-in methods to export your chart data to CSV, JSON, PNG, and SVG formats. This is useful for saving experiment results, generating reports, or sharing high-quality vector graphics.
+SciChart Engine provides built-in methods to export your chart data to CSV, JSON, and PNG/JPEG formats. This is useful for saving experiment results, generating reports, or sharing chart snapshots.
 
 ## Quick Example
 
@@ -24,12 +24,8 @@ const jsonData = chart.exportJSON();
 console.log(jsonData);
 // Output: { exportDate: "...", chartBounds: {...}, series: {...} }
 
-// Export to SVG (Vector)
-const svgString = chart.exportSVG();
-// Output: "<svg xmlns='...'>...</svg>"
-
 // Export to Image (Raster)
-const dataUrl = chart.exportImage();
+const dataUrl = chart.exportImage('png');
 // Output: "data:image/png;base64,..."
 ```
 
@@ -167,49 +163,26 @@ function downloadJSON(chart, filename = 'chart-data.json') {
 }
 ```
 
-## SVG Export (Vector)
-
-SVG export provides high-quality vector graphics that remain sharp at any zoom level, making them ideal for academic papers and print media.
-
-### Basic Usage
-
-```typescript
-const svg = chart.exportSVG();
-```
-
-The generated SVG includes:
-- All visible series (Lines, Scatter, Bars, Candlesticks, Areas).
-- X and Y axes with ticks.
-- Grid lines matched to the current theme.
-- Legends and Annotations.
-
-### Supported Series Types
-
-The SVG exporter supports all internal series types:
-- **Line/Step**: Orthogonal or direct paths.
-- **Scatter**: Circle, Square, Diamond, etc., using vector primitives.
-- **Bar/Candlestick**: Sharp rectangles and wicks.
-- **Area/Band**: High-fidelity polygons with customizable opacity.
-
 ## Image Export (Raster)
 
-Export the current chart view as a PNG or JPEG image.
+Export the current chart view as a PNG or JPEG image. The export includes all visible elements including series, axes, grid, and legend.
 
 ### Basic Usage
 
 ```typescript
-const dataUrl = chart.exportImage('image/png');
+const dataUrl = chart.exportImage('png');
 ```
 
 ### Options
 
 ```typescript
-const dataUrl = chart.exportImage('image/jpeg', 0.9); // 90% quality
+const dataUrl = chart.exportImage('jpeg'); 
 ```
 
-### Configuration
-
-The image export uses the current canvas state and is limited by the screen resolution (multiplied by the Device Pixel Ratio). For higher quality print results, **SVG Export** is recommended.
+### Why use Image Export?
+- **Universal compatibility**: PNG/JPEG files can be viewed anywhere.
+- **WYSWYG**: Captures exactly what the user sees on the screen, including complex WebGL shaders.
+- **High Resolution**: The export automatically respects the Device Pixel Ratio (DPR), ensuring sharp results on Retina displays.
 
 ## React Integration
 

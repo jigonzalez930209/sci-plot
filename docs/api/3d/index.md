@@ -7,27 +7,30 @@ description: Documentation for SciChart Engine's high-performance 3D rendering m
 
 Complete API documentation for the 3D rendering module.
 
-## Core Classes
+## Architecture
 
-### Chart3D
-Main entry point for creating 3D visualizations.
+SciChart Engine 3D uses specialized renderer classes that manage their own WebGL2 context, camera, and interaction. This provides maximum performance for complex visualizations like surface meshes or high-density point clouds.
+
+## Core Renderers
+
+### Area3DRenderer
+Renders filled 3D areas (curtain effect) with lighting and tooltips.
 
 ```typescript
-import { Chart3D } from 'scichart-engine/core/3d';
+import { Area3DRenderer } from 'scichart-engine/plugins/3d';
+
+const renderer = new Area3DRenderer({
+  canvas: document.getElementById('my-canvas'),
+  showAxes: true,
+  opacity: 0.8
+});
 ```
 
-### Bubble3DRenderer
-Specialized renderer for bubble/scatter visualizations with instanced rendering.
+### Waterfall3DRenderer
+Specialized for cascading spectral results or time-series profiles.
 
 ```typescript
-import { Bubble3DRenderer } from 'scichart-engine/core/3d';
-```
-
-### Axes3D
-3D axis renderer with wall grids, tick marks, and labels.
-
-```typescript
-import { Axes3D } from 'scichart-engine/core/3d';
+import { Waterfall3DRenderer } from 'scichart-engine/plugins/3d';
 ```
 
 ## Specialized Renderer Classes

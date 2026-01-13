@@ -13,28 +13,32 @@ Plugins are self-contained modules that receive a **PluginContext** upon initial
 
 ## Using Built-in Plugins
 
-The most common plugins are **auto-loaded** by defaults in `ChartCore`, but you can also configure them explicitly.
+From version 1.5.0, core features are modularized into plugins. You should explicitly load the plugins you need to keep your application bundle small.
 
 ```typescript
-import { createChart, PluginTools, PluginAnalysis } from 'scichart-engine';
+import { createChart } from 'scichart-engine';
+import { PluginTools, PluginAnalysis, PluginAnnotations } from 'scichart-engine/plugins';
 
 const chart = createChart({
   container: document.getElementById('chart'),
   theme: 'midnight'
 });
 
-// Accessing auto-loaded plugins
-const tools = chart.getPluginAPI('scichart-tools');
-const analysis = chart.getPluginAPI('scichart-analysis');
-const loading = chart.getPluginAPI('scichart-loading');
-const annotations = chart.getPluginAPI('scichart-annotations');
+// Load the plugins you need
+await chart.use(PluginTools());
+await chart.use(PluginAnalysis());
+await chart.use(PluginAnnotations());
 
-// Example: setting a measurement tool
-tools.setMode('delta');
+// Accessing the plugin APIs
+const tools = chart.getPlugin('scichart-tools');
+const analysis = chart.getPlugin('scichart-analysis');
 
-// Example: controlling loading indicator
-loading.show("Downloading data...");
-loading.setProgress(25);
+// Example: switching to delta measurement mode
+chart.setMode('delta');
+
+// Example: controlling loading indicator (built-in)
+chart.loading.show("Downloading data...");
+chart.loading.setProgress(25);
 ```
 
 ## Creating a Custom Plugin

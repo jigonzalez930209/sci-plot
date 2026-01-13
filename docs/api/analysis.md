@@ -9,6 +9,9 @@ SciChart Engine includes built-in utilities for common data analysis tasks.
 
 ## Overview
 
+The analysis utilities can be used as standalone functions or integrated into the chart via the **Analysis Plugin**.
+
+### Standalone Usage
 ```typescript
 import {
   detectCycles,
@@ -17,9 +20,24 @@ import {
   movingAverage,
   downsampleLTTB,
   validateData,
-  formatWithPrefix,
-  generateCycleColors,
 } from 'scichart-engine'
+
+const stats = calculateStats(myData);
+```
+
+### Plugin Usage (Recommended)
+By loading the `PluginAnalysis`, you gain access to all analysis tools directly through the `chart` instance, which handles coordinate conversion and series-aware analysis automatically.
+
+```typescript
+import { PluginAnalysis } from 'scichart-engine/plugins';
+
+await chart.use(PluginAnalysis());
+
+// Calculate stats for a specific series data
+const stats = chart.analysis.calculateStats(mySeries.getData().y);
+
+// High-level series curve fitting
+chart.analysis.addFitLine('my-series-id', 'linear');
 ```
 
 ## Functions

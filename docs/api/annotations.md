@@ -147,6 +147,9 @@ chart.addAnnotation({
 });
 ```
 
+> [!TIP]
+> **Multi-line Text**: Text annotations support multiple lines using the `\n` character. The engine automatically calculates the required background height and centers the text appropriately.
+
 ### Arrow
 
 An arrow pointing from one position to another.

@@ -157,10 +157,12 @@ import { DirectionIndicatorPlugin } from '@scichart/engine/plugins';
 // Add the direction indicator plugin
 await chart.use(DirectionIndicatorPlugin({
   seriesId: 'cv',           // Series to track
-  sampleSize: 15,           // Number of recent points to analyze
+  sampleSize: 15,           // Points used for regression calculation
+  historySize: 20,          // Points used for smoothing (moving average)
   color: '#FF9800',         // Arrow color (orange)
   size: 25,                 // Triangle size in pixels
-  minVelocity: 0.1          // Minimum velocity to show arrow (pixels/point)
+  minVelocity: 0.1,         // Minimum velocity to show arrow (pixels/point)
+  idleTimeout: 5000         // Hide arrow after 5s of inactivity (ms)
 }));
 ```
 

@@ -12,6 +12,11 @@ The persistence system allows:
 - **URL Sharing**: Compact, compressed Base64 representation of the chart state for sharing via URL hash.
 - **Undo/Redo**: History management using state snapshots.
 - **Compact Storage**: Typed data is encoded as Base64 for efficiency.
+- **Plugin Persistence**: Plugins can participating in serialization via `onSerialize` and `onDeserialize` hooks.
+
+::: tip Plugin Persistence
+From version 1.5.0, the serialization system also includes data from active plugins. For example, the `PluginAnnotations` state is automatically saved with the chart.
+:::
 
 ## Exporting State
 

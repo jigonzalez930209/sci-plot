@@ -5,19 +5,20 @@ description: Find local maxima and minima in your data using the detectPeaks fun
 
 # Peak Detection
 
-Find local maxima and minima in data.
+Find local maxima and minima in data. Available via `import { detectPeaks } from 'scichart-engine'` or `chart.analysis.detectPeaks()`.
+
+::: tip Requirement
+To use peak detection as part of the chart lifecycle (e.g., within a custom plugin or reactive workflow), loading `PluginAnalysis` is recommended.
+:::
 
 ## detectPeaks
 
 ```typescript
-function detectPeaks(
-  x: Float32Array | Float64Array | number[],
-  y: Float32Array | Float64Array | number[],
-  options?: {
-    minProminence?: number
-    type?: 'max' | 'min' | 'both'
-  }
-): Peak[]
+import { detectPeaks } from 'scichart-engine';
+
+const peaks = detectPeaks(x, y, { minProminence: 0.1 });
+// Or via chart:
+// const peaks = chart.analysis.detectPeaks(x, y, { type: 'max' });
 ```
 
 ### Parameters

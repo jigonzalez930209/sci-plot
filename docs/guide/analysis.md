@@ -1,7 +1,23 @@
 # Scientific Analysis Guide
 
-SciChart Engine is more than just a renderer; it includes a suite of high-performance tools for scientific and engineering data analysis. Most features are available via the **PluginAnalysis** module, which is loaded by default.
+SciChart Engine is more than just a renderer; it includes a suite of high-performance tools for scientific and engineering data analysis. These features are provided by the **PluginAnalysis** module.
 
+## Getting Started
+
+To use the analysis features, you must load the `PluginAnalysis` plugin.
+
+```typescript
+import { createChart } from 'scichart-engine';
+import { PluginAnalysis } from 'scichart-engine/plugins';
+
+const chart = createChart({ container });
+
+// Enable analysis capabilities
+await chart.use(PluginAnalysis());
+
+// The analysis methods are now available on the chart instance
+const analysis = chart.analysis;
+```
 ## Core Modules
 
 Analysis tools are divided into four main categories:
@@ -21,7 +37,7 @@ The most common task is removing noise from experimental data. The **Savitzky-Go
 import { createChart } from 'scichart-engine';
 
 const chart = createChart({ container });
-const analysis = chart.getPluginAPI('scichart-analysis');
+const analysis = chart.analysis;
 
 // Smooth a noisy signal using 15-point window and 3rd order polynomial
 const smoothedY = analysis.savitzkyGolay(noisyY, 15, 3);
@@ -38,7 +54,7 @@ chart.addSeries({
 Transform time-domain data into frequency-domain to identify dominant frequencies.
 
 ```typescript
-const analysis = chart.getPluginAPI('scichart-analysis');
+const analysis = chart.analysis;
 
 // 1. Calculate FFT
 const spectrum = analysis.fft(timeData);
@@ -72,7 +88,7 @@ chart.addFitLine('sensor-1', {
 Calculates the area under a curve, essential for techniques like chromatography or cyclic voltammetry ($Q = \int I dt$).
 
 ```typescript
-const analysis = chart.getPluginAPI('scichart-analysis');
+const analysis = chart.analysis;
 
 // Calculate area under the entire curve
 const totalArea = analysis.integrate(x, y);
@@ -93,7 +109,7 @@ Most scientific applications follow this pipeline:
 4. **Visualization**: Add data to `Chart` and highlight results.
 
 ```typescript
-const analysis = chart.getPluginAPI('scichart-analysis');
+const analysis = chart.analysis;
 
 // Process
 const filteredY = analysis.lowPassFilter(rawY, sampleRate, 10);

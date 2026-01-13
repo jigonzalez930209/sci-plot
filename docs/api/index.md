@@ -59,7 +59,21 @@ SciChart Engine provides a comprehensive API for creating high-performance scien
 | `chart.resize(width?, height?)` | Manually resize chart |
 | `chart.render()` | Force a render |
 | `chart.destroy()` | Clean up resources |
-| `chart.exportImage(type?)` | Export as PNG/JPEG |
+| [`chart.use(plugin)`](/api/plugins) | Load a plugin |
+| `chart.getPlugin(name)` | Get a plugin instance |
+
+### Core Plugins
+
+Many high-level features are provided as plugins. Load them using `chart.use()`.
+
+| Plugin | Features |
+|--------|----------|
+| [`PluginTools`](/api/interactive-tools) | Tooltips, Delta Tool, Peak Tool |
+| [`PluginAnalysis`](/api/analysis) | FFT, Regression, Smoothing |
+| [`PluginAnnotations`](/api/annotations) | Lines, Shapes, Text |
+| [`StatsPlugin`](/api/statistics-panel) | Real-time statistics panel |
+| [`PluginLoading`](/api/chart#loading-state) | Custom loading indicators |
+| [`DirectionIndicatorPlugin`](/examples/cyclic-voltammetry#direction-indicator-plugin) | Real-time trend arrows |
 
 ### Annotations
 
@@ -195,6 +209,9 @@ Advanced, high-performance tooltips with multi-series support, scientific notati
 | [`movingAverage()`](/api/analysis-utils#movingaverage) | Smooth data |
 | [`downsampleLTTB()`](/api/analysis-utils#downsamplelttb) | Reduce point count |
 | [`validateData()`](/api/analysis-utils#validatedata) | Check for invalid values |
+
+> [!TIP]
+> These functions are available as standalone utilities or via `chart.analysis` after loading the `PluginAnalysis`.
 
 ## Theming
 

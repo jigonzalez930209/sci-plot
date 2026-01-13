@@ -7,9 +7,28 @@ description: Documentation for the automated regression analysis system
 
 The Curve Fitting system allows you to mathematically analyze data series and visualize trends. It uses high-performance numerical solvers to compute regressions and automatically renders them as stylized fit lines with equations.
 
+## Requirement
+
+The Curve Fitting system is part of the `PluginAnalysis` module. You must load this plugin to use `addFitLine`.
+
+```typescript
+import { createChart } from 'scichart-engine';
+import { PluginAnalysis, PluginAnnotations } from 'scichart-engine/plugins';
+
+const chart = createChart({ container });
+
+// Enable analysis and annotations (for equation labels)
+await chart.use(PluginAnalysis());
+await chart.use(PluginAnnotations());
+```
+
 ## Using `addFitLine`
 
 The most common way to use curve fitting is via the `addFitLine` method on the `Chart` instance.
+
+::: tip Automatic Annotations
+When you call `addFitLine`, the engine calculates the regression, adds a new themed dashed series for the fit, and **automatically adds a text annotation** containing the equation and $R^2$ value. This requires `PluginAnnotations` to be loaded.
+:::
 
 ::: tip Async Safe
 You can call `addFitLine` immediately after creating the chart. If the analysis plugin hasn't finished loading yet, the request will be queued and applied automatically as soon as the plugin is ready.

@@ -5,15 +5,20 @@ description: Detect cycles in oscillating or periodic data with SciChart Engine'
 
 # Cycle Detection
 
-Detect cycles in oscillating or periodic data.
+Detect cycles in oscillating or periodic data. Available via `import { detectCycles } from 'scichart-engine'` or `chart.analysis.detectCycles()`.
+
+::: tip Requirement
+Cycle detection is part of the `PluginAnalysis`.
+:::
 
 ## detectCycles
 
 ```typescript
-function detectCycles(
-  signal: Float32Array | Float64Array | number[],
-  tolerance?: number
-): CycleInfo[]
+import { detectCycles } from 'scichart-engine';
+
+const cycles = detectCycles(signal, 0.005);
+// Or via chart:
+// const cycles = chart.analysis.detectCycles(signal);
 ```
 
 ### Parameters

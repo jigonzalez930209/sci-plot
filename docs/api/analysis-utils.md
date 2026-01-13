@@ -1,15 +1,21 @@
-# Data Utilities
+General-purpose utilities for data processing and formatting. These are available as standalone functions or via `chart.analysis`.
 
-General-purpose utilities for data processing and formatting.
+::: tip Requirement
+While many of these are standalone utilities, the recommended way to use them within a chart is to load the `PluginAnalysis`.
+:::
 
 ## calculateStats
 
 Calculate basic statistics for a dataset.
 
 ```typescript
-function calculateStats(
-  data: Float32Array | Float64Array | number[]
-): DataStats
+import { calculateStats } from 'scichart-engine'
+
+// Use standalone
+const stats = calculateStats(yData)
+
+// Or via chart (if PluginAnalysis is loaded)
+const stats = chart.analysis.calculateStats(yData)
 ```
 
 ### Returns
@@ -285,9 +291,10 @@ function integrate(
 ### Example
 
 ```typescript
-import { integrate } from 'scichart-engine/analysis'
+import { integrate } from 'scichart-engine'
 
 const area = integrate(xData, yData, 0.2, 0.8)
+// Or via chart: chart.analysis.integrate(...)
 console.log(`Peak Area: ${area.toFixed(4)}`)
 ```
 
@@ -318,10 +325,11 @@ function subtractBaseline(
 ### Example
 
 ```typescript
-import { subtractBaseline } from 'scichart-engine/analysis'
+import { subtractBaseline } from 'scichart-engine'
 
 // Subtract background using points at x=0.1 and x=0.9
 const correctedY = subtractBaseline(xData, yData, 0.1, 0.9)
+// Or via chart: chart.analysis.subtractBaseline(...)
 
 chart.addSeries({
   id: 'corrected',

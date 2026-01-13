@@ -9,20 +9,36 @@ The SciChart Engine features a high-performance, customizable tooltip system des
 
 ## Quick Start
 
+The tooltip system is provided by the `PluginTools` module. You must load this plugin to enable tooltips.
+
 ```typescript
+import { createChart } from 'scichart-engine';
+import { PluginTools } from 'scichart-engine/plugins';
+
 const chart = createChart({
-  container: document.getElementById('chart'),
-  tooltip: {
-    enabled: true,
+  container: document.getElementById('chart')
+});
+
+// Load the plugin to enable tooltips and analysis tools
+await chart.use(PluginTools({
+  useEnhancedTooltips: true,
+  tooltipConfig: {
     theme: 'glass',
     showDelay: 100,
-    followCursor: true,
-    dataPoint: {
-      snapToPoint: true,
-      hitRadius: 20
-    }
+    followCursor: true
   }
+}));
+```
+
+Alternatively, if you provide `tooltip` options during `createChart`, they will be automatically applied as soon as `PluginTools` is loaded via `chart.use()`.
+
+```typescript
+const chart = createChart({
+  container,
+  tooltip: { theme: 'midnight' } // Queued until plugin is loaded
 });
+
+await chart.use(PluginTools()); // Queued config is applied now
 ```
 
 ## Tooltip Options

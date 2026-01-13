@@ -21,8 +21,8 @@ yarn add scichart-engine
 // Core API
 import { createChart } from 'scichart-engine';
 
-// Specialized Plugins (Auto-loaded by default)
-import { PluginTools, PluginAnalysis } from 'scichart-engine';
+// Specialized Plugins 
+import { PluginTools, PluginAnalysis, PluginAnnotations } from 'scichart-engine';
 
 // React components
 import { SciChart, useSciChart } from 'scichart-engine';
