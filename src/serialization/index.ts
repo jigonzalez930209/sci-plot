@@ -65,13 +65,14 @@ export interface ChartState {
   annotations: Annotation[];
   /** Active theme name (if applicable) */
   themeName?: string;
-  /** Chart options (partial) */
   options?: {
     showLegend?: boolean;
     showControls?: boolean;
     showStatistics?: boolean;
     autoScroll?: boolean;
   };
+  /** Plugin-specific data */
+  plugins?: Record<string, any>;
 }
 
 /** Options for serialization */

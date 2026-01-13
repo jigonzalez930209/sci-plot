@@ -137,6 +137,27 @@ export {
   OverlayRenderer,
 } from "./core/OverlayRenderer";
 
+// ============================================
+// Persistence & Serialization
+// ============================================
+export {
+  SERIALIZATION_VERSION,
+  encodeFloat32Array,
+  decodeFloat32Array,
+  compressString,
+  decompressString,
+  stateToUrlHash,
+  urlHashToState,
+  validateChartState,
+  StateHistory,
+  type SerializedAxis,
+  type SerializedSeries,
+  type ChartState,
+  type SerializeOptions,
+  type DeserializeOptions,
+  type StateSnapshot,
+} from "./serialization";
+
 export type {
   PlotArea,
   CursorState,
@@ -186,11 +207,57 @@ export {
   calculateStats,
   movingAverage,
   downsampleLTTB,
+  subtractBaseline,
+  // Math
+  integrate,
+  derivative,
+  cumulativeIntegral,
+  calculateR2,
+  solveLinearSystem,
+  // Spectral / FFT
+  fft,
+  ifft,
+  analyzeSpectrum,
+  powerSpectrum,
+  dominantFrequency,
+  analyzeComplexSpectrum,
+  fftFromComplexInput,
+  hanningWindow,
+  hammingWindow,
+  blackmanWindow,
+  nextPowerOf2,
+  complexToArrays,
+  arraysToComplex,
+  ifftFromArrays,
+  ifftComplex,
+  getPositiveFrequencies,
+  // Filters
+  lowPassFilter,
+  highPassFilter,
+  bandPassFilter,
+  bandStopFilter,
+  butterworth,
+  exponentialMovingAverage,
+  gaussianSmooth,
+  savitzkyGolay,
+  medianFilter,
+  // Statistics
+  crossCorrelation,
+  autoCorrelation,
+  detectAnomalies,
+  trapezoidalIntegration,
+  simpsonsIntegration,
+  tTest,
   type CycleInfo,
   type Peak,
   type PrefixInfo,
   type ValidationResult,
   type DataStats,
+  type FFTResult,
+  type ComplexFFTResult,
+  type PowerSpectrumResult,
+  type FilterOptions,
+  type ButterworthOptions,
 } from "./plugins/analysis";
 
 // ============================================

@@ -275,7 +275,7 @@ export class ChartImpl implements Chart {
       findNearestPoint: (px, py, radius) => this.selectionManager?.hitTest(px, py, radius) ?? null,
       getPlugin: (name) => this.pluginManager?.get(name) as any
     });
-
+    
     // 3. Show loading indicator INSTANTLY if enabled
     if (options.loading !== false) {
       const loadingConfig = typeof options.loading === 'object' ? options.loading : {
@@ -286,6 +286,11 @@ export class ChartImpl implements Chart {
         ...loadingConfig,
         autoShow: true // Ensure it shows immediately
       }));
+    }
+
+    // 4. Load initial plugins
+    if (options.plugins) {
+      options.plugins.forEach(p => this.use(p));
     }
 
     const requestedRenderer = options.renderer ?? "webgl";
@@ -1317,6 +1322,7 @@ export class ChartImpl implements Chart {
         showStatistics: this.showStatistics,
         autoScroll: this.autoScroll,
       },
+      plugins: this.pluginManager.collectSerializationData(),
     };
 
     return state;
@@ -1378,6 +1384,11 @@ export class ChartImpl implements Chart {
       this.autoScroll = state.options.autoScroll ?? this.autoScroll;
     }
 
+    // Restore plugin data
+    if (state.plugins) {
+      this.pluginManager.restoreSerializationData(state.plugins);
+    }
+
     this.requestRender();
   }
 
@@ -1398,7 +1409,7 @@ export class ChartImpl implements Chart {
     }
   }
 
-  use(plugin: any): void {
+  use(plugin: import("../../plugins").ChartPlugin): void {
     this.pluginManager.use(plugin);
 
     // If annotations plugin was just added, process queued annotations

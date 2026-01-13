@@ -368,6 +368,8 @@ export interface ChartOptions {
   animations?: import("./core/animation").ChartAnimationConfig | boolean;
   /** Responsive design configuration */
   responsive?: import("./core/responsive").ResponsiveConfig | boolean;
+  /** Initial plugins to load */
+  plugins?: any[];
   /** Loading indicator configuration */
   loading?: boolean | import("./plugins/loading").PluginLoadingConfig;
   
