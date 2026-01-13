@@ -38,13 +38,15 @@ const vStart = -1000
 const vEnd = 1000
 const selectedCycles = ref(10)
 const selectedScanRate = ref(100)
+const smoothingWindow = ref(20)
+const arrowTimeout = ref(5000)
 
 const chartTheme = computed(() => isDark.value ? 'midnight' : 'light')
 
 onMounted(async () => {
   if (typeof window === 'undefined' || !chartContainer.value) return
   const { createChart } = await import('@src/index')
-  const { DirectionIndicatorPlugin } = await import('@src/plugins')
+  const { DirectionIndicatorPlugin, PluginTools } = await import('@src/plugins')
   
   chart = createChart({
     container: chartContainer.value,
@@ -61,13 +63,17 @@ onMounted(async () => {
     loading: false
   })
 
+  await chart.use(PluginTools({ useEnhancedTooltips: true }))
+
   // Add direction indicator plugin - triangle arrow replaces last point
   await chart.use(DirectionIndicatorPlugin({
     seriesId: 'cv',
     sampleSize: 15,
     color: '#FF9800',
     size: 25,
-    minVelocity: 0.1
+    minVelocity: 0.1,
+    historySize: smoothingWindow.value,
+    idleTimeout: arrowTimeout.value
   }))
 
   chart.addSeries({
@@ -195,6 +201,22 @@ watch(isDark, (val) => {
     }, 100)
   }
 })
+
+watch(smoothingWindow, (val) => {
+  if (chart && chart.pluginManager) {
+    chart.pluginManager.configure('direction-indicator', { 
+      historySize: val 
+    })
+  }
+})
+
+watch(arrowTimeout, (val) => {
+  if (chart && chart.pluginManager) {
+    chart.pluginManager.configure('direction-indicator', { 
+      idleTimeout: val 
+    })
+  }
+})
 </script>
 
 <template>
@@ -212,6 +234,14 @@ watch(isDark, (val) => {
         </span>
         <span class="stat">
           📈 <strong>{{ dataPointCount.toLocaleString() }}</strong> points
+        </span>
+        <span class="stat" style="display: flex; align-items: center; gap: 8px;">
+           Smoothing: <strong>{{ smoothingWindow }}</strong>
+           <input type="range" v-model.number="smoothingWindow" min="1" max="50" step="1" style="width: 60px;">
+        </span>
+        <span class="stat" style="display: flex; align-items: center; gap: 8px;">
+            Arrow Timeout: <strong>{{ (arrowTimeout / 1000).toFixed(1) }}s</strong>
+            <input type="range" v-model.number="arrowTimeout" min="500" max="10000" step="500" style="width: 60px;">
         </span>
       </div>
       <div class="chart-controls">

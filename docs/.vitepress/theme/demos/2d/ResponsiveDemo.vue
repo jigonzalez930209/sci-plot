@@ -16,12 +16,15 @@ const chartTheme = computed(() => isDark.value ? 'midnight' : 'light')
 onMounted(async () => {
   if (typeof window === 'undefined' || !chartContainer.value) return
   const { createChart } = await import('@src/index')
+  const { PluginTools } = await import('@src/plugins')
   
   chart = createChart({
     container: chartContainer.value,
     theme: chartTheme.value,
     showControls: true
   })
+
+  await chart.use(PluginTools({ useEnhancedTooltips: true }))
 
   const n = 100
   const x = new Float32Array(n)

@@ -29,6 +29,7 @@ onMounted(async () => {
   }
   
   const { createChart } = await import('@src/index')
+  const { PluginTools } = await import('@src/plugins')
   
   chart = createChart({
     container: chartContainer.value,
@@ -37,6 +38,8 @@ onMounted(async () => {
     theme: chartTheme.value,
     showControls: true
   })
+
+  await chart.use(PluginTools({ useEnhancedTooltips: true }))
 
   chart.on('render', (e: any) => {
     fps.value = Math.round(e.fps)

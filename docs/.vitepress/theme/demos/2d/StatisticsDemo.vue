@@ -17,6 +17,7 @@ const chartTheme = computed(() => isDark.value ? 'midnight' : 'light')
 onMounted(async () => {
   if (typeof window === 'undefined' || !chartContainer.value) return
   const { createChart } = await import('@src/index')
+  const { PluginDebug, PluginTools } = await import('@src/plugins')
   
   chart = createChart({
     container: chartContainer.value,
@@ -24,6 +25,10 @@ onMounted(async () => {
     showStatistics: true, // Key feature for this demo
     showControls: true
   })
+
+  // Explicitly enable required plugins
+  await chart.use(PluginDebug({ showDataStats: true }))
+  await chart.use(PluginTools({ useEnhancedTooltips: true }))
 
   chart.on('render', (e: any) => {
     fps.value = Math.round(e.fps)

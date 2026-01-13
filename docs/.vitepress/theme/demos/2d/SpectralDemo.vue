@@ -35,6 +35,7 @@ onMounted(async () => {
   
   try {
     const { createChart } = await import('@src/index')
+    const { PluginAnnotations, PluginTools } = await import('@src/plugins')
     console.log('SpectralDemo: createChart imported')
     
     chart = createChart({
@@ -43,6 +44,9 @@ onMounted(async () => {
       showControls: false,
       showStatistics: false
     })
+
+    await chart.use(PluginAnnotations())
+    await chart.use(PluginTools({ useEnhancedTooltips: true }))
     console.log('SpectralDemo: chart created', chart)
 
     chart.on('render', (e: any) => { fps.value = Math.round(e.fps) })
