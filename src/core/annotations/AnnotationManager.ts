@@ -449,16 +449,24 @@ export class AnnotationManager {
     const fontSize = annotation.fontSize ?? DEFAULT_STYLES.text.fontSize;
     const fontFamily = annotation.fontFamily ?? DEFAULT_STYLES.text.fontFamily;
     const fontWeight = annotation.fontWeight ?? 'normal';
+    const lineHeight = fontSize * 1.2;
     
     ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Measure text for background
-    const metrics = ctx.measureText(annotation.text);
+    // Support multi-line text
+    const lines = annotation.text.split('\n');
     const padding = annotation.padding ?? DEFAULT_STYLES.text.padding;
-    const textWidth = metrics.width + padding * 2;
-    const textHeight = fontSize + padding * 2;
+    
+    // Measure all lines to find max width
+    let maxWidth = 0;
+    for (const line of lines) {
+      maxWidth = Math.max(maxWidth, ctx.measureText(line).width);
+    }
+    
+    const textWidth = maxWidth + padding * 2;
+    const textHeight = (lines.length * lineHeight) - (lineHeight - fontSize) + padding * 2;
     
     // Calculate position based on anchor
     let drawX = x;
@@ -509,9 +517,13 @@ export class AnnotationManager {
       ctx.fill();
     }
     
-    // Draw text
+    // Draw text lines
     ctx.fillStyle = annotation.color ?? DEFAULT_STYLES.text.color;
-    ctx.fillText(annotation.text, drawX, drawY);
+    const startY = drawY - (textHeight / 2) + padding + (fontSize / 2);
+    
+    lines.forEach((line, i) => {
+      ctx.fillText(line, drawX, startY + i * lineHeight);
+    });
     
     ctx.restore();
   }

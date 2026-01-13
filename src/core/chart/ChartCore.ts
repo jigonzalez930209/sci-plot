@@ -196,7 +196,11 @@ export class ChartImpl implements Chart {
     return {
       configure: (config: any) => {
         this.tooltipConfigQueue.push(config);
-      }
+      },
+      handleCursorMove: () => {},
+      handleCursorLeave: () => {},
+      setSuspended: () => {},
+      updateChartTheme: () => {},
     };
   }
 
@@ -439,33 +443,9 @@ export class ChartImpl implements Chart {
     this.initControls();
     this.initLegend(options);
 
-    // Auto-load debug plugin if requested
-    if (options.debug || options.showStatistics) {
-      import("../../plugins/debug").then(({ PluginDebug }) => {
-        const config = typeof options.debug === 'object' ? options.debug : {};
-        if (options.showStatistics) (config as any).showDataStats = true;
-        this.use(PluginDebug(config));
-      });
-    }
+    // Plugins are now manual - user must call chart.use() or specify them in options
+    // This allows for smaller bundles and more explicit control in each example.
 
-    // Auto-load tools plugin for delta/peak measurement and tooltips
-    import("../../plugins/tools").then(({ PluginTools }) => {
-      this.use(PluginTools({
-        enableDeltaTool: true,
-        enablePeakTool: true,
-        useEnhancedTooltips: true,
-      }));
-    });
-
-    // Auto-load analysis plugin for curve fitting and analysis features
-    import("../../plugins/analysis").then(({ PluginAnalysis }) => {
-      this.use(PluginAnalysis());
-    });
-
-    // Auto-load annotations plugin
-    import("../../plugins/annotations").then(({ PluginAnnotations }) => {
-      this.use(PluginAnnotations());
-    });
 
     // NOTE: resize() and startRenderLoop() are now called by startInit()
     // This allows the queue system to control when rendering actually begins
