@@ -15,6 +15,10 @@ export interface DirectionIndicatorConfig {
     size?: number;
     /** Minimum velocity to show arrow (default: 0.01) */
     minVelocity?: number;
+    /** Number of points for smoothing the position/angle (default: 20) */
+    historySize?: number;
+    /** Hide arrow if no new points are received for this duration in ms (default: undefined/disabled) */
+    idleTimeout?: number;
 }
 
 interface DirectionData {
@@ -43,6 +47,8 @@ export const DirectionIndicatorPlugin = definePlugin<DirectionIndicatorConfig>(
             color,
             size = 40,
             minVelocity = 0.01,
+            historySize = 20,
+            idleTimeout,
         } = config;
 
         let overlayId: string;
@@ -55,7 +61,13 @@ export const DirectionIndicatorPlugin = definePlugin<DirectionIndicatorConfig>(
         const positionHistoryX: number[] = [];
         const positionHistoryY: number[] = [];
         const angleHistory: number[] = [];
-        const maxHistorySize = 30;
+
+        let maxHistorySize = historySize;
+        let timeoutTimer: any = null;
+        let lastPointTimestamp = Date.now();
+        let lastSeenX = -Infinity;
+        let lastSeenY = -Infinity;
+        let currentIdleTimeout = idleTimeout;
 
         return {
             onInit(pluginCtx: PluginContext) {
@@ -86,6 +98,7 @@ export const DirectionIndicatorPlugin = definePlugin<DirectionIndicatorConfig>(
 
             onDestroy(pluginCtx: PluginContext) {
                 pluginCtx.ui.removeOverlay(overlayId);
+                if (timeoutTimer) clearTimeout(timeoutTimer);
                 canvas = null;
                 ctx = null;
                 currentDirection = null;
@@ -99,7 +112,34 @@ export const DirectionIndicatorPlugin = definePlugin<DirectionIndicatorConfig>(
                 // Update direction every frame for smooth rendering
                 updateDirection(pluginCtx);
                 render(pluginCtx);
+
+                // Ensure we render again when the idle timeout expires to hide the arrow
+                if (currentIdleTimeout) {
+                    if (timeoutTimer) clearTimeout(timeoutTimer);
+                    const age = Date.now() - lastPointTimestamp;
+                    if (age < currentIdleTimeout) {
+                        timeoutTimer = setTimeout(() => {
+                            pluginCtx.requestRender();
+                        }, currentIdleTimeout - age + 10);
+                    }
+                }
             },
+
+            onConfigChange(_pluginCtx: PluginContext, newConfig: DirectionIndicatorConfig) {
+                if (newConfig.historySize !== undefined) {
+                    maxHistorySize = newConfig.historySize;
+                    // Reset history buffers if size changes significantly or just trim/expand? 
+                    // Simpler to just let them adjust over time or trim if needed.
+                    // If we want immediate effect, we might want to trim if smaller.
+                    while (positionHistoryX.length > maxHistorySize) positionHistoryX.shift();
+                    while (positionHistoryY.length > maxHistorySize) positionHistoryY.shift();
+                    while (angleHistory.length > maxHistorySize) angleHistory.shift();
+                }
+
+                if (newConfig.idleTimeout !== undefined) {
+                    currentIdleTimeout = newConfig.idleTimeout;
+                }
+            }
         };
 
         function resizeCanvas(pluginCtx: PluginContext) {
@@ -127,6 +167,13 @@ export const DirectionIndicatorPlugin = definePlugin<DirectionIndicatorConfig>(
             // Get last point coordinates in data space
             const lastX = data.x[totalPoints - 1];
             const lastY = data.y[totalPoints - 1];
+
+            // Detect if this is a new point
+            if (lastX !== lastSeenX || lastY !== lastSeenY) {
+                lastSeenX = lastX;
+                lastSeenY = lastY;
+                lastPointTimestamp = Date.now();
+            }
 
             // Get last N points for direction calculation
             const n = Math.min(sampleSize, totalPoints);
@@ -221,6 +268,12 @@ export const DirectionIndicatorPlugin = definePlugin<DirectionIndicatorConfig>(
 
             const { width, height } = pluginCtx.render.canvasSize;
             ctx.clearRect(0, 0, width, height);
+
+            // Check for idle timeout
+            if (currentIdleTimeout !== undefined) {
+                const age = Date.now() - lastPointTimestamp;
+                if (age > currentIdleTimeout) return;
+            }
 
             if (currentDirection.magnitude < minVelocity) return;
 
