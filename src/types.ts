@@ -98,7 +98,8 @@ export type SeriesType =
   | "bar"
   | "heatmap"
   | "candlestick"
-  | "polar";
+  | "polar"
+  | "radar";
 
 /** Step mode defines where the step occurs */
 export type StepMode = "before" | "after" | "center";
@@ -133,6 +134,11 @@ export interface SeriesData {
   low?: Float32Array | Float64Array;
   /** Close values for OHLC/Candlestick */
   close?: Float32Array | Float64Array;
+  /** Radar data - axes labels and values */
+  radar?: {
+    axes: string[];
+    values: number[];
+  };
 }
 
 /** Error bar styling options */
@@ -172,6 +178,23 @@ export interface SeriesStyle {
   symbol?: ScatterSymbol;
   /** Dash pattern [dash, gap] - empty for solid */
   lineDash?: number[];
+  /** Radar-specific styling */
+  radar?: {
+    /** Fill area under radar line */
+    fill?: boolean;
+    /** Fill color (overrides color for fill) */
+    fillColor?: string;
+    /** Fill opacity */
+    fillOpacity?: number;
+    /** Show axis labels */
+    showLabels?: boolean;
+    /** Label font size */
+    labelSize?: number;
+    /** Number of levels for background grid */
+    levels?: number;
+    /** Start angle in degrees */
+    startAngle?: number;
+  };
 }
 
 /** Available scatter symbol shapes */
@@ -365,17 +388,68 @@ export interface PolarStyle extends Omit<SeriesStyle, "stepMode"> {
   showAngularGrid?: boolean;
   /** Number of angular divisions (default: 12 for 30° intervals) */
   angularDivisions?: number;
-  /** Number of radial divisions (default: 5) */
-  radialDivisions?: number;
 }
 
 /** Polar series options */
-export interface PolarOptions extends Omit<SeriesOptions, "data" | "style" | "type"> {
+export interface PolarOptions extends Omit<SeriesOptions, "data" | "style"> {
   type: "polar";
   /** Polar coordinate data */
   data: PolarData;
   /** Polar-specific styling */
   style?: PolarStyle;
+}
+
+// ============================================
+// Radar Chart Types
+// ============================================
+
+/** Radar data structure */
+export interface RadarData {
+  /** Axis labels */
+  axes: string[];
+  /** Values for each axis (0-1 normalized) */
+  values: number[];
+}
+
+/** Radar chart styling */
+export interface RadarStyle {
+  /** Line/point color (hex or rgb) */
+  color?: string;
+  /** Line width in pixels */
+  width?: number;
+  /** Opacity (0-1) */
+  opacity?: number;
+  /** Point size */
+  pointSize?: number;
+  /** Fill area under radar line */
+  fill?: boolean;
+  /** Fill color (overrides color for fill) */
+  fillColor?: string;
+  /** Fill opacity */
+  fillOpacity?: number;
+  /** Show axis labels */
+  showLabels?: boolean;
+  /** Label font size */
+  labelSize?: number;
+  /** Number of levels for background grid */
+  levels?: number;
+  /** Start angle in degrees */
+  startAngle?: number;
+  /** Show background grid */
+  showGrid?: boolean;
+  /** Grid color */
+  gridColor?: string;
+  /** Grid opacity */
+  gridOpacity?: number;
+}
+
+/** Radar chart options */
+export interface RadarOptions extends Omit<SeriesOptions, "data" | "style"> {
+  type: "radar";
+  /** Radar data with axes and values */
+  data: RadarData;
+  /** Radar-specific styling */
+  style?: RadarStyle;
 }
 
 // ============================================
