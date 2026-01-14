@@ -81,6 +81,10 @@
     "./plugins/loading": {
       "types": "./dist/plugins/loading.d.ts",
       "import": "./dist/plugins/loading.js"
+    },
+    "./plugins/data-export": {
+      "types": "./dist/plugins/data-export.d.ts",
+      "import": "./dist/plugins/data-export.js"
     }
   },
   "files": [

@@ -118,6 +118,7 @@ export { PluginClipboard, type PluginClipboardConfig } from "./clipboard";
 export { PluginSync, type PluginSyncConfig } from "./sync";
 export { PluginDebug, type PluginDebugConfig } from "./debug";
 export { PluginLoading, type PluginLoadingConfig } from "./loading";
+export { PluginDataExport, type PluginDataExportConfig } from "./data-export";
 
 // ============================================
 // Helper for creating typed plugins
