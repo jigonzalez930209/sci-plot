@@ -26,6 +26,9 @@ export { WebGPURenderer, type WebGPURendererOptions } from "./WebGPURenderer";
 
 export * from "./shaders";
 
+// Radar Charts
+export * from './radar';
+
 // Bar Chart Utilities
 export { interleaveBarData, calculateBarWidth } from "./BarRenderer";
 
