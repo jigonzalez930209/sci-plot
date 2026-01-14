@@ -85,6 +85,10 @@
     "./plugins/data-export": {
       "types": "./dist/plugins/data-export.d.ts",
       "import": "./dist/plugins/data-export.js"
+    },
+    "./plugins/context-menu": {
+      "types": "./dist/plugins/context-menu.d.ts",
+      "import": "./dist/plugins/context-menu.js"
     }
   },
   "files": [

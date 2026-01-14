@@ -22,6 +22,7 @@ export default defineConfig({
         'plugins/debug': resolve(__dirname, 'src/plugins/debug/index.ts'),
         'plugins/loading': resolve(__dirname, 'src/plugins/loading/index.ts'),
         'plugins/data-export': resolve(__dirname, 'src/plugins/data-export/index.ts'),
+        'plugins/context-menu': resolve(__dirname, 'src/plugins/context-menu/index.ts'),
       },
       name: 'SciChartEngine',
       formats: ['es']
