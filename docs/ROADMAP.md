@@ -6,6 +6,8 @@
 
 ---
 
+OJO añadir filtro de una unica frecuencia en el plugin de análisis adaptativo para restar componentes de ruido o interferencias periodica.
+
 ## 📊 Resumen Ejecutivo
 
 Este documento propone **39 nuevas features** organizadas en 8 categorías y 4 fases de desarrollo para mejorar la usabilidad, rendimiento y capacidades de la librería `scichart-engine`.
