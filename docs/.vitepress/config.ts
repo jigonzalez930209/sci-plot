@@ -157,6 +157,13 @@ export default defineConfig({
             { text: "Chart Sync", link: "/api/chart-sync" },
           ],
         },
+        {
+          text: "Modular Plugins",
+          items: [
+            { text: "Data Export", link: "/api/plugin-data-export" },
+            { text: "Context Menu", link: "/api/plugin-context-menu" },
+          ],
+        },
       ],
       "/examples/": [
         {
@@ -236,6 +243,8 @@ export default defineConfig({
             { text: "Waveform Generators", link: "/examples/waveforms" },
             { text: "Backpressure Demo", link: "/examples/backpressure" },
             { text: "Internationalization", link: "/examples/i18n" },
+            { text: "Data Export", link: "/examples/data-export" },
+            { text: "Context Menu", link: "/examples/context-menu" },
           ],
         },
       ],

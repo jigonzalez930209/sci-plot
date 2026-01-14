@@ -1,22 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { 
-  createChart, 
-  PluginTools, 
-  PluginDataExport 
-} from 'scichart-engine';
-import type { Chart, ExportFormat } from 'scichart-engine';
 
 const chartContainer = ref<HTMLDivElement | null>(null);
-let chart: Chart | null = null;
+let chart: any = null;
 
-const selectedFormat = ref<ExportFormat>('csv');
+const selectedFormat = ref<string>('csv');
 const exportRange = ref<'all' | 'visible'>('all');
 const includeMetadata = ref(true);
 const exportResult = ref<string>('');
 const exportStatus = ref<string>('');
 
-const formats: { value: ExportFormat; label: string }[] = [
+const formats = [
   { value: 'csv', label: 'CSV' },
   { value: 'tsv', label: 'TSV' },
   { value: 'json', label: 'JSON' },
@@ -52,7 +46,6 @@ function generateImpedanceData() {
   const y = new Float32Array(points);
   
   for (let i = 0; i < points; i++) {
-    const freq = Math.pow(10, i / 40); // Logarithmic frequency
     const re = 100 + 50 * Math.cos(i / 20);
     const im = -50 * Math.sin(i / 20) - i * 0.2;
     x[i] = re; // Real impedance
@@ -69,7 +62,7 @@ async function handleExport() {
   exportResult.value = '';
   
   try {
-    const dataExport = (chart as any).plugins?.get('scichart-data-export')?.api;
+    const dataExport = chart.plugins?.get('scichart-data-export')?.api;
     
     if (!dataExport) {
       exportStatus.value = 'Plugin not found';
@@ -110,7 +103,7 @@ async function handleDownload() {
   if (!chart) return;
   
   try {
-    const dataExport = (chart as any).plugins?.get('scichart-data-export')?.api;
+    const dataExport = chart.plugins?.get('scichart-data-export')?.api;
     
     if (!dataExport) {
       exportStatus.value = 'Plugin not found';
@@ -131,14 +124,18 @@ async function handleDownload() {
   }
 }
 
-onMounted(() => {
-  if (!chartContainer.value) return;
+onMounted(async () => {
+  if (typeof window === 'undefined' || !chartContainer.value) return;
+  
+  const { createChart } = await import('@src/index');
+  const { PluginTools } = await import('@src/plugins/tools');
+  const { PluginDataExport } = await import('@src/plugins/data-export');
   
   chart = createChart({
     container: chartContainer.value,
     title: 'Data Export Demo',
-    xAxis: { label: 'Potential (V)', unit: 'V' },
-    yAxis: { label: 'Current (A)', unit: 'A', prefix: 'µ' },
+    xAxis: { label: 'Potential (V)' },
+    yAxis: { label: 'Current (A)' },
     theme: 'midnight',
     showLegend: true,
     showControls: true,
