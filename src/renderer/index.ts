@@ -34,3 +34,13 @@ export { interleaveHeatmapData, getColormap } from "./HeatmapRenderer";
 
 // Candlestick Utilities
 export { interleaveCandlestickData } from "./CandlestickRenderer";
+
+// Polar Chart Utilities
+export {
+  polarToCartesian,
+  interleavePolarLineData,
+  interleavePolarFillData,
+  generatePolarGrid,
+  calculatePolarBounds,
+  normalizeAngles,
+} from "./PolarRenderer";

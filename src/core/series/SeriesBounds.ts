@@ -1,12 +1,14 @@
 /**
  * Series Bounds Calculation Logic
  */
-import type { SeriesData, Bounds, SeriesType, HeatmapData } from "../../types";
+import type { SeriesData, Bounds, SeriesType, HeatmapData, PolarData } from "../../types";
+import { calculatePolarBounds } from "../../renderer/PolarRenderer";
 
 export function calculateSeriesBounds(
   type: SeriesType,
   data: SeriesData,
-  heatmapData?: HeatmapData
+  heatmapData?: HeatmapData,
+  polarData?: PolarData
 ): Bounds {
   if (type === "heatmap" && heatmapData) {
     const { xValues, yValues } = heatmapData;
@@ -22,6 +24,10 @@ export function calculateSeriesBounds(
       if (v > yMax) yMax = v;
     }
     return { xMin, xMax, yMin, yMax };
+  }
+
+  if (type === "polar" && polarData) {
+    return calculatePolarBounds(polarData);
   }
 
   const { x, y, y2, high, low } = data;

@@ -97,7 +97,8 @@ export type SeriesType =
   | "area"
   | "bar"
   | "heatmap"
-  | "candlestick";
+  | "candlestick"
+  | "polar";
 
 /** Step mode defines where the step occurs */
 export type StepMode = "before" | "after" | "center";
@@ -329,6 +330,52 @@ export interface HeatmapOptions extends Omit<SeriesOptions, "data" | "style"> {
   data: HeatmapData;
   /** Heatmap-specific styling */
   style?: HeatmapStyle;
+}
+
+// ============================================
+// Polar Chart Types
+// ============================================
+
+/** Polar coordinate mode */
+export type PolarMode = "radians" | "degrees";
+
+/** Polar data structure */
+export interface PolarData {
+  /** Radial values (distance from origin) */
+  r: Float32Array | Float64Array | number[];
+  /** Angular values (theta) */
+  theta: Float32Array | Float64Array | number[];
+}
+
+/** Polar chart styling options */
+export interface PolarStyle extends Omit<SeriesStyle, "stepMode"> {
+  /** Angular unit mode (default: 'degrees') */
+  angleMode?: PolarMode;
+  /** Fill the area to origin (default: false) */
+  fill?: boolean;
+  /** Fill color (default: same as line color with opacity) */
+  fillColor?: string;
+  /** Fill opacity (default: 0.3) */
+  fillOpacity?: number;
+  /** Close the path (connect last point to first) */
+  closePath?: boolean;
+  /** Show radial grid lines (default: true) */
+  showRadialGrid?: boolean;
+  /** Show angular grid lines (default: true) */
+  showAngularGrid?: boolean;
+  /** Number of angular divisions (default: 12 for 30° intervals) */
+  angularDivisions?: number;
+  /** Number of radial divisions (default: 5) */
+  radialDivisions?: number;
+}
+
+/** Polar series options */
+export interface PolarOptions extends Omit<SeriesOptions, "data" | "style" | "type"> {
+  type: "polar";
+  /** Polar coordinate data */
+  data: PolarData;
+  /** Polar-specific styling */
+  style?: PolarStyle;
 }
 
 // ============================================

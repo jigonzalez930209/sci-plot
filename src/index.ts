@@ -89,6 +89,11 @@ export type {
   ScatterSymbol,
   DeltaMeasurement,
   PeakMeasurement,
+  // Polar Charts
+  PolarMode,
+  PolarData,
+  PolarStyle,
+  PolarOptions,
 } from "./types";
 
 // ============================================

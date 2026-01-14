@@ -11,6 +11,8 @@ import {
   interleaveHeatmapData,
   getColormap,
   interleaveCandlestickData,
+  interleavePolarLineData,
+  interleavePolarFillData,
 } from "../../../renderer";
 
 export function updateSeriesBuffer(ctx: any, s: Series): void {
@@ -22,7 +24,7 @@ export function updateSeriesBuffer(ctx: any, s: Series): void {
 
   const d = s.getData();
   const seriesType = s.getType();
-  if (seriesType !== "heatmap" && (!d || d.x.length === 0)) return;
+  if (seriesType !== "heatmap" && seriesType !== "polar" && (!d || d.x.length === 0)) return;
   const seriesId = s.getId();
 
   if (seriesType === "band" || seriesType === "area") {
@@ -44,6 +46,8 @@ export function updateSeriesBuffer(ctx: any, s: Series): void {
       s.bullishCount = (bullish.length / 2);
       s.bearishCount = (bearish.length / 2);
     }
+  } else if (seriesType === "polar") {
+    updatePolarBuffer(ctx, s);
   } else {
     ctx.renderer.createBuffer(seriesId, interleaveData(d.x, d.y));
   }
@@ -53,6 +57,26 @@ export function updateSeriesBuffer(ctx: any, s: Series): void {
     ctx.renderer.createBuffer(`${seriesId}_step`, interleaveStepData(d.x, d.y, stepMode));
   }
   s.resetLastAppendCount();
+}
+
+function updatePolarBuffer(ctx: any, s: Series) {
+  const polarData = s.getPolarData();
+  if (!polarData || polarData.r.length === 0) return;
+  
+  const style = s.getStyle() as any;
+  const angleMode = style.angleMode || 'degrees';
+  const closePath = style.closePath !== false;
+  const fill = style.fill || false;
+  
+  if (fill) {
+    // Create filled triangles from origin
+    const fillData = interleavePolarFillData(polarData, angleMode, closePath);
+    ctx.renderer.createBuffer(s.getId(), fillData);
+  } else {
+    // Create line path
+    const lineData = interleavePolarLineData(polarData, angleMode, closePath);
+    ctx.renderer.createBuffer(s.getId(), lineData);
+  }
 }
 
 function updateHeatmapBuffer(ctx: any, s: Series) {

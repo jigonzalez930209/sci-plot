@@ -83,7 +83,15 @@ export function prepareSeriesData(
       }
 
       // Map area type to band for rendering (area fills to y=0)
-      const renderType = seriesType === "area" ? "band" : seriesType;
+      // Polar charts render as lines (or filled triangles if fill is enabled)
+      let renderType = seriesType;
+      if (seriesType === "area") {
+        renderType = "band";
+      } else if (seriesType === "polar") {
+        // Polar renders as line by default, or triangles if filled
+        const polarStyle = s.getStyle() as any;
+        renderType = polarStyle?.fill ? "band" : "line";
+      }
 
       // Base render data (only if buffer exists)
       let renderData: SeriesRenderData | null = null;
@@ -95,7 +103,7 @@ export function prepareSeriesData(
           count: s.getPointCount(),
           style: s.getStyle(),
           visible: s.isVisible(),
-          type: renderType,
+          type: renderType as any,
           yBounds,
         };
       }
@@ -106,6 +114,16 @@ export function prepareSeriesData(
           renderData.count = s.getPointCount() * 2;
         } else if (seriesType === "bar") {
           renderData.count = s.getPointCount() * 6;
+        } else if (seriesType === "polar") {
+          const polarStyle = s.getStyle() as any;
+          if (polarStyle?.fill) {
+            // Filled polar: triangles from origin
+            const closePath = polarStyle?.closePath !== false;
+            renderData.count = closePath ? s.getPointCount() * 3 : (s.getPointCount() - 1) * 3;
+          } else if (polarStyle?.closePath) {
+            // Line with closed path
+            renderData.count = s.getPointCount() + 1;
+          }
         }
 
         // Add step buffer for step types

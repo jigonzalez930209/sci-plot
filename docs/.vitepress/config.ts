@@ -105,6 +105,7 @@ export default defineConfig({
             { text: "Heatmaps", link: "/api/heatmap" },
             { text: "Candlestick", link: "/api/candlestick" },
             { text: "Error Bars", link: "/api/error-bars" },
+            { text: "Polar Charts", link: "/api/polar-charts" },
           ],
         },
         {
@@ -184,6 +185,7 @@ export default defineConfig({
             { text: "Candlestick", link: "/examples/candlestick" },
             { text: "Error Bars", link: "/examples/error-bars" },
             { text: "Scatter Symbols", link: "/examples/scatter-symbols" },
+            { text: "Polar Charts", link: "/examples/polar-charts" },
           ],
         },
         {

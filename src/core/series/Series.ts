@@ -11,6 +11,8 @@ import type {
   HeatmapOptions,
   HeatmapData,
   HeatmapStyle,
+  PolarOptions,
+  PolarData,
 } from "../../types";
 import { calculateSeriesBounds } from "./SeriesBounds";
 import { 
@@ -45,6 +47,8 @@ export class Series {
 
   private heatmapData?: HeatmapData;
   private heatmapStyle?: HeatmapStyle;
+  
+  private polarData?: PolarData;
 
   private lastAppendCount = 0;
   private cachedBounds: Bounds | null = null;
@@ -53,7 +57,7 @@ export class Series {
   private smoothedData: SeriesData | null = null;
   private smoothingNeedsUpdate = true;
 
-  constructor(options: SeriesOptions | HeatmapOptions) {
+  constructor(options: SeriesOptions | HeatmapOptions | PolarOptions) {
     this.id = options.id;
     this.name = options.name;
     this.type = options.type;
@@ -72,6 +76,15 @@ export class Series {
         zValues: ensureTypedArray(hOpts.data.zValues),
       };
       this.heatmapStyle = hOpts.style;
+    } else if (this.type === "polar") {
+      const pOpts = options as PolarOptions;
+      // Store polar data separately
+      this.polarData = {
+        r: ensureTypedArray(pOpts.data.r),
+        theta: ensureTypedArray(pOpts.data.theta),
+      };
+      // Also create empty x,y for compatibility
+      this.data = { x: new Float32Array(0), y: new Float32Array(0) };
     } else {
       const d = (options as SeriesOptions).data;
       this.data = {
@@ -108,8 +121,16 @@ export class Series {
   getStyle = () => this.style;
   getHeatmapData = () => this.heatmapData;
   getHeatmapStyle = () => this.heatmapStyle;
+  getPolarData = () => this.polarData;
   getCycle = () => this.cycle;
-  getPointCount = () => this.type === "heatmap" ? this.heatmapData!.xValues.length * this.heatmapData!.yValues.length : this.data.x.length;
+  getPointCount = () => {
+    if (this.type === "heatmap") {
+      return this.heatmapData!.xValues.length * this.heatmapData!.yValues.length;
+    } else if (this.type === "polar") {
+      return this.polarData ? this.polarData.r.length : 0;
+    }
+    return this.data.x.length;
+  };
   getLastAppendCount = () => this.lastAppendCount;
   resetLastAppendCount = () => { this.lastAppendCount = 0; };
   hasErrorData = () => !!(this.data.yError || this.data.yErrorPlus || this.data.yErrorMinus || this.data.xError || this.data.xErrorPlus || this.data.xErrorMinus);
@@ -128,9 +149,9 @@ export class Series {
   }
 
   getBounds(): Bounds | null {
-    if (this.data.x.length === 0 && this.type !== "heatmap") return null;
+    if (this.data.x.length === 0 && this.type !== "heatmap" && this.type !== "polar") return null;
     if (this.boundsNeedsUpdate || !this.cachedBounds) {
-      this.cachedBounds = calculateSeriesBounds(this.type, this.data, this.heatmapData);
+      this.cachedBounds = calculateSeriesBounds(this.type, this.data, this.heatmapData, this.polarData);
       this.boundsNeedsUpdate = false;
     }
     return this.cachedBounds;
