@@ -121,6 +121,9 @@ export { PluginLoading, type PluginLoadingConfig } from "./loading";
 export { PluginDataExport, type PluginDataExportConfig } from "./data-export";
 export { PluginContextMenu, type PluginContextMenuConfig } from "./context-menu";
 export { PluginAnomalyDetection, type PluginAnomalyDetectionConfig, type AnomalyDetectionResult, type AnomalyPoint, type AnomalyMethod } from "./anomaly-detection";
+export { PluginMLIntegration, type PluginMLIntegrationConfig, type MLIntegrationAPI, type MLModelAPI, type PredictionResult, type VisualizationConfig } from "./ml-integration";
+export { PluginPatternRecognition, type PluginPatternRecognitionConfig, type PatternRecognitionAPI, type PatternMatch, type PatternDetectionResult } from "./pattern-recognition";
+export { PluginRegression, type PluginRegressionConfig, type RegressionAPI, type RegressionResult, type RegressionData } from "./regression";
 
 // ============================================
 // Helper for creating typed plugins
