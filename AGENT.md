@@ -190,6 +190,29 @@ Iso Forest: score = isolation_depth(value, random_trees)
 
 ---
 
+## 🚀 FASE 2: Análisis Extendido (v1.8.x) - INICIADA 2026-01-14
+
+### Feature 1: Polar Grid Enhancement ✅ COMPLETADO
+
+**Objetivo**: Implementar grilla polar personalizada con divisiones configurables
+
+**Implementación**:
+- ✅ Agregado método `drawPolarGrid` en OverlayRenderer
+- ✅ Detección automática de series polares en ChartRenderer
+- ✅ Renderizado de círculos radiales concéntricos
+- ✅ Renderizado de líneas angulares (spokes)
+- ✅ Ocultación de ejes cartesianos cuando hay series polares
+- ✅ Controles de grilla habilitados en PolarChartDemo (angularDivisions, radialDivisions)
+
+**Archivos Modificados**:
+- `src/core/OverlayRenderer.ts` - Método `drawPolarGrid`
+- `src/core/chart/ChartRenderer.ts` - Detección polar y renderizado condicional
+- `docs/.vitepress/theme/demos/PolarChartDemo.vue` - Controles habilitados
+
+**Progreso**: 100% ✅ COMPLETO
+
+---
+
 ## 2026-01-12
 - Created `ENGINE_AI_GUIDE.md`: A comprehensive, single-file technical guide for AI agents to implement and integrate the SciChart Engine.
 - The guide covers architecture, data management, plugins (Analysis, Tools, Loading), theming, and interaction modes.

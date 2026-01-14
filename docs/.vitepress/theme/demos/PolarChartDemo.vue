@@ -246,7 +246,7 @@ onUnmounted(() => {
         </div>
       </div>
       
-      <!-- Grid controls commented out - pending Phase 2 implementation
+   
       <div class="control-section">
         <h4>🎛️ Grid</h4>
         <div class="slider-group">
@@ -275,7 +275,6 @@ onUnmounted(() => {
           </label>
         </div>
       </div>
-      -->
     </div>
   </div>
 </template>

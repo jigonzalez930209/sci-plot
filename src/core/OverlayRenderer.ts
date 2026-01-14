@@ -111,6 +111,80 @@ export class OverlayRenderer {
   }
 
   /**
+   * Draw polar grid (radial circles and angular spokes)
+   */
+  drawPolarGrid(
+    plotArea: PlotArea,
+    xScale: Scale,
+    yScale: Scale,
+    radialDivisions: number = 5,
+    angularDivisions: number = 12,
+    angleMode: 'degrees' | 'radians' = 'degrees'
+  ): void {
+    if (!this.theme.grid.visible) return;
+
+    const { ctx } = this;
+    const grid = this.theme.grid;
+    
+    // The center of a polar plot is ALWAYS (0,0) in data coordinates
+    const centerX = xScale.transform(0);
+    const centerY = yScale.transform(0);
+
+    // To fill the entire plot area, we find the distance to the furthest corner
+    const corners = [
+      { x: plotArea.x, y: plotArea.y },
+      { x: plotArea.x + plotArea.width, y: plotArea.y },
+      { x: plotArea.x, y: plotArea.y + plotArea.height },
+      { x: plotArea.x + plotArea.width, y: plotArea.y + plotArea.height }
+    ];
+
+    let maxPixelRadius = 0;
+    for (const corner of corners) {
+      const dist = Math.sqrt(Math.pow(corner.x - centerX, 2) + Math.pow(corner.y - centerY, 2));
+      maxPixelRadius = Math.max(maxPixelRadius, dist);
+    }
+
+    ctx.save();
+    
+    // Clip grid to plot area
+    ctx.beginPath();
+    ctx.rect(plotArea.x, plotArea.y, plotArea.width, plotArea.height);
+    ctx.clip();
+
+    ctx.strokeStyle = grid.majorColor;
+    ctx.lineWidth = grid.majorWidth;
+    ctx.setLineDash(grid.majorDash);
+
+    // Draw radial circles (concentric)
+    // We adjust radial divisions to look good with zoom
+    for (let i = 1; i <= radialDivisions; i++) {
+      const radiusPixels = (i / radialDivisions) * maxPixelRadius;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radiusPixels, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+
+    // Draw angular spokes (radial lines)
+    const angleStep = angleMode === 'degrees' 
+      ? (360 / angularDivisions) * (Math.PI / 180)
+      : (2 * Math.PI) / angularDivisions;
+
+    for (let i = 0; i < angularDivisions; i++) {
+      const angle = i * angleStep;
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(
+        centerX + maxPixelRadius * Math.cos(angle), 
+        centerY - maxPixelRadius * Math.sin(angle) // Subtract because Canvas Y is inverted
+      );
+      ctx.stroke();
+    }
+
+    ctx.restore();
+    ctx.setLineDash([]);
+  }
+
+  /**
    * Draw X axis with ticks and labels
    */
   drawXAxis(plotArea: PlotArea, xScale: Scale, options?: AxisOptions): void {

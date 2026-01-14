@@ -237,8 +237,50 @@ export function renderOverlay(
   }
 
   ctx.overlay.clear(rect.width, rect.height);
-  ctx.overlay.drawGrid(plotArea, ctx.xScale, primaryYScale);
-  ctx.overlay.drawXAxis(plotArea, ctx.xScale, ctx.xAxisOptions);
+  
+  // Detect if we have polar series
+  let hasPolarSeries = false;
+  let maxRadius = 0;
+  let polarAngleMode: 'degrees' | 'radians' = 'degrees';
+  let polarRadialDivisions = 5;
+  let polarAngularDivisions = 12;
+  
+  ctx.series.forEach((s) => {
+    if (s.getType() === 'polar' && s.isVisible()) {
+      hasPolarSeries = true;
+      const polarData = s.getPolarData();
+      if (polarData) {
+        // Find max radius
+        for (let i = 0; i < polarData.r.length; i++) {
+          maxRadius = Math.max(maxRadius, Math.abs(polarData.r[i]));
+        }
+        // Get polar options from style
+        const style = s.getStyle() as any;
+        if (style.angleMode) polarAngleMode = style.angleMode;
+        if (style.radialDivisions) polarRadialDivisions = style.radialDivisions;
+        if (style.angularDivisions) polarAngularDivisions = style.angularDivisions;
+      }
+    }
+  });
+  
+  // Draw appropriate grid
+  if (hasPolarSeries && maxRadius > 0) {
+    ctx.overlay.drawPolarGrid(
+      plotArea,
+      ctx.xScale,
+      primaryYScale,
+      polarRadialDivisions,
+      polarAngularDivisions,
+      polarAngleMode
+    );
+  } else {
+    ctx.overlay.drawGrid(plotArea, ctx.xScale, primaryYScale);
+  }
+  
+  // Only draw cartesian axes if not polar
+  if (!hasPolarSeries) {
+    ctx.overlay.drawXAxis(plotArea, ctx.xScale, ctx.xAxisOptions);
+  }
 
   // Group axes by position
   const leftAxes: string[] = [];
@@ -249,25 +291,28 @@ export function renderOverlay(
     else leftAxes.push(id);
   });
 
-  // Draw Left Axes (stacked outwards)
-  leftAxes.forEach((id, index) => {
-    const scale = ctx.yScales.get(id);
-    const opts = ctx.yAxisOptionsMap.get(id);
-    if (scale && opts) {
-      const offset = index * 65;
-      ctx.overlay.drawYAxis(plotArea, scale, opts, "left", offset);
-    }
-  });
+  // Only draw Y axes if not polar
+  if (!hasPolarSeries) {
+    // Draw Left Axes (stacked outwards)
+    leftAxes.forEach((id, index) => {
+      const scale = ctx.yScales.get(id);
+      const opts = ctx.yAxisOptionsMap.get(id);
+      if (scale && opts) {
+        const offset = index * 65;
+        ctx.overlay.drawYAxis(plotArea, scale, opts, "left", offset);
+      }
+    });
 
-  // Draw Right Axes (stacked outwards)
-  rightAxes.forEach((id, index) => {
-    const scale = ctx.yScales.get(id);
-    const opts = ctx.yAxisOptionsMap.get(id);
-    if (scale && opts) {
-      const offset = index * 65;
-      ctx.overlay.drawYAxis(plotArea, scale, opts, "right", offset);
-    }
-  });
+    // Draw Right Axes (stacked outwards)
+    rightAxes.forEach((id, index) => {
+      const scale = ctx.yScales.get(id);
+      const opts = ctx.yAxisOptionsMap.get(id);
+      if (scale && opts) {
+        const offset = index * 65;
+        ctx.overlay.drawYAxis(plotArea, scale, opts, "right", offset);
+      }
+    });
+  }
 
   ctx.overlay.drawPlotBorder(plotArea);
 
