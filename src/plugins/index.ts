@@ -120,6 +120,7 @@ export { PluginDebug, type PluginDebugConfig } from "./debug";
 export { PluginLoading, type PluginLoadingConfig } from "./loading";
 export { PluginDataExport, type PluginDataExportConfig } from "./data-export";
 export { PluginContextMenu, type PluginContextMenuConfig } from "./context-menu";
+export { PluginAnomalyDetection, type PluginAnomalyDetectionConfig, type AnomalyDetectionResult, type AnomalyPoint, type AnomalyMethod } from "./anomaly-detection";
 
 // ============================================
 // Helper for creating typed plugins

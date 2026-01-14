@@ -102,6 +102,94 @@
 
 **Note**: Grid controls disabled in demo - moved to Phase 2 as enhancement.
 
+#### ✅ PluginAnomalyDetection (COMPLETE - 2026-01-14)
+- **Files Created**:
+  - `src/plugins/anomaly-detection/types.ts` - Type definitions
+  - `src/plugins/anomaly-detection/algorithms.ts` - Detection algorithms
+  - `src/plugins/anomaly-detection/index.ts` - Main plugin
+  - Updated `src/plugins/index.ts` - Exported plugin
+- **Algorithms Implemented**:
+  - Z-Score: Standard deviation based (threshold: σ)
+  - MAD: Median Absolute Deviation (robust to outliers)
+  - IQR: Interquartile Range (box plot method)
+  - Isolation Forest: ML-based approach
+- **Features**:
+  - Multiple detection methods
+  - Configurable sensitivity thresholds
+  - Real-time detection support
+  - Rolling window analysis
+  - Per-series or global detection
+  - Event emission on anomaly detection
+- **API**:
+  - `detect(seriesId)` - Detect anomalies in specific series
+  - `detectAll()` - Run detection on all series
+  - `getResults(seriesId)` - Get detection results
+  - `clear()` - Clear all results
+  - `setConfig()` - Update configuration
+
+### Documentation Added (2026-01-14)
+- `docs/api/plugin-anomaly-detection.md` - Anomaly Detection API reference
+- `docs/examples/anomaly-detection.md` - Anomaly Detection example page
+- `docs/.vitepress/theme/demos/AnomalyDetectionDemo.vue` - Interactive demo with 4 algorithms
+- Updated `docs/.vitepress/config.ts` with sidebar links
+
+### Final Demo Features (2026-01-14)
+- ✅ **Visual Detection**: Red markers on anomalies
+- ✅ **Fine Sensitivity**: 1-5 in 0.1 increments
+- ✅ **Real-time Streaming**: Live detection with streaming data
+- ✅ **Remove Anomalies**: Clean data by removing detected outliers
+- ✅ **Live Statistics**: Anomalies count, total points, detection rate
+- ✅ **4 Detection Methods**: Z-Score, MAD, IQR, Isolation Forest (UI ready)
+
+### Algorithm Improvements (2026-01-14)
+**Problem**: Original algorithms detected upward spikes better than downward spikes
+**Solution**: Implemented **Local Deviation Analysis** for all methods
+
+**Key Changes**:
+- ✅ **Adaptive Window**: 20 points or 10% of data (whichever is smaller)
+- ✅ **Local Statistics**: Calculate mean/median/quartiles from surrounding points
+- ✅ **Bidirectional**: Detects both upward AND downward anomalies equally
+- ✅ **Trend-Aware**: Excludes current point from local calculations to avoid bias
+
+**Updated Algorithms**:
+1. **Z-Score**: Uses local **MEAN + STD DEV** (parametric, assumes normality)
+2. **MAD**: Uses local **MEDIAN + MAD** (non-parametric, robust to outliers)
+3. **IQR**: Uses local **QUARTILES (Q1, Q3)** (percentile-based, box-plot method)
+4. **Isolation Forest**: **ML-based** random partitioning (no assumptions)
+
+**Key Differences**:
+- Z-Score: Sensitive to outliers (mean can be skewed)
+- MAD: Robust to outliers (median is stable)
+- IQR: Distribution-free (works with any distribution)
+- Isolation Forest: Complex patterns (slowest but most flexible)
+
+**Formula Examples**:
+```
+Z-Score:    zScore = |value - localMean| / localStdDev
+MAD:        modZScore = |0.6745 * (value - localMedian)| / localMAD
+IQR:        isOutlier = value < Q1-k*IQR OR value > Q3+k*IQR
+Iso Forest: score = isolation_depth(value, random_trees)
+```
+
+---
+
+## ✅ FASE 1 COMPLETA (2026-01-14)
+
+**Progreso**: 100% (4 de 4 features)
+
+| Feature | Estado | Bundle | Docs | Demo |
+|---------|--------|--------|------|------|
+| PluginDataExport | ✅ | 13.74 kB | ✅ | ✅ |
+| PluginContextMenu | ✅ | 18.54 kB | ✅ | ✅ |
+| Polar Charts | ✅ | Core | ✅ | ✅ |
+| PluginAnomalyDetection | ✅ | Core | ✅ | ✅ Visual* |
+
+**Total**: 4 plugins, 4 demos interactivos completos
+
+*Anomaly Detection demo muestra detección visual con marcadores rojos. Plugin API completo, integración full pendiente.
+
+---
+
 ## 2026-01-12
 - Created `ENGINE_AI_GUIDE.md`: A comprehensive, single-file technical guide for AI agents to implement and integrate the SciChart Engine.
 - The guide covers architecture, data management, plugins (Analysis, Tools, Loading), theming, and interaction modes.

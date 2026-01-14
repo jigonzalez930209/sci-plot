@@ -163,6 +163,7 @@ export default defineConfig({
           items: [
             { text: "Data Export", link: "/api/plugin-data-export" },
             { text: "Context Menu", link: "/api/plugin-context-menu" },
+            { text: "Anomaly Detection", link: "/api/plugin-anomaly-detection" },
           ],
         },
       ],
@@ -247,6 +248,7 @@ export default defineConfig({
             { text: "Internationalization", link: "/examples/i18n" },
             { text: "Data Export", link: "/examples/data-export" },
             { text: "Context Menu", link: "/examples/context-menu" },
+            { text: "Anomaly Detection", link: "/examples/anomaly-detection" },
           ],
         },
       ],
