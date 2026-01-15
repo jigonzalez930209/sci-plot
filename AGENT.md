@@ -525,13 +525,39 @@ chart.ml.stats.correlation(x, y)   // Correlación de Pearson
 
 ---
 
-**Progreso Fase 2**: 100% ✅ COMPLETO
+### [2026-01-15] Finalización de Features v1.8.0 (Cat 1 & 2) ✅
 
-| Feature | Estado | Rendering | Demo | Docs |
-|---------|--------|-----------|------|------|
-| Error Bars | ✅ | WebGL + Canvas | ✅ | ✅ |
-| Box Plot | ✅ | WebGL | ✅ | ✅ |
-| Waterfall | ✅ | WebGL | ✅ | ✅ |
-| ML Refinement | ✅ | Overlay | ✅ | ✅ |
+Se han completado los pendientes de las Categorías 1 y 2 del Roadmap para cerrar la versión 1.8.0.
 
-**Total**: 4 nuevos tipos de visualización, 2 demos interactivas, documentación completa.
+#### 1. PluginDataTransform (#5)
+Implementación de un sistema de pipeline para transformaciones de datos encadenadas.
+- **Normalize**: Normalización a rangos personalizados.
+- **Smooth / Moving Average**: Suavizado de señales.
+- **Derivative / Integral**: Cálculo numérico de primera y segunda derivada, e integral acumulativa.
+- **Resample**: Remuestreo lineal para uniformidad de datos.
+- **Baseline Removal**: Eliminación de línea base lineal.
+
+#### 2. Gauge/Dial Charts (#9)
+Nuevo tipo de visualización de tablero para métricas críticas.
+- Renderizado en 2D Overlay para máxima calidad visual.
+- Soporte para rangos de colores (semáforos) y agujas personalizables.
+- Animación suave de valores.
+
+#### 3. Sankey/Flow Diagrams (#10)
+Visualización de flujos y balances.
+- Layout automático de nodos por capas.
+- Curvas de Bézier con grosor proporcional al flujo.
+- Gradientes y efectos de brillo premium.
+
+**Archivos Modificados/Creados**:
+- `src/plugins/data-transform/index.ts` - Implementación del plugin.
+- `src/renderer/GaugeRenderer.ts` - Renderizado de diales.
+- `src/renderer/SankeyRenderer.ts` - Renderizado de flujos.
+- `src/core/chart/ChartRenderer.ts` - Integración en el loop de overlay.
+- `src/core/series/Series.ts` - Soporte para nuevos tipos de datos.
+- `src/types.ts` - Definiciones de tipos para Gauge y Sankey.
+
+**Roadmap**: Marcados como **COMPLETADO**.
+- PluginDataTransform (#5)
+- Gauge/Dial Charts (#9)
+- Sankey/Flow Diagrams (#10)

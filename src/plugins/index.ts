@@ -126,6 +126,7 @@ export { PluginPatternRecognition, type PluginPatternRecognitionConfig, type Pat
 export { PluginRegression, type PluginRegressionConfig, type RegressionAPI, type RegressionResult, type RegressionData } from "./regression";
 export { PluginRadar, type PluginRadarConfig, type RadarAPI, type RadarSeriesData, type RadarPoint } from "./radar";
 export { PluginSnapshot, type PluginSnapshotConfig, type SnapshotExportAPI, type SnapshotExportOptions, type SnapshotResolution, type SnapshotFormat } from "./snapshot";
+export { PluginDataTransform, type PluginDataTransformConfig, type DataTransformAPI, type TransformOp, type TransformType } from "./data-transform";
 
 // ============================================
 // Helper for creating typed plugins

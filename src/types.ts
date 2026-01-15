@@ -101,7 +101,9 @@ export type SeriesType =
   | "polar"
   | "radar"
   | "boxplot"
-  | "waterfall";
+  | "waterfall"
+  | "gauge"
+  | "sankey";
 
 /** Step mode defines where the step occurs */
 export type StepMode = "before" | "after" | "center";
@@ -142,6 +144,13 @@ export interface SeriesData {
     values: number[];
   };
   /** Median values for BoxPlot */
+  /** Gauge data */
+  value?: number;
+  min?: number;
+  max?: number;
+  /** Sankey data */
+  nodes?: string[];
+  links?: { source: string | number; target: string | number; value: number }[];
   median?: Float32Array | Float64Array;
   /** Outlier values for BoxPlot [ [x, y], [x, y], ... ] or flattened [x0, y0, x1, y1, ...] per box?
    * For simplicity, let's use an array of arrays of numbers or similar.
@@ -254,6 +263,12 @@ export interface SeriesUpdateData {
   low?: Float32Array | Float64Array;
   /** New Close values (for candlesticks) */
   close?: Float32Array | Float64Array;
+  /** New value for Gauge charts */
+  value?: number;
+  /** New nodes for Sankey diagrams */
+  nodes?: any[];
+  /** New links for Sankey diagrams */
+  links?: any[];
   /** If true, append to existing data; if false, replace */
   append?: boolean;
 }
@@ -458,6 +473,93 @@ export interface RadarOptions extends Omit<SeriesOptions, "data" | "style"> {
   data: RadarData;
   /** Radar-specific styling */
   style?: RadarStyle;
+}
+
+// ============================================
+// Gauge Chart Types
+// ============================================
+
+export interface GaugeRange {
+  from: number;
+  to: number;
+  color: string;
+  label?: string;
+}
+
+export interface GaugeStyle {
+  /** Needle color (default: #333) */
+  needleColor?: string;
+  /** Needle width (default: 3) */
+  needleWidth?: number;
+  /** Ranges of colors (e.g., green for good, red for bad) */
+  ranges?: GaugeRange[];
+  /** Radius of the gauge (0-1, default: 0.8) */
+  radius?: number;
+  /** Start angle in degrees (default: 135) */
+  startAngle?: number;
+  /** End angle in degrees (default: 405) */
+  endAngle?: number;
+  /** Show value text in center (default: true) */
+  showValue?: boolean;
+  /** Value text color */
+  valueColor?: string;
+  /** Value font size */
+  valueSize?: number;
+  /** Label for the gauge */
+  label?: string;
+}
+
+export interface GaugeData {
+  value: number;
+  min: number;
+  max: number;
+}
+
+export interface GaugeOptions extends Omit<SeriesOptions, "data" | "style"> {
+  type: "gauge";
+  data: GaugeData;
+  style?: GaugeStyle;
+}
+
+// ============================================
+// Sankey Chart Types
+// ============================================
+
+export interface SankeyLink {
+  source: string | number;
+  target: string | number;
+  value: number;
+  color?: string;
+}
+
+export interface SankeyNode {
+  id: string | number;
+  name?: string;
+  color?: string;
+}
+
+export interface SankeyData {
+  nodes: SankeyNode[] | string[];
+  links: SankeyLink[];
+}
+
+export interface SankeyStyle {
+  /** Node width in pixels (default: 20) */
+  nodeWidth?: number;
+  /** Padding between nodes (default: 10) */
+  nodePadding?: number;
+  /** Color palette for nodes */
+  palette?: string[];
+  /** Link opacity (default: 0.2) */
+  linkOpacity?: number;
+  /** Show labels (default: true) */
+  showLabels?: boolean;
+}
+
+export interface SankeyOptions extends Omit<SeriesOptions, "data" | "style"> {
+  type: "sankey";
+  data: SankeyData;
+  style?: SankeyStyle;
 }
 
 // ============================================

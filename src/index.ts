@@ -577,6 +577,7 @@ export {
   PluginMLIntegration,
   PluginRadar,
   PluginSnapshot,
+  PluginDataTransform,
   BuiltinPlugins,
 } from "./plugins";
 
@@ -631,8 +632,10 @@ export type {
   PluginMLIntegrationConfig,
   PluginRadarConfig,
   PluginSnapshotConfig,
+  PluginDataTransformConfig,
   RegressionAPI,
   MLIntegrationAPI,
+  DataTransformAPI,
   RadarAPI,
   SnapshotExportAPI as SnapshotAPI,
   SnapshotExportOptions as SnapshotExportOptions,

@@ -15,6 +15,8 @@ import type { OverlayRenderer } from "../OverlayRenderer";
 import type { PlotArea, CursorState, ChartEventMap } from "../../types";
 import type { EventEmitter } from "../EventEmitter";
 import type { SelectionManager } from "../selection";
+import { drawGauge } from "../../renderer/GaugeRenderer";
+import { drawSankey } from "../../renderer/SankeyRenderer";
 
 export interface RenderContext {
   webglCanvas: HTMLCanvasElement;
@@ -330,30 +332,40 @@ export function renderOverlay(
 
   ctx.overlay.clear(rect.width, rect.height);
   
-  // Detect if we have polar series
+  // Detect special series types
   let hasPolarSeries = false;
+  let hasGaugeSeries = false;
+  let hasSankeySeries = false;
+  
   let maxRadius = 0;
   let polarAngleMode: 'degrees' | 'radians' = 'degrees';
   let polarRadialDivisions = 5;
   let polarAngularDivisions = 12;
   
   ctx.series.forEach((s) => {
-    if (s.getType() === 'polar' && s.isVisible()) {
+    const type = s.getType();
+    if (!s.isVisible()) return;
+
+    if (type === 'polar') {
       hasPolarSeries = true;
       const polarData = s.getPolarData();
       if (polarData) {
-        // Find max radius
         for (let i = 0; i < polarData.r.length; i++) {
           maxRadius = Math.max(maxRadius, Math.abs(polarData.r[i]));
         }
-        // Get polar options from style
         const style = s.getStyle() as any;
         if (style.angleMode) polarAngleMode = style.angleMode;
         if (style.radialDivisions) polarRadialDivisions = style.radialDivisions;
         if (style.angularDivisions) polarAngularDivisions = style.angularDivisions;
       }
+    } else if (type === 'gauge') {
+      hasGaugeSeries = true;
+    } else if (type === 'sankey') {
+      hasSankeySeries = true;
     }
   });
+
+  const isSpecialChart = hasPolarSeries || hasGaugeSeries || hasSankeySeries;
   
   // Draw appropriate grid
   if (hasPolarSeries && maxRadius > 0) {
@@ -365,12 +377,32 @@ export function renderOverlay(
       polarAngularDivisions,
       polarAngleMode
     );
-  } else {
+  } else if (!hasGaugeSeries && !hasSankeySeries) {
     ctx.overlay.drawGrid(plotArea, ctx.xScale, primaryYScale);
   }
   
-  // Only draw cartesian axes if not polar
-  if (!hasPolarSeries) {
+  // Draw series-specific overlay elements (Gauge, Sankey)
+  ctx.series.forEach((s) => {
+    if (!s.isVisible()) return;
+    const type = s.getType();
+    
+    if (type === 'gauge') {
+      const gData = s.getGaugeData();
+      const gStyle = s.getGaugeStyle();
+      if (gData && gStyle) {
+        drawGauge(ctx.overlayCtx, gData, gStyle, plotArea);
+      }
+    } else if (type === 'sankey') {
+      const sData = s.getSankeyData();
+      const sStyle = s.getSankeyStyle();
+      if (sData && sStyle) {
+        drawSankey(ctx.overlayCtx, sData, sStyle, plotArea);
+      }
+    }
+  });
+
+  // Only draw cartesian axes if not special
+  if (!isSpecialChart) {
     ctx.overlay.drawXAxis(plotArea, ctx.xScale, ctx.xAxisOptions);
   }
 
@@ -383,8 +415,8 @@ export function renderOverlay(
     else leftAxes.push(id);
   });
 
-  // Only draw Y axes if not polar
-  if (!hasPolarSeries) {
+  // Only draw Y axes if not special
+  if (!isSpecialChart) {
     // Draw Left Axes (stacked outwards)
     leftAxes.forEach((id, index) => {
       const scale = ctx.yScales.get(id);
