@@ -1,481 +1,175 @@
-/**
- * Native ML Integration Plugin - Main Implementation
- * 
- * Provides 100% native machine learning capabilities without third-party dependencies.
- * Includes neural networks, statistical models, and signal processing.
- * 
- * @example
- * ```typescript
-// Main plugin
-export { PluginMLIntegration, default } from './index';
-export { NativeLinearRegression } from './native-algorithms';chart-engine/plugins/ml-integration';
- * 
- * chart.use(PluginMLIntegration({
- *   defaultRuntime: 'native',
- *   models: {
- *     'linear-predictor': {
- *       id: 'linear-predictor',
- *       type: 'linear-regression',
- *       metadata: { algorithm: 'least-squares' }
- *     }
- *   }
- * }));
- * 
- * // Train model
- * const model = await chart.ml.getModel('linear-predictor');
- * if (model && model instanceof NativeLinearRegression) {
- *   model.train({
- *     x: [[1, 2, 3], [2, 4, 6], [3, 6, 9]],
- *     y: [2, 4, 6]
- *   });
- * }
- * 
- * // Predict
- * const result = await chart.ml.predict('linear-predictor', {
- *   data: [4, 8, 12]
- * });
- * ```
- * 
- * @packageDocumentation
- * @module plugins/ml-integration
- */
-
+import type { 
+  PluginMLIntegrationConfig, 
+  MLIntegrationAPI, 
+  MLModelAPI, 
+  PredictionResult, 
+  VisualizationConfig
+} from './types';
+import { 
+  createNativeModel,
+  nativeFFT, 
+  nativeMean, 
+  nativeStandardDeviation, 
+  nativeCorrelation 
+} from './native-algorithms';
 import type { 
   PluginManifest, 
   ChartPlugin, 
   PluginContext,
-  BeforeRenderEvent,
-  DataUpdateEvent
+  AfterRenderEvent
 } from '../types';
 
-import type {
-  PluginMLIntegrationConfig,
-  MLIntegrationAPI,
-  MLModelAPI,
-  ModelConfig,
-  PredictionInput,
-  PredictionResult,
-  VisualizationConfig,
-  ModelLoadedEvent,
-  PredictionEvent,
-  ModelErrorEvent
-} from './types';
-
-import { createNativeModel, nativeFFT, nativeMean, nativeStandardDeviation, nativeCorrelation } from './native-algorithms';
-
-
-// ============================================
-// Plugin Manifest
-// ============================================
-
-const manifestMLIntegration: PluginManifest = {
-  name: 'ml-integration',
-  version: '1.0.0',
-  description: 'Native machine learning integration without third-party dependencies',
-  author: 'SciChart Engine Team',
-  provides: ['ml', 'prediction', 'native-ml', 'signal-processing']
+const manifestML: PluginManifest = {
+  name: "scichart-ml-integration",
+  version: "1.0.0",
+  description: "Machine Learning Integration Bridge for SciChart Engine",
+  provides: ["ml", "prediction", "inference"],
+  tags: ["ml", "ai", "analysis"],
 };
-
-// ============================================
-// Default Configuration
-// ============================================
-
-const DEFAULT_CONFIG: Required<PluginMLIntegrationConfig> = {
-  defaultRuntime: 'native',
-  models: {},
-  enableGPU: false, // Native implementation doesn't use GPU
-  maxCacheSize: 5,
-  defaultVisualization: {
-    type: 'overlay',
-    colorScheme: '#ff6b6b',
-    opacity: 0.8,
-    lineStyle: 'dashed',
-    showConfidence: false,
-    confidenceLevel: 0.95
-  },
-  enableRealtime: false,
-  debounceTime: 100,
-  enableWarmup: true
-};
-
-// ============================================
-// Native ML Integration Plugin Implementation
-// ============================================
 
 export function PluginMLIntegration(
   userConfig: Partial<PluginMLIntegrationConfig> = {}
 ): ChartPlugin<PluginMLIntegrationConfig> {
-  const config = { ...DEFAULT_CONFIG, ...userConfig };
   let ctx: PluginContext | null = null;
-  
-  // Model management
-  const loadedModels = new Map<string, MLModelAPI>();
-  const modelConfigs = new Map<string, ModelConfig>();
-  
-  // Real-time prediction tracking
-  const realtimeSeries = new Map<string, string>(); // seriesId -> modelId
-  const debounceTimers = new Map<string, any>();
-  const predictionSeries = new Map<string, string>(); // seriesId -> predictionSeriesId
-  
-  // ============================================
-  // Model Management (Native Implementation)
-  // ============================================
-  
-  async function loadModel(modelConfig: ModelConfig): Promise<MLModelAPI> {
-    const { id } = modelConfig;
-    
-    // Check if model already loaded
-    if (loadedModels.has(id)) {
-      return loadedModels.get(id)!;
-    }
-    
-    // Check cache size limit
-    if (loadedModels.size >= config.maxCacheSize) {
-      const firstModelId = loadedModels.keys().next().value;
-      if (firstModelId) {
-        removeModel(firstModelId);
+  const models = new Map<string, MLModelAPI>();
+  const activeVisualizations = new Map<string, { result: PredictionResult, config: VisualizationConfig }>();
+
+  // Register initial models from config
+  if (userConfig.models) {
+    userConfig.models.forEach(m => models.set(m.id, createNativeModel(m)));
+  }
+
+  const api: MLIntegrationAPI & Record<string, unknown> = {
+    registerModel(model: MLModelAPI) {
+      if (!model.id) {
+        ctx?.log.error("Cannot register model without id");
+        return;
       }
-    }
-    
-    // Create native model
-    const model = createNativeModel(modelConfig);
-    if (!model) {
-      throw new Error(`Failed to create model: ${id}`);
-    }
-    
-    // Warm up if enabled
-    if (config.enableWarmup) {
-      await model.warmup();
-    }
-    
-    // Store model
-    loadedModels.set(id, model);
-    modelConfigs.set(id, modelConfig);
-    
-    if (ctx) {
-      ctx.log.info(`Native ML model loaded: ${id} (${modelConfig.type || 'unknown'})`);
-      ctx.events.emit('model:loaded', {
-        modelId: id,
-        config: modelConfig,
-        loadTime: 0
-      } as ModelLoadedEvent);
-    }
-    
-    return model;
-  }
-  
-  function getModel(modelId: string): MLModelAPI | undefined {
-    return loadedModels.get(modelId);
-  }
-  
-  function listModels(): string[] {
-    return Array.from(loadedModels.keys());
-  }
-  
-  function removeModel(modelId: string): boolean {
-    const model = loadedModels.get(modelId);
-    if (model) {
-      model.dispose();
-      loadedModels.delete(modelId);
-      modelConfigs.delete(modelId);
-      
-      // Clean up real-time predictions
-      for (const [seriesId, model] of realtimeSeries.entries()) {
-        if (model === modelId) {
-          disableRealtime(seriesId);
-        }
-      }
-      
-      ctx?.log.info(`Native ML model removed: ${modelId}`);
-      return true;
-    }
-    return false;
-  }
-  
-  async function predict(modelId: string, input: PredictionInput): Promise<PredictionResult> {
-    const model = getModel(modelId);
-    if (!model) {
-      throw new Error(`Model not found: ${modelId}`);
-    }
-    
-    try {
-      const result = await model.predict(input);
-      
-      if (ctx) {
-        ctx.events.emit('prediction:complete', {
-          modelId,
-          input,
-          result
-        } as PredictionEvent);
-      }
-      
+      models.set(model.id, model);
+      ctx?.log.info(`Model registered: ${model.name || 'Unnamed'} (${model.id})`);
+    },
+
+    async runInference(modelId: string, seriesId: string) {
+      const model = models.get(modelId);
+      if (!model) throw new Error(`Model not found: ${modelId}`);
+
+      const seriesData = ctx?.data.getSeriesData(seriesId);
+      if (!seriesData) throw new Error(`Series not found: ${seriesId}`);
+
+      // Convert to Float32Array for model compatibility
+      const data = new Float32Array(seriesData.y);
+
+      const result = await model.predict({ data });
+      // Attach X values for visualization
+      result.xValues = seriesData.x;
       return result;
-    } catch (error) {
-      if (ctx) {
-        ctx.log.error(`Native ML prediction failed: ${error}`);
-        ctx.events.emit('model:error', {
-          modelId,
-          error: error as Error,
-          context: 'predict'
-        } as ModelErrorEvent);
-      }
-      throw error;
-    }
-  }
-  
-  // ============================================
-  // Visualization (Native Implementation)
-  // ============================================
-  
-  function visualizePredictions(
-    modelId: string, 
-    seriesId: string, 
-    vizConfig?: Partial<VisualizationConfig>
-  ): void {
-    const model = getModel(modelId);
-    if (!model) {
-      throw new Error(`Model not found: ${modelId}`);
-    }
-    
-    const chart = ctx?.chart;
-    if (!chart) {
-      throw new Error('Chart not available');
-    }
-    
-    const series = chart.getSeries(seriesId);
-    if (!series) {
-      throw new Error(`Series not found: ${seriesId}`);
-    }
-    
-    const vizSettings = { ...config.defaultVisualization, ...vizConfig };
-    
-    // Create prediction series
-    const predictionSeriesId = `${seriesId}_predictions_${modelId}`;
-    
-    // Remove existing prediction series
-    if (chart.getSeries(predictionSeriesId)) {
-      chart.removeSeries(predictionSeriesId);
-    }
-    
-    // Get series data
-    const seriesData = series.getData();
-    if (!seriesData || seriesData.x.length === 0) {
-      return;
-    }
-    
-    // Run prediction
-    predict(modelId, {
-      data: new Float32Array(seriesData.y),
-      preprocessing: {
-        normalize: true,
-        windowSize: 100
-      }
-    }).then(result => {
-      if (!ctx?.chart) return;
-      // Create prediction series
-      ctx.chart.addSeries({
-        id: predictionSeriesId,
-        type: 'line',
-        data: {
-          x: new Float32Array(seriesData.x.slice(-result.output.length)),
-          y: new Float32Array(result.output)
-        },
-        style: {
-          color: vizSettings.colorScheme || '#ff6b6b',
-          width: 2,
-          opacity: vizSettings.opacity || 0.8
-        }
+    },
+
+    visualizeResults(result: PredictionResult, config: VisualizationConfig = {}) {
+      const vizId = `ml-viz-${Math.random().toString(36).substr(2, 9)}`;
+      activeVisualizations.set(vizId, { 
+        result, 
+        config: { ...userConfig.defaultVisualization, ...config } 
       });
-      
-      predictionSeries.set(seriesId, predictionSeriesId);
-    }).catch(error => {
-      ctx?.log.error(`Native ML prediction visualization failed: ${error}`);
+      ctx?.requestRender();
+      return vizId;
+    },
+
+    clearResults(visualizationId?: string) {
+      if (visualizationId) {
+        activeVisualizations.delete(visualizationId);
+      } else {
+        activeVisualizations.clear();
+      }
+      ctx?.requestRender();
+    },
+
+    stats: {
+      fft: nativeFFT,
+      mean: nativeMean,
+      standardDeviation: nativeStandardDeviation,
+      correlation: nativeCorrelation
+    }
+  };
+
+  function drawMLVisualizations(pCtx: PluginContext) {
+    const { render, coords } = pCtx;
+    const { ctx2d } = render;
+    if (!ctx2d) return;
+
+    activeVisualizations.forEach((viz) => {
+      const { result, config } = viz;
+      const { output, xValues, confidence } = result;
+      if (!xValues) return;
+
+      const n = Math.min(xValues.length, output.length);
+
+      ctx2d.save();
+
+      // 1. Draw Confidence Interval (as filled area)
+      if (config.showConfidenceInterval && confidence && confidence.length === n) {
+        ctx2d.beginPath();
+        const opacity = config.intervalOpacity ?? 0.2;
+        ctx2d.fillStyle = (config.lineStyle?.color || '#3b82f6') + Math.floor(opacity * 255).toString(16).padStart(2, '0');
+        
+        // Forward: upper bound
+        for (let i = 0; i < n; i++) {
+          const px = coords.dataToPixelX(xValues[i]);
+          const py = coords.dataToPixelY(output[i] + confidence[i]);
+          if (i === 0) ctx2d.moveTo(px, py);
+          else ctx2d.lineTo(px, py);
+        }
+        
+        // Backward: lower bound
+        for (let i = n - 1; i >= 0; i--) {
+          const px = coords.dataToPixelX(xValues[i]);
+          const py = coords.dataToPixelY(output[i] - confidence[i]);
+          ctx2d.lineTo(px, py);
+        }
+        
+        ctx2d.closePath();
+        ctx2d.fill();
+      }
+
+      // 2. Draw Prediction Line
+      ctx2d.beginPath();
+      ctx2d.strokeStyle = config.lineStyle?.color || '#3b82f6';
+      ctx2d.lineWidth = config.lineStyle?.width || 2;
+      if (config.lineStyle?.dash) ctx2d.setLineDash(config.lineStyle.dash);
+
+      for (let i = 0; i < n; i++) {
+        const px = coords.dataToPixelX(xValues[i]);
+        const py = coords.dataToPixelY(output[i]);
+        if (i === 0) ctx2d.moveTo(px, py);
+        else ctx2d.lineTo(px, py);
+      }
+      ctx2d.stroke();
+
+      ctx2d.restore();
     });
   }
-  
-  // ============================================
-  // Real-time Predictions (Native Implementation)
-  // ============================================
-  
-  function enableRealtime(
-    seriesId: string, 
-    modelId: string, 
-    vizConfig?: Partial<VisualizationConfig>
-  ): void {
-    const model = getModel(modelId);
-    if (!model) {
-      throw new Error(`Model not found: ${modelId}`);
-    }
-    
-    realtimeSeries.set(seriesId, modelId);
-    
-    // Initial prediction
-    visualizePredictions(modelId, seriesId, vizConfig);
-    
-    ctx?.log.info(`Native real-time ML predictions enabled for series: ${seriesId} -> ${modelId}`);
-  }
-  
-  function disableRealtime(seriesId: string): void {
-    realtimeSeries.delete(seriesId);
-    
-    // Clear debounce timer
-    const timer = debounceTimers.get(seriesId);
-    if (timer) {
-      clearTimeout(timer);
-      debounceTimers.delete(seriesId);
-    }
-    
-    // Remove prediction series
-    const predictionSeriesId = predictionSeries.get(seriesId);
-    if (predictionSeriesId) {
-      const chart = ctx?.chart;
-      if (chart && chart.getSeries(predictionSeriesId)) {
-        chart.removeSeries(predictionSeriesId);
-      }
-      predictionSeries.delete(seriesId);
-    }
-    
-    ctx?.log.info(`Native real-time ML predictions disabled for series: ${seriesId}`);
-  }
-  
-  // ============================================
-  // Native Statistical Functions API
-  // ============================================
-  
-  const nativeStatsAPI = {
-    fft: nativeFFT,
-    mean: nativeMean,
-    stdDev: nativeStandardDeviation,
-    correlation: nativeCorrelation
-  };
-  
-  // ============================================
-  // Plugin API
-  // ============================================
-  
-  const api: MLIntegrationAPI & Record<string, unknown> = {
-    loadModel,
-    getModel,
-    listModels,
-    removeModel,
-    predict,
-    visualizePredictions,
-    enableRealtime,
-    disableRealtime,
-    updateConfig: (newConfig: Partial<PluginMLIntegrationConfig>) => {
-      Object.assign(config, newConfig);
-    },
-    getConfig: () => ({ ...config }),
-    // Expose native statistical functions
-    stats: nativeStatsAPI
-  };
-  
-  // ============================================
-  // Event Handlers
-  // ============================================
-  
-  function handleDataUpdate(_context: PluginContext, event: DataUpdateEvent): void {
-    if (!config.enableRealtime) return;
-    
-    const { seriesId } = event;
-    const modelId = realtimeSeries.get(seriesId);
-    
-    if (modelId) {
-      // Debounce predictions
-      const timer = debounceTimers.get(seriesId);
-      if (timer) {
-        clearTimeout(timer);
-      }
-      
-      const newTimer = setTimeout(() => {
-        visualizePredictions(modelId, seriesId);
-      }, config.debounceTime);
-      
-      debounceTimers.set(seriesId, newTimer);
-    }
-  }
-  
-  // ============================================
-  // Plugin Definition
-  // ============================================
-  
+
   return {
-    manifest: manifestMLIntegration,
-    
-    onInit(context: PluginContext) {
-      ctx = context;
-      
-      // Load pre-configured models
-      if (config.models) {
-        const modelEntries = Object.entries(config.models);
-        for (const [id, modelConfig] of modelEntries) {
-          loadModel({ ...modelConfig, id }).catch(error => {
-            if (ctx) {
-              ctx.log.error(`Failed to load native ML model ${id}: ${error}`);
-            }
-          });
-        }
-      }
-      
-      if (ctx) {
-        ctx.log.info('Native ML Integration plugin initialized');
-      }
+    manifest: manifestML,
+
+    onInit(c: PluginContext) {
+      ctx = c;
     },
-    
-    onConfigChange(_context: PluginContext, newConfig: Partial<PluginMLIntegrationConfig>) {
-      Object.assign(config, newConfig);
+
+    onRenderOverlay(pCtx: PluginContext, _event: AfterRenderEvent) {
+      drawMLVisualizations(pCtx);
     },
-    
-    onBeforeRender(_context: PluginContext, _event: BeforeRenderEvent) {
-      // Handle pre-render tasks if needed
-    },
-    
-    onDataUpdate: handleDataUpdate,
-    
-    onDestroy(_context: PluginContext) {
-      // Clean up all models
-      for (const model of loadedModels.values()) {
-        model.dispose();
-      }
-      loadedModels.clear();
-      modelConfigs.clear();
-      
-      // Clear timers
-      for (const timer of debounceTimers.values()) {
-        clearTimeout(timer);
-      }
-      debounceTimers.clear();
-      
-      realtimeSeries.clear();
-      predictionSeries.clear();
-    },
-    
+
     api
   };
 }
 
 export default PluginMLIntegration;
 
-// Re-export types for convenience
-export type {
-  MLRuntime,
-  ModelConfig,
-  PredictionInput,
-  PredictionResult,
-  VisualizationConfig,
-  PluginMLIntegrationConfig,
-  ModelLoadedEvent,
-  PredictionEvent,
-  ModelErrorEvent,
-  MLModelAPI,
-  MLIntegrationAPI
+export type { 
+  PluginMLIntegrationConfig, 
+  MLIntegrationAPI, 
+  MLModelAPI, 
+  PredictionResult, 
+  VisualizationConfig 
 } from './types';
-
-// Re-export native algorithms
-export { 
-  createNativeModel,
-  nativeFFT,
-  nativeMean,
-  nativeStandardDeviation,
-  nativeCorrelation
-} from './native-algorithms';

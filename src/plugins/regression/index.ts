@@ -122,6 +122,9 @@ export function PluginRegression(
     methodConfig: any = {}
   ): Promise<RegressionResult> {
     try {
+      // Clear previous visualization before fitting new model
+      api.hideVisualization(seriesId);
+      
       let result: RegressionResult;
       
       switch (method) {
@@ -160,11 +163,8 @@ export function PluginRegression(
           throw new Error(`Unsupported regression method: ${method}`);
       }
       
-      // Store result
-      if (!regressionResults.has(seriesId)) {
-        regressionResults.set(seriesId, []);
-      }
-      regressionResults.get(seriesId)!.push(result);
+      // Clear and store new result (replace, don't accumulate)
+      regressionResults.set(seriesId, [result]);
       
       // Emit event
       if (ctx) {
@@ -526,17 +526,21 @@ export function PluginRegression(
       const chart = ctx?.chart;
       if (!chart) return;
       
-      const results = regressionResults.get(seriesId) || [];
+      // List all possible regression methods to ensure cleanup
+      const allMethods: RegressionMethod[] = [
+        'linear', 'polynomial', 'exponential', 'gaussian', 
+        'logarithmic', 'power', 'lorentzian', 'sigmoid', 'custom'
+      ];
       
-      for (const result of results) {
+      for (const method of allMethods) {
         // Remove fit series
-        const fitSeriesId = `${seriesId}_fit_${result.method}`;
+        const fitSeriesId = `${seriesId}_fit_${method}`;
         if (chart.getSeries(fitSeriesId)) {
           chart.removeSeries(fitSeriesId);
         }
         
         // Remove equation annotation
-        const annotationId = `${seriesId}_equation_${result.method}`;
+        const annotationId = `${seriesId}_equation_${method}`;
         if (chart.getAnnotation(annotationId)) {
           chart.removeAnnotation(annotationId);
         }

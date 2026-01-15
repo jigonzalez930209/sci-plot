@@ -224,6 +224,22 @@ export class ChartImpl implements Chart {
     return this.getPluginAPI<any>("scichart-tools")?.getPeakTool() ?? null;
   }
 
+  get regression(): any {
+    return this.getPluginAPI<any>("regression");
+  }
+
+  get radar(): any {
+    return this.getPluginAPI<any>("scichart-radar");
+  }
+
+  get ml(): any {
+    return this.getPluginAPI<any>("scichart-ml-integration");
+  }
+
+  get snapshot(): any {
+    return this.getPluginAPI<any>("scichart-snapshot");
+  }
+
   constructor(options: ChartOptions) {
     this.initialOptions = options;
     this.container = options.container;
@@ -964,6 +980,13 @@ export class ChartImpl implements Chart {
     this.requestOverlayRender();
   }
 
+  /**
+   * Get a plugin API by name
+   */
+  public getPlugin<T = any>(name: string): T | null {
+    return this.getPluginAPI<T>(name);
+  }
+
   private getPluginAPI<T>(name: string): T | null {
     const plugin = this.pluginManager.get(name) as any;
     return plugin ? plugin.api : null;
@@ -1063,6 +1086,42 @@ export class ChartImpl implements Chart {
         newScale.setDomain(oldScale.domain[0], oldScale.domain[1]);
       }
       this.yScales.set(id, newScale);
+    }
+
+    this.requestRender();
+  }
+
+  /**
+   * Get current device pixel ratio
+   */
+  getDPR(): number {
+    return this.dpr;
+  }
+
+  /**
+   * Set device pixel ratio and re-render
+   */
+  setDPR(dpr: number): void {
+    this.dpr = dpr;
+    this.renderer.setDPR(dpr);
+    this.overlay.setTheme(this.theme); // Force refresh dpr in overlay if needed
+    // In our OverlayRenderer, dpr is often used in draw calls
+    this.resize();
+    this.requestRender();
+  }
+
+  /**
+   * Update X axis configuration
+   */
+  updateXAxis(options: Partial<AxisOptions>): void {
+    this.xAxisOptions = { ...this.xAxisOptions, ...options };
+
+    // Update scale if scale type changed
+    if (options.scale && options.scale !== this.xAxisOptions.scale) {
+      const newScale =
+        options.scale === "log" ? new LogScale() : new LinearScale();
+      newScale.setDomain(this.xScale.domain[0], this.xScale.domain[1]);
+      this.xScale = newScale;
     }
 
     this.requestRender();

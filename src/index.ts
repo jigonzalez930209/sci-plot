@@ -246,6 +246,7 @@ export {
   gaussianSmooth,
   savitzkyGolay,
   medianFilter,
+  singleFrequencyFilter,
   // Statistics
   crossCorrelation,
   autoCorrelation,
@@ -263,6 +264,7 @@ export {
   type PowerSpectrumResult,
   type FilterOptions,
   type ButterworthOptions,
+  type SingleFrequencyFilterOptions,
 } from "./plugins/analysis";
 
 // ============================================
@@ -571,6 +573,10 @@ export {
   PluginAnalysis,
   PluginAnnotations,
   PluginLoading,
+  PluginRegression,
+  PluginMLIntegration,
+  PluginRadar,
+  PluginSnapshot,
   BuiltinPlugins,
 } from "./plugins";
 
@@ -621,5 +627,16 @@ export type {
   PluginAnalysisConfig,
   PluginAnnotationsConfig,
   PluginLoadingConfig,
+  PluginRegressionConfig,
+  PluginMLIntegrationConfig,
+  PluginRadarConfig,
+  PluginSnapshotConfig,
+  RegressionAPI,
+  MLIntegrationAPI,
+  RadarAPI,
+  SnapshotExportAPI as SnapshotAPI,
+  SnapshotExportOptions as SnapshotExportOptions,
+  SnapshotResolution,
+  SnapshotFormat
 } from "./plugins";
 

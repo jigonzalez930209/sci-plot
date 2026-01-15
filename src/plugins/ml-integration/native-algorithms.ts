@@ -46,10 +46,14 @@ export class SimpleNeuralNetwork implements MLModelAPI {
     };
   }
 
+  get id(): string { return this.config.id; }
+  get name(): string { return this.config.name; }
+  get type(): string { return this.config.type; }
+
   async predict(input: PredictionInput): Promise<PredictionResult> {
     const startTime = performance.now();
     
-    const inputData = Array.from(input.data);
+    const inputData = Array.from(input.data as number[]);
     const outputData = this.forwardPass(inputData);
     
     const processingTime = performance.now() - startTime;
@@ -137,14 +141,18 @@ export class NativeLinearRegression implements MLModelAPI {
     this.config = config;
   }
 
+  get id(): string { return this.config.id; }
+  get name(): string { return this.config.name; }
+  get type(): string { return this.config.type; }
+
   async predict(input: PredictionInput): Promise<PredictionResult> {
     const startTime = performance.now();
     
     const inputData = Array.from(input.data);
     const predictions = inputData.map(x => {
       let result = this.intercept;
-      for (let i = 0; i < this.coefficients.length && i < x; i++) {
-        result += this.coefficients[i] * x;
+      for (let i = 0; i < this.coefficients.length && i < (x as number); i++) {
+        result += this.coefficients[i] * (x as number);
       }
       return result;
     });
@@ -257,10 +265,14 @@ export class NativeSignalProcessor implements MLModelAPI {
     this.sampleRate = config.metadata?.sampleRate || 44100;
   }
 
+  get id(): string { return this.config.id; }
+  get name(): string { return this.config.name; }
+  get type(): string { return this.config.type; }
+
   async predict(input: PredictionInput): Promise<PredictionResult> {
     const startTime = performance.now();
     
-    const inputData = Array.from(input.data);
+    const inputData = Array.from(input.data as number[]);
     const filteredData = this.applyFilter(inputData);
     
     const processingTime = performance.now() - startTime;

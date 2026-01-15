@@ -22,6 +22,7 @@ import {
     formatWithPrefix, generateCycleColors 
 } from "./utils";
 import { sma, ema, rsi } from "./indicators";
+import { singleFrequencyFilter } from "./filters";
 
 // ============================================
 // Core Exports (Utilities)
@@ -110,12 +111,14 @@ export {
   gaussianSmooth,
   savitzkyGolay,
   medianFilter,
+  singleFrequencyFilter,
 } from './filters';
 
 export type {
   FilterType,
   FilterOptions,
   ButterworthOptions,
+  SingleFrequencyFilterOptions,
 } from './filters';
 
 export {
@@ -221,6 +224,7 @@ export function PluginAnalysis(_config: PluginAnalysisConfig = {}): ChartPlugin<
             movingAverage,
             subtractBaseline,
             downsampleLTTB,
+            singleFrequencyFilter,
             
             // Fitting
             fitData,

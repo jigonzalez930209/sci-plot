@@ -71,8 +71,8 @@ export function prepareSeriesData(
     const buf = ctx.renderer.getBuffer(s.getId());
     const seriesType = s.getType();
 
-    // Candlesticks use sub-buffers, so main buffer might be missing
-    if (buf || seriesType === "candlestick") {
+    // Candlesticks, boxplots and waterfall use sub-buffers, so main buffer might be missing
+    if (buf || seriesType === "candlestick" || seriesType === "boxplot" || seriesType === "waterfall") {
       // Determine Y-bounds for this series
       const axisId = s.getYAxisId() || ctx.primaryYAxisId;
       const scale = ctx.yScales.get(axisId);
@@ -140,6 +140,98 @@ export function prepareSeriesData(
               renderData.stepCount = pointCount * 2 - 1;
             }
           }
+        }
+        
+        // Handle Boxplot (extract both buffers)
+        if (seriesType === "boxplot") {
+          const linesBuf = ctx.renderer.getBuffer(`${s.getId()}_box_lines`);
+          const facesBuf = ctx.renderer.getBuffer(`${s.getId()}_box_faces`);
+          if (linesBuf && facesBuf) {
+            renderData.boxLinesBuffer = linesBuf;
+            renderData.boxLinesCount = s.getPointCount() * 10;
+            renderData.boxBuffer = facesBuf;
+            renderData.boxCount = s.getPointCount() * 6;
+          }
+        }
+      }
+      
+      // For boxplot without main buffer, create renderData with sub-buffers
+      if (seriesType === "boxplot" && !renderData) {
+        const linesBuf = ctx.renderer.getBuffer(`${s.getId()}_box_lines`);
+        const facesBuf = ctx.renderer.getBuffer(`${s.getId()}_box_faces`);
+        if (linesBuf && facesBuf) {
+          const axisId = s.getYAxisId() || ctx.primaryYAxisId;
+          const scale = ctx.yScales.get(axisId);
+          let yBounds: { min: number; max: number } | undefined;
+          if (scale) {
+            yBounds = { min: scale.domain[0], max: scale.domain[1] };
+          }
+          
+          renderData = {
+            id: s.getId(),
+            buffer: linesBuf, // Use lines buffer as main buffer for reference
+            count: 0, // No main buffer rendering
+            style: s.getStyle(),
+            visible: s.isVisible(),
+            type: "boxplot" as any,
+            yBounds,
+            boxLinesBuffer: linesBuf,
+            boxLinesCount: s.getPointCount() * 10,
+            boxBuffer: facesBuf,
+            boxCount: s.getPointCount() * 6,
+          };
+        }
+      }
+      
+      // For waterfall without main buffer, create renderData with sub-buffers
+      if (seriesType === "waterfall" && !renderData) {
+        const positiveBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_positive`);
+        const negativeBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_negative`);
+        const subtotalBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_subtotal`);
+        const connectorBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_connectors`);
+        
+        if (positiveBuf || negativeBuf || subtotalBuf) {
+          const axisId = s.getYAxisId() || ctx.primaryYAxisId;
+          const scale = ctx.yScales.get(axisId);
+          let yBounds: { min: number; max: number } | undefined;
+          if (scale) {
+            yBounds = { min: scale.domain[0], max: scale.domain[1] };
+          }
+          
+          const wfCounts = s.waterfallCounts || { positive: 0, negative: 0, subtotal: 0, connectors: 0 };
+          
+          renderData = {
+            id: s.getId(),
+            buffer: positiveBuf || negativeBuf || subtotalBuf!, // Use any available buffer as reference
+            count: 0, // No main buffer rendering
+            style: s.getStyle(),
+            visible: s.isVisible(),
+            type: "waterfall" as any,
+            yBounds,
+            wfPositiveBuffer: positiveBuf,
+            wfPositiveCount: wfCounts.positive,
+            wfNegativeBuffer: negativeBuf,
+            wfNegativeCount: wfCounts.negative,
+            wfSubtotalBuffer: subtotalBuf,
+            wfSubtotalCount: wfCounts.subtotal,
+            wfConnectorBuffer: connectorBuf,
+            wfConnectorCount: wfCounts.connectors,
+          };
+        }
+      }
+
+      // Add error buffer if present (for any series type with renderData)
+      if (renderData) {
+        const errBuf = ctx.renderer.getBuffer(`${s.getId()}_errors`);
+        if (errBuf) {
+          renderData.errorBuffer = errBuf;
+          // Count depends on how many segments were interleaved
+          // Each segment is 2 points. interleaveErrorData handles this.
+          const d = s.getData();
+          let segmentsPerPoint = 0;
+          if (d.yError || d.yErrorMinus || d.yErrorPlus) segmentsPerPoint++;
+          if (d.xError || d.xErrorMinus || d.xErrorPlus) segmentsPerPoint++;
+          renderData.errorCount = s.getPointCount() * segmentsPerPoint * 2;
         }
 
         if (seriesType === "heatmap") {

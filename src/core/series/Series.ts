@@ -44,6 +44,12 @@ export class Series {
 
   public bullishCount = 0;
   public bearishCount = 0;
+  public waterfallCounts?: {
+    positive: number;
+    negative: number;
+    subtotal: number;
+    connectors: number;
+  };
 
   private heatmapData?: HeatmapData;
   private heatmapStyle?: HeatmapStyle;
@@ -101,6 +107,7 @@ export class Series {
         high: d?.high ? ensureTypedArray(d.high) : undefined,
         low: d?.low ? ensureTypedArray(d.low) : undefined,
         close: d?.close ? ensureTypedArray(d.close) : undefined,
+        median: d?.median ? ensureTypedArray(d.median) : undefined,
       };
     }
     this.style = { ...DEFAULT_STYLE, ...options.style };
@@ -170,6 +177,7 @@ export class Series {
         if (update.high) this.data.high = this.data.high ? appendTypedArray(this.data.high, ensureTypedArray(update.high)) : ensureTypedArray(update.high);
         if (update.low) this.data.low = this.data.low ? appendTypedArray(this.data.low, ensureTypedArray(update.low)) : ensureTypedArray(update.low);
         if (update.close) this.data.close = this.data.close ? appendTypedArray(this.data.close, ensureTypedArray(update.close)) : ensureTypedArray(update.close);
+        if ((update as any).median) this.data.median = this.data.median ? appendTypedArray(this.data.median, ensureTypedArray((update as any).median)) : ensureTypedArray((update as any).median);
         
         this.lastAppendCount += newX.length;
         if (this.maxPoints && this.data.x.length > this.maxPoints) {
@@ -192,6 +200,7 @@ export class Series {
       if (update.high) this.data.high = ensureTypedArray(update.high);
       if (update.low) this.data.low = ensureTypedArray(update.low);
       if (update.close) this.data.close = ensureTypedArray(update.close);
+      if ((update as any).median) this.data.median = ensureTypedArray((update as any).median);
       this.lastAppendCount = 0;
     }
     this.boundsNeedsUpdate = true;

@@ -128,6 +128,13 @@ const filtered = butterworth(data, {
   sampleRate: 1000,
   order: 4
 });
+
+// Single Frequency Notch Filter (Remove specific interference like 50Hz/60Hz)
+const cleaned = singleFrequencyFilter(data, {
+  frequency: 50,
+  sampleRate: 1000,
+  bandwidth: 2 // 2Hz width
+});
 ```
 
 ### Smoothing Filters

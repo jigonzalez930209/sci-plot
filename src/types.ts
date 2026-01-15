@@ -99,7 +99,9 @@ export type SeriesType =
   | "heatmap"
   | "candlestick"
   | "polar"
-  | "radar";
+  | "radar"
+  | "boxplot"
+  | "waterfall";
 
 /** Step mode defines where the step occurs */
 export type StepMode = "before" | "after" | "center";
@@ -139,6 +141,12 @@ export interface SeriesData {
     axes: string[];
     values: number[];
   };
+  /** Median values for BoxPlot */
+  median?: Float32Array | Float64Array;
+  /** Outlier values for BoxPlot [ [x, y], [x, y], ... ] or flattened [x0, y0, x1, y1, ...] per box?
+   * For simplicity, let's use an array of arrays of numbers or similar.
+   */
+  outliers?: number[][];
 }
 
 /** Error bar styling options */

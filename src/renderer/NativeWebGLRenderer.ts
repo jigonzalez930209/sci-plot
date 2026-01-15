@@ -18,6 +18,9 @@ export {
   interleaveBandData,
   interleaveData,
   interleaveStepData,
+  interleaveErrorData,
+  interleaveBoxPlotData,
+  interleaveWaterfallData,
   parseColor,
   brightenColor,
 } from "./native/utils";

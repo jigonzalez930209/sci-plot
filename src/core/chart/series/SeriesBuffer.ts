@@ -13,6 +13,9 @@ import {
   interleaveCandlestickData,
   interleavePolarLineData,
   interleavePolarFillData,
+  interleaveErrorData,
+  interleaveBoxPlotData,
+  interleaveWaterfallData,
 } from "../../../renderer";
 
 export function updateSeriesBuffer(ctx: any, s: Series): void {
@@ -46,10 +49,45 @@ export function updateSeriesBuffer(ctx: any, s: Series): void {
       s.bullishCount = (bullish.length / 2);
       s.bearishCount = (bearish.length / 2);
     }
+  } else if (seriesType === "boxplot") {
+    const d = s.getData();
+    if (d.low && d.open && d.median && d.close && d.high) {
+      const barWidth = (s.getStyle() as any).barWidth ?? calculateBarWidth(d.x);
+      const { lines, boxes } = interleaveBoxPlotData(d.x, d.low, d.open, d.median, d.close, d.high, barWidth);
+      ctx.renderer.createBuffer(`${seriesId}_box_lines`, lines);
+      ctx.renderer.createBuffer(`${seriesId}_box_faces`, boxes);
+    }
+  } else if (seriesType === "waterfall") {
+    const d = s.getData();
+    const barWidth = (s.getStyle() as any).barWidth ?? calculateBarWidth(d.x);
+    const isSubtotal = (s.getStyle() as any).isSubtotal;
+    const wfData = interleaveWaterfallData(d.x, d.y, barWidth, isSubtotal);
+    ctx.renderer.createBuffer(`${seriesId}_wf_positive`, wfData.positiveData);
+    ctx.renderer.createBuffer(`${seriesId}_wf_negative`, wfData.negativeData);
+    ctx.renderer.createBuffer(`${seriesId}_wf_subtotal`, wfData.subtotalData);
+    ctx.renderer.createBuffer(`${seriesId}_wf_connectors`, wfData.connectorData);
+    // Store counts
+    s.waterfallCounts = {
+      positive: wfData.positiveCount,
+      negative: wfData.negativeCount,
+      subtotal: wfData.subtotalCount,
+      connectors: wfData.connectorData.length / 2
+    };
   } else if (seriesType === "polar") {
     updatePolarBuffer(ctx, s);
   } else {
     ctx.renderer.createBuffer(seriesId, interleaveData(d.x, d.y));
+  }
+
+  // Handle Error Bars for any series type that has error data
+  if (s.hasErrorData()) {
+    const d = s.getData();
+    const errData = interleaveErrorData(
+      d.x, d.y,
+      { yError: d.yError, yErrorMinus: d.yErrorMinus, yErrorPlus: d.yErrorPlus },
+      { xError: d.xError, xErrorMinus: d.xErrorMinus, xErrorPlus: d.xErrorPlus }
+    );
+    ctx.renderer.createBuffer(`${seriesId}_errors`, errData);
   }
 
   if (seriesType === "step" || seriesType === "step+scatter") {

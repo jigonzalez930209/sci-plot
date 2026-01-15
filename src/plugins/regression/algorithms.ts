@@ -16,6 +16,7 @@ import type {
   ExponentialRegressionConfig,
   GaussianRegressionConfig
 } from './types';
+import { solveLinearSystem } from '../analysis/math';
 
 // ============================================
 // Utility Functions
@@ -433,10 +434,7 @@ export function gaussianRegression(
 // Helper Functions
 // ============================================
 
-function solveLeastSquares(X: number[][], y: number[], regularization: number): number[] {
-  // Simplified least squares solver
-  // In practice, would use numerical libraries
-  
+function solveLeastSquares(X: number[][], y: number[], regularization: number = 0): number[] {
   const n = X.length;
   const m = X[0].length;
   
@@ -453,16 +451,13 @@ function solveLeastSquares(X: number[][], y: number[], regularization: number): 
     }
   }
   
-  // Add regularization
-  for (let i = 0; i < m; i++) {
-    XtX[i][i] += regularization;
+  // Add L2 regularization if needed
+  if (regularization > 0) {
+    for (let i = 0; i < m; i++) {
+      XtX[i][i] += regularization;
+    }
   }
   
-  // Solve (simplified - would use proper matrix inversion)
-  const parameters = new Array(m).fill(0);
-  for (let i = 0; i < m; i++) {
-    parameters[i] = Xty[i] / (XtX[i][i] + 1e-10); // Simplified
-  }
-  
-  return parameters;
+  // Solve using Gaussian elimination
+  return solveLinearSystem(XtX, Xty);
 }

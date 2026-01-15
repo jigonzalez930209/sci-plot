@@ -193,6 +193,79 @@ export function renderBar(
   gl.disableVertexAttribArray(prog.attributes.position);
 }
 
+export function renderErrorBars(
+  gl: WebGLRenderingContext,
+  prog: ShaderProgram,
+  buffer: WebGLBuffer,
+  count: number,
+  uniforms: { scale: [number, number]; translate: [number, number] },
+  color: [number, number, number, number],
+  width: number = 1
+): void {
+  gl.useProgram(prog.program);
+  gl.lineWidth(width);
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.enableVertexAttribArray(prog.attributes.position);
+  gl.vertexAttribPointer(prog.attributes.position, 2, gl.FLOAT, false, 0, 0);
+
+  gl.uniform2f(prog.uniforms.uScale, uniforms.scale[0], uniforms.scale[1]);
+  gl.uniform2f(
+    prog.uniforms.uTranslate,
+    uniforms.translate[0],
+    uniforms.translate[1]
+  );
+  gl.uniform4f(prog.uniforms.uColor!, color[0], color[1], color[2], color[3]);
+
+  gl.drawArrays(gl.LINES, 0, count);
+  gl.disableVertexAttribArray(prog.attributes.position);
+}
+
+export function renderBoxPlot(
+  gl: WebGLRenderingContext,
+  programs: { line: ShaderProgram; point: ShaderProgram },
+  data: {
+    boxBuffer: WebGLBuffer;
+    boxCount: number;
+    linesBuffer: WebGLBuffer;
+    linesCount: number;
+  },
+  uniforms: { scale: [number, number]; translate: [number, number] },
+  style: any
+): void {
+  const color = computeSeriesColor(style);
+  
+  // 1. Render Boxes (using point/heatmap style? or just line program as triangles)
+  // We can use the line program to draw triangles if we set the color.
+  gl.useProgram(programs.line.program);
+  gl.bindBuffer(gl.ARRAY_BUFFER, data.boxBuffer);
+  gl.enableVertexAttribArray(programs.line.attributes.position);
+  gl.vertexAttribPointer(programs.line.attributes.position, 2, gl.FLOAT, false, 0, 0);
+
+  gl.uniform2f(programs.line.uniforms.uScale, uniforms.scale[0], uniforms.scale[1]);
+  gl.uniform2f(
+    programs.line.uniforms.uTranslate,
+    uniforms.translate[0],
+    uniforms.translate[1]
+  );
+  
+  // Fill color (usually slightly lighter or with opacity)
+  const fillColor = [...color] as [number, number, number, number];
+  fillColor[3] *= 0.5;
+  gl.uniform4f(programs.line.uniforms.uColor!, fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+  
+  gl.drawArrays(gl.TRIANGLES, 0, data.boxCount);
+  
+  // 2. Render Lines (outlines and whiskers)
+  gl.uniform4f(programs.line.uniforms.uColor!, color[0], color[1], color[2], color[3]);
+  gl.lineWidth(style.width || 1);
+  gl.bindBuffer(gl.ARRAY_BUFFER, data.linesBuffer);
+  gl.vertexAttribPointer(programs.line.attributes.position, 2, gl.FLOAT, false, 0, 0);
+  
+  gl.drawArrays(gl.LINES, 0, data.linesCount);
+  
+  gl.disableVertexAttribArray(programs.line.attributes.position);
+}
+
 export function computeSeriesColor(
   style: any
 ): [number, number, number, number] {
