@@ -106,6 +106,8 @@ export default defineConfig({
             { text: "Candlestick", link: "/api/candlestick" },
             { text: "Error Bars", link: "/api/error-bars" },
             { text: "Polar Charts", link: "/api/polar-charts" },
+            { text: "Gauge Charts", link: "/api/gauge-charts" },
+            { text: "Sankey Diagrams", link: "/api/sankey-diagrams" },
           ],
         },
         {
@@ -161,6 +163,7 @@ export default defineConfig({
         {
           text: "Modular Plugins",
           items: [
+            { text: "Data Transform", link: "/api/plugin-data-transform" },
             { text: "Data Export", link: "/api/plugin-data-export" },
             { text: "Context Menu", link: "/api/plugin-context-menu" },
             { text: "Anomaly Detection", link: "/api/plugin-anomaly-detection" },
@@ -193,6 +196,7 @@ export default defineConfig({
             { text: "Scatter Symbols", link: "/examples/scatter-symbols" },
             { text: "Polar Charts", link: "/examples/polar-charts" },
             { text: "Radar Charts", link: "/examples/radar-charts" },
+            { text: "Gauge & Sankey", link: "/examples/gauge-sankey" },
           ],
         },
         {

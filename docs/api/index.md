@@ -72,6 +72,7 @@ Many high-level features are provided as plugins. Load them using `chart.use()`.
 | [`PluginAnalysis`](/api/analysis) | FFT, Regression, Smoothing |
 | [`PluginAnnotations`](/api/annotations) | Lines, Shapes, Text |
 | [`StatsPlugin`](/api/statistics-panel) | Real-time statistics panel |
+| [`PluginDataTransform`](/api/plugin-data-transform) | Real-time data transformation pipeline |
 | [`PluginLoading`](/api/chart#loading-state) | Custom loading indicators |
 | [`DirectionIndicatorPlugin`](/examples/cyclic-voltammetry#direction-indicator-plugin) | Real-time trend arrows |
 
@@ -191,6 +192,17 @@ Advanced, high-performance tooltips with multi-series support, scientific notati
 `dark`, `light`, `glass` (translucent), `midnight` (blue), `neon` (vibrant), `minimal`.
 
 [View Tooltip System documentation →](/api/tooltips)
+
+### Gauge & Sankey
+
+Nuevos tipos de visualización altamente especializados para KPIs y flujos.
+
+| Tipo | Descripción | Documentación |
+|------|-------------|---------------|
+| `gauge` | Diales y medidores de aguja | [Gauge Charts](/api/gauge-charts) |
+| `sankey` | Diagramas de flujo de Sankey | [Sankey Diagrams](/api/sankey-diagrams) |
+
+[Ver todos los tipos de Series →](/api/series)
 
 ## React API
 

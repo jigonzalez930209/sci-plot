@@ -13,6 +13,9 @@ import RegressionDemo from './demos/RegressionDemo.vue'
 import RadarDemo from './demos/RadarDemo.vue'
 import MLIntegrationDemo from './demos/MLIntegrationDemo.vue'
 import SnapshotDemo from './demos/SnapshotDemo.vue'
+import ProcessMonitoringDemo from './demos/2d/ProcessMonitoringDemo.vue'
+import ScientificDemo from './demos/ScientificDemo.vue'
+import WaterfallDemo from './demos/WaterfallDemo.vue'
 import './custom.css'
 
 export default {
@@ -32,6 +35,9 @@ export default {
     app.component('RadarDemo', RadarDemo)
     app.component('MLIntegrationDemo', MLIntegrationDemo)
     app.component('SnapshotDemo', SnapshotDemo)
+    app.component('ProcessMonitoringDemo', ProcessMonitoringDemo)
+    app.component('ScientificDemo', ScientificDemo)
+    app.component('WaterfallDemo', WaterfallDemo)
   }
 }
 
