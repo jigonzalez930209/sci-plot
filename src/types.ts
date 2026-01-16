@@ -103,7 +103,8 @@ export type SeriesType =
   | "boxplot"
   | "waterfall"
   | "gauge"
-  | "sankey";
+  | "sankey"
+  | "ternary";
 
 /** Step mode defines where the step occurs */
 export type StepMode = "before" | "after" | "center";
@@ -560,6 +561,53 @@ export interface SankeyOptions extends Omit<SeriesOptions, "data" | "style"> {
   type: "sankey";
   data: SankeyData;
   style?: SankeyStyle;
+}
+
+// ============================================
+// Ternary Chart Types
+// ============================================
+
+/** Ternary data structure (3 components that sum to 1) */
+export interface TernaryData {
+  /** Component A values (0-1) - top vertex */
+  a: number[];
+  /** Component B values (0-1) - bottom-left vertex */
+  b: number[];
+  /** Component C values (0-1) - bottom-right vertex */
+  c: number[];
+}
+
+/** Ternary chart styling options */
+export interface TernaryStyle {
+  /** Point size for scatter mode */
+  pointSize?: number;
+  /** Point color */
+  color?: string;
+  /** Fill opacity for regions */
+  fillOpacity?: number;
+  /** Grid line color */
+  gridColor?: string;
+  /** Grid line width */
+  gridWidth?: number;
+  /** Number of grid divisions (default: 10) */
+  gridDivisions?: number;
+}
+
+/** Ternary chart options */
+export interface TernaryOptions extends Omit<SeriesOptions, "data" | "style"> {
+  type: "ternary";
+  data: TernaryData;
+  style?: TernaryStyle;
+  /** Label for component A (top vertex) */
+  labelA?: string;
+  /** Label for component B (bottom-left vertex) */
+  labelB?: string;
+  /** Label for component C (bottom-right vertex) */
+  labelC?: string;
+  /** Show grid lines (default: true) */
+  showGrid?: boolean;
+  /** Show component labels (default: true) */
+  showLabels?: boolean;
 }
 
 // ============================================

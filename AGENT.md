@@ -649,3 +649,163 @@ chart.addAnnotation({
 - Solo falta: **Gráficos Ternarios** (3 semanas estimadas)
 
 **Actualizado**: `docs/ROADMAP.md` - Marcado como ✅ COMPLETO (2026-01-15)
+
+---
+
+### [2026-01-15] PluginLaTeX - Renderizado Matemático Nativo ✅
+
+**Objetivo**: Implementar renderizado de expresiones LaTeX sin dependencias externas (cumpliendo con la política de 0 dependencias).
+
+#### Implementación Comprimida y Escalable
+
+Se creó un plugin **100% nativo** que usa Canvas 2D API para renderizar notación matemática común:
+
+**Características Core (v1.0)**:
+- ✅ **Símbolos Griegos**: Todas las letras griegas (α, β, γ, Δ, Σ, Ω, etc.) + ℏ (hbar)
+- ✅ **Operadores Matemáticos**: ∑, ∫, ∂, ±, ×, ÷, ∞, ≤, ≥, ≠, ≈, →, ⇒
+- ✅ **Superíndices/Subíndices**: `x^2`, `H_2O`, `x_i^2`
+- ✅ **Fracciones**: `\frac{a}{b}` con renderizado vertical
+- ✅ **Raíces Cuadradas**: `\sqrt{x}` con símbolo radical
+- ✅ **Caché Inteligente**: Parseo y medición cacheados para performance
+- ✅ **Personalizable**: fontSize, fontFamily, color
+
+**Arquitectura (Pipeline de 3 Etapas)**:
+1. **Tokenizer** (`parser.ts`) - Convierte string LaTeX en tokens individuales
+2. **Parser** (`parser.ts`) - Construye Abstract Syntax Tree (AST)
+3. **Renderer** (`renderer.ts`) - Traversa AST y dibuja en Canvas 2D
+
+**Corrección Crítica del Tokenizer**:
+- **Problema Original**: Agrupaba caracteres, causando que `x^2 + y^2` se parseara como `x^(2 + y^2)`
+- **Solución**: Tokenización carácter por carácter (excepto comandos LaTeX)
+- **Resultado**: `x^2 + y^2` → `['x', '^', '2', '+', 'y', '^', '2']` ✅
+
+**Mapeo de Símbolos**:
+- Usa caracteres Unicode nativos (no requiere fuentes externas)
+- 120+ símbolos matemáticos mapeados en `symbols.ts`
+
+**Archivos Creados**:
+- `src/plugins/latex/index.ts` - Plugin principal con API (211 líneas)
+- `src/plugins/latex/parser.ts` - Tokenizer y Parser (174 líneas)
+- `src/plugins/latex/renderer.ts` - Renderizador Canvas 2D (237 líneas)
+- `src/plugins/latex/symbols.ts` - Mapeo Unicode (142 líneas, incluye ℏ)
+- `src/plugins/latex/types.ts` - Definiciones TypeScript (84 líneas)
+- `src/plugins/latex/exports.ts` - Exports del módulo
+
+**Documentación**:
+- `docs/api/plugin-latex.md` - API Reference completa
+- `docs/examples/latex-rendering.md` - Guía de uso y ejemplos
+
+**Demo Interactivo**:
+- `docs/.vitepress/theme/demos/LaTeXDemo.vue` - Editor en vivo con:
+  - Input de expresión LaTeX en tiempo real
+  - 8 presets rápidos (Einstein, Heisenberg, Pythagorean, Chemistry, etc.)
+  - Controles de fontSize y color
+  - Medición de dimensiones (width, height, baseline)
+  - Grid de comandos soportados
+  - Canvas dedicado (no usa overlay del chart)
+
+**API Expuesta**:
+```typescript
+chart.latex.render(latex, ctx, x, y, options)  // Renderizar
+chart.latex.measure(latex, options)             // Medir sin renderizar
+chart.latex.clearCache()                        // Limpiar caché
+```
+
+**Exportaciones**:
+- Agregado a `src/index.ts`: `PluginLaTeX`, `PluginLaTeXConfig`, `LaTeXPluginAPI`
+- Agregado a `src/plugins/index.ts`
+
+**Bundle Size**: ~850 líneas total (muy compacto)
+
+---
+
+### [2026-01-15] Gráficos Ternarios - Última Feature de Phase 2 ✅
+
+**Objetivo**: Implementar visualizaciones triangulares para datos composicionales de 3 componentes.
+
+#### Implementación Completa
+
+Se implementó un renderer completo para gráficos ternarios (diagramas triangulares) usado en:
+- **Clasificación de suelos** (arena, limo, arcilla)
+- **Diagramas de fase** (metalurgia, composiciones de aleaciones)
+- **Composiciones químicas** (3 componentes que suman 100%)
+- **Análisis geológico** (contenido mineral de rocas)
+- **Datos económicos** (asignación de presupuesto entre 3 categorías)
+
+**Características Implementadas**:
+- ✅ **Conversión de Coordenadas**: Ternario (a, b, c) → Cartesiano (x, y)
+- ✅ **Grid Triangular**: Líneas paralelas a cada lado del triángulo
+- ✅ **Outline del Triángulo**: Contorno del triángulo equilátero
+- ✅ **Labels de Componentes**: Etiquetas en cada vértice
+- ✅ **Scatter Points**: Renderizado de puntos de datos
+- ✅ **Normalización Automática**: Si a+b+c ≠ 1, se normaliza automáticamente
+- ✅ **Grid Configurable**: 5-20 divisiones (intervalos de porcentaje)
+
+**Fórmula de Conversión**:
+```
+x = c + b/2
+y = b × √3/2
+```
+
+Donde a, b, c están normalizados (a + b + c = 1)
+
+**Archivos Creados**:
+- `src/renderer/ternary/TernaryRenderer.ts` - Renderer completo (223 líneas)
+  - `ternaryToCartesian()` - Conversión de coordenadas
+  - `convertTernaryData()` - Conversión de arrays
+  - `drawTernaryGrid()` - Grid triangular con divisiones configurables
+  - `drawTernaryOutline()` - Contorno del triángulo
+  - `drawTernaryLabels()` - Labels de componentes
+  - `renderTernaryPoints()` - Puntos scatter
+  - `renderTernaryPlot()` - Función all-in-one
+- `src/renderer/ternary/types.ts` - Tipos TypeScript
+- `src/renderer/ternary/index.ts` - Exports del módulo
+
+**Tipos Agregados**:
+- `TernaryData` - Estructura de datos (a[], b[], c[])
+- `TernaryStyle` - Opciones de estilo
+- `TernaryOptions` - Configuración completa
+- Agregado "ternary" a `SeriesType` en `src/types.ts`
+
+**Documentación**:
+- `docs/api/ternary-charts.md` - API Reference completa con:
+  - Guía de uso básico
+  - Explicación del sistema de coordenadas
+  - 5 casos de uso comunes (suelos, fases, geología, presupuesto, química)
+  - Guía de lectura del gráfico
+  - Mejores prácticas
+  - Background matemático
+- `docs/examples/ternary-charts.md` - Guía de implementación con ejemplos
+
+**Demo Interactivo**:
+- `docs/.vitepress/theme/demos/TernaryDemo.vue` - Demo completo con:
+  - 4 datasets precargados:
+    - Soil Classification (7 puntos)
+    - Phase Diagram (6 puntos)
+    - Budget Allocation (5 puntos)
+    - Random Points (generador)
+  - Controles interactivos:
+    - Selector de dataset
+    - Point size slider (3-15px)
+    - Grid divisions slider (5-20)
+    - Color picker
+    - Toggles para grid y labels
+  - Botón "Generate Random Data" (20 puntos aleatorios)
+  - Info panel con labels de componentes y contador de puntos
+  - Canvas responsive con DPR support
+
+**Exportaciones**:
+- Agregado a `src/renderer/index.ts`: `export * from './ternary'`
+- Agregado a `src/index.ts`: `TernaryData`, `TernaryStyle`, `TernaryOptions`
+
+**Integración VitePress**:
+- Registrado `TernaryDemo` component
+- Links agregados al sidebar:
+  - API: `/api/ternary-charts`
+  - Examples: `/examples/ternary-charts`
+
+**Progreso Phase 2**: **100% COMPLETO** 🎉  
+- 8/8 features implementados
+- TODAS las features documentadas con demos interactivos
+
+**Actualizado**: `docs/ROADMAP.md` - Phase 2 marcada como 100% COMPLETA (2026-01-15)

@@ -108,6 +108,7 @@ export default defineConfig({
             { text: "Polar Charts", link: "/api/polar-charts" },
             { text: "Gauge Charts", link: "/api/gauge-charts" },
             { text: "Sankey Diagrams", link: "/api/sankey-diagrams" },
+            { text: "Ternary Charts", link: "/api/ternary-charts" },
           ],
         },
         {
@@ -198,6 +199,7 @@ export default defineConfig({
             { text: "Polar Charts", link: "/examples/polar-charts" },
             { text: "Radar Charts", link: "/examples/radar-charts" },
             { text: "Gauge & Sankey", link: "/examples/gauge-sankey" },
+            { text: "Ternary Charts", link: "/examples/ternary-charts" },
           ],
         },
         {
@@ -215,7 +217,7 @@ export default defineConfig({
             { text: "Peak Analysis", link: "/examples/analysis" },
             { text: "Single Frequency Filter", link: "/examples/single-frequency-filter" },
             { text: "Statistics Panel", link: "/examples/statistics" },
-            { text: "🔬 Scientific Analysis", link: "/examples/scientific-analysis" },
+            { text: "Scientific Analysis", link: "/examples/scientific-analysis" },
           ],
         },
         {

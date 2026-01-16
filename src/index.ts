@@ -94,6 +94,10 @@ export type {
   PolarData,
   PolarStyle,
   PolarOptions,
+  // Ternary Charts
+  TernaryData,
+  TernaryStyle,
+  TernaryOptions,
 } from "./types";
 
 // ============================================

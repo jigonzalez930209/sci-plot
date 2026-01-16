@@ -50,3 +50,6 @@ export {
   calculatePolarBounds,
   normalizeAngles,
 } from "./PolarRenderer";
+
+// Ternary Chart Utilities
+export * from './ternary';
