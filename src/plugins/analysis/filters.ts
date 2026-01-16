@@ -33,6 +33,15 @@ export interface ButterworthOptions extends FilterOptions {
   type: FilterType;
 }
 
+export interface SingleFrequencyFilterOptions {
+  /** Frequency to remove in Hz */
+  frequency: number;
+  /** Sampling rate in Hz */
+  sampleRate: number;
+  /** Bandwidth of the notch in Hz (default: 1.0) */
+  bandwidth?: number;
+}
+
 // ============================================
 // Simple FIR Filters
 // ============================================
@@ -245,6 +254,44 @@ export function butterworth(
   
   // Apply filter (forward-backward for zero phase)
   return filtfilt(data, b, a);
+}
+
+/**
+ * Apply a single frequency notch filter to remove periodic noise.
+ * Implementing a 2nd order IIR notch filter.
+ */
+export function singleFrequencyFilter(
+  data: Float32Array | Float64Array,
+  options: SingleFrequencyFilterOptions
+): Float32Array {
+  const { frequency, sampleRate, bandwidth = 1.0 } = options;
+  const { b, a } = designNotchFilter(frequency, sampleRate, bandwidth);
+  
+  // Apply zero-phase filtering
+  return filtfilt(data, b, a);
+}
+
+/**
+ * Design 2nd order IIR Notch Filter coefficients.
+ * H(z) = (1 - 2*cos(w0)*z^-1 + z^-2) / (1 - 2*r*cos(w0)*z^-1 + r^2*z^-2)
+ */
+function designNotchFilter(
+  frequency: number,
+  sampleRate: number,
+  bandwidth: number
+): { b: number[]; a: number[] } {
+  const w0 = (2 * Math.PI * frequency) / sampleRate;
+  const bw = (2 * Math.PI * bandwidth) / sampleRate;
+  
+  // r is the pole radius, related to bandwidth
+  const r = 1 - (bw / 2);
+  
+  const cosW0 = Math.cos(w0);
+  
+  const b = [1, -2 * cosW0, 1];
+  const a = [1, -2 * r * cosW0, r * r];
+  
+  return { b, a };
 }
 
 /**

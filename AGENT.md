@@ -211,6 +211,148 @@ Iso Forest: score = isolation_depth(value, random_trees)
 
 **Progreso**: 100% ✅ COMPLETO
 
+### Feature 2: Single Frequency Filter ✅ COMPLETADO
+
+**Objetivo**: Implementar un filtro de frecuencia única (Notch) para eliminar interferencias periódicas.
+
+**Implementación**:
+- ✅ Implementado `singleFrequencyFilter` en `src/plugins/analysis/filters.ts` usando un filtro Notch IIR de 2do orden.
+- ✅ Aplicación con técnica `filtfilt` para respuesta de fase cero.
+- ✅ Expuesto en `PluginAnalysis` API.
+- ✅ **NUEVO**: Agregado método `updateXAxis` a `ChartCore` y a la interfaz `Chart` para permitir cambios dinámicos en el eje X (etiquetas, rangos, etc.).
+- ✅ Documentación completa en `docs/api/analysis-advanced.md` y `docs/examples/single-frequency-filter.md`.
+- ✅ Demo interactiva robustecida en `docs/.vitepress/theme/demos/2d/SingleFreqFilterDemo.vue` con vista de tiempo/frecuencia conmutable.
+
+**Archivos Modificados**:
+- `src/core/chart/ChartCore.ts` - Implementación de `updateXAxis`.
+- `src/core/chart/types.ts` - Actualización de la interfaz `Chart`.
+- `src/plugins/analysis/filters.ts` - Implementación core y opciones.
+- `src/plugins/analysis/index.ts` - Exportación y API del plugin.
+- `src/index.ts` - Exportación pública.
+- `docs/.vitepress/theme/demos/2d/SingleFreqFilterDemo.vue` - Nueva demo estabilizada.
+- `docs/examples/single-frequency-filter.md` - Nueva página de ejemplo.
+- `docs/api/analysis-advanced.md` - Actualización de API.
+- `docs/.vitepress/config.ts` - Configuración de sidebar.
+- `docs/.vitepress/theme/index.ts` - Registro de componente.
+
+**Progreso**: 100% ✅ COMPLETO
+
+### Feature 3: PluginRegression ✅ COMPLETADO
+
+**Objetivo**: Implementar un sistema de regresión científica avanzada con selección automática de modelos.
+
+**Implementación**:
+- ✅ Corregido algoritmo de **Mínimos Cuadrados** usando Eliminación Gaussiana con pivoteo parcial.
+- ✅ Implementados modelos: Lineal, Polinómico, Exponencial, Gaussiano, Logarítmico y Potencia.
+- ✅ Sistema de **Auto-Selección** basado en criterios estadísticos (AIC/BIC).
+- ✅ Visualización automática de curvas de ajuste y etiquetas de ecuación.
+- ✅ Exportación de resultados a JSON, CSV y MATLAB.
+- ✅ Documentación API completa en `docs/api/plugin-regression.md`.
+- ✅ Demo interactiva en `docs/.vitepress/theme/demos/RegressionDemo.vue`.
+
+**Archivos Modificados**:
+- `src/plugins/regression/algorithms.ts` - Corrección de álgebra lineal.
+- `docs/api/plugin-regression.md` - Nueva documentación.
+- `docs/.vitepress/theme/demos/RegressionDemo.vue` - Nueva demo.
+- `docs/examples/regression-plugin.md` - Nueva página de ejemplo.
+- `docs/.vitepress/config.ts` - Configuración de sidebar.
+- `docs/.vitepress/theme/index.ts` - Registro de componente.
+
+**Progreso**: 100% ✅ COMPLETO
+
+### Feature 4: Radar Charts ✅ COMPLETADO
+
+**Objetivo**: Implementar soporte para gráficos de radar (Spider Charts) mediante un plugin dedicado.
+
+**Implementación**:
+- ✅ Añadido método `drawRadarGrid` en `OverlayRenderer` para dibujar la "telaraña" del gráfico.
+- ✅ Implementado `PluginRadar` con soporte para múltiples series, relleno de área y puntos de datos.
+- ✅ Sistema de mapeo automático de categorías a ángulos.
+- ✅ API para añadir, actualizar y eliminar series de radar dinámicamente.
+- ✅ Soporte para temas (claro/oscuro) y personalización de estilos de línea/relleno.
+- ✅ Documentación API completa en `docs/api/plugin-radar.md`.
+- ✅ Demo interactiva en `docs/.vitepress/theme/demos/RadarDemo.vue`.
+
+**Archivos Modificados**:
+- `src/core/OverlayRenderer.ts` - Primitivas de dibujo para radar.
+- `src/plugins/radar/` - Implementación completa del plugin.
+- `src/plugins/index.ts` - Exportación del plugin.
+- `docs/api/plugin-radar.md` - Documentación API.
+- `docs/examples/radar-charts.md` - Página de ejemplo.
+- `docs/.vitepress/theme/demos/RadarDemo.vue` - Nueva demo.
+- `docs/.vitepress/config.ts` - Configuración de sidebar.
+- `docs/.vitepress/theme/index.ts` - Registro de componente.
+
+**Progreso**: 100% ✅ COMPLETO
+
+### Feature 5: ML Integration ✅ COMPLETADO
+
+**Objetivo**: Implementar una capa de integración para modelos de Machine Learning (ML) y visualización de predicciones.
+
+**Implementación**:
+- ✅ Implementado `PluginMLIntegration` como puente agnóstico para bibliotecas como Tensorflow.js u ONNX.
+- ✅ Sistema de **Inferencia Asíncrona** aplicado a series de datos del gráfico.
+- ✅ Visualización de **Intervalos de Confianza** (bandas de incertidumbre) mediante renderizado en overlay.
+- ✅ Soporte para múltiples modelos registrados simultáneamente.
+- ✅ API para visualizar resultados de predicción sin necesidad de crear nuevas series pesadas.
+- ✅ Documentación API completa en `docs/api/plugin-ml-integration.md`.
+- ✅ Demo interactiva en `docs/.vitepress/theme/demos/MLIntegrationDemo.vue` simulando predicción LSTM.
+
+**Archivos Modificados**:
+- `src/plugins/ml-integration/` - Implementación completa (Abstracción de modelos y visualización).
+- `src/plugins/index.ts` - Exportación del plugin.
+- `docs/api/plugin-ml-integration.md` - Documentación API.
+- `docs/examples/ml-integration.md` - Página de ejemplo.
+- `docs/.vitepress/theme/demos/MLIntegrationDemo.vue` - Nueva demo.
+- `docs/.vitepress/config.ts` - Configuración de sidebar.
+- `docs/.vitepress/theme/index.ts` - Registro de componente.
+
+**Progreso**: 100% ✅ COMPLETO
+
+### Feature 6: PluginSnapshot ✅ COMPLETADO (2026-01-14)
+
+**Objetivo**: Implementar un sistema de exportación de imágenes de alta resolución (4K, 8K) para publicaciones científicas.
+
+**Implementación**:
+- ✅ Agregados métodos `getDPR` y `setDPR` a `ChartCore` para permitir re-renderizado a resoluciones escaladas.
+- ✅ Implementada composición de capas (WebGL + Overlay) en un único canvas de salida.
+- ✅ Soporte para formatos: PNG, JPEG (con calidad ajustable) y WebP.
+- ✅ Resoluciones preestablecidas: Standard, 2K, 4K y 8K.
+- ✅ Sistema de **Marca de Agua** profesional con escalado automático de fuente según resolución.
+- ✅ Opción de fondo transparente para integración en presentaciones.
+- ✅ Documentación API completa en `docs/api/plugin-snapshot.md`.
+- ✅ Demo interactiva en `docs/.vitepress/theme/demos/SnapshotDemo.vue`.
+
+**Archivos Modificados**:
+- `src/core/chart/ChartCore.ts`, `src/core/chart/types.ts` - Soporte para DPR dinámico.
+- `src/plugins/snapshot/` - Implementación completa del plugin.
+- `src/index.ts`, `src/plugins/index.ts` - Exportaciones globales.
+- `docs/api/plugin-snapshot.md`, `docs/examples/snapshot-export.md` - Documentación y ejemplo.
+- `docs/.vitepress/theme/demos/SnapshotDemo.vue`, `docs/.vitepress/config.ts`, `docs/.vitepress/theme/index.ts` - Demo e integración.
+
+**Progreso**: 100% ✅ COMPLETO
+
+---
+
+### Bug Fixes & Refinements ✅ COMPLETADO
+
+**Objetivo**: Resolver problemas de inicialización en demos y mejorar la integración de tipos.
+
+**Correcciones**:
+- ✅ **Radar Demo Loading**: Corregido problema donde el indicador de carga no se ocultaba en el gráfico de Radar (al no usar series estándar, el plugin de carga no detectaba el fin de la inicialización).
+- ✅ **ML Integration Predictor**: Renombrado "Mock LSTM" a **Scientific Trend Predictor**. Ahora utiliza las funciones reales de regresión lineal y estadísticas del motor para realizar predicciones basadas en datos.
+- ✅ **Exportación de Plugins**: Los plugins `Regression`, `MLIntegration` y `Radar` ahora se exportan correctamente desde el punto de entrada principal del motor, evitando errores de "not a function".
+- ✅ **TSConfig Alias**: Añadido alias `@src` a la configuración de TypeScript para validación correcta de rutas en demos.
+
+**Archivos Modificados**:
+- `src/index.ts` - Exportaciones globales añadidas.
+- `docs/.vitepress/theme/demos/RadarDemo.vue` - Deshabilitado loader y corregidas rutas.
+- `docs/.vitepress/theme/demos/MLIntegrationDemo.vue` - Implementado predictor real y corregidas rutas.
+- `docs/.vitepress/theme/demos/RegressionDemo.vue` - Corregida importación de tipos.
+- `tsconfig.json` - Añadido soporte para alias `@src`.
+
+**Progreso**: 100% ✅ COMPLETO
+
 ---
 
 ## 2026-01-12
@@ -223,3 +365,447 @@ Iso Forest: score = isolation_depth(value, random_trees)
 - **Explicit Plugin Usage**: Updated all 2D chart documentation examples to explicitly import and use necessary plugins.
 - **Tooltips**: Enabled "Enhanced Tooltips" in all documentation examples using `PluginTools`.
 - **Code Quality**: Enforced a more modular approach where features are only loaded when needed, reducing default bundle size.
+
+---
+
+## 2026-01-14 (Scientific Visualization Enhancement)
+
+### Phase 2: Scientific & Financial Charts ✅ COMPLETADO
+
+**Objetivo**: Añadir tipos de gráficos científicos avanzados para análisis estadístico y financiero.
+
+#### Feature 1: Error Bars (Barras de Error) ✅
+
+**Implementación**:
+- ✅ Añadido soporte para `yError`, `yErrorMinus`, `yErrorPlus` en SeriesData
+- ✅ Añadido soporte para `xError`, `xErrorMinus`, `xErrorPlus` para errores horizontales
+- ✅ Implementado `interleaveErrorData` en `renderer/native/utils.ts` para WebGL
+- ✅ Implementado `renderErrorBars` en `renderer/native/draw.ts`
+- ✅ Integrado en `renderFrame.ts` para renderizado automático
+- ✅ Añadido método `drawErrorBars` en `OverlayRenderer.ts` para Canvas 2D
+
+**APIs**:
+```typescript
+chart.addSeries({
+  type: 'scatter',
+  data: { x, y, yError: stdDeviations },
+  style: {
+    errorBars: {
+      visible: true,
+      color: '#ff6b6b',
+      width: 1.5,
+      capWidth: 6,
+      direction: 'both', // 'both' | 'positive' | 'negative'
+      opacity: 0.7
+    }
+  }
+})
+```
+
+**Archivos Modificados**:
+- `src/types.ts` - Tipos de datos de error
+- `src/renderer/native/utils.ts` - Función de entrelazado
+- `src/renderer/native/draw.ts` - Función de renderizado
+- `src/renderer/native/renderFrame.ts` - Integración
+- `src/renderer/native/types.ts` - Tipos de buffer
+- `src/core/chart/series/SeriesBuffer.ts` - Creación de buffers
+- `src/core/OverlayRenderer.ts` - Renderizado Canvas 2D
+
+#### Feature 2: Box Plot (Diagrama de Caja) ✅
+
+**Implementación**:
+- ✅ Añadido tipo de serie `boxplot` a SeriesType
+- ✅ Implementado `interleaveBoxPlotData` en `renderer/native/utils.ts`
+- ✅ Implementado `renderBoxPlot` en `renderer/native/draw.ts`
+- ✅ Soporte para datos: min (low), Q1 (open), median, Q3 (close), max (high)
+- ✅ Renderizado híbrido: cajas con transparencia + líneas de bigotes
+
+**APIs**:
+```typescript
+chart.addSeries({
+  type: 'boxplot',
+  data: {
+    x: [1, 2, 3, 4],
+    low: minValues,
+    open: q1Values,
+    median: medianValues,
+    close: q3Values,
+    high: maxValues
+  },
+  style: { barWidth: 0.6, color: '#00f2ff' }
+})
+```
+
+**Archivos Modificados**:
+- `src/types.ts` - Tipo boxplot y campo median en SeriesData
+- `src/renderer/native/types.ts` - Tipo boxplot en NativeSeriesRenderData
+- `src/renderer/native/utils.ts` - Función de entrelazado
+- `src/renderer/native/draw.ts` - Función de renderizado
+- `src/renderer/native/renderFrame.ts` - Caso boxplot
+- `src/core/series/Series.ts` - Inicialización de median
+- `src/core/chart/series/SeriesBuffer.ts` - Creación de buffers
+- `src/core/chart/ChartRenderer.ts` - Preparación de datos
+
+#### Feature 3: Waterfall Charts ✅
+
+**Implementación**:
+- ✅ Añadido tipo de serie `waterfall` a SeriesType
+- ✅ Implementado `interleaveWaterfallData` con soporte para:
+  - Barras positivas (verde)
+  - Barras negativas (rojo)
+  - Subtotales (azul)
+  - Líneas conectoras
+- ✅ Sistema de acumulación running total automático
+- ✅ Arrays separados para cada tipo de barra (optimización de color)
+
+**APIs**:
+```typescript
+chart.addSeries({
+  type: 'waterfall',
+  data: { x, y },
+  style: {
+    barWidth: 0.6,
+    positiveColor: '#22c55e',
+    negativeColor: '#ef4444',
+    subtotalColor: '#3b82f6',
+    connectorColor: '#64748b',
+    showConnectors: true,
+    isSubtotal: [false, false, true, false, true] // Marcar subtotales
+  }
+})
+```
+
+**Archivos Modificados**:
+- `src/types.ts` - Tipo waterfall
+- `src/renderer/native/types.ts` - Tipo waterfall
+- `src/renderer/native/utils.ts` - Función de entrelazado
+- `src/renderer/NativeWebGLRenderer.ts` - Exportación
+- `src/renderer/index.ts` - Exportación
+- `src/core/series/Series.ts` - waterfallCounts property
+- `src/core/chart/series/SeriesBuffer.ts` - Creación de buffers
+
+#### Feature 4: ML Integration Refinement ✅
+
+**Correcciones**:
+- ✅ Reconstruido sistema de tipos en `ml-integration/types.ts`
+- ✅ Añadidos getters `id`, `name`, `type` a clases de modelos nativos
+- ✅ Corregido `PredictionResult` para incluir `xValues` para visualización
+- ✅ Añadido `NativeStatsAPI` con funciones estadísticas expuestas
+- ✅ Corregida visualización de predicciones en overlay
+
+**APIs Estadísticas Nativas**:
+```typescript
+chart.ml.stats.fft(data)           // Fast Fourier Transform
+chart.ml.stats.mean(data)          // Media aritmética
+chart.ml.stats.standardDeviation(data) // Desviación estándar
+chart.ml.stats.correlation(x, y)   // Correlación de Pearson
+```
+
+**Archivos Modificados**:
+- `src/plugins/ml-integration/types.ts` - Tipos reconstruidos
+- `src/plugins/ml-integration/native-algorithms.ts` - Getters de interfaz
+- `src/plugins/ml-integration/index.ts` - API stats y fixes
+
+#### Demos Creadas ✅
+
+1. **ScientificDemo.vue**: Demo completa con 3 tabs:
+   - BoxPlot: Distribución estadística de tratamientos
+   - Error Bars: 3 datasets científicos (Enzyme Kinetics, Clinical Trial, Sensor)
+   - ML Analysis: Filtrado de señales con estadísticas nativas
+
+2. **WaterfallDemo.vue**: Demo con 3 escenarios:
+   - Revenue Analysis: Análisis de ingresos Q4
+   - Project Budget: Flujo de presupuesto por fases
+   - Inventory Movement: Movimiento de inventario
+
+**Documentación Creada**:
+- `docs/examples/scientific-analysis.md` - Guía completa de análisis científico
+- `docs/examples/waterfall-chart.md` - Guía de gráficos waterfall
+- Actualizaciones en `docs/.vitepress/config.ts` - Sidebar links
+
+---
+
+### [2026-01-15] Finalización de Features v1.8.0 (Cat 1 & 2) ✅
+
+Se han completado los pendientes de las Categorías 1 y 2 del Roadmap para cerrar la versión 1.8.0.
+
+#### 1. PluginDataTransform (#5)
+Implementación de un sistema de pipeline para transformaciones de datos encadenadas.
+- **Normalize**: Normalización a rangos personalizados.
+- **Smooth / Moving Average**: Suavizado de señales.
+- **Derivative / Integral**: Cálculo numérico de primera y segunda derivada, e integral acumulativa.
+- **Resample**: Remuestreo lineal para uniformidad de datos.
+- **Baseline Removal**: Eliminación de línea base lineal.
+
+#### 2. Gauge/Dial Charts (#9)
+Nuevo tipo de visualización de tablero para métricas críticas.
+- Renderizado en 2D Overlay para máxima calidad visual.
+- Soporte para rangos de colores (semáforos) y agujas personalizables.
+- Animación suave de valores.
+
+#### 3. Sankey/Flow Diagrams (#10)
+Visualización de flujos y balances.
+- Layout automático de nodos por capas.
+- Curvas de Bézier con grosor proporcional al flujo.
+- Gradientes y efectos de brillo premium.
+
+**Archivos Modificados/Creados**:
+- `src/plugins/data-transform/index.ts` - Implementación del plugin.
+- `src/renderer/GaugeRenderer.ts` - Renderizado de diales.
+- `src/renderer/SankeyRenderer.ts` - Renderizado de flujos.
+- `src/core/chart/ChartRenderer.ts` - Integración en el loop de overlay.
+- `src/core/series/Series.ts` - Soporte para nuevos tipos de datos.
+- `src/types.ts` - Definiciones de tipos para Gauge y Sankey.
+
+**Roadmap**: Marcados como **COMPLETADO**.
+- PluginDataTransform (#5)
+- Gauge/Dial Charts (#9)
+- Sankey/Flow Diagrams (#10)
+
+---
+
+### [2026-01-15] PluginLaTeX - Renderizado Matemático Nativo ✅
+
+**Objetivo**: Implementar renderizado de expresiones LaTeX sin dependencias externas (cumpliendo con la política de 0 dependencias).
+
+#### Implementación Comprimida y Escalable
+
+Se creó un plugin **100% nativo** que usa Canvas 2D API para renderizar notación matemática común:
+
+**Características Core (v1.0)**:
+- ✅ **Símbolos Griegos**: Todas las letras griegas (α, β, γ, Δ, Σ, Ω, etc.)
+- ✅ **Operadores Matemáticos**: ∑, ∫, ∂, ±, ×, ÷, ∞, ≤, ≥, ≠, ≈, →, ⇒
+- ✅ **Superíndices/Subíndices**: `x^2`, `H_2O`, `x_i^2`
+- ✅ **Fracciones**: `\frac{a}{b}` con renderizado vertical
+- ✅ **Raíces Cuadradas**: `\sqrt{x}` con símbolo radical
+- ✅ **Caché Inteligente**: Parseo y medición cacheados para performance
+- ✅ **Personalizable**: fontSize, fontFamily, color
+
+**Arquitectura (Pipeline de 3 Etapas)**:
+1. **Tokenizer** (`parser.ts`) - Convierte string LaTeX en tokens
+2. **Parser** (`parser.ts`) - Construye Abstract Syntax Tree (AST)
+3. **Renderer** (`renderer.ts`) - Traversa AST y dibuja en Canvas 2D
+
+**Mapeo de Símbolos**:
+- Usa caracteres Unicode nativos (no requiere fuentes externas)
+- 120+ símbolos matemáticos mapeados en `symbols.ts`
+
+**Archivos Creados**:
+- `src/plugins/latex/index.ts` - Plugin principal (167 líneas)
+- `src/plugins/latex/parser.ts` - Tokenizer y Parser (212 líneas)
+- `src/plugins/latex/renderer.ts` - Renderizador Canvas 2D (253 líneas)
+- `src/plugins/latex/symbols.ts` - Mapeo Unicode (139 líneas)
+- `src/plugins/latex/types.ts` - Definiciones TypeScript (80 líneas)
+- `src/plugins/latex/exports.ts` - Exports del módulo
+
+**Documentación**:
+- `docs/api/plugin-latex.md` - API Reference completa (290 líneas)
+- `docs/examples/latex-rendering.md` - Guía de uso y ejemplos (170 líneas)
+
+**Demo Interactivo**:
+- `docs/.vitepress/theme/demos/LaTeXDemo.vue` - Editor en vivo con:
+  - Input de expresión LaTeX en tiempo real
+  - 8 presets rápidos (Einstein, Heisenberg, Summation, etc.)
+  - Controles de fontSize y color
+  - Medición de dimensiones (width, height, baseline)
+  - Grid de comandos soportados
+  - Diseño glassmorphism premium
+
+**API Expuesta**:
+```typescript
+chart.latex.render(latex, ctx, x, y, options)  // Renderizar
+chart.latex.measure(latex, options)             // Medir sin renderizar
+chart.latex.clearCache()                        // Limpiar caché
+```
+
+**Uso en Charts**:
+```typescript
+// Ejes
+chart.xAxis.label = '\\Delta E (eV)';
+chart.yAxis.label = '\\frac{\\partial^2 y}{\\partial x^2}';
+
+// Anotaciones
+chart.addAnnotation({
+  type: 'text',
+  text: 'E = mc^2',
+  latex: true
+});
+```
+
+**Limitaciones Actuales** (por diseño compacto):
+- No soporta matrices (`\begin{matrix}`)
+- No soporta ecuaciones multi-línea
+- No soporta todos los 1000+ comandos LaTeX (solo los ~100 más comunes)
+
+**Futuras Expansiones** (sin romper compatibilidad):
+- Límites en integrales (`\int_0^\infty`)
+- Comandos de color (`\color{red}`)
+- Matrices básicas
+- Más símbolos especializados
+
+**Bundle Size**: ~850 líneas total (muy compacto)
+
+**Progreso Phase 2**: 87.5% (7/8 features completos)
+- Solo falta: **Gráficos Ternarios** (3 semanas estimadas)
+
+**Actualizado**: `docs/ROADMAP.md` - Marcado como ✅ COMPLETO (2026-01-15)
+
+---
+
+### [2026-01-15] PluginLaTeX - Renderizado Matemático Nativo ✅
+
+**Objetivo**: Implementar renderizado de expresiones LaTeX sin dependencias externas (cumpliendo con la política de 0 dependencias).
+
+#### Implementación Comprimida y Escalable
+
+Se creó un plugin **100% nativo** que usa Canvas 2D API para renderizar notación matemática común:
+
+**Características Core (v1.0)**:
+- ✅ **Símbolos Griegos**: Todas las letras griegas (α, β, γ, Δ, Σ, Ω, etc.) + ℏ (hbar)
+- ✅ **Operadores Matemáticos**: ∑, ∫, ∂, ±, ×, ÷, ∞, ≤, ≥, ≠, ≈, →, ⇒
+- ✅ **Superíndices/Subíndices**: `x^2`, `H_2O`, `x_i^2`
+- ✅ **Fracciones**: `\frac{a}{b}` con renderizado vertical
+- ✅ **Raíces Cuadradas**: `\sqrt{x}` con símbolo radical
+- ✅ **Caché Inteligente**: Parseo y medición cacheados para performance
+- ✅ **Personalizable**: fontSize, fontFamily, color
+
+**Arquitectura (Pipeline de 3 Etapas)**:
+1. **Tokenizer** (`parser.ts`) - Convierte string LaTeX en tokens individuales
+2. **Parser** (`parser.ts`) - Construye Abstract Syntax Tree (AST)
+3. **Renderer** (`renderer.ts`) - Traversa AST y dibuja en Canvas 2D
+
+**Corrección Crítica del Tokenizer**:
+- **Problema Original**: Agrupaba caracteres, causando que `x^2 + y^2` se parseara como `x^(2 + y^2)`
+- **Solución**: Tokenización carácter por carácter (excepto comandos LaTeX)
+- **Resultado**: `x^2 + y^2` → `['x', '^', '2', '+', 'y', '^', '2']` ✅
+
+**Mapeo de Símbolos**:
+- Usa caracteres Unicode nativos (no requiere fuentes externas)
+- 120+ símbolos matemáticos mapeados en `symbols.ts`
+
+**Archivos Creados**:
+- `src/plugins/latex/index.ts` - Plugin principal con API (211 líneas)
+- `src/plugins/latex/parser.ts` - Tokenizer y Parser (174 líneas)
+- `src/plugins/latex/renderer.ts` - Renderizador Canvas 2D (237 líneas)
+- `src/plugins/latex/symbols.ts` - Mapeo Unicode (142 líneas, incluye ℏ)
+- `src/plugins/latex/types.ts` - Definiciones TypeScript (84 líneas)
+- `src/plugins/latex/exports.ts` - Exports del módulo
+
+**Documentación**:
+- `docs/api/plugin-latex.md` - API Reference completa
+- `docs/examples/latex-rendering.md` - Guía de uso y ejemplos
+
+**Demo Interactivo**:
+- `docs/.vitepress/theme/demos/LaTeXDemo.vue` - Editor en vivo con:
+  - Input de expresión LaTeX en tiempo real
+  - 8 presets rápidos (Einstein, Heisenberg, Pythagorean, Chemistry, etc.)
+  - Controles de fontSize y color
+  - Medición de dimensiones (width, height, baseline)
+  - Grid de comandos soportados
+  - Canvas dedicado (no usa overlay del chart)
+
+**API Expuesta**:
+```typescript
+chart.latex.render(latex, ctx, x, y, options)  // Renderizar
+chart.latex.measure(latex, options)             // Medir sin renderizar
+chart.latex.clearCache()                        // Limpiar caché
+```
+
+**Exportaciones**:
+- Agregado a `src/index.ts`: `PluginLaTeX`, `PluginLaTeXConfig`, `LaTeXPluginAPI`
+- Agregado a `src/plugins/index.ts`
+
+**Bundle Size**: ~850 líneas total (muy compacto)
+
+---
+
+### [2026-01-15] Gráficos Ternarios - Última Feature de Phase 2 ✅
+
+**Objetivo**: Implementar visualizaciones triangulares para datos composicionales de 3 componentes.
+
+#### Implementación Completa
+
+Se implementó un renderer completo para gráficos ternarios (diagramas triangulares) usado en:
+- **Clasificación de suelos** (arena, limo, arcilla)
+- **Diagramas de fase** (metalurgia, composiciones de aleaciones)
+- **Composiciones químicas** (3 componentes que suman 100%)
+- **Análisis geológico** (contenido mineral de rocas)
+- **Datos económicos** (asignación de presupuesto entre 3 categorías)
+
+**Características Implementadas**:
+- ✅ **Conversión de Coordenadas**: Ternario (a, b, c) → Cartesiano (x, y)
+- ✅ **Grid Triangular**: Líneas paralelas a cada lado del triángulo
+- ✅ **Outline del Triángulo**: Contorno del triángulo equilátero
+- ✅ **Labels de Componentes**: Etiquetas en cada vértice
+- ✅ **Scatter Points**: Renderizado de puntos de datos
+- ✅ **Normalización Automática**: Si a+b+c ≠ 1, se normaliza automáticamente
+- ✅ **Grid Configurable**: 5-20 divisiones (intervalos de porcentaje)
+
+**Fórmula de Conversión**:
+```
+x = c + b/2
+y = b × √3/2
+```
+
+Donde a, b, c están normalizados (a + b + c = 1)
+
+**Archivos Creados**:
+- `src/renderer/ternary/TernaryRenderer.ts` - Renderer completo (223 líneas)
+  - `ternaryToCartesian()` - Conversión de coordenadas
+  - `convertTernaryData()` - Conversión de arrays
+  - `drawTernaryGrid()` - Grid triangular con divisiones configurables
+  - `drawTernaryOutline()` - Contorno del triángulo
+  - `drawTernaryLabels()` - Labels de componentes
+  - `renderTernaryPoints()` - Puntos scatter
+  - `renderTernaryPlot()` - Función all-in-one
+- `src/renderer/ternary/types.ts` - Tipos TypeScript
+- `src/renderer/ternary/index.ts` - Exports del módulo
+
+**Tipos Agregados**:
+- `TernaryData` - Estructura de datos (a[], b[], c[])
+- `TernaryStyle` - Opciones de estilo
+- `TernaryOptions` - Configuración completa
+- Agregado "ternary" a `SeriesType` en `src/types.ts`
+
+**Documentación**:
+- `docs/api/ternary-charts.md` - API Reference completa con:
+  - Guía de uso básico
+  - Explicación del sistema de coordenadas
+  - 5 casos de uso comunes (suelos, fases, geología, presupuesto, química)
+  - Guía de lectura del gráfico
+  - Mejores prácticas
+  - Background matemático
+- `docs/examples/ternary-charts.md` - Guía de implementación con ejemplos
+
+**Demo Interactivo**:
+- `docs/.vitepress/theme/demos/TernaryDemo.vue` - Demo completo con:
+  - 4 datasets precargados:
+    - Soil Classification (7 puntos)
+    - Phase Diagram (6 puntos)
+    - Budget Allocation (5 puntos)
+    - Random Points (generador)
+  - Controles interactivos:
+    - Selector de dataset
+    - Point size slider (3-15px)
+    - Grid divisions slider (5-20)
+    - Color picker
+    - Toggles para grid y labels
+  - Botón "Generate Random Data" (20 puntos aleatorios)
+  - Info panel con labels de componentes y contador de puntos
+  - Canvas responsive con DPR support
+
+**Exportaciones**:
+- Agregado a `src/renderer/index.ts`: `export * from './ternary'`
+- Agregado a `src/index.ts`: `TernaryData`, `TernaryStyle`, `TernaryOptions`
+
+**Integración VitePress**:
+- Registrado `TernaryDemo` component
+- Links agregados al sidebar:
+  - API: `/api/ternary-charts`
+  - Examples: `/examples/ternary-charts`
+
+**Progreso Phase 2**: **100% COMPLETO** 🎉  
+- 8/8 features implementados
+- TODAS las features documentadas con demos interactivos
+
+**Actualizado**: `docs/ROADMAP.md` - Phase 2 marcada como 100% COMPLETA (2026-01-15)

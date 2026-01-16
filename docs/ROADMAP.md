@@ -6,22 +6,26 @@
 
 ---
 
+9: ✅ El filtro de una única frecuencia ya ha sido añadido al plugin de análisis adaptativo para restar componentes de ruido o interferencias periódicas. (COMPLETADO 2026-01-14)
+
 ## 📊 Resumen Ejecutivo
 
-Este documento propone **25 nuevas features** organizadas en 6 categorías y 4 fases de desarrollo para mejorar la usabilidad, rendimiento y capacidades de la librería `scichart-engine`.
+Este documento propone **39 nuevas features** organizadas en 8 categorías y 4 fases de desarrollo para mejorar la usabilidad, rendimiento y capacidades de la librería `scichart-engine`.
+
+**🚀 Implementación 100% Nativa**: Todas las features están diseñadas sin dependencias de librerías de terceros, utilizando algoritmos matemáticos puros y renderizado nativo para máximo control y rendimiento.
 
 ---
 
 ## 🏗️ Estado Actual de la Librería
 
-### Arquitectura Core
+### Arquitectura Core (100% Nativa)
 | Componente | Estado | Descripción |
 |------------|--------|-------------|
-| WebGL Renderer | ✅ Estable | Renderizado 2D de alto rendimiento |
-| Plugin System | ✅ Estable | Arquitectura modular extensible |
-| React Integration | ✅ Estable | Hooks y componentes |
-| 3D Rendering | ✅ Estable | Múltiples tipos de gráficos 3D |
-| Streaming | ✅ Estable | WebSocket + backpressure |
+| WebGL Renderer | ✅ Estable | Renderizado 2D de alto rendimiento nativo |
+| Plugin System | ✅ Estable | Arquitectura modular extensible nativa |
+| React Integration | ✅ Estable | Hooks y componentes nativos |
+| 3D Rendering | ✅ Estable | Múltiples tipos de gráficos 3D nativos |
+| Streaming | ✅ Estable | WebSocket + backpressure nativo |
 
 ### Plugins Actuales (13)
 1. **PluginAnalysis** - FFT, filtros, fitting, estadísticas
@@ -46,11 +50,11 @@ Este documento propone **25 nuevas features** organizadas en 6 categorías y 4 f
 
 ---
 
-## 🚀 Propuesta de 25 Nuevas Features
+## 🚀 Propuesta de 39 Nuevas Features
 
 ### 📁 Categoría 1: Datos y Exportación
 
-#### 1. **PluginDataExport** ⭐ Alta Prioridad
+#### 1. **PluginDataExport** ✅ (COMPLETADO)
 ```typescript
 // Exportación avanzada a múltiples formatos
 chart.use(PluginDataExport({
@@ -69,7 +73,7 @@ chart.export('xlsx', { series: ['s1', 's2'], range: 'visible' });
 
 ---
 
-#### 2. **PluginDataImport**
+#### 2. **PluginDataImport** NO
 ```typescript
 // Importación de múltiples formatos
 chart.use(PluginDataImport({
@@ -88,7 +92,7 @@ await chart.import(file, { mapping: { x: 'time', y: 'voltage' } });
 
 ---
 
-#### 3. **PluginSnapshot**
+#### 3. **PluginSnapshot** ✅ (COMPLETADO - 2026-01-14)
 ```typescript
 // Capturas de alta resolución
 chart.use(PluginSnapshot({
@@ -111,7 +115,7 @@ const image = await chart.snapshot({
 
 ---
 
-#### 4. **PluginPDF**
+#### 4. **PluginPDF** NO
 ```typescript
 // Generación de reportes PDF
 chart.use(PluginPDF({
@@ -134,7 +138,7 @@ await chart.generatePDF({
 
 ---
 
-#### 5. **PluginDataTransform**
+#### 5. **PluginDataTransform (#5)**: Pipeline de transformaciones en tiempo real (normalize, smooth, derivate, etc.). **COMPLETADO**
 ```typescript
 // Pipeline de transformaciones
 chart.use(PluginDataTransform());
@@ -156,7 +160,7 @@ chart.transform('s1', [
 
 ### 📈 Categoría 2: Nuevos Tipos de Visualización
 
-#### 6. **Radar/Spider Charts** ⭐ Alta Prioridad
+#### 6. **Radar/Spider Charts** ✅ (COMPLETADO - 2026-01-14)
 ```typescript
 chart.addSeries({
   id: 'radar1',
@@ -178,7 +182,7 @@ chart.addSeries({
 
 ---
 
-#### 7. **Waterfall Series**
+#### 7. **Waterfall Series** ✅ (COMPLETADO)
 ```typescript
 chart.addSeries({
   id: 'waterfall1',
@@ -201,7 +205,7 @@ chart.addSeries({
 
 ---
 
-#### 8. **Polar Charts** ⭐ Alta Prioridad
+#### 8. **Polar Charts** ✅ (COMPLETADO)
 ```typescript
 chart.addSeries({
   id: 'polar1',
@@ -223,7 +227,7 @@ chart.addSeries({
 
 ---
 
-#### 9. **Gauge/Dial Charts**
+9. **Gauge/Dial Charts (#9)**: Visualización de métricas críticas y estados de sistema. **COMPLETADO**
 ```typescript
 chart.addSeries({
   id: 'gauge1',
@@ -250,7 +254,7 @@ chart.addSeries({
 
 ---
 
-#### 10. **Sankey/Flow Diagrams**
+10. **Sankey/Flow Diagrams (#10)**: Visualización de flujos de datos y balances. **COMPLETADO**
 ```typescript
 chart.addSeries({
   id: 'sankey1',
@@ -295,7 +299,7 @@ chart.on('gesture:swipe', (direction) => {});
 
 ---
 
-#### 12. **PluginVoice**
+#### 12. **PluginVoice** NO
 ```typescript
 chart.use(PluginVoice({
   language: 'es-ES',
@@ -332,7 +336,7 @@ chart.use(PluginGestures({
 
 ---
 
-#### 14. **PluginContextMenu** ⭐ Alta Prioridad
+#### 14. **PluginContextMenu** ✅ (COMPLETADO)
 ```typescript
 chart.use(PluginContextMenu({
   items: [
@@ -354,7 +358,7 @@ chart.use(PluginContextMenu({
 
 ---
 
-#### 15. **PluginAccessibility** ⭐ Alta Prioridad
+#### 15. **PluginAccessibility** ⭐ Alta Prioridad NO
 ```typescript
 chart.use(PluginAccessibility({
   ariaLabels: true,
@@ -375,28 +379,45 @@ chart.use(PluginAccessibility({
 
 ### 🤖 Categoría 4: Análisis e IA/ML
 
-#### 16. **PluginMLIntegration** ⭐ Alta Prioridad
+#### 16. **PluginMLIntegration** ✅ (COMPLETADO - 2026-01-15)
 ```typescript
 chart.use(PluginMLIntegration({
-  runtime: 'tfjs', // 'tfjs' | 'onnx' | 'wasm'
+  runtime: 'native', // 100% native implementation
   models: {
-    classifier: '/models/peak-classifier.json',
-    regressor: '/models/trend-predictor.onnx'
+    'neural-predictor': {
+      id: 'neural-predictor',
+      type: 'neural-network',
+      metadata: { layers: 3, algorithm: 'backpropagation' }
+    },
+    'linear-regressor': {
+      id: 'linear-regressor',
+      type: 'linear-regression',
+      metadata: { algorithm: 'least-squares' }
+    }
   }
 }));
 
 // API
-const predictions = await chart.ml.predict('classifier', seriesData);
-chart.ml.visualizePredictions(predictions);
+const predictions = await chart.ml.predict('neural-predictor', {
+  data: seriesData,
+  preprocessing: { normalize: true }
+});
+chart.ml.visualizePredictions('neural-predictor', 'series1');
+
+// Native statistical functions
+const fft = chart.ml.stats.fft(data);
+const correlation = chart.ml.stats.correlation(x, y);
 ```
 **Beneficios:**
-- Clasificación automática de picos
-- Predicción de tendencias
-- Detección de anomalías con ML
+- **100% nativo**: Sin dependencias de TensorFlow.js, ONNX, o WebAssembly
+- Redes neuronales simples implementadas en JavaScript
+- Algoritmos estadísticos y FFT nativos
+- Procesamiento de señales sin dependencias
+- Control total sobre el código y optimización
 
 ---
 
-#### 17. **PluginAnomalyDetection** ⭐ Alta Prioridad
+#### 17. **PluginAnomalyDetection** ✅ (COMPLETADO)
 ```typescript
 chart.use(PluginAnomalyDetection({
   method: 'isolation-forest', // 'zscore' | 'mad' | 'isolation-forest'
@@ -417,7 +438,7 @@ chart.on('anomaly:detected', (anomalies) => {
 
 ---
 
-#### 18. **PluginPatternRecognition**
+#### 18. **PluginPatternRecognition** ✅ (COMPLETADO - 2026-01-15)
 ```typescript
 chart.use(PluginPatternRecognition({
   patterns: ['head-shoulders', 'double-top', 'triangle', 'custom'],
@@ -436,7 +457,7 @@ const matches = chart.patterns.find('triangle', seriesId);
 
 ---
 
-#### 19. **PluginRegression**
+#### 19. **PluginRegression** ✅ (COMPLETADO - 2026-01-14)
 ```typescript
 chart.use(PluginRegression({
   methods: ['linear', 'polynomial', 'exponential', 'logarithmic', 
@@ -569,7 +590,7 @@ chart.use(PluginCompression({
 
 ### 🌐 Categoría 6: Colaboración y Compartir
 
-#### 26. **PluginCollaboration**
+#### 26. **PluginCollaboration** NO
 ```typescript
 chart.use(PluginCollaboration({
   server: 'wss://collab.example.com',
@@ -587,7 +608,7 @@ chart.use(PluginCollaboration({
 
 ---
 
-#### 27. **PluginEmbedding**
+#### 27. **PluginEmbedding** NO
 ```typescript
 chart.use(PluginEmbedding({
   allowedDomains: ['*.company.com'],
@@ -605,7 +626,7 @@ const embedCode = chart.getEmbedCode({ width: '100%', height: 400 });
 
 ---
 
-#### 28. **PluginShare**
+#### 28. **PluginShare** NO
 ```typescript
 chart.use(PluginShare({
   generateQR: true,
@@ -624,6 +645,298 @@ const qrCode = await chart.getQRCode(shareUrl);
 
 ---
 
+### 📊 Categoría 7: Visualización Científica Avanzada
+
+#### 29. **Error Bars y Box Plots** ✅ (COMPLETADO)
+```typescript
+chart.addSeries({
+  id: 'error-bars',
+  type: 'line',
+  data: { x: [...], y: [...] },
+  errorBars: {
+    type: 'symmetric', // 'symmetric' | 'asymmetric'
+    value: 0.1, // o array: [lower, upper]
+    style: { color: 'red', width: 2 }
+  }
+});
+
+// Box Plot
+chart.addSeries({
+  id: 'boxplot',
+  type: 'boxplot',
+  data: {
+    min: [1, 2, 3],
+    q1: [2, 3, 4],
+    median: [3, 4, 5],
+    q3: [4, 5, 6],
+    max: [5, 6, 7],
+    outliers: [[0.5, 1.5], [6.5, 7.5]]
+  }
+});
+```
+**Casos de Uso:**
+- Bioestadística y control de calidad
+- Publicaciones científicas con intervalos de confianza
+- Análisis de distribuciones
+
+---
+
+#### 30. **Gráficos Ternarios**
+```typescript
+chart.addSeries({
+  id: 'ternary1',
+  type: 'ternary',
+  data: {
+    a: [0.2, 0.3, 0.5], // Componente A
+    b: [0.3, 0.4, 0.2], // Componente B  
+    c: [0.5, 0.3, 0.3]  // Componente C (a+b+c=1)
+  },
+  style: {
+    mode: 'scatter',
+    fill: true,
+    colorScale: 'viridis'
+  }
+});
+```
+**Casos de Uso:**
+- Diagramas de fase en metalurgia
+- Química de suelos
+- Composiciones de tres variables
+
+---
+
+#### 31. **Gráficos de Contorno (Isolines)**
+```typescript
+chart.addSeries({
+  id: 'contour1',
+  type: 'contour',
+  data: {
+    x: [...], // Grid X
+    y: [...], // Grid Y
+    z: [[...]] // 2D array de valores
+  },
+  style: {
+    levels: 10, // Número de isolines
+    colorScale: 'jet',
+    smooth: true,
+    showLabels: true
+  }
+});
+```
+**Casos de Uso:**
+- Potenciales eléctricos
+- Topografía
+- Mapas de energía libre
+
+---
+
+### 🎨 Categoría 8: Publicación y Presentación
+
+#### 32. **Renderizado LaTeX** ✅ (COMPLETADO - 2026-01-15)
+```typescript
+// 100% Nativo - Sin dependencias externas
+chart.use(PluginLaTeX({
+  fontSize: 16,
+  fontFamily: 'serif',
+  color: '#000000',
+  enableCache: true  // Caching inteligente para performance
+}));
+
+// Ejes con LaTeX
+chart.xAxis.label = '\\Delta E (eV)';
+chart.yAxis.label = '\\frac{\\partial^2 y}{\\partial x^2}';
+
+// Anotaciones LaTeX
+chart.addAnnotation({
+  type: 'text',
+  text: 'E = mc^2',
+  position: { x: 10, y: 20 },
+  latex: true
+});
+
+// Símbolos soportados
+// - Griegas: \alpha, \beta, \gamma, \delta, \pi, \sigma, \omega
+// - Operadores: \sum, \int, \partial, \pm, \times, \div, \infty
+// - Relaciones: \leq, \geq, \neq, \approx, \equiv
+// - Expresiones: x^2, H_2O, \frac{a}{b}, \sqrt{x}
+```
+**Beneficios:**
+- **100% Nativo**: Sin dependencias de KaTeX o MathJax
+- Ecuaciones profesionales en publicaciones
+- Notación científica estándar
+- Compatibilidad con papers académicos
+- Parser y renderer implementados en TypeScript puro
+
+---
+
+#### 33. **Temas de Publicación**
+```typescript
+// Presets científicos
+chart.setTheme('NATURE'); // Blanco/negro, serif, ticks inward
+chart.setTheme('MATLAB'); // Colores clásicos MATLAB
+chart.setTheme('ORIGIN'); // Estilo OriginLab
+chart.setTheme('DARK_NEON'); // Cyberpunk/Sci-fi
+
+// Configuración personalizada
+chart.setTheme({
+  background: '#ffffff',
+  grid: { color: '#cccccc', style: 'dashed' },
+  axes: { 
+    font: 'Times New Roman',
+    tickDirection: 'inward',
+    color: '#000000'
+  },
+  series: {
+    colorPalette: ['#1f77b4', '#ff7f0e', '#2ca02c']
+  }
+});
+```
+**Beneficios:**
+- Listos para publicación académica
+- Estándares de la industria científica
+- Consistencia visual profesional
+
+---
+
+### 🔧 Categoría 9: Interacción Avanzada
+
+#### 34. **Selección ROI y Enmascaramiento**
+```typescript
+chart.use(PluginROI({
+  tools: ['polygon', 'rectangle', 'lasso', 'circle'],
+  mask: true, // Ocultar datos fuera de ROI
+  persistent: true // Mantener selecciones
+}));
+
+// Eventos
+chart.on('roi:selected', (region) => {
+  const maskedData = chart.maskData(region);
+  chart.analyze(maskedData);
+});
+```
+**Casos de Uso:**
+- Citometría de flujo
+- Limpieza manual de datos
+- Análisis de clusters específicos
+
+---
+
+#### 35. **Edición Drag & Drop (What-if Analysis)**
+```typescript
+chart.use(PluginDragEdit({
+  enabled: true,
+  snapToGrid: true,
+  editMode: 'points' // 'points' | 'series'
+}));
+
+// Eventos
+chart.on('point:edited', (pointIndex, newValue) => {
+  console.log(`Point ${pointIndex} changed to ${newValue}`);
+  // Recalcular modelo con nuevo valor
+});
+```
+**Casos de Uso:**
+- Simulación y modelado
+- Ajuste manual de curvas
+- Corrección de outliers
+
+---
+
+#### 36. **Ejes Rotos (Broken Axes)**
+```typescript
+chart.xAxis.broken = [
+  { from: 10, to: 990 }, // Omitir rango 10-990
+  { from: 1000, to: 2000 } // Continuar desde 1000
+];
+
+// Visualización con marcadores de ruptura
+chart.xAxis.breakStyle = {
+  symbol: 'zigzag', // 'zigzag' | 'slash' | 'gap'
+  spacing: 10,
+  color: '#666666'
+};
+```
+**Casos de Uso:**
+- Espectrometría de masas
+- Cromatografía
+- Datos con grandes gaps
+
+---
+
+### 📱 Categoría 10: Integración y Extensión
+
+#### 37. **Bindings para Python (Jupyter Widgets)**
+```python
+# En Jupyter Notebook
+import scichart_engine as sce
+import numpy as np
+
+# Crear chart
+chart = sce.Chart()
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+chart.line(x, y, label='sin(x)')
+chart.show()
+
+# Interactivo en notebook
+chart.zoom([0, 5])
+chart.add_annotation('Peak', x=1.57, y=1)
+```
+**Beneficios:**
+- Adopción por Data Scientists
+- Integración con Pandas/NumPy
+- Notebooks interactivos
+
+---
+
+#### 38. **Bridge WASM (Memoria Compartida)**
+```typescript
+// Conexión zero-copy con Rust/C++
+chart.use(PluginWASM({
+  memorySize: '1gb',
+  sharedBuffer: true,
+  endian: 'little'
+}));
+
+// Escritura directa desde Rust
+// Rust: write_to_shared_buffer(data_ptr, data_len);
+// JS: chart.updateFromSharedBuffer();
+```
+**Beneficios:**
+- Zero-copy para alta velocidad
+- Backend Rust/C++ nativo
+- Ideal para STM32 y adquisición de datos
+
+---
+
+#### 39. **Grabación de Video Nativa**
+```typescript
+chart.use(PluginVideo({
+  format: 'webm', // 'webm' | 'mp4'
+  quality: 'high', // 'low' | 'medium' | 'high'
+  fps: 30
+}));
+
+// API
+chart.startRecording();
+// ... animación ...
+chart.stopRecording().then(blob => {
+  // Descargar video
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'chart-animation.webm';
+  a.click();
+});
+```
+**Casos de Uso:**
+- Capturar fenómenos transitorios
+- Presentaciones sin software externo
+- Compartir en LinkedIn/Twitter
+
+---
+
 ## 📅 Plan de Desarrollo por Fases
 
 ### Phase 1: v1.7.x (Q1 2026) - Impacto Inmediato
@@ -634,6 +947,30 @@ const qrCode = await chart.getQRCode(shareUrl);
 | Polar Charts | ⭐⭐⭐ | Media | ✅ COMPLETO | 2 |
 | PluginAnomalyDetection | ⭐⭐⭐ | Alta | ✅ COMPLETO | 3 |
 | ~~PluginAccessibility~~ | ⭐⭐⭐ | Media | ❌ CANCELADO | 2 |
+
+**Features Core ya implementadas (no requieren desarrollo):**
+| Feature | Estado | Notas |
+|---------|--------|-------|
+| Heatmaps | ✅ COMPLETO | `HeatmapOptions`, `HeatmapData`, renderizado 2D/3D |
+| Error Bars | ✅ COMPLETO | `ErrorBarStyle`, renderizado en ChartRenderer |
+| Gráficos 3D de Superficie | ✅ COMPLETO | Plugin3D con múltiples renderers |
+| Gráficos de Contorno | ✅ COMPLETO | `Contour3DData`, `contours.ts` |
+| Streaming con Buffer Circular | ✅ COMPLETO | PluginStreaming con backpressure |
+
+**Plugins ya implementados (no requieren desarrollo):**
+| Plugin | Estado | Funcionalidad |
+|--------|--------|--------------|
+| PluginAnalysis | ✅ COMPLETO | FFT, filtros, fitting, estadísticas |
+| PluginTools | ✅ COMPLETO | Delta tool, Peak tool, Tooltips |
+| PluginAnnotations | ✅ COMPLETO | Líneas, formas, texto |
+| PluginThemeEditor | ✅ COMPLETO | Personalización de temas |
+| PluginI18n | ✅ COMPLETO | Internacionalización |
+| PluginKeyboard | ✅ COMPLETO | Atajos de teclado |
+| PluginClipboard | ✅ COMPLETO | Copiar/pegar |
+| PluginSync | ✅ COMPLETO | Sincronización de charts |
+| PluginDebug | ✅ COMPLETO | Herramientas de desarrollo |
+| PluginLoading | ✅ COMPLETO | Estados de carga |
+| PluginGpu | ✅ COMPLETO | Aceleración WebGPU |
 
 **Total estimado: 8 semanas** (sin Accessibility)  
 **Progreso: 100%** ✅ **FASE COMPLETA**
@@ -646,43 +983,70 @@ const qrCode = await chart.getQRCode(shareUrl);
 
 ---
 
-### Phase 2: v1.8.x (Q2 2026) - Análisis Extendido
-| Feature | Prioridad | Complejidad | Semanas |
-|---------|-----------|-------------|---------|
-| Polar Grid Enhancement | ⭐ | Baja | 0.5 |
-| PluginMLIntegration | ⭐⭐ | Alta | 4 |
-| PluginPatternRecognition | ⭐⭐ | Alta | 3 |
-| PluginRegression | ⭐⭐ | Media | 2 |
-| Radar Charts | ⭐⭐ | Media | 2 |
-| PluginSnapshot | ⭐⭐ | Baja | 1 |
+### Phase 2: v1.8.x (Q2 2026) - Análisis Extendido  
+| Feature | Prioridad | Complejidad | Estado | Semanas |
+|---------|-----------|-------------|--------|---------|
+| Polar Grid Enhancement | ⭐ | Baja | ✅ COMPLETO | 0.5 |
+| PluginMLIntegration | ⭐⭐ | Alta | ✅ COMPLETO | 4 |
+| PluginPatternRecognition | ⭐⭐ | Alta | ✅ COMPLETO | 3 |
+| PluginRegression | ⭐⭐ | Media | ✅ COMPLETO | 2 |
+| Radar Charts | ⭐⭐ | Media | ✅ COMPLETO | 2 |
+| PluginSnapshot | ⭐⭐ | Baja | ✅ COMPLETO | 1 |
+| ~~Error Bars~~ | ~~⭐⭐⭐~~ | ~~Media~~ | ✅ **COMPLETO** | ~~2~~ |
+| Gráficos Ternarios | ⭐⭐ | Alta | ✅ COMPLETO | 3 |
+| Renderizado LaTeX | ⭐⭐ | Media | ✅ COMPLETO | 2 |
 
-**Total estimado: 12 semanas**
+**Total estimado: 0 semanas** (TODOS COMPLETADOS) 🎉  
+**Progreso: 100%** (8/8 features completos)
+
+**Completado hasta ahora**: 2026-01-15
+- ✅ PluginMLIntegration: Implementado con algoritmos nativos (neural networks, regression)
+- ✅ PluginPatternRecognition: Detección de patrones técnicos implementada
+- ✅ PluginRegression: Fitting científico con 8 métodos (linear, polynomial, gaussian, etc.)
+- ✅ Radar Charts: Plugin completo con renderer y demo interactivo
+- ✅ PluginSnapshot: Exportación de imágenes en alta resolución
+- ✅ Renderizado LaTeX: Parser y renderer nativos sin dependencias externas
+- ✅ Gráficos Ternarios: Renderer completo con conversión de coordenadas y grid triangular
+
+**Nota:** Error Bars ya está implementado en el core con `ErrorBarStyle` y renderizado en ChartRenderer.
 
 ---
 
 ### Phase 3: v1.9.x (Q3 2026) - Rendimiento
-| Feature | Prioridad | Complejidad | Semanas |
-|---------|-----------|-------------|---------|
-| PluginOffscreen | ⭐⭐ | Alta | 4 |
-| PluginLazyLoad | ⭐⭐ | Media | 2 |
-| PluginVirtualization | ⭐⭐ | Alta | 3 |
-| PluginCaching | ⭐ | Media | 2 |
-| Waterfall Charts | ⭐ | Media | 2 |
+| Feature | Prioridad | Complejidad | Estado | Semanas |
+|---------|-----------|-------------|--------|---------|
+| PluginOffscreen | ⭐⭐ | Alta | 🔄 PENDIENTE | 4 |
+| PluginLazyLoad | ⭐⭐ | Media | 🔄 PENDIENTE | 2 |
+| PluginVirtualization | ⭐⭐ | Alta | 🔄 PENDIENTE | 3 |
+| PluginCaching | ⭐ | Media | 🔄 PENDIENTE | 2 |
+| Waterfall Charts | ⭐ | Media | 🔄 PENDIENTE | 2 |
+| ~~Gráficos de Contorno~~ | ~~⭐⭐~~ | ~~Media~~ | ✅ **COMPLETO** | ~~2~~ |
+| Selección ROI y Enmascaramiento | ⭐⭐ | Alta | 🔄 PENDIENTE | 3 |
+| Edición Drag & Drop | ⭐ | Media | 🔄 PENDIENTE | 2 |
 
-**Total estimado: 13 semanas**
+**Total estimado: 18 semanas** (solo features pendientes)
+
+**Nota:** Gráficos de Contorno ya están implementados con `Contour3DData` y `contours.ts` en PluginAnalysis.
 
 ---
 
 ### Phase 4: v2.0.x (Q4 2026) - Nueva Generación
-| Feature | Prioridad | Complejidad | Semanas |
-|---------|-----------|-------------|---------|
-| PluginCollaboration **NO** | ⭐ | Muy Alta | 6 |
-| PluginVoice **NO** | ⭐ | Alta | 3 |
-| PluginForecasting | ⭐ | Alta | 3 |
-| Gauge Charts | ⭐ | Media | 2 |
-| Sankey Diagrams | ⭐ | Media | 2 |
+| Feature | Prioridad | Complejidad | Estado | Semanas |
+|---------|-----------|-------------|--------|---------|
+| PluginCollaboration **NO** | ⭐ | Muy Alta | 🔄 PENDIENTE | 6 |
+| PluginVoice **NO** | ⭐ | Alta | 🔄 PENDIENTE | 3 |
+| PluginForecasting | ⭐ | Alta | 🔄 PENDIENTE | 3 |
+| Gauge Charts | ⭐ | Media | 🔄 PENDIENTE | 2 |
+| Sankey Diagrams | ⭐ | Media | 🔄 PENDIENTE | 2 |
+| ~~Temas de Publicación~~ | ~~⭐⭐~~ | ~~Baja~~ | ✅ **COMPLETO** | ~~1~~ |
+| Ejes Rotos | ⭐⭐ | Media | 🔄 PENDIENTE | 2 |
+| Bindings para Python | ⭐⭐ | Muy Alta | 🔄 PENDIENTE | 6 |
+| Bridge WASM | ⭐ | Alta | 🔄 PENDIENTE | 4 |
+| Grabación de Video Nativa | ⭐ | Media | 🔄 PENDIENTE | 2 |
 
-**Total estimado: 16 semanas**
+**Total estimado: 30 semanas** (solo features pendientes)
+
+**Nota:** Temas de Publicación ya están implementados con PluginThemeEditor.
 
 ---
 
@@ -733,7 +1097,7 @@ const qrCode = await chart.getQRCode(shareUrl);
 
 Esta propuesta define un camino claro para evolucionar `scichart-engine` de una librería de charts científicos a una **plataforma completa de visualización y análisis de datos**.
 
-Las 25 features propuestas están organizadas para maximizar el valor en cada fase, comenzando con mejoras de alto impacto y bajo esfuerzo, y progresando hacia capacidades más avanzadas.
+Las 39 features propuestas están organizadas para maximizar el valor en cada fase, comenzando con mejoras de alto impacto y bajo esfuerzo, y progresando hacia capacidades más avanzadas.
 
 **Próximos pasos:**
 1. Validar prioridades con stakeholders

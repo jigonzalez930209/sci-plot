@@ -8,6 +8,9 @@ export {
   interleaveData,
   interleaveStepData,
   interleaveBandData,
+  interleaveErrorData,
+  interleaveBoxPlotData,
+  interleaveWaterfallData,
   parseColor,
   type NativeSeriesRenderData,
   type NativeRenderOptions,
@@ -25,6 +28,9 @@ export {
 export { WebGPURenderer, type WebGPURendererOptions } from "./WebGPURenderer";
 
 export * from "./shaders";
+
+// Radar Charts
+export * from './radar';
 
 // Bar Chart Utilities
 export { interleaveBarData, calculateBarWidth } from "./BarRenderer";
@@ -44,3 +50,6 @@ export {
   calculatePolarBounds,
   normalizeAngles,
 } from "./PolarRenderer";
+
+// Ternary Chart Utilities
+export * from './ternary';

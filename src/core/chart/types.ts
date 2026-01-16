@@ -47,6 +47,10 @@ export interface Chart {
   enableCursor(options: CursorOptions): void;
   disableCursor(): void;
   resize(width?: number, height?: number): void;
+  /** Get current device pixel ratio used for rendering */
+  getDPR(): number;
+  /** Set device pixel ratio and trigger re-render */
+  setDPR(dpr: number): void;
   render(): void;
   on<K extends keyof ChartEventMap>(
     event: K,
@@ -67,6 +71,10 @@ export interface Chart {
   readonly baseTheme: any;
   readonly analysis: any;
   readonly animations: any;
+  readonly regression: any;
+  readonly radar: any;
+  readonly ml: any;
+  readonly snapshot: any;
 
   // Annotation methods
   addAnnotation(annotation: Annotation): string;
@@ -114,6 +122,8 @@ export interface Chart {
   removeYAxis(id: string): boolean;
   /** Update Y axis configuration */
   updateYAxis(id: string, options: Partial<AxisOptions>): void;
+  /** Update X axis configuration */
+  updateXAxis(options: Partial<AxisOptions>): void;
   /** Get Y axis configuration by ID */
   getYAxis(id: string): AxisOptions | undefined;
   /** Get all Y axes configurations */
@@ -178,6 +188,11 @@ export interface Chart {
    * Get the Peak Tool instance for peak integration
    */
   getPeakTool(): any | null;
+
+  /**
+   * Get a plugin API by name
+   */
+  getPlugin<T = any>(name: string): T | null;
 
   // ============================================
   // Responsive Design

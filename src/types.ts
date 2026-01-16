@@ -98,7 +98,13 @@ export type SeriesType =
   | "bar"
   | "heatmap"
   | "candlestick"
-  | "polar";
+  | "polar"
+  | "radar"
+  | "boxplot"
+  | "waterfall"
+  | "gauge"
+  | "sankey"
+  | "ternary";
 
 /** Step mode defines where the step occurs */
 export type StepMode = "before" | "after" | "center";
@@ -133,6 +139,24 @@ export interface SeriesData {
   low?: Float32Array | Float64Array;
   /** Close values for OHLC/Candlestick */
   close?: Float32Array | Float64Array;
+  /** Radar data - axes labels and values */
+  radar?: {
+    axes: string[];
+    values: number[];
+  };
+  /** Median values for BoxPlot */
+  /** Gauge data */
+  value?: number;
+  min?: number;
+  max?: number;
+  /** Sankey data */
+  nodes?: string[];
+  links?: { source: string | number; target: string | number; value: number }[];
+  median?: Float32Array | Float64Array;
+  /** Outlier values for BoxPlot [ [x, y], [x, y], ... ] or flattened [x0, y0, x1, y1, ...] per box?
+   * For simplicity, let's use an array of arrays of numbers or similar.
+   */
+  outliers?: number[][];
 }
 
 /** Error bar styling options */
@@ -172,6 +196,23 @@ export interface SeriesStyle {
   symbol?: ScatterSymbol;
   /** Dash pattern [dash, gap] - empty for solid */
   lineDash?: number[];
+  /** Radar-specific styling */
+  radar?: {
+    /** Fill area under radar line */
+    fill?: boolean;
+    /** Fill color (overrides color for fill) */
+    fillColor?: string;
+    /** Fill opacity */
+    fillOpacity?: number;
+    /** Show axis labels */
+    showLabels?: boolean;
+    /** Label font size */
+    labelSize?: number;
+    /** Number of levels for background grid */
+    levels?: number;
+    /** Start angle in degrees */
+    startAngle?: number;
+  };
 }
 
 /** Available scatter symbol shapes */
@@ -223,6 +264,12 @@ export interface SeriesUpdateData {
   low?: Float32Array | Float64Array;
   /** New Close values (for candlesticks) */
   close?: Float32Array | Float64Array;
+  /** New value for Gauge charts */
+  value?: number;
+  /** New nodes for Sankey diagrams */
+  nodes?: any[];
+  /** New links for Sankey diagrams */
+  links?: any[];
   /** If true, append to existing data; if false, replace */
   append?: boolean;
 }
@@ -365,17 +412,202 @@ export interface PolarStyle extends Omit<SeriesStyle, "stepMode"> {
   showAngularGrid?: boolean;
   /** Number of angular divisions (default: 12 for 30° intervals) */
   angularDivisions?: number;
-  /** Number of radial divisions (default: 5) */
-  radialDivisions?: number;
 }
 
 /** Polar series options */
-export interface PolarOptions extends Omit<SeriesOptions, "data" | "style" | "type"> {
+export interface PolarOptions extends Omit<SeriesOptions, "data" | "style"> {
   type: "polar";
   /** Polar coordinate data */
   data: PolarData;
   /** Polar-specific styling */
   style?: PolarStyle;
+}
+
+// ============================================
+// Radar Chart Types
+// ============================================
+
+/** Radar data structure */
+export interface RadarData {
+  /** Axis labels */
+  axes: string[];
+  /** Values for each axis (0-1 normalized) */
+  values: number[];
+}
+
+/** Radar chart styling */
+export interface RadarStyle {
+  /** Line/point color (hex or rgb) */
+  color?: string;
+  /** Line width in pixels */
+  width?: number;
+  /** Opacity (0-1) */
+  opacity?: number;
+  /** Point size */
+  pointSize?: number;
+  /** Fill area under radar line */
+  fill?: boolean;
+  /** Fill color (overrides color for fill) */
+  fillColor?: string;
+  /** Fill opacity */
+  fillOpacity?: number;
+  /** Show axis labels */
+  showLabels?: boolean;
+  /** Label font size */
+  labelSize?: number;
+  /** Number of levels for background grid */
+  levels?: number;
+  /** Start angle in degrees */
+  startAngle?: number;
+  /** Show background grid */
+  showGrid?: boolean;
+  /** Grid color */
+  gridColor?: string;
+  /** Grid opacity */
+  gridOpacity?: number;
+}
+
+/** Radar chart options */
+export interface RadarOptions extends Omit<SeriesOptions, "data" | "style"> {
+  type: "radar";
+  /** Radar data with axes and values */
+  data: RadarData;
+  /** Radar-specific styling */
+  style?: RadarStyle;
+}
+
+// ============================================
+// Gauge Chart Types
+// ============================================
+
+export interface GaugeRange {
+  from: number;
+  to: number;
+  color: string;
+  label?: string;
+}
+
+export interface GaugeStyle {
+  /** Needle color (default: #333) */
+  needleColor?: string;
+  /** Needle width (default: 3) */
+  needleWidth?: number;
+  /** Ranges of colors (e.g., green for good, red for bad) */
+  ranges?: GaugeRange[];
+  /** Radius of the gauge (0-1, default: 0.8) */
+  radius?: number;
+  /** Start angle in degrees (default: 135) */
+  startAngle?: number;
+  /** End angle in degrees (default: 405) */
+  endAngle?: number;
+  /** Show value text in center (default: true) */
+  showValue?: boolean;
+  /** Value text color */
+  valueColor?: string;
+  /** Value font size */
+  valueSize?: number;
+  /** Label for the gauge */
+  label?: string;
+}
+
+export interface GaugeData {
+  value: number;
+  min: number;
+  max: number;
+}
+
+export interface GaugeOptions extends Omit<SeriesOptions, "data" | "style"> {
+  type: "gauge";
+  data: GaugeData;
+  style?: GaugeStyle;
+}
+
+// ============================================
+// Sankey Chart Types
+// ============================================
+
+export interface SankeyLink {
+  source: string | number;
+  target: string | number;
+  value: number;
+  color?: string;
+}
+
+export interface SankeyNode {
+  id: string | number;
+  name?: string;
+  color?: string;
+}
+
+export interface SankeyData {
+  nodes: SankeyNode[] | string[];
+  links: SankeyLink[];
+}
+
+export interface SankeyStyle {
+  /** Node width in pixels (default: 20) */
+  nodeWidth?: number;
+  /** Padding between nodes (default: 10) */
+  nodePadding?: number;
+  /** Color palette for nodes */
+  palette?: string[];
+  /** Link opacity (default: 0.2) */
+  linkOpacity?: number;
+  /** Show labels (default: true) */
+  showLabels?: boolean;
+}
+
+export interface SankeyOptions extends Omit<SeriesOptions, "data" | "style"> {
+  type: "sankey";
+  data: SankeyData;
+  style?: SankeyStyle;
+}
+
+// ============================================
+// Ternary Chart Types
+// ============================================
+
+/** Ternary data structure (3 components that sum to 1) */
+export interface TernaryData {
+  /** Component A values (0-1) - top vertex */
+  a: number[];
+  /** Component B values (0-1) - bottom-left vertex */
+  b: number[];
+  /** Component C values (0-1) - bottom-right vertex */
+  c: number[];
+}
+
+/** Ternary chart styling options */
+export interface TernaryStyle {
+  /** Point size for scatter mode */
+  pointSize?: number;
+  /** Point color */
+  color?: string;
+  /** Fill opacity for regions */
+  fillOpacity?: number;
+  /** Grid line color */
+  gridColor?: string;
+  /** Grid line width */
+  gridWidth?: number;
+  /** Number of grid divisions (default: 10) */
+  gridDivisions?: number;
+}
+
+/** Ternary chart options */
+export interface TernaryOptions extends Omit<SeriesOptions, "data" | "style"> {
+  type: "ternary";
+  data: TernaryData;
+  style?: TernaryStyle;
+  /** Label for component A (top vertex) */
+  labelA?: string;
+  /** Label for component B (bottom-left vertex) */
+  labelB?: string;
+  /** Label for component C (bottom-right vertex) */
+  labelC?: string;
+  /** Show grid lines (default: true) */
+  showGrid?: boolean;
+  /** Show component labels (default: true) */
+  showLabels?: boolean;
 }
 
 // ============================================

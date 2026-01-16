@@ -94,6 +94,10 @@ export type {
   PolarData,
   PolarStyle,
   PolarOptions,
+  // Ternary Charts
+  TernaryData,
+  TernaryStyle,
+  TernaryOptions,
 } from "./types";
 
 // ============================================
@@ -246,6 +250,7 @@ export {
   gaussianSmooth,
   savitzkyGolay,
   medianFilter,
+  singleFrequencyFilter,
   // Statistics
   crossCorrelation,
   autoCorrelation,
@@ -263,6 +268,7 @@ export {
   type PowerSpectrumResult,
   type FilterOptions,
   type ButterworthOptions,
+  type SingleFrequencyFilterOptions,
 } from "./plugins/analysis";
 
 // ============================================
@@ -571,6 +577,12 @@ export {
   PluginAnalysis,
   PluginAnnotations,
   PluginLoading,
+  PluginRegression,
+  PluginMLIntegration,
+  PluginRadar,
+  PluginSnapshot,
+  PluginDataTransform,
+  PluginLaTeX,
   BuiltinPlugins,
 } from "./plugins";
 
@@ -621,5 +633,20 @@ export type {
   PluginAnalysisConfig,
   PluginAnnotationsConfig,
   PluginLoadingConfig,
+  PluginRegressionConfig,
+  PluginMLIntegrationConfig,
+  PluginRadarConfig,
+  PluginSnapshotConfig,
+  PluginDataTransformConfig,
+  PluginLaTeXConfig,
+  RegressionAPI,
+  MLIntegrationAPI,
+  DataTransformAPI,
+  RadarAPI,
+  LaTeXPluginAPI,
+  SnapshotExportAPI as SnapshotAPI,
+  SnapshotExportOptions as SnapshotExportOptions,
+  SnapshotResolution,
+  SnapshotFormat
 } from "./plugins";
 

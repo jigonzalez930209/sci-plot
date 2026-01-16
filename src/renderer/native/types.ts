@@ -19,7 +19,9 @@ export interface NativeSeriesRenderData {
     | "band"
     | "bar"
     | "heatmap"
-    | "candlestick";
+    | "candlestick"
+    | "boxplot"
+    | "waterfall";
   /** For step types: pre-computed step buffer */
   stepBuffer?: WebGLBuffer;
   stepCount?: number;
@@ -29,6 +31,23 @@ export interface NativeSeriesRenderData {
   zBounds?: { min: number; max: number };
   colormap?: string;
   colormapTexture?: WebGLTexture;
+  /** Error bars */
+  errorBuffer?: WebGLBuffer;
+  errorCount?: number;
+  /** Box plot specific */
+  boxBuffer?: WebGLBuffer;
+  boxCount?: number;
+  boxLinesBuffer?: WebGLBuffer;
+  boxLinesCount?: number;
+  /** Waterfall specific */
+  wfPositiveBuffer?: WebGLBuffer;
+  wfPositiveCount?: number;
+  wfNegativeBuffer?: WebGLBuffer;
+  wfNegativeCount?: number;
+  wfSubtotalBuffer?: WebGLBuffer;
+  wfSubtotalCount?: number;
+  wfConnectorBuffer?: WebGLBuffer;
+  wfConnectorCount?: number;
 }
 
 export interface NativeRenderOptions {

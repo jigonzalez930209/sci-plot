@@ -121,6 +121,13 @@ export { PluginLoading, type PluginLoadingConfig } from "./loading";
 export { PluginDataExport, type PluginDataExportConfig } from "./data-export";
 export { PluginContextMenu, type PluginContextMenuConfig } from "./context-menu";
 export { PluginAnomalyDetection, type PluginAnomalyDetectionConfig, type AnomalyDetectionResult, type AnomalyPoint, type AnomalyMethod } from "./anomaly-detection";
+export { PluginMLIntegration, type PluginMLIntegrationConfig, type MLIntegrationAPI, type MLModelAPI, type PredictionResult, type VisualizationConfig } from "./ml-integration";
+export { PluginPatternRecognition, type PluginPatternRecognitionConfig, type PatternRecognitionAPI, type PatternMatch, type PatternDetectionResult } from "./pattern-recognition";
+export { PluginRegression, type PluginRegressionConfig, type RegressionAPI, type RegressionResult, type RegressionData } from "./regression";
+export { PluginRadar, type PluginRadarConfig, type RadarAPI, type RadarSeriesData, type RadarPoint } from "./radar";
+export { PluginSnapshot, type PluginSnapshotConfig, type SnapshotExportAPI, type SnapshotExportOptions, type SnapshotResolution, type SnapshotFormat } from "./snapshot";
+export { PluginDataTransform, type PluginDataTransformConfig, type DataTransformAPI, type TransformOp, type TransformType } from "./data-transform";
+export { PluginLaTeX, type PluginLaTeXConfig, type LaTeXPluginAPI, type LaTeXDimensions } from "./latex";
 
 // ============================================
 // Helper for creating typed plugins

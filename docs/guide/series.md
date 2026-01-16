@@ -142,6 +142,41 @@ chart.addSeries({
 })
 ```
 
+### Gauge Series (KPIs)
+
+Visualize single values within a range.
+
+```typescript
+chart.addSeries({
+  id: 'speed',
+  type: 'gauge',
+  data: { value: 65, min: 0, max: 120 },
+  style: {
+    label: 'Speed (km/h)',
+    needleColor: '#00ccff',
+    ranges: [
+      { from: 0, to: 60, color: 'rgba(76, 175, 80, 0.4)' },
+      { from: 90, to: 120, color: 'rgba(244, 67, 54, 0.4)' }
+    ]
+  }
+})
+```
+
+### Sankey Series (Flows)
+
+Visualize distribution flows between categories.
+
+```typescript
+chart.addSeries({
+  id: 'flow',
+  type: 'sankey',
+  data: {
+    nodes: [{ id: 'A', name: 'Source' }, { id: 'B', name: 'Target' }],
+    links: [{ source: 'A', target: 'B', value: 100 }]
+  }
+})
+```
+
 ## Data Requirements
 
 ::: warning TypedArrays Required

@@ -15,6 +15,8 @@ import type { OverlayRenderer } from "../OverlayRenderer";
 import type { PlotArea, CursorState, ChartEventMap } from "../../types";
 import type { EventEmitter } from "../EventEmitter";
 import type { SelectionManager } from "../selection";
+import { drawGauge } from "../../renderer/GaugeRenderer";
+import { drawSankey } from "../../renderer/SankeyRenderer";
 
 export interface RenderContext {
   webglCanvas: HTMLCanvasElement;
@@ -71,8 +73,8 @@ export function prepareSeriesData(
     const buf = ctx.renderer.getBuffer(s.getId());
     const seriesType = s.getType();
 
-    // Candlesticks use sub-buffers, so main buffer might be missing
-    if (buf || seriesType === "candlestick") {
+    // Candlesticks, boxplots and waterfall use sub-buffers, so main buffer might be missing
+    if (buf || seriesType === "candlestick" || seriesType === "boxplot" || seriesType === "waterfall") {
       // Determine Y-bounds for this series
       const axisId = s.getYAxisId() || ctx.primaryYAxisId;
       const scale = ctx.yScales.get(axisId);
@@ -140,6 +142,98 @@ export function prepareSeriesData(
               renderData.stepCount = pointCount * 2 - 1;
             }
           }
+        }
+        
+        // Handle Boxplot (extract both buffers)
+        if (seriesType === "boxplot") {
+          const linesBuf = ctx.renderer.getBuffer(`${s.getId()}_box_lines`);
+          const facesBuf = ctx.renderer.getBuffer(`${s.getId()}_box_faces`);
+          if (linesBuf && facesBuf) {
+            renderData.boxLinesBuffer = linesBuf;
+            renderData.boxLinesCount = s.getPointCount() * 10;
+            renderData.boxBuffer = facesBuf;
+            renderData.boxCount = s.getPointCount() * 6;
+          }
+        }
+      }
+      
+      // For boxplot without main buffer, create renderData with sub-buffers
+      if (seriesType === "boxplot" && !renderData) {
+        const linesBuf = ctx.renderer.getBuffer(`${s.getId()}_box_lines`);
+        const facesBuf = ctx.renderer.getBuffer(`${s.getId()}_box_faces`);
+        if (linesBuf && facesBuf) {
+          const axisId = s.getYAxisId() || ctx.primaryYAxisId;
+          const scale = ctx.yScales.get(axisId);
+          let yBounds: { min: number; max: number } | undefined;
+          if (scale) {
+            yBounds = { min: scale.domain[0], max: scale.domain[1] };
+          }
+          
+          renderData = {
+            id: s.getId(),
+            buffer: linesBuf, // Use lines buffer as main buffer for reference
+            count: 0, // No main buffer rendering
+            style: s.getStyle(),
+            visible: s.isVisible(),
+            type: "boxplot" as any,
+            yBounds,
+            boxLinesBuffer: linesBuf,
+            boxLinesCount: s.getPointCount() * 10,
+            boxBuffer: facesBuf,
+            boxCount: s.getPointCount() * 6,
+          };
+        }
+      }
+      
+      // For waterfall without main buffer, create renderData with sub-buffers
+      if (seriesType === "waterfall" && !renderData) {
+        const positiveBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_positive`);
+        const negativeBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_negative`);
+        const subtotalBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_subtotal`);
+        const connectorBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_connectors`);
+        
+        if (positiveBuf || negativeBuf || subtotalBuf) {
+          const axisId = s.getYAxisId() || ctx.primaryYAxisId;
+          const scale = ctx.yScales.get(axisId);
+          let yBounds: { min: number; max: number } | undefined;
+          if (scale) {
+            yBounds = { min: scale.domain[0], max: scale.domain[1] };
+          }
+          
+          const wfCounts = s.waterfallCounts || { positive: 0, negative: 0, subtotal: 0, connectors: 0 };
+          
+          renderData = {
+            id: s.getId(),
+            buffer: positiveBuf || negativeBuf || subtotalBuf!, // Use any available buffer as reference
+            count: 0, // No main buffer rendering
+            style: s.getStyle(),
+            visible: s.isVisible(),
+            type: "waterfall" as any,
+            yBounds,
+            wfPositiveBuffer: positiveBuf,
+            wfPositiveCount: wfCounts.positive,
+            wfNegativeBuffer: negativeBuf,
+            wfNegativeCount: wfCounts.negative,
+            wfSubtotalBuffer: subtotalBuf,
+            wfSubtotalCount: wfCounts.subtotal,
+            wfConnectorBuffer: connectorBuf,
+            wfConnectorCount: wfCounts.connectors,
+          };
+        }
+      }
+
+      // Add error buffer if present (for any series type with renderData)
+      if (renderData) {
+        const errBuf = ctx.renderer.getBuffer(`${s.getId()}_errors`);
+        if (errBuf) {
+          renderData.errorBuffer = errBuf;
+          // Count depends on how many segments were interleaved
+          // Each segment is 2 points. interleaveErrorData handles this.
+          const d = s.getData();
+          let segmentsPerPoint = 0;
+          if (d.yError || d.yErrorMinus || d.yErrorPlus) segmentsPerPoint++;
+          if (d.xError || d.xErrorMinus || d.xErrorPlus) segmentsPerPoint++;
+          renderData.errorCount = s.getPointCount() * segmentsPerPoint * 2;
         }
 
         if (seriesType === "heatmap") {
@@ -238,30 +332,40 @@ export function renderOverlay(
 
   ctx.overlay.clear(rect.width, rect.height);
   
-  // Detect if we have polar series
+  // Detect special series types
   let hasPolarSeries = false;
+  let hasGaugeSeries = false;
+  let hasSankeySeries = false;
+  
   let maxRadius = 0;
   let polarAngleMode: 'degrees' | 'radians' = 'degrees';
   let polarRadialDivisions = 5;
   let polarAngularDivisions = 12;
   
   ctx.series.forEach((s) => {
-    if (s.getType() === 'polar' && s.isVisible()) {
+    const type = s.getType();
+    if (!s.isVisible()) return;
+
+    if (type === 'polar') {
       hasPolarSeries = true;
       const polarData = s.getPolarData();
       if (polarData) {
-        // Find max radius
         for (let i = 0; i < polarData.r.length; i++) {
           maxRadius = Math.max(maxRadius, Math.abs(polarData.r[i]));
         }
-        // Get polar options from style
         const style = s.getStyle() as any;
         if (style.angleMode) polarAngleMode = style.angleMode;
         if (style.radialDivisions) polarRadialDivisions = style.radialDivisions;
         if (style.angularDivisions) polarAngularDivisions = style.angularDivisions;
       }
+    } else if (type === 'gauge') {
+      hasGaugeSeries = true;
+    } else if (type === 'sankey') {
+      hasSankeySeries = true;
     }
   });
+
+  const isSpecialChart = hasPolarSeries || hasGaugeSeries || hasSankeySeries;
   
   // Draw appropriate grid
   if (hasPolarSeries && maxRadius > 0) {
@@ -273,12 +377,32 @@ export function renderOverlay(
       polarAngularDivisions,
       polarAngleMode
     );
-  } else {
+  } else if (!hasGaugeSeries && !hasSankeySeries) {
     ctx.overlay.drawGrid(plotArea, ctx.xScale, primaryYScale);
   }
   
-  // Only draw cartesian axes if not polar
-  if (!hasPolarSeries) {
+  // Draw series-specific overlay elements (Gauge, Sankey)
+  ctx.series.forEach((s) => {
+    if (!s.isVisible()) return;
+    const type = s.getType();
+    
+    if (type === 'gauge') {
+      const gData = s.getGaugeData();
+      const gStyle = s.getGaugeStyle();
+      if (gData && gStyle) {
+        drawGauge(ctx.overlayCtx, gData, gStyle, plotArea);
+      }
+    } else if (type === 'sankey') {
+      const sData = s.getSankeyData();
+      const sStyle = s.getSankeyStyle();
+      if (sData && sStyle) {
+        drawSankey(ctx.overlayCtx, sData, sStyle, plotArea);
+      }
+    }
+  });
+
+  // Only draw cartesian axes if not special
+  if (!isSpecialChart) {
     ctx.overlay.drawXAxis(plotArea, ctx.xScale, ctx.xAxisOptions);
   }
 
@@ -291,8 +415,8 @@ export function renderOverlay(
     else leftAxes.push(id);
   });
 
-  // Only draw Y axes if not polar
-  if (!hasPolarSeries) {
+  // Only draw Y axes if not special
+  if (!isSpecialChart) {
     // Draw Left Axes (stacked outwards)
     leftAxes.forEach((id, index) => {
       const scale = ctx.yScales.get(id);
