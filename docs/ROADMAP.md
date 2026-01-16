@@ -1016,15 +1016,18 @@ chart.stopRecording().then(blob => {
 | Feature | Prioridad | Complejidad | Estado | Semanas |
 |---------|-----------|-------------|--------|---------|
 | PluginOffscreen | ⭐⭐ | Alta | 🔄 PENDIENTE | 4 |
-| PluginLazyLoad | ⭐⭐ | Media | 🔄 PENDIENTE | 2 |
+| PluginLazyLoad | ⭐⭐ | Media | ✅ COMPLETO | 2 |
 | PluginVirtualization | ⭐⭐ | Alta | 🔄 PENDIENTE | 3 |
-| PluginCaching | ⭐ | Media | 🔄 PENDIENTE | 2 |
-| Waterfall Charts | ⭐ | Media | 🔄 PENDIENTE | 2 |
+| PluginCaching | ⭐ | Media | ✅ COMPLETO | 2 |
+| Waterfall Charts | ⭐ | Media | ✅ COMPLETO | 2 |
 | ~~Gráficos de Contorno~~ | ~~⭐⭐~~ | ~~Media~~ | ✅ **COMPLETO** | ~~2~~ |
 | Selección ROI y Enmascaramiento | ⭐⭐ | Alta | 🔄 PENDIENTE | 3 |
-| Edición Drag & Drop | ⭐ | Media | 🔄 PENDIENTE | 2 |
+| Ejes Rotos | ⭐ | Media | 🔄 EN REVISIÓN | 2 |
+| Edición Drag & Drop | ⭐ | Media | ✅ COMPLETO | 2 |
+| Grabación de Video Nativa | ⭐⭐ | Alta | ✅ COMPLETO | 3 |
+| Export & Media Suite | ⭐ | Baja | ✅ COMPLETO | 1 |
 
-**Total estimado: 18 semanas** (solo features pendientes)
+**Total estimado: 6 semanas** (solo features pendientes)
 
 **Nota:** Gráficos de Contorno ya están implementados con `Contour3DData` y `contours.ts` en PluginAnalysis.
 

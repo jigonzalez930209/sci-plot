@@ -122,6 +122,7 @@ Professional tooltips with themes, animations, and scientific notation.
 | [Bar Charts](/examples/bar-charts) | Categorical data | Automatic width |
 | [Heatmaps](/examples/heatmap) | 2D intensity maps | Color scales |
 | [Tooltips](/examples/tooltips) | Tooltip system | Themes & Animations |
+| [Export & Media](/examples/export-utilities) | Media Suite | Snapshot/Video/Data |
 
 ## Code Snippets
 
