@@ -16,6 +16,7 @@ import SnapshotDemo from './demos/SnapshotDemo.vue'
 import ProcessMonitoringDemo from './demos/2d/ProcessMonitoringDemo.vue'
 import ScientificDemo from './demos/ScientificDemo.vue'
 import WaterfallDemo from './demos/WaterfallDemo.vue'
+import LaTeXDemo from './demos/LaTeXDemo.vue'
 import './custom.css'
 
 export default {
@@ -38,6 +39,7 @@ export default {
     app.component('ProcessMonitoringDemo', ProcessMonitoringDemo)
     app.component('ScientificDemo', ScientificDemo)
     app.component('WaterfallDemo', WaterfallDemo)
+    app.component('LaTeXDemo', LaTeXDemo)
   }
 }
 

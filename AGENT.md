@@ -561,3 +561,91 @@ Visualización de flujos y balances.
 - PluginDataTransform (#5)
 - Gauge/Dial Charts (#9)
 - Sankey/Flow Diagrams (#10)
+
+---
+
+### [2026-01-15] PluginLaTeX - Renderizado Matemático Nativo ✅
+
+**Objetivo**: Implementar renderizado de expresiones LaTeX sin dependencias externas (cumpliendo con la política de 0 dependencias).
+
+#### Implementación Comprimida y Escalable
+
+Se creó un plugin **100% nativo** que usa Canvas 2D API para renderizar notación matemática común:
+
+**Características Core (v1.0)**:
+- ✅ **Símbolos Griegos**: Todas las letras griegas (α, β, γ, Δ, Σ, Ω, etc.)
+- ✅ **Operadores Matemáticos**: ∑, ∫, ∂, ±, ×, ÷, ∞, ≤, ≥, ≠, ≈, →, ⇒
+- ✅ **Superíndices/Subíndices**: `x^2`, `H_2O`, `x_i^2`
+- ✅ **Fracciones**: `\frac{a}{b}` con renderizado vertical
+- ✅ **Raíces Cuadradas**: `\sqrt{x}` con símbolo radical
+- ✅ **Caché Inteligente**: Parseo y medición cacheados para performance
+- ✅ **Personalizable**: fontSize, fontFamily, color
+
+**Arquitectura (Pipeline de 3 Etapas)**:
+1. **Tokenizer** (`parser.ts`) - Convierte string LaTeX en tokens
+2. **Parser** (`parser.ts`) - Construye Abstract Syntax Tree (AST)
+3. **Renderer** (`renderer.ts`) - Traversa AST y dibuja en Canvas 2D
+
+**Mapeo de Símbolos**:
+- Usa caracteres Unicode nativos (no requiere fuentes externas)
+- 120+ símbolos matemáticos mapeados en `symbols.ts`
+
+**Archivos Creados**:
+- `src/plugins/latex/index.ts` - Plugin principal (167 líneas)
+- `src/plugins/latex/parser.ts` - Tokenizer y Parser (212 líneas)
+- `src/plugins/latex/renderer.ts` - Renderizador Canvas 2D (253 líneas)
+- `src/plugins/latex/symbols.ts` - Mapeo Unicode (139 líneas)
+- `src/plugins/latex/types.ts` - Definiciones TypeScript (80 líneas)
+- `src/plugins/latex/exports.ts` - Exports del módulo
+
+**Documentación**:
+- `docs/api/plugin-latex.md` - API Reference completa (290 líneas)
+- `docs/examples/latex-rendering.md` - Guía de uso y ejemplos (170 líneas)
+
+**Demo Interactivo**:
+- `docs/.vitepress/theme/demos/LaTeXDemo.vue` - Editor en vivo con:
+  - Input de expresión LaTeX en tiempo real
+  - 8 presets rápidos (Einstein, Heisenberg, Summation, etc.)
+  - Controles de fontSize y color
+  - Medición de dimensiones (width, height, baseline)
+  - Grid de comandos soportados
+  - Diseño glassmorphism premium
+
+**API Expuesta**:
+```typescript
+chart.latex.render(latex, ctx, x, y, options)  // Renderizar
+chart.latex.measure(latex, options)             // Medir sin renderizar
+chart.latex.clearCache()                        // Limpiar caché
+```
+
+**Uso en Charts**:
+```typescript
+// Ejes
+chart.xAxis.label = '\\Delta E (eV)';
+chart.yAxis.label = '\\frac{\\partial^2 y}{\\partial x^2}';
+
+// Anotaciones
+chart.addAnnotation({
+  type: 'text',
+  text: 'E = mc^2',
+  latex: true
+});
+```
+
+**Limitaciones Actuales** (por diseño compacto):
+- No soporta matrices (`\begin{matrix}`)
+- No soporta ecuaciones multi-línea
+- No soporta todos los 1000+ comandos LaTeX (solo los ~100 más comunes)
+
+**Futuras Expansiones** (sin romper compatibilidad):
+- Límites en integrales (`\int_0^\infty`)
+- Comandos de color (`\color{red}`)
+- Matrices básicas
+- Más símbolos especializados
+
+**Bundle Size**: ~850 líneas total (muy compacto)
+
+**Progreso Phase 2**: 87.5% (7/8 features completos)
+- Solo falta: **Gráficos Ternarios** (3 semanas estimadas)
+
+**Actualizado**: `docs/ROADMAP.md` - Marcado como ✅ COMPLETO (2026-01-15)
