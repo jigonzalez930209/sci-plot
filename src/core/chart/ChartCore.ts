@@ -166,6 +166,16 @@ export class ChartImpl implements Chart {
   private pluginManager: PluginManagerImpl;
   private initialOptions: ChartOptions;
 
+  setXScale(scale: Scale): void {
+      this.xScale = scale;
+      this.needsFullRender = true;
+  }
+
+  setYScale(yAxisId: string, scale: Scale): void {
+      this.yScales.set(yAxisId, scale);
+      this.needsFullRender = true;
+  }
+
   get analysis(): any {
     const api = this.getPluginAPI<any>("scichart-analysis");
     if (api) return api;

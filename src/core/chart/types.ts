@@ -225,6 +225,10 @@ export interface Chart {
   /** Load state from URL hash */
   fromUrlHash(hash: string, compressed?: boolean): void;
 
+  /** Set custom scales (e.g. for Broken Axis support) */
+  setXScale(scale: any): void;
+  setYScale(yAxisId: string, scale: any): void;
+
   /** Use a plugin */
   use(plugin: ChartPlugin): void;
   /** Destroy the chart and cleanup resources */
