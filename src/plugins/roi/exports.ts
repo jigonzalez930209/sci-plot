@@ -3,9 +3,9 @@
  * @module plugins/roi
  */
 
-export { PluginROI, default } from "./index";
+export { PluginROI } from "./index";
 export type {
-  PluginRoiConfig,
+  PluginROIConfig,
   RoiAPI,
   RoiRegion,
   RoiPoint,
@@ -13,4 +13,4 @@ export type {
   RoiTool,
   RoiEvent,
   RoiSelectedEvent,
-} from "./types";
+} from "./index";

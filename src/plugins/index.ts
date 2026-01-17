@@ -151,7 +151,7 @@ export { PluginOffscreen, type PluginOffscreenConfig, type OffscreenAPI, type Of
 export { PluginVirtualization, type PluginVirtualizationConfig, type VirtualizationAPI, type VirtualizationStats, type VirtualizationMode, type VirtualizationStrategy } from "./virtualization";
 
 // ROI
-export { PluginROI, type PluginRoiConfig, type RoiAPI, type RoiRegion, type RoiPoint, type RoiMaskResult, type RoiTool, type RoiEvent, type RoiSelectedEvent } from "./roi";
+export { PluginROI, type PluginROIConfig, type RoiAPI, type RoiRegion, type RoiPoint, type RoiMaskResult, type RoiTool, type RoiEvent, type RoiSelectedEvent } from "./roi";
 
 // ============================================
 // Helper for creating typed plugins

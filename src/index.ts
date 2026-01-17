@@ -680,7 +680,7 @@ export type {
   PluginVideoRecorderConfig,
   PluginOffscreenConfig,
   PluginVirtualizationConfig,
-  PluginRoiConfig,
+  PluginROIConfig,
   
   // API & Result Types
   RegressionAPI,
