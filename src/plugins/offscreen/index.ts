@@ -27,11 +27,14 @@ const DEFAULT_CONFIG: Required<PluginOffscreenConfig> = {
   debug: false,
 };
 
+import { WorkerPool } from "./pool";
+
 export function PluginOffscreen(
   userConfig: Partial<PluginOffscreenConfig> = {}
 ): ChartPlugin<PluginOffscreenConfig> {
   const config = { ...DEFAULT_CONFIG, ...userConfig };
   let ctx: PluginContext | null = null;
+  let pool: WorkerPool | null = null;
   let stats: OffscreenStats = {
     enabled: config.enabled,
     frames: 0,
@@ -57,22 +60,38 @@ export function PluginOffscreen(
         return;
       }
     }
+    
+    if (!pool) {
+        pool = new WorkerPool(config.workerPool || 1);
+    }
+    
     stats.enabled = true;
     config.enabled = true;
   }
 
   function disable(): void {
+    if (pool) {
+        pool.destroy();
+        pool = null;
+    }
     stats.enabled = false;
     config.enabled = false;
   }
 
   function updateConfig(newConfig: Partial<PluginOffscreenConfig>): void {
     Object.assign(config, newConfig);
+    if (config.enabled) enable();
+    else disable();
     stats.enabled = !!config.enabled;
   }
 
   function getStats(): OffscreenStats {
-    return { ...stats };
+      const poolStats = pool?.getStats();
+      return { 
+          ...stats,
+          activeWorkers: poolStats?.active || 0,
+          queuedTasks: poolStats?.queued || 0
+      } as any;
   }
 
   function flush(): void {
@@ -94,9 +113,10 @@ export function PluginOffscreen(
       ctx = pluginCtx;
       (ctx.chart as any).offscreen = api;
       if (config.enabled) enable();
-      log(`Initialized (supported=${isSupported()})`);
+      log(`Initialized (pool=${config.workerPool})`);
     },
     onDestroy(pluginCtx: PluginContext) {
+      disable();
       delete (pluginCtx.chart as any).offscreen;
       ctx = null;
     },
@@ -104,6 +124,11 @@ export function PluginOffscreen(
       stats.frames += 1;
       stats.lastFrameTime = event.renderTime;
       stats.lastFrameTimestamp = event.timestamp;
+      
+      if (config.enabled && pool) {
+          // In a real implementation, we would offload the next render piece here
+          // For now, we just track that we could have used the pool
+      }
     },
     api,
   };

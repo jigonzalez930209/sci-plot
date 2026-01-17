@@ -9,7 +9,6 @@ import type {
   DraggedPoint,
   DragEditEvent,
   DragConstraint,
-  DragValidation,
 } from './types';
 import type {
   ChartPlugin,
@@ -178,6 +177,9 @@ export function PluginDragEdit(
     data.x[index] = newX;
     data.y[index] = newY;
 
+    // Invalidate buffers to trigger GPU upload
+    series.invalidateBuffers?.();
+
     // Trigger chart re-render
     ctx.requestRender();
   }
@@ -198,107 +200,6 @@ export function PluginDragEdit(
       deltaX: draggedPoint.currentX - draggedPoint.originalX,
       deltaY: draggedPoint.currentY - draggedPoint.originalY,
     };
-  }
-
-  /**
-   * Mouse down handler
-   */
-  function onMouseDown(event: MouseEvent): void {
-    if (!config.enabled || !ctx) return;
-
-    const rect = (ctx.render.ctx2d?.canvas as HTMLCanvasElement)?.getBoundingClientRect();
-    if (!rect) return;
-
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    const point = findNearestPoint(mouseX, mouseY);
-    if (point) {
-      draggedPoint = point;
-      dragStartX = mouseX;
-      dragStartY = mouseY;
-      hasMoved = false;
-      isDragging = false; // Will become true after threshold
-    }
-  }
-
-  /**
-   * Mouse move handler
-   */
-  function onMouseMove(event: MouseEvent): void {
-    if (!draggedPoint || !config.enabled || !ctx) return;
-
-    const rect = (ctx.render.ctx2d?.canvas as HTMLCanvasElement)?.getBoundingClientRect();
-    if (!rect) return;
-
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    // Check if we've moved beyond threshold
-    if (!isDragging) {
-      const dx = mouseX - dragStartX;
-      const dy = mouseY - dragStartY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance > config.dragThreshold) {
-        isDragging = true;
-        hasMoved = true;
-
-        // Fire drag start event
-        const dragEvent = createDragEvent();
-        if (dragEvent) config.onDragStart(dragEvent);
-      } else {
-        return;
-      }
-    }
-
-    // Convert to data coordinates
-    let { x, y } = pixelToData(mouseX, mouseY);
-
-    // Apply constraints
-    ({ x, y } = applyConstraints(x, y, config.constraint));
-
-    // Validate and snap
-    const { x: finalX, y: finalY, valid } = validateAndSnap(x, y);
-
-    if (valid) {
-      draggedPoint.currentX = finalX;
-      draggedPoint.currentY = finalY;
-
-      // Fire drag event
-      const dragEvent = createDragEvent();
-      if (dragEvent) config.onDrag(dragEvent);
-
-      // Request render to show preview
-      ctx.requestRender();
-    }
-  }
-
-  /**
-   * Mouse up handler
-   */
-  function onMouseUp(): void {
-    if (!draggedPoint || !config.enabled || !ctx) return;
-
-    if (isDragging && hasMoved) {
-      // Apply the changes
-      updatePointData(
-        draggedPoint.seriesId,
-        draggedPoint.index,
-        draggedPoint.currentX,
-        draggedPoint.currentY
-      );
-
-      // Fire drag end event
-      const dragEvent = createDragEvent();
-      if (dragEvent) config.onDragEnd(dragEvent);
-    }
-
-    // Reset state
-    draggedPoint = null;
-    isDragging = false;
-    hasMoved = false;
-    ctx.requestRender();
   }
 
   /**
@@ -391,31 +292,101 @@ export function PluginDragEdit(
 
       // Attach to chart API
       (ctx.chart as any).dragEdit = api;
-
-      // Add event listeners
-      const canvas = ctx.render.ctx2d?.canvas as HTMLCanvasElement;
-      if (canvas) {
-        canvas.addEventListener('mousedown', onMouseDown);
-        canvas.addEventListener('mousemove', onMouseMove);
-        canvas.addEventListener('mouseup', onMouseUp);
-        canvas.addEventListener('mouseleave', onMouseUp); // Cancel on mouse leave
-      }
     },
 
-    onDestroy(pluginCtx: PluginContext) {
-      // Remove event listeners
-      const canvas = pluginCtx.render.ctx2d?.canvas as HTMLCanvasElement;
-      if (canvas) {
-        canvas.removeEventListener('mousedown', onMouseDown);
-        canvas.removeEventListener('mousemove', onMouseMove);
-        canvas.removeEventListener('mouseup', onMouseUp);
-        canvas.removeEventListener('mouseleave', onMouseUp);
-      }
-
+    onDestroy(_pluginCtx: PluginContext) {
       // Remove from chart API
-      delete (pluginCtx.chart as any).dragEdit;
+      delete (_pluginCtx.chart as any).dragEdit;
 
       ctx = null;
+    },
+
+    onInteraction(_pluginCtx: PluginContext, event: import('../types').InteractionEvent) {
+      if (!config.enabled) return;
+
+      if (event.type === 'mousedown') {
+        const point = findNearestPoint(event.pixelX, event.pixelY);
+        if (point) {
+          draggedPoint = point;
+          dragStartX = event.pixelX;
+          dragStartY = event.pixelY;
+          hasMoved = false;
+          isDragging = false;
+          // Prevent default to stop panning when clicking on a point
+          event.preventDefault();
+        }
+      } else if (event.type === 'mousemove') {
+        if (!draggedPoint) return;
+
+        // Check if we've moved beyond threshold
+        if (!isDragging) {
+          const dx = event.pixelX - dragStartX;
+          const dy = event.pixelY - dragStartY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance > config.dragThreshold) {
+            isDragging = true;
+            hasMoved = true;
+
+            // Fire drag start event
+            const dragEvent = createDragEvent();
+            if (dragEvent) config.onDragStart(dragEvent);
+          } else {
+            return;
+          }
+        }
+
+        // Prevent default during dragging
+        if (isDragging) {
+          event.preventDefault();
+        }
+
+        // Convert to data coordinates
+        let { x, y } = pixelToData(event.pixelX, event.pixelY);
+
+        // Apply constraints
+        ({ x, y } = applyConstraints(x, y, config.constraint));
+
+        // Validate and snap
+        const { x: finalX, y: finalY, valid } = validateAndSnap(x, y);
+
+        if (valid) {
+          draggedPoint.currentX = finalX;
+          draggedPoint.currentY = finalY;
+
+          // Fire drag event (for callbacks)
+          const dragEvent = createDragEvent();
+          if (dragEvent) config.onDrag(dragEvent);
+
+          // Request render to show preview line
+          ctx?.requestRender();
+        }
+      } else if (event.type === 'mouseup') {
+        if (!draggedPoint) return;
+
+        if (isDragging && hasMoved) {
+          // Apply the changes
+          updatePointData(
+            draggedPoint.seriesId,
+            draggedPoint.index,
+            draggedPoint.currentX,
+            draggedPoint.currentY
+          );
+
+          // Fire drag end event
+          const dragEvent = createDragEvent();
+          if (dragEvent) config.onDragEnd(dragEvent);
+
+          // Prevent default on mouseup to avoid triggering click events
+          event.preventDefault();
+        }
+
+        // Reset state
+        draggedPoint = null;
+        isDragging = false;
+        hasMoved = false;
+        ctx?.requestRender();
+      }
     },
 
     onRenderOverlay(pluginCtx: PluginContext) {
@@ -435,5 +406,4 @@ export type {
   DraggedPoint,
   DragEditEvent,
   DragConstraint,
-  DragValidation,
 } from './types';

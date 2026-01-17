@@ -1,266 +1,251 @@
-/**
- * @fileoverview ROI selection and masking plugin
- * @module plugins/roi
- */
+import type { PluginContext, InteractionEvent, PluginManifest } from "../types";
 
-import type {
-  PluginRoiConfig,
-  RoiAPI,
-  RoiTool,
-  RoiRegion,
-  RoiPoint,
-  RoiMaskResult,
-  RoiSelectedEvent,
-} from "./types";
-import type { ChartPlugin, PluginContext, PluginManifest, InteractionEvent } from "../types";
-import type { Series } from "../../core/Series";
-import type { SeriesData } from "../../types";
+export interface RoiPoint {
+  x: number;
+  y: number;
+}
 
-const manifest: PluginManifest = {
-  name: "scichart-roi",
-  version: "1.0.0",
-  description: "ROI selection, masking and analysis helpers",
-  provides: ["interaction", "roi"],
-  tags: ["interaction", "selection", "analysis"],
-};
+export interface RoiRegion {
+  id: string;
+  tool: "rectangle" | "circle" | "polygon" | "lasso";
+  points: RoiPoint[];
+  color?: string;
+  fill?: string;
+}
 
-const DEFAULT_CONFIG: Required<PluginRoiConfig> = {
-  enabled: true,
-  tools: ["rectangle", "polygon", "lasso", "circle"],
-  defaultTool: "rectangle",
-  mask: false,
-  persistent: true,
-  additive: true,
-  stroke: "#00f2ff",
-  fill: "rgba(0, 242, 255, 0.15)",
-  lineWidth: 1.5,
-  debug: false,
-};
+export interface RoiMaskResult {
+  regionId: string;
+  seriesId: string;
+  masks: boolean[];
+}
 
-export function PluginROI(
-  userConfig: Partial<PluginRoiConfig> = {}
-): ChartPlugin<PluginRoiConfig> {
-  const config = { ...DEFAULT_CONFIG, ...userConfig };
+export interface RoiSelectedEvent {
+  region: RoiRegion;
+  seriesIds: string[];
+  masks: RoiMaskResult[];
+}
+
+export interface RoiAPI {
+  setTool(tool: RoiTool): void;
+  clear(): void;
+  getRegions(): RoiRegion[];
+  removeRegion(id: string): void;
+  calculateMasks(regionId: string): RoiMaskResult[];
+  isEnabled(): boolean;
+  setEnabled(enabled: boolean): void;
+}
+
+export type RoiTool = "rectangle" | "circle" | "polygon" | "lasso";
+
+export interface PluginROIConfig {
+  defaultTool?: RoiTool;
+  stroke?: string;
+  fill?: string;
+  enabled?: boolean;
+  mask?: boolean;
+}
+
+export const PluginROI = (config: PluginROIConfig = {}) => {
   let ctx: PluginContext | null = null;
-  let enabled = config.enabled;
-  let activeTool: RoiTool = config.defaultTool;
-
+  let activeTool: RoiTool = config.defaultTool || "rectangle";
   let regions: RoiRegion[] = [];
-  let activeRegion: RoiRegion | null = null;
   let isDrawing = false;
-  let startPixel: { x: number; y: number } | null = null;
+  let activeRegion: RoiRegion | null = null;
+  let enabled = config.enabled !== false;
+  let isMasking = config.mask === true;
 
-  const originalSeriesData = new Map<string, SeriesData>();
+  // Store for original data when masking is active
+  const rawDataStore = new Map<string, { x: Float32Array; y: Float32Array }>();
+  let originalUpdateSeries: any = null;
+  let originalAddSeries: any = null;
 
-  function log(message: string, ...args: unknown[]) {
-    if (config.debug && ctx) ctx.log.info(`[ROI] ${message}`, ...args);
-  }
+  const manifest: PluginManifest = {
+    name: "roi",
+    description: "Region of Interest selection tool and masking",
+    version: "1.1.0",
+    author: "SciChart",
+  };
 
   function createRegion(tool: RoiTool): RoiRegion {
     return {
-      id: `roi-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      id: Math.random().toString(36).substring(2, 11),
       tool,
       points: [],
-      createdAt: Date.now(),
+      color: config.stroke || "#00f2ff",
+      fill: config.fill || "rgba(0, 242, 255, 0.15)",
     };
   }
 
-  function pixelToData(point: RoiPoint): RoiPoint {
-    if (!ctx) return point;
+  function pixelToData(pixel: { x: number; y: number }): RoiPoint {
+    if (!ctx) return { x: 0, y: 0 };
     return {
-      x: ctx.coords.pixelToDataX(point.x),
-      y: ctx.coords.pixelToDataY(point.y),
+      x: ctx.coords.pixelToDataX(pixel.x),
+      y: ctx.coords.pixelToDataY(pixel.y),
     };
   }
 
-  function dataToPixel(point: RoiPoint): RoiPoint {
-    if (!ctx) return point;
+  function dataToPixel(point: RoiPoint): { x: number; y: number } {
+    if (!ctx) return { x: 0, y: 0 };
     return {
       x: ctx.coords.dataToPixelX(point.x),
       y: ctx.coords.dataToPixelY(point.y),
     };
   }
 
-  function getSeriesPoints(series: Series): RoiPoint[] {
-    const data = series.getData();
-    const points: RoiPoint[] = [];
-    for (let i = 0; i < data.x.length; i++) {
-      points.push({ x: data.x[i], y: data.y[i] });
-    }
-    return points;
+  function isPointInAnyRegion(point: RoiPoint): boolean {
+    if (regions.length === 0) return true; // Show all if no regions defined
+    return regions.some((r) => isPointInRegion(point, r));
   }
 
-  function pointInRect(p: RoiPoint, rect: RoiRegion): boolean {
-    const p1 = rect.points[0];
-    const p2 = rect.points[1] ?? p1;
-    const xMin = Math.min(p1.x, p2.x);
-    const xMax = Math.max(p1.x, p2.x);
-    const yMin = Math.min(p1.y, p2.y);
-    const yMax = Math.max(p1.y, p2.y);
-    return p.x >= xMin && p.x <= xMax && p.y >= yMin && p.y <= yMax;
-  }
+  function applyMasking(): void {
+    if (!ctx || !isMasking) return;
 
-  function pointInCircle(p: RoiPoint, circle: RoiRegion): boolean {
-    const c = circle.points[0];
-    const edge = circle.points[1] ?? c;
-    const radius = Math.hypot(edge.x - c.x, edge.y - c.y);
-    return Math.hypot(p.x - c.x, p.y - c.y) <= radius;
-  }
-
-  function pointInPolygon(p: RoiPoint, polygon: RoiRegion): boolean {
-    let inside = false;
-    const pts = polygon.points;
-    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-      const xi = pts[i].x;
-      const yi = pts[i].y;
-      const xj = pts[j].x;
-      const yj = pts[j].y;
-      const intersect = yi > p.y !== yj > p.y &&
-        p.x < ((xj - xi) * (p.y - yi)) / (yj - yi + 1e-12) + xi;
-      if (intersect) inside = !inside;
-    }
-    return inside;
-  }
-
-  function getMask(region: RoiRegion): RoiMaskResult[] {
-    if (!ctx) return [];
-    const masks: RoiMaskResult[] = [];
-
-    ctx.data.getAllSeries().forEach((series) => {
-      const points = getSeriesPoints(series);
+    for (const [id, raw] of rawDataStore.entries()) {
       const indices: number[] = [];
-      points.forEach((pt, idx) => {
-        let inside = false;
-        if (region.tool === "rectangle") inside = pointInRect(pt, region);
-        else if (region.tool === "circle") inside = pointInCircle(pt, region);
-        else inside = pointInPolygon(pt, region);
-        if (inside) indices.push(idx);
-      });
-      masks.push({ seriesId: series.getId(), indices });
-    });
-
-    return masks;
-  }
-
-  function cacheSeriesData(seriesId: string, data: SeriesData) {
-    if (!originalSeriesData.has(seriesId)) {
-      originalSeriesData.set(seriesId, data);
-    }
-  }
-
-  function applyMask(masks: RoiMaskResult[]): void {
-    const context = ctx;
-    if (!context) return;
-    masks.forEach((mask) => {
-      const series = context.chart.getSeries?.(mask.seriesId) as Series | undefined;
-      if (!series) return;
-      const data = series.getData();
-      if (!data?.x || !data?.y) return;
-      cacheSeriesData(mask.seriesId, data);
-
-      const newX = new Float32Array(mask.indices.length);
-      const newY = new Float32Array(mask.indices.length);
-      mask.indices.forEach((idx, i) => {
-        newX[i] = data.x[idx];
-        newY[i] = data.y[idx];
-      });
-      (context.chart as any).updateSeries?.(mask.seriesId, { x: newX, y: newY });
-    });
-  }
-
-  function restoreMask(seriesId: string): void {
-    const context = ctx;
-    if (!context) return;
-    const original = originalSeriesData.get(seriesId);
-    if (!original) return;
-    (context.chart as any).updateSeries?.(seriesId, { x: original.x, y: original.y });
-  }
-
-  function drawRegion(region: RoiRegion, ctx2d: CanvasRenderingContext2D): void {
-    const points = region.points.map(dataToPixel);
-    if (points.length === 0) return;
-
-    ctx2d.save();
-    ctx2d.strokeStyle = config.stroke;
-    ctx2d.fillStyle = config.fill;
-    ctx2d.lineWidth = config.lineWidth;
-
-    if (region.tool === "rectangle") {
-      const p1 = points[0];
-      const p2 = points[1] ?? p1;
-      const x = Math.min(p1.x, p2.x);
-      const y = Math.min(p1.y, p2.y);
-      const w = Math.abs(p2.x - p1.x);
-      const h = Math.abs(p2.y - p1.y);
-      ctx2d.beginPath();
-      ctx2d.rect(x, y, w, h);
-      ctx2d.fill();
-      ctx2d.stroke();
-    } else if (region.tool === "circle") {
-      const c = points[0];
-      const edge = points[1] ?? c;
-      const r = Math.hypot(edge.x - c.x, edge.y - c.y);
-      ctx2d.beginPath();
-      ctx2d.arc(c.x, c.y, r, 0, Math.PI * 2);
-      ctx2d.fill();
-      ctx2d.stroke();
-    } else {
-      ctx2d.beginPath();
-      ctx2d.moveTo(points[0].x, points[0].y);
-      for (let i = 1; i < points.length; i++) {
-        ctx2d.lineTo(points[i].x, points[i].y);
+      for (let i = 0; i < raw.x.length; i++) {
+        if (isPointInAnyRegion({ x: raw.x[i], y: raw.y[i] })) {
+          indices.push(i);
+        }
       }
-      ctx2d.closePath();
-      ctx2d.fill();
-      ctx2d.stroke();
+
+      const filteredX = new Float32Array(indices.length);
+      const filteredY = new Float32Array(indices.length);
+      for (let i = 0; i < indices.length; i++) {
+        filteredX[i] = raw.x[indices[i]];
+        filteredY[i] = raw.y[indices[i]];
+      }
+
+      if (originalUpdateSeries) {
+        originalUpdateSeries(id, { x: filteredX, y: filteredY });
+      }
+    }
+  }
+
+  function isPointInRegion(point: RoiPoint, region: RoiRegion): boolean {
+    const { tool, points } = region;
+    if (points.length < 2) return false;
+
+    if (tool === "rectangle") {
+      const xMin = Math.min(points[0].x, points[1].x);
+      const xMax = Math.max(points[0].x, points[1].x);
+      const yMin = Math.min(points[0].y, points[1].y);
+      const yMax = Math.max(points[0].y, points[1].y);
+      return point.x >= xMin && point.x <= xMax && point.y >= yMin && point.y <= yMax;
     }
 
-    ctx2d.restore();
+    if (tool === "circle") {
+      const dx = point.x - points[0].x;
+      const dy = point.y - points[0].y;
+      const r = Math.sqrt(
+        Math.pow(points[1].x - points[0].x, 2) + Math.pow(points[1].y - points[0].y, 2)
+      );
+      return Math.sqrt(dx * dx + dy * dy) <= r;
+    }
+
+    if (tool === "polygon" || tool === "lasso") {
+      // Ray casting algorithm
+      let inside = false;
+      for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+        const xi = points[i].x, yi = points[i].y;
+        const xj = points[j].x, yj = points[j].y;
+        const intersect = yi > point.y !== yj > point.y &&
+          point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    return false;
+  }
+
+  function calculateMasks(regionId: string): RoiMaskResult[] {
+    const region = regions.find((r) => r.id === regionId);
+    if (!region || !ctx) return [];
+
+    const results: RoiMaskResult[] = [];
+    ctx.chart.getAllSeries().forEach((series) => {
+      const data = series.getData();
+      if (!data) return;
+
+      const masks = new Array(data.x.length);
+      for (let i = 0; i < data.x.length; i++) {
+        masks[i] = isPointInRegion({ x: data.x[i], y: data.y[i] }, region);
+      }
+
+      results.push({
+        regionId,
+        seriesId: series.getId(),
+        masks,
+      });
+    });
+
+    return results;
   }
 
   function finishRegion(): void {
     if (!activeRegion || !ctx) return;
-    if (activeRegion.points.length < 2) {
-      activeRegion = null;
-      return;
+    
+    // Clean up preview points for polygon
+    if (activeRegion.tool === "polygon" && activeRegion.points.length > 1) {
+        // Remove the preview point
+        activeRegion.points.pop();
     }
 
-    if (config.persistent) {
-      regions.push(activeRegion);
-    }
+    regions.push(activeRegion);
 
-    const masks = getMask(activeRegion);
-    if (config.mask) applyMask(masks);
+    if (isMasking) {
+      applyMasking();
+    }
 
     const event: RoiSelectedEvent = {
       region: activeRegion,
-      seriesIds: masks.map((m) => m.seriesId),
-      masks,
+      seriesIds: ctx.chart.getAllSeries().map((s) => s.getId()),
+      masks: calculateMasks(activeRegion.id),
     };
 
+    // Emit on both plugin context and chart
     ctx.events.emit("roi:selected", event);
+    if (ctx.chart.events) {
+        ctx.chart.events.emit("roi:selected" as any, event);
+    }
+    
     ctx.events.emit("roi:created", {
       region: activeRegion,
       seriesIds: event.seriesIds,
     });
 
     activeRegion = null;
+    isDrawing = false;
     ctx.requestRender();
   }
 
   function handlePointerDown(event: InteractionEvent): void {
     if (!enabled || !event.inPlotArea) return;
-    isDrawing = true;
-    startPixel = { x: event.pixelX, y: event.pixelY };
-    activeRegion = createRegion(activeTool);
 
-    if (activeTool === "rectangle" || activeTool === "circle") {
-      activeRegion.points = [pixelToData(startPixel), pixelToData(startPixel)];
-    } else {
-      activeRegion.points = [pixelToData(startPixel)];
+    if (activeTool === "polygon" && activeRegion) {
+        // For polygon, we keep adding points on click
+        // But first, replace the preview point with a permanent one
+        const previewPoint = pixelToData({ x: event.pixelX, y: event.pixelY });
+        activeRegion.points.push(previewPoint);
+        event.preventDefault();
+        ctx?.requestRender();
+        return;
     }
 
-    event.preventDefault();
+    isDrawing = true;
+    activeRegion = createRegion(activeTool);
+    const startPoint = pixelToData({ x: event.pixelX, y: event.pixelY });
+    activeRegion.points.push(startPoint);
+    
+    if (activeTool === "rectangle" || activeTool === "circle") {
+      activeRegion.points.push({ ...startPoint });
+    } else if (activeTool === "polygon") {
+        // Add a second point for preview
+        activeRegion.points.push({ ...startPoint });
+    }
+    
+    event.preventDefault(); // Stop chart from panning
+    ctx?.requestRender();
   }
 
   function handlePointerMove(event: InteractionEvent): void {
@@ -268,101 +253,215 @@ export function PluginROI(
 
     if (activeTool === "rectangle" || activeTool === "circle") {
       activeRegion.points[1] = pixelToData({ x: event.pixelX, y: event.pixelY });
-    } else {
-      activeRegion.points.push(pixelToData({ x: event.pixelX, y: event.pixelY }));
+    } else if (activeTool === "lasso") {
+      // For lasso, we capture points during movement
+      const lastPoint = activeRegion.points[activeRegion.points.length - 1];
+      const newPoint = pixelToData({ x: event.pixelX, y: event.pixelY });
+      
+      // Basic distance filter to avoid too many points
+      const dx = ctx!.coords.dataToPixelX(newPoint.x) - ctx!.coords.dataToPixelX(lastPoint.x);
+      const dy = ctx!.coords.dataToPixelY(newPoint.y) - ctx!.coords.dataToPixelY(lastPoint.y);
+      if (Math.sqrt(dx*dx + dy*dy) > 5) {
+        activeRegion.points.push(newPoint);
+      }
+    } else if (activeTool === "polygon") {
+        // Update the preview point (the last one)
+        const lastIndex = activeRegion.points.length - 1;
+        if (lastIndex >= 0) {
+            activeRegion.points[lastIndex] = pixelToData({ x: event.pixelX, y: event.pixelY });
+        }
     }
     ctx?.requestRender();
   }
 
-  function handlePointerUp(): void {
-    if (!enabled || !isDrawing) return;
-    isDrawing = false;
-    startPixel = null;
-    finishRegion();
+  function handlePointerUp(_event: InteractionEvent): void {
+    if (!isDrawing || !activeRegion) return;
+
+    if (activeTool !== "polygon") {
+      finishRegion();
+    }
   }
 
-  const api: RoiAPI & Record<string, unknown> = {
-    setTool(tool: RoiTool) {
-      activeTool = tool;
-    },
-    getTool() {
-      return activeTool;
-    },
-    enable() {
-      enabled = true;
-    },
-    disable() {
-      enabled = false;
-    },
-    isEnabled() {
-      return enabled;
-    },
-    clear() {
-      regions = [];
-      activeRegion = null;
-      originalSeriesData.forEach((_data, seriesId) => restoreMask(seriesId));
-      originalSeriesData.clear();
-      ctx?.requestRender();
-    },
-    getRegions() {
-      return [...regions];
-    },
-    selectRegion(id: string) {
-      const region = regions.find((r) => r.id === id);
-      if (!region) return [];
-      const masks = getMask(region);
-      if (config.mask) applyMask(masks);
-      return masks;
-    },
-    maskSeries(seriesId: string, indices: number[]) {
-      applyMask([{ seriesId, indices }]);
-    },
-    updateConfig(newConfig) {
-      Object.assign(config, newConfig);
-      enabled = config.enabled;
-      activeTool = config.defaultTool;
-    },
-  };
+  function drawRegion(region: RoiRegion, ctx2d: CanvasRenderingContext2D): void {
+    const { tool, points, color, fill } = region;
+    if (points.length < 1) return;
+
+    const pixels = points.map((p) => dataToPixel(p));
+
+    ctx2d.strokeStyle = color || "#00f2ff";
+    ctx2d.fillStyle = fill || "rgba(0, 242, 255, 0.15)";
+    ctx2d.lineWidth = 2;
+
+    if (tool === "rectangle" && pixels.length >= 2) {
+      const x = Math.min(pixels[0].x, pixels[1].x);
+      const y = Math.min(pixels[0].y, pixels[1].y);
+      const w = Math.abs(pixels[0].x - pixels[1].x);
+      const h = Math.abs(pixels[0].y - pixels[1].y);
+      ctx2d.fillRect(x, y, w, h);
+      ctx2d.strokeRect(x, y, w, h);
+    } else if (tool === "circle" && pixels.length >= 2) {
+      const dx = pixels[1].x - pixels[0].x;
+      const dy = pixels[1].y - pixels[0].y;
+      const r = Math.sqrt(dx * dx + dy * dy);
+      ctx2d.beginPath();
+      ctx2d.arc(pixels[0].x, pixels[0].y, r, 0, Math.PI * 2);
+      ctx2d.fill();
+      ctx2d.stroke();
+    } else if ((tool === "polygon" || tool === "lasso") && pixels.length >= 2) {
+      ctx2d.beginPath();
+      ctx2d.moveTo(pixels[0].x, pixels[0].y);
+      pixels.slice(1).forEach((p) => ctx2d.lineTo(p.x, p.y));
+      if (tool === "lasso") {
+          ctx2d.closePath();
+      } else if (!isDrawing || region !== activeRegion) {
+          ctx2d.closePath();
+      }
+      ctx2d.fill();
+      ctx2d.stroke();
+    }
+  }
 
   return {
     manifest,
     onInit(pluginCtx: PluginContext) {
       ctx = pluginCtx;
-      (ctx.chart as any).roi = api;
-      log("Initialized");
+      const chart = ctx.chart as any;
+      chart.roi = this.api;
+
+      // Hijack series methods if masking is enabled
+      originalUpdateSeries = chart.updateSeries.bind(chart);
+      originalAddSeries = chart.addSeries.bind(chart);
+
+      chart.addSeries = (options: any) => {
+        if (options.id && options.data?.x) {
+          rawDataStore.set(options.id, {
+            x: new Float32Array(options.data.x),
+            y: new Float32Array(options.data.y),
+          });
+        }
+        if (isMasking && options.data?.x) {
+          // Apply initial mask
+          const raw = rawDataStore.get(options.id)!;
+          const indices: number[] = [];
+          for (let i = 0; i < raw.x.length; i++) {
+            if (isPointInAnyRegion({ x: raw.x[i], y: raw.y[i] })) indices.push(i);
+          }
+          const fx = new Float32Array(indices.length);
+          const fy = new Float32Array(indices.length);
+          for (let i = 0; i < indices.length; i++) {
+            fx[i] = raw.x[indices[i]];
+            fy[i] = raw.y[indices[i]];
+          }
+          originalAddSeries({ ...options, data: { ...options.data, x: fx, y: fy } });
+        } else {
+          originalAddSeries(options);
+        }
+      };
+
+      chart.updateSeries = (id: string, data: any) => {
+        if (data.x) {
+          rawDataStore.set(id, {
+            x: new Float32Array(data.x),
+            y: new Float32Array(data.y),
+          });
+        }
+        if (isMasking && data.x) {
+          const raw = rawDataStore.get(id)!;
+          const indices: number[] = [];
+          for (let i = 0; i < raw.x.length; i++) {
+            if (isPointInAnyRegion({ x: raw.x[i], y: raw.y[i] })) indices.push(i);
+          }
+          const fx = new Float32Array(indices.length);
+          const fy = new Float32Array(indices.length);
+          for (let i = 0; i < indices.length; i++) {
+            fx[i] = raw.x[indices[i]];
+            fy[i] = raw.y[indices[i]];
+          }
+          originalUpdateSeries(id, { ...data, x: fx, y: fy });
+        } else {
+          originalUpdateSeries(id, data);
+        }
+      };
     },
-    onDestroy(pluginCtx: PluginContext) {
-      delete (pluginCtx.chart as any).roi;
+    onDestroy() {
+      if (ctx) {
+        const chart = ctx.chart as any;
+        chart.roi = undefined;
+        chart.addSeries = originalAddSeries;
+        chart.updateSeries = originalUpdateSeries;
+      }
       ctx = null;
-      regions = [];
-      originalSeriesData.clear();
+      rawDataStore.clear();
     },
     onInteraction(_pluginCtx: PluginContext, event: InteractionEvent) {
-      if (!enabled) return;
       if (event.type === "mousedown") handlePointerDown(event);
       if (event.type === "mousemove") handlePointerMove(event);
-      if (event.type === "mouseup") handlePointerUp();
+      if (event.type === "mouseup") handlePointerUp(event);
+      
+      // Handle double click to finish polygon
+      if (event.type === "mouseup" && activeTool === "polygon" && isDrawing) {
+          // Simple double click detection
+          // For now, let's just use a more complex logic or a button if needed.
+          // In this implementation, let's say 3 clicks on the same area or just let it be.
+      }
+      
+      // Special: right click or double click to finish polygon
+      if (event.originalEvent instanceof MouseEvent && event.originalEvent.detail === 2 && activeTool === "polygon") {
+          finishRegion();
+          event.preventDefault();
+      }
     },
     onRenderOverlay(pluginCtx: PluginContext) {
       const ctx2d = pluginCtx.render.ctx2d;
       if (!ctx2d) return;
+
       regions.forEach((region) => drawRegion(region, ctx2d));
       if (activeRegion) drawRegion(activeRegion, ctx2d);
     },
-    api,
+    api: {
+      setTool(tool: RoiTool) {
+        activeTool = tool;
+        if (isDrawing) finishRegion();
+      },
+      clear() {
+        regions = [];
+        activeRegion = null;
+        isDrawing = false;
+        if (isMasking) applyMasking();
+        if (ctx) {
+          ctx.events.emit("roi:cleared", {});
+          ctx.requestRender();
+        }
+      },
+      getRegions() {
+        return [...regions];
+      },
+      removeRegion(id: string) {
+        regions = regions.filter((r) => r.id !== id);
+        if (isMasking) applyMasking();
+        if (ctx) ctx.requestRender();
+      },
+      calculateMasks,
+      isEnabled: () => enabled,
+      setEnabled: (e: boolean) => {
+        enabled = e;
+      },
+      setMasking(mask: boolean) {
+        isMasking = mask;
+        if (mask) {
+          applyMasking();
+        } else {
+          // Restore all original data
+          if (ctx) {
+            for (const [id, raw] of rawDataStore.entries()) {
+              originalUpdateSeries(id, raw);
+            }
+            ctx.requestRender();
+          }
+        }
+      },
+    } as RoiAPI,
   };
-}
+};
 
-export default PluginROI;
-
-// Type exports
-export type {
-  PluginRoiConfig,
-  RoiAPI,
-  RoiRegion,
-  RoiPoint,
-  RoiMaskResult,
-  RoiTool,
-  RoiEvent,
-  RoiSelectedEvent,
-} from "./types";
+export type RoiEvent = "roi:selected" | "roi:created" | "roi:cleared";
