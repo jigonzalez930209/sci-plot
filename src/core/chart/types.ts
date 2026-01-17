@@ -17,6 +17,7 @@ import type {
 import type { Series } from "../Series";
 import type { Annotation } from "../annotations";
 import type { ChartAnimationConfig } from "../animation";
+import type { EventEmitter } from "../EventEmitter";
 
 // Analysis types moved to plugin
 
@@ -25,6 +26,7 @@ import type { ChartAnimationConfig } from "../animation";
 // ============================================
 
 export interface Chart {
+  readonly events: EventEmitter<ChartEventMap>;
   addSeries(options: SeriesOptions | HeatmapOptions): void;
   addBar(options: Omit<SeriesOptions, "type">): void;
   addHeatmap(options: Omit<HeatmapOptions, "type">): void;
@@ -75,6 +77,9 @@ export interface Chart {
   readonly radar: any;
   readonly ml: any;
   readonly snapshot: any;
+  readonly dataExport: any;
+  readonly roi: any;
+  readonly videoRecorder: any;
 
   // Annotation methods
   addAnnotation(annotation: Annotation): string;
@@ -193,6 +198,11 @@ export interface Chart {
    * Get a plugin API by name
    */
   getPlugin<T = any>(name: string): T | null;
+
+  /**
+   * Get names of all registered plugins
+   */
+  getPluginNames(): string[];
 
   // ============================================
   // Responsive Design

@@ -103,8 +103,8 @@ export class ChartImpl implements Chart {
   private webglCanvas: HTMLCanvasElement;
   private overlayCanvas: HTMLCanvasElement;
   private overlayCtx: CanvasRenderingContext2D;
-  private series: Map<string, Series> = new Map();
-  private events = new EventEmitter<ChartEventMap>();
+  public series: Map<string, Series> = new Map();
+  public events = new EventEmitter<ChartEventMap>();
   private viewBounds: Bounds = {
     xMin: -0.5,
     xMax: 0.5,
@@ -248,6 +248,18 @@ export class ChartImpl implements Chart {
 
   get snapshot(): any {
     return this.getPluginAPI<any>("scichart-snapshot");
+  }
+
+  get dataExport(): any {
+    return this.getPluginAPI<any>("scichart-data-export");
+  }
+
+  get roi(): any {
+    return this.getPluginAPI<any>("roi");
+  }
+
+  get videoRecorder(): any {
+    return this.getPluginAPI<any>("scichart-video-recorder");
   }
 
   constructor(options: ChartOptions) {
@@ -1050,6 +1062,10 @@ export class ChartImpl implements Chart {
    */
   public getPlugin<T = any>(name: string): T | null {
     return this.getPluginAPI<T>(name);
+  }
+
+  public getPluginNames(): string[] {
+    return this.pluginManager.getNames();
   }
 
   private getPluginAPI<T>(name: string): T | null {
