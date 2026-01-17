@@ -79,7 +79,10 @@ async function initChart() {
     style: { color: 'rgba(255, 255, 255, 0.2)', width: 1, lineDash: [5, 5] }
   });
 
-  chart.autoScale();
+// Initial auto-scale to frame the waves
+  setTimeout(() => {
+    if (chart) chart.autoScale();
+  }, 300);
 }
 
 async function takeSnapshot() {

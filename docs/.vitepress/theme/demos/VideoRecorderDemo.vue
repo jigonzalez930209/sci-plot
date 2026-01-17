@@ -45,17 +45,29 @@ const initChart = async () => {
       requestAnimationFrame(update);
   };
   update();
+
+  // Initial auto-scale to frame the waves
+  setTimeout(() => {
+    if (chart) chart.autoScale();
+  }, 300);
 };
 
 const startRecording = () => {
-    chart.videoRecorder.start();
+    const videoRecorder = chart.getPlugin('scichart-video-recorder') || chart.videoRecorder;
+    if (!videoRecorder) {
+        console.error('Video Recorder plugin not found');
+        return;
+    }
+    videoRecorder.start();
     isRecording.value = true;
     duration.value = 0;
     timer = setInterval(() => duration.value++, 1000);
 };
 
 const stopRecording = async () => {
-    const blob = await chart.videoRecorder.stop();
+    const videoRecorder = chart.getPlugin('scichart-video-recorder') || chart.videoRecorder;
+    if (!videoRecorder) return;
+    const blob = await videoRecorder.stop();
     isRecording.value = false;
     clearInterval(timer);
     

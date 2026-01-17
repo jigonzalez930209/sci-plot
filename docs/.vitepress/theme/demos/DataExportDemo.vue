@@ -62,10 +62,10 @@ async function handleExport() {
   exportResult.value = '';
   
   try {
-    const dataExport = chart.plugins?.get('scichart-data-export')?.api;
+    const dataExport = chart.getPlugin('scichart-data-export') || chart.dataExport;
     
     if (!dataExport) {
-      exportStatus.value = 'Plugin not found';
+      exportStatus.value = `❌ Error: Data Export Plugin not found. Available plugins: ${chart.getPluginNames().join(', ')}`;
       return;
     }
     
@@ -103,10 +103,10 @@ async function handleDownload() {
   if (!chart) return;
   
   try {
-    const dataExport = chart.plugins?.get('scichart-data-export')?.api;
+    const dataExport = chart.getPlugin('scichart-data-export') || chart.dataExport;
     
     if (!dataExport) {
-      exportStatus.value = 'Plugin not found';
+      exportStatus.value = '❌ Error: Data Export Plugin not found';
       return;
     }
     
@@ -162,6 +162,10 @@ onMounted(async () => {
     data: eisData,
     style: { color: '#ff6b6b', pointSize: 4 }
   });
+
+  setTimeout(() => {
+    if (chart) chart.autoScale();
+  }, 300);
 });
 
 onUnmounted(() => {
