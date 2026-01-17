@@ -265,6 +265,15 @@ export class Series {
     this._needsBufferUpdate = true;
   }
 
+  /**
+   * Invalidate buffers - call this after modifying data directly
+   */
+  invalidateBuffers(): void {
+    this.boundsNeedsUpdate = true;
+    this.smoothingNeedsUpdate = true;
+    this._needsBufferUpdate = true;
+  }
+
   setVisible(visible: boolean): void {
     this.visible = visible;
   }
