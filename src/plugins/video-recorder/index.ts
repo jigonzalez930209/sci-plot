@@ -199,14 +199,12 @@ export function PluginVideoRecorder(
     manifest,
     onInit(pCtx) {
       ctx = pCtx;
-      (ctx.chart as any).videoRecorder = pluginApi;
     },
     onDestroy() {
       if (isRecording) {
           mediaRecorder?.stop();
           if (animationFrameId) cancelAnimationFrame(animationFrameId);
       }
-      if (ctx) delete (ctx.chart as any).videoRecorder;
       ctx = null;
     },
     api: pluginApi

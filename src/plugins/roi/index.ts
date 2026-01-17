@@ -326,7 +326,6 @@ export const PluginROI = (config: PluginROIConfig = {}) => {
     onInit(pluginCtx: PluginContext) {
       ctx = pluginCtx;
       const chart = ctx.chart as any;
-      chart.roi = this.api;
 
       // Hijack series methods if masking is enabled
       originalUpdateSeries = chart.updateSeries.bind(chart);
@@ -386,7 +385,6 @@ export const PluginROI = (config: PluginROIConfig = {}) => {
     onDestroy() {
       if (ctx) {
         const chart = ctx.chart as any;
-        chart.roi = undefined;
         chart.addSeries = originalAddSeries;
         chart.updateSeries = originalUpdateSeries;
       }

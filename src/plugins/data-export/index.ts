@@ -300,6 +300,122 @@ export function PluginDataExport(
   // Plugin Implementation
   // ============================================
 
+  const pluginApi: any = {
+    /**
+     * Export chart data to specified format
+     * 
+     * @param format - Export format
+     * @param options - Export options
+     * @returns Export result with content/blob
+     */
+    export(format: ExportFormat, options: Partial<DataExportOptions> = {}): ExportResult {
+      const fullOptions: DataExportOptions = {
+        format,
+        includeHeaders: true,
+        includeTimestamp: true,
+        includeMetadata,
+        prettyPrint: true,
+        ...options
+      };
+
+      const result = doExport(fullOptions);
+
+      // Auto download if enabled and successful
+      if (autoDownload && result.success && result.blob) {
+        downloadBlob(result.blob, result.filename);
+      }
+
+      return result;
+    },
+
+    /**
+     * Export and immediately download
+     * 
+     * @param format - Export format
+     * @param options - Export options
+     */
+    download(format: ExportFormat, options: Partial<DataExportOptions> = {}): ExportResult {
+      const fullOptions: DataExportOptions = {
+        format,
+        includeHeaders: true,
+        includeTimestamp: true,
+        includeMetadata,
+        prettyPrint: true,
+        ...options
+      };
+      const result = doExport(fullOptions);
+      
+      if (result.success && result.blob) {
+        downloadBlob(result.blob, result.filename);
+      }
+      
+      return result;
+    },
+
+    /**
+     * Export to CSV format
+     */
+    toCSV(options: Partial<DataExportOptions> = {}): ExportResult {
+      return doExport({ format: 'csv', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
+    },
+
+    /**
+     * Export to JSON format
+     */
+    toJSON(options: Partial<DataExportOptions> = {}): ExportResult {
+      return doExport({ format: 'json', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
+    },
+
+    /**
+     * Export to MATLAB format
+     */
+    toMATLAB(options: Partial<DataExportOptions> = {}): ExportResult {
+      return doExport({ format: 'matlab', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
+    },
+
+    /**
+     * Export to Python/NumPy format
+     */
+    toPython(options: Partial<DataExportOptions> = {}): ExportResult {
+      return doExport({ format: 'python', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
+    },
+
+    /**
+     * Export to Excel-compatible CSV
+     */
+    toExcel(options: Partial<DataExportOptions> = {}): ExportResult {
+      return doExport({ format: 'xlsx', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
+    },
+
+    /**
+     * Export to binary format
+     */
+    toBinary(options: Partial<DataExportOptions> = {}): ExportResult {
+      return doExport({ format: 'binary', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
+    },
+
+    /**
+     * Get available export formats
+     */
+    getFormats(): ExportFormat[] {
+      return [...formats];
+    },
+
+    /**
+     * Check if a format is supported
+     */
+    supportsFormat(format: ExportFormat): boolean {
+      return formats.includes(format);
+    },
+
+    /**
+     * Get format configuration
+     */
+    getFormatConfig(format: ExportFormat) {
+      return FORMAT_CONFIGS[format];
+    }
+  };
+
   return {
     manifest: manifestDataExport,
 
@@ -312,121 +428,7 @@ export function PluginDataExport(
       _ctx = null;
     },
 
-    api: {
-      /**
-       * Export chart data to specified format
-       * 
-       * @param format - Export format
-       * @param options - Export options
-       * @returns Export result with content/blob
-       */
-      export(format: ExportFormat, options: Partial<DataExportOptions> = {}): ExportResult {
-        const fullOptions: DataExportOptions = {
-          format,
-          includeHeaders: true,
-          includeTimestamp: true,
-          includeMetadata,
-          prettyPrint: true,
-          ...options
-        };
-
-        const result = doExport(fullOptions);
-
-        // Auto download if enabled and successful
-        if (autoDownload && result.success && result.blob) {
-          downloadBlob(result.blob, result.filename);
-        }
-
-        return result;
-      },
-
-      /**
-       * Export and immediately download
-       * 
-       * @param format - Export format
-       * @param options - Export options
-       */
-      download(format: ExportFormat, options: Partial<DataExportOptions> = {}): ExportResult {
-        const fullOptions: DataExportOptions = {
-          format,
-          includeHeaders: true,
-          includeTimestamp: true,
-          includeMetadata,
-          prettyPrint: true,
-          ...options
-        };
-        const result = doExport(fullOptions);
-        
-        if (result.success && result.blob) {
-          downloadBlob(result.blob, result.filename);
-        }
-        
-        return result;
-      },
-
-      /**
-       * Export to CSV format
-       */
-      toCSV(options: Partial<DataExportOptions> = {}): ExportResult {
-        return doExport({ format: 'csv', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
-      },
-
-      /**
-       * Export to JSON format
-       */
-      toJSON(options: Partial<DataExportOptions> = {}): ExportResult {
-        return doExport({ format: 'json', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
-      },
-
-      /**
-       * Export to MATLAB format
-       */
-      toMATLAB(options: Partial<DataExportOptions> = {}): ExportResult {
-        return doExport({ format: 'matlab', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
-      },
-
-      /**
-       * Export to Python/NumPy format
-       */
-      toPython(options: Partial<DataExportOptions> = {}): ExportResult {
-        return doExport({ format: 'python', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
-      },
-
-      /**
-       * Export to Excel-compatible CSV
-       */
-      toExcel(options: Partial<DataExportOptions> = {}): ExportResult {
-        return doExport({ format: 'xlsx', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
-      },
-
-      /**
-       * Export to binary format
-       */
-      toBinary(options: Partial<DataExportOptions> = {}): ExportResult {
-        return doExport({ format: 'binary', includeHeaders: true, includeTimestamp: true, includeMetadata, prettyPrint: true, ...options });
-      },
-
-      /**
-       * Get available export formats
-       */
-      getFormats(): ExportFormat[] {
-        return [...formats];
-      },
-
-      /**
-       * Check if a format is supported
-       */
-      supportsFormat(format: ExportFormat): boolean {
-        return formats.includes(format);
-      },
-
-      /**
-       * Get format configuration
-       */
-      getFormatConfig(format: ExportFormat) {
-        return FORMAT_CONFIGS[format];
-      }
-    }
+    api: pluginApi
   };
 }
 
