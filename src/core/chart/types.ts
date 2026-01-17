@@ -80,6 +80,11 @@ export interface Chart {
   readonly dataExport: any;
   readonly roi: any;
   readonly videoRecorder: any;
+  readonly offscreen: any;
+  readonly virtualization: any;
+  readonly themeEditor: any;
+  readonly sync: any;
+  readonly brokenAxis: any;
 
   // Annotation methods
   addAnnotation(annotation: Annotation): string;

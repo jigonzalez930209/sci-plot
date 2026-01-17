@@ -262,6 +262,26 @@ export class ChartImpl implements Chart {
     return this.getPluginAPI<any>("scichart-video-recorder");
   }
 
+  get offscreen(): any {
+    return this.getPluginAPI<any>("scichart-offscreen");
+  }
+
+  get virtualization(): any {
+    return this.getPluginAPI<any>("scichart-virtualization");
+  }
+
+  get themeEditor(): any {
+    return this.getPluginAPI<any>("scichart-theme-editor");
+  }
+
+  get sync(): any {
+    return this.getPluginAPI<any>("scichart-sync");
+  }
+
+  get brokenAxis(): any {
+    return this.getPluginAPI<any>("scichart-broken-axis");
+  }
+
   constructor(options: ChartOptions) {
     this.initialOptions = options;
     this.container = options.container;
