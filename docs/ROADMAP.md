@@ -1040,9 +1040,9 @@ chart.stopRecording().then(blob => {
 |---------|-----------|-------------|--------|---------|
 | PluginCollaboration **NO** | ⭐ | Muy Alta | 🔄 PENDIENTE | 6 |
 | PluginVoice **NO** | ⭐ | Alta | 🔄 PENDIENTE | 3 |
-| PluginForecasting | ⭐ | Alta | 🔄 PENDIENTE | 3 |
-| Gauge Charts | ⭐ | Media | 🔄 PENDIENTE | 2 |
-| Sankey Diagrams | ⭐ | Media | 🔄 PENDIENTE | 2 |
+| PluginForecasting | ⭐ | Alta | ✅ COMPLETO | 3 |
+| Gauge Charts | ⭐ | Media | ✅ COMPLETO | 2 |
+| Sankey Diagrams | ⭐ | Media | ✅ COMPLETO | 2 |
 | ~~Temas de Publicación~~ | ~~⭐⭐~~ | ~~Baja~~ | ✅ **COMPLETO** | ~~1~~ |
 | Ejes Rotos | ⭐⭐ | Media | 🔄 PENDIENTE | 2 |
 | Bindings para Python | ⭐⭐ | Muy Alta | 🔄 PENDIENTE | 6 |

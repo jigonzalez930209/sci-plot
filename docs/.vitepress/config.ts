@@ -181,6 +181,7 @@ export default defineConfig({
             { text: "Offscreen Rendering", link: "/api/plugin-offscreen" },
             { text: "Pattern Recognition", link: "/api/plugin-pattern-recognition" },
             { text: "GPU & WebGPU", link: "/api/plugin-gpu" },
+            { text: "Forecasting", link: "/api/plugin-forecasting" },
             { text: "Utility Suite", link: "/api/plugin-utilities" },
           ],
         },
@@ -227,6 +228,7 @@ export default defineConfig({
             { text: "Single Frequency Filter", link: "/examples/single-frequency-filter" },
             { text: "Statistics Panel", link: "/examples/statistics" },
             { text: "Scientific Analysis", link: "/examples/scientific-analysis" },
+            { text: "Forecasting", link: "/examples/forecasting" },
           ],
         },
         {

@@ -282,6 +282,10 @@ export class ChartImpl implements Chart {
     return this.getPluginAPI<any>("scichart-broken-axis");
   }
 
+  get forecasting(): any {
+    return this.getPluginAPI<any>("scichart-forecasting");
+  }
+
   constructor(options: ChartOptions) {
     this.initialOptions = options;
     this.container = options.container;
@@ -1569,8 +1573,8 @@ export class ChartImpl implements Chart {
     }
   }
 
-  use(plugin: import("../../plugins").ChartPlugin): void {
-    this.pluginManager.use(plugin);
+  async use(plugin: any): Promise<void> {
+    await this.pluginManager.use(plugin);
 
     // If annotations plugin was just added, process queued annotations
     const annotationsApi = this.getPluginAPI<any>("scichart-annotations");

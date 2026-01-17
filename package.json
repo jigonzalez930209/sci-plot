@@ -149,6 +149,10 @@
     "./plugins/pattern-recognition": {
       "types": "./dist/plugins/pattern-recognition.d.ts",
       "import": "./dist/plugins/pattern-recognition.js"
+    },
+    "./plugins/forecasting": {
+      "types": "./dist/plugins/forecasting.d.ts",
+      "import": "./dist/plugins/forecasting.js"
     }
   },
   "files": [

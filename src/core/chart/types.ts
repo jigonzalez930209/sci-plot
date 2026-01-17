@@ -85,6 +85,7 @@ export interface Chart {
   readonly themeEditor: any;
   readonly sync: any;
   readonly brokenAxis: any;
+  readonly forecasting: any;
 
   // Annotation methods
   addAnnotation(annotation: Annotation): string;
@@ -245,7 +246,7 @@ export interface Chart {
   setYScale(yAxisId: string, scale: any): void;
 
   /** Use a plugin */
-  use(plugin: ChartPlugin): void;
+  use(plugin: ChartPlugin | any): Promise<void>;
   /** Destroy the chart and cleanup resources */
   destroy(): void;
 }
