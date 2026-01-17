@@ -129,6 +129,30 @@ export { PluginSnapshot, type PluginSnapshotConfig, type SnapshotExportAPI, type
 export { PluginDataTransform, type PluginDataTransformConfig, type DataTransformAPI, type TransformOp, type TransformType } from "./data-transform";
 export { PluginLaTeX, type PluginLaTeXConfig, type LaTeXPluginAPI, type LaTeXDimensions } from "./latex";
 
+// Drag & Drop Editing
+export { PluginDragEdit, type PluginDragEditConfig, type DragEditAPI, type DragEditEvent } from "./drag-edit";
+
+// Caching
+export { PluginCaching, type PluginCachingConfig, type CachingAPI, type CacheStats } from "./caching";
+
+// Lazy Loading
+export { PluginLazyLoad, type PluginLazyLoadConfig, type LazyLoadAPI, type DataProvider } from "./lazy-load";
+
+// Broken Axis
+export { PluginBrokenAxis, type PluginBrokenAxisConfig, type BrokenAxisAPI, type AxisBreak } from "./broken-axis";
+
+// Video Recorder
+export { PluginVideoRecorder, type PluginVideoRecorderConfig, type VideoRecorderAPI, type VideoRecorderOptions } from "./video-recorder";
+
+// Offscreen Rendering
+export { PluginOffscreen, type PluginOffscreenConfig, type OffscreenAPI, type OffscreenStats, type OffscreenMode, type OffscreenTransferMode, type OffscreenFallbackMode } from "./offscreen";
+
+// Virtualization
+export { PluginVirtualization, type PluginVirtualizationConfig, type VirtualizationAPI, type VirtualizationStats, type VirtualizationMode, type VirtualizationStrategy } from "./virtualization";
+
+// ROI
+export { PluginROI, type PluginROIConfig, type RoiAPI, type RoiRegion, type RoiPoint, type RoiMaskResult, type RoiTool, type RoiEvent, type RoiSelectedEvent } from "./roi";
+
 // ============================================
 // Helper for creating typed plugins
 // ============================================

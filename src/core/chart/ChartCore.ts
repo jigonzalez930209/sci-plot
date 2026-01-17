@@ -103,8 +103,8 @@ export class ChartImpl implements Chart {
   private webglCanvas: HTMLCanvasElement;
   private overlayCanvas: HTMLCanvasElement;
   private overlayCtx: CanvasRenderingContext2D;
-  private series: Map<string, Series> = new Map();
-  private events = new EventEmitter<ChartEventMap>();
+  public series: Map<string, Series> = new Map();
+  public events = new EventEmitter<ChartEventMap>();
   private viewBounds: Bounds = {
     xMin: -0.5,
     xMax: 0.5,
@@ -165,6 +165,16 @@ export class ChartImpl implements Chart {
   } | null = null;
   private pluginManager: PluginManagerImpl;
   private initialOptions: ChartOptions;
+
+  setXScale(scale: Scale): void {
+      this.xScale = scale;
+      this.needsFullRender = true;
+  }
+
+  setYScale(yAxisId: string, scale: Scale): void {
+      this.yScales.set(yAxisId, scale);
+      this.needsFullRender = true;
+  }
 
   get analysis(): any {
     const api = this.getPluginAPI<any>("scichart-analysis");
@@ -238,6 +248,38 @@ export class ChartImpl implements Chart {
 
   get snapshot(): any {
     return this.getPluginAPI<any>("scichart-snapshot");
+  }
+
+  get dataExport(): any {
+    return this.getPluginAPI<any>("scichart-data-export");
+  }
+
+  get roi(): any {
+    return this.getPluginAPI<any>("roi");
+  }
+
+  get videoRecorder(): any {
+    return this.getPluginAPI<any>("scichart-video-recorder");
+  }
+
+  get offscreen(): any {
+    return this.getPluginAPI<any>("scichart-offscreen");
+  }
+
+  get virtualization(): any {
+    return this.getPluginAPI<any>("scichart-virtualization");
+  }
+
+  get themeEditor(): any {
+    return this.getPluginAPI<any>("scichart-theme-editor");
+  }
+
+  get sync(): any {
+    return this.getPluginAPI<any>("scichart-sync");
+  }
+
+  get brokenAxis(): any {
+    return this.getPluginAPI<any>("scichart-broken-axis");
   }
 
   constructor(options: ChartOptions) {
@@ -334,6 +376,9 @@ export class ChartImpl implements Chart {
       events: this.events as any, // SelectionEventMap is a subset of ChartEventMap
       requestRender: () => this.requestRender(),
     });
+    this.events.on("selectionChange", (event) => {
+      this.pluginManager.notifySelectionChange(event.selected);
+    });
 
     // Initialize animation system
     this.animationEngine = new AnimationEngine();
@@ -360,13 +405,27 @@ export class ChartImpl implements Chart {
       this.container,
       {
         onZoom: (b, axisId) => {
+          const previous = { ...this.viewBounds };
           this.zoom({ x: [b.xMin, b.xMax], y: [b.yMin, b.yMax], axisId });
+          this.pluginManager.notifyViewChange({
+            previous,
+            current: { ...this.viewBounds },
+            trigger: "zoom",
+            animated: this.animationEngine.isAnimating(),
+          });
           // Refresh tool overlays so points follow the zoom
           if (this.deltaTool) this.deltaTool.renderOverlay();
           if (this.peakTool) this.peakTool.renderOverlay();
         },
         onPan: (dx, dy, axisId) => {
+          const previous = { ...this.viewBounds };
           this.pan(dx, dy, axisId);
+          this.pluginManager.notifyViewChange({
+            previous,
+            current: { ...this.viewBounds },
+            trigger: "pan",
+            animated: false,
+          });
           // Refresh tool overlays so points follow the pan
           if (this.deltaTool) this.deltaTool.renderOverlay();
           if (this.peakTool) this.peakTool.renderOverlay();
@@ -450,7 +509,7 @@ export class ChartImpl implements Chart {
           }
         },
         onInteraction: (event) => {
-          this.pluginManager.notify("onInteraction", event);
+          this.pluginManager.notifyInteraction(event);
         },
       },
       () => this.getPlotArea(),
@@ -711,7 +770,9 @@ export class ChartImpl implements Chart {
   addSeries(options: SeriesOptions | HeatmapOptions): void {
     addSeriesImpl(this.getSeriesContext() as any, options as any);
     const series = this.series.get((options as any).id);
-    if (series) this.pluginManager.notify("onSeriesAdd", series);
+    if (series) {
+      this.pluginManager.notifySeriesAdd({ series, changeType: "add" });
+    }
   }
   addBar(options: Omit<SeriesOptions, "type">): void {
     this.addSeries({ ...options, type: "bar" } as SeriesOptions);
@@ -720,11 +781,24 @@ export class ChartImpl implements Chart {
     this.addSeries({ ...options, type: "heatmap" } as HeatmapOptions);
   }
   removeSeries(id: string): void {
+    const series = this.series.get(id);
     removeSeriesImpl(this.getSeriesContext(), id);
+    if (series) {
+      this.pluginManager.notifySeriesRemove({ series, changeType: "remove" });
+    }
   }
   updateSeries(id: string, data: SeriesUpdateData): void {
     updateSeriesImpl(this.getSeriesContext(), id, data);
     this.recalculateTools();
+    const series = this.series.get(id);
+    if (series) {
+      this.pluginManager.notifyDataUpdate({
+        seriesId: id,
+        mode: data.append ? "append" : "replace",
+        pointCount: data.x?.length ?? data.y?.length ?? 0,
+        bounds: series.getBounds() ?? this.viewBounds,
+      });
+    }
   }
   appendData(
     id: string,
@@ -735,9 +809,11 @@ export class ChartImpl implements Chart {
     this.recalculateTools();
     const series = this.series.get(id);
     if (series) {
-      this.pluginManager.notify("onDataUpdate", {
+      this.pluginManager.notifyDataUpdate({
         seriesId: id,
-        data: series.getData(),
+        mode: "append",
+        pointCount: x.length,
+        bounds: series.getBounds() ?? this.viewBounds,
       });
     }
   }
@@ -792,6 +868,7 @@ export class ChartImpl implements Chart {
   }
 
   zoom(options: ZoomOptions & { animate?: boolean }): void {
+    const previous = { ...this.viewBounds };
     if (this.animationConfig.enabled && options.animate !== false) {
       const animation = applyAnimatedZoom(
         this.getAnimatedNavContext(),
@@ -809,10 +886,23 @@ export class ChartImpl implements Chart {
     } else {
       applyZoom(this.getNavContext(), options);
     }
+    this.pluginManager.notifyViewChange({
+      previous,
+      current: { ...this.viewBounds },
+      trigger: "zoom",
+      animated: this.animationConfig.enabled && options.animate !== false,
+    });
     this.requestRender();
   }
   pan(deltaX: number, deltaY: number, axisId?: string): void {
+    const previous = { ...this.viewBounds };
     applyPan(this.getNavContext(), deltaX, deltaY, axisId);
+    this.pluginManager.notifyViewChange({
+      previous,
+      current: { ...this.viewBounds },
+      trigger: "pan",
+      animated: false,
+    });
   }
   resetZoom(): void {
     this.autoScale();
@@ -822,6 +912,7 @@ export class ChartImpl implements Chart {
   }
   autoScale(animate: boolean = true): void {
     this.executeOrQueue("autoScale", () => {
+      const previous = { ...this.viewBounds };
       if (this.animationConfig.enabled && animate) {
         const animation = applyAnimatedAutoScale(
           this.getAnimatedNavContext(),
@@ -839,6 +930,12 @@ export class ChartImpl implements Chart {
       } else {
         autoScaleAll(this.getNavContext());
       }
+      this.pluginManager.notifyViewChange({
+        previous,
+        current: { ...this.viewBounds },
+        trigger: "autoScale",
+        animated: this.animationConfig.enabled && animate,
+      });
       this.requestRender();
     });
   }
@@ -985,6 +1082,10 @@ export class ChartImpl implements Chart {
    */
   public getPlugin<T = any>(name: string): T | null {
     return this.getPluginAPI<T>(name);
+  }
+
+  public getPluginNames(): string[] {
+    return this.pluginManager.getNames();
   }
 
   private getPluginAPI<T>(name: string): T | null {
@@ -1513,6 +1614,10 @@ export class ChartImpl implements Chart {
       return;
     this.renderer.resize();
     this.requestRender();
+    this.pluginManager.notifyResize({
+      width: this.webglCanvas.width / this.dpr,
+      height: this.webglCanvas.height / this.dpr,
+    });
   }
 
   requestRender(): void {
@@ -1588,6 +1693,11 @@ export class ChartImpl implements Chart {
         plotAreaBackground: this.plotAreaBackground,
         plotArea,
       });
+      const webglEvent = {
+        ...beforeEvent,
+        renderTime: performance.now() - start,
+      };
+      this.pluginManager.notifyRenderWebGL(webglEvent);
       renderOverlay(renderCtx, plotArea, this.yScale);
     } else {
       // Overlay only render
@@ -1597,8 +1707,8 @@ export class ChartImpl implements Chart {
     const renderTime = performance.now() - start;
     const afterEvent = { ...beforeEvent, renderTime };
 
-    this.pluginManager.notifyAfterRender(afterEvent);
     this.pluginManager.notifyRenderOverlay(afterEvent);
+    this.pluginManager.notifyAfterRender(afterEvent);
 
     this.events.emit("render", {
       fps: 1000 / renderTime,

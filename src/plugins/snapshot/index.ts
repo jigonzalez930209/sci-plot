@@ -166,6 +166,9 @@ export function PluginSnapshot(
         ctx = c; 
         ctx.log.info("Snapshot plugin initialized");
     },
+    onDestroy() {
+        ctx = null;
+    },
     api
   };
 }

@@ -1,6 +1,6 @@
 {
   "name": "scichart-engine",
-  "version": "1.8.1",
+  "version": "1.9.1",
   "author": "jigonzalez930209",
   "license": "MIT",
   "repository": {
@@ -89,6 +89,66 @@
     "./plugins/context-menu": {
       "types": "./dist/plugins/context-menu.d.ts",
       "import": "./dist/plugins/context-menu.js"
+    },
+    "./plugins/snapshot": {
+      "types": "./dist/plugins/snapshot.d.ts",
+      "import": "./dist/plugins/snapshot.js"
+    },
+    "./plugins/video-recorder": {
+      "types": "./dist/plugins/video-recorder.d.ts",
+      "import": "./dist/plugins/video-recorder.js"
+    },
+    "./plugins/roi": {
+      "types": "./dist/plugins/roi.d.ts",
+      "import": "./dist/plugins/roi.js"
+    },
+    "./plugins/virtualization": {
+      "types": "./dist/plugins/virtualization.d.ts",
+      "import": "./dist/plugins/virtualization.js"
+    },
+    "./plugins/offscreen": {
+      "types": "./dist/plugins/offscreen.d.ts",
+      "import": "./dist/plugins/offscreen.js"
+    },
+    "./plugins/broken-axis": {
+      "types": "./dist/plugins/broken-axis.d.ts",
+      "import": "./dist/plugins/broken-axis.js"
+    },
+    "./plugins/anomaly-detection": {
+      "types": "./dist/plugins/anomaly-detection.d.ts",
+      "import": "./dist/plugins/anomaly-detection.js"
+    },
+    "./plugins/latex": {
+      "types": "./dist/plugins/latex.d.ts",
+      "import": "./dist/plugins/latex.js"
+    },
+    "./plugins/data-transform": {
+      "types": "./dist/plugins/data-transform.d.ts",
+      "import": "./dist/plugins/data-transform.js"
+    },
+    "./plugins/ml-integration": {
+      "types": "./dist/plugins/ml-integration.d.ts",
+      "import": "./dist/plugins/ml-integration.js"
+    },
+    "./plugins/radar": {
+      "types": "./dist/plugins/radar.d.ts",
+      "import": "./dist/plugins/radar.js"
+    },
+    "./plugins/regression": {
+      "types": "./dist/plugins/regression.d.ts",
+      "import": "./dist/plugins/regression.js"
+    },
+    "./plugins/lazy-load": {
+      "types": "./dist/plugins/lazy-load.d.ts",
+      "import": "./dist/plugins/lazy-load.js"
+    },
+    "./plugins/caching": {
+      "types": "./dist/plugins/caching.d.ts",
+      "import": "./dist/plugins/caching.js"
+    },
+    "./plugins/pattern-recognition": {
+      "types": "./dist/plugins/pattern-recognition.d.ts",
+      "import": "./dist/plugins/pattern-recognition.js"
     }
   },
   "files": [

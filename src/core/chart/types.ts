@@ -17,6 +17,7 @@ import type {
 import type { Series } from "../Series";
 import type { Annotation } from "../annotations";
 import type { ChartAnimationConfig } from "../animation";
+import type { EventEmitter } from "../EventEmitter";
 
 // Analysis types moved to plugin
 
@@ -25,6 +26,7 @@ import type { ChartAnimationConfig } from "../animation";
 // ============================================
 
 export interface Chart {
+  readonly events: EventEmitter<ChartEventMap>;
   addSeries(options: SeriesOptions | HeatmapOptions): void;
   addBar(options: Omit<SeriesOptions, "type">): void;
   addHeatmap(options: Omit<HeatmapOptions, "type">): void;
@@ -75,6 +77,14 @@ export interface Chart {
   readonly radar: any;
   readonly ml: any;
   readonly snapshot: any;
+  readonly dataExport: any;
+  readonly roi: any;
+  readonly videoRecorder: any;
+  readonly offscreen: any;
+  readonly virtualization: any;
+  readonly themeEditor: any;
+  readonly sync: any;
+  readonly brokenAxis: any;
 
   // Annotation methods
   addAnnotation(annotation: Annotation): string;
@@ -194,6 +204,11 @@ export interface Chart {
    */
   getPlugin<T = any>(name: string): T | null;
 
+  /**
+   * Get names of all registered plugins
+   */
+  getPluginNames(): string[];
+
   // ============================================
   // Responsive Design
   // ============================================
@@ -224,6 +239,10 @@ export interface Chart {
   toUrlHash(compress?: boolean): string;
   /** Load state from URL hash */
   fromUrlHash(hash: string, compressed?: boolean): void;
+
+  /** Set custom scales (e.g. for Broken Axis support) */
+  setXScale(scale: any): void;
+  setYScale(yAxisId: string, scale: any): void;
 
   /** Use a plugin */
   use(plugin: ChartPlugin): void;

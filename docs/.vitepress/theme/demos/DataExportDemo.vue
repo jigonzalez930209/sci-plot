@@ -62,10 +62,10 @@ async function handleExport() {
   exportResult.value = '';
   
   try {
-    const dataExport = chart.plugins?.get('scichart-data-export')?.api;
+    const dataExport = chart.getPlugin('scichart-data-export') || chart.dataExport;
     
     if (!dataExport) {
-      exportStatus.value = 'Plugin not found';
+      exportStatus.value = `❌ Error: Data Export Plugin not found. Available plugins: ${chart.getPluginNames().join(', ')}`;
       return;
     }
     
@@ -103,10 +103,10 @@ async function handleDownload() {
   if (!chart) return;
   
   try {
-    const dataExport = chart.plugins?.get('scichart-data-export')?.api;
+    const dataExport = chart.getPlugin('scichart-data-export') || chart.dataExport;
     
     if (!dataExport) {
-      exportStatus.value = 'Plugin not found';
+      exportStatus.value = '❌ Error: Data Export Plugin not found';
       return;
     }
     
@@ -127,9 +127,7 @@ async function handleDownload() {
 onMounted(async () => {
   if (typeof window === 'undefined' || !chartContainer.value) return;
   
-  const { createChart } = await import('@src/index');
-  const { PluginTools } = await import('@src/plugins/tools');
-  const { PluginDataExport } = await import('@src/plugins/data-export');
+  const { createChart, PluginDataExport, PluginTools } = await import('@src/index');
   
   chart = createChart({
     container: chartContainer.value,
@@ -164,6 +162,10 @@ onMounted(async () => {
     data: eisData,
     style: { color: '#ff6b6b', pointSize: 4 }
   });
+
+  setTimeout(() => {
+    if (chart) chart.autoScale();
+  }, 300);
 });
 
 onUnmounted(() => {

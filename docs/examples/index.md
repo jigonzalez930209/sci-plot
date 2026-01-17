@@ -108,6 +108,18 @@ Professional tooltips with themes, animations, and scientific notation.
 
 [View full example →](/examples/tooltips)
 
+---
+
+### ROI Tools
+
+Interactive tools for selecting and analyzing specific data regions.
+
+<RoiDemo />
+
+[View full example →](/examples/roi-tools)
+
+---
+
 ## Quick Links
 
 | Example | Description | Key Feature |
@@ -122,6 +134,9 @@ Professional tooltips with themes, animations, and scientific notation.
 | [Bar Charts](/examples/bar-charts) | Categorical data | Automatic width |
 | [Heatmaps](/examples/heatmap) | 2D intensity maps | Color scales |
 | [Tooltips](/examples/tooltips) | Tooltip system | Themes & Animations |
+| [Export & Media](/examples/export-utilities) | Media Suite | Snapshot/Video/Data |
+| [ROI Selection](/examples/roi-tools) | Data Region Selection | Rect/Lasso/Polygon |
+| [Offscreen](/examples/offscreen) | Smooth Rendering | `OffscreenCanvas` |
 
 ## Code Snippets
 

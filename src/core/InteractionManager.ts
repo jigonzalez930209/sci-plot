@@ -287,15 +287,20 @@ export class InteractionManager {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    const inPlotArea = mouseX >= plotArea.x && mouseX <= plotArea.x + plotArea.width && mouseY >= plotArea.y && mouseY <= plotArea.y + plotArea.height;
+
     this.callbacks.onInteraction?.({
       type: "mousedown",
       pixelX: mouseX,
       pixelY: mouseY,
-      inPlotArea: mouseX >= plotArea.x && mouseX <= plotArea.x + plotArea.width && mouseY >= plotArea.y && mouseY <= plotArea.y + plotArea.height,
+      inPlotArea,
       originalEvent: e,
       preventDefault: () => e.preventDefault(),
       defaultPrevented: e.defaultPrevented,
     });
+
+    // If a plugin handled the event, stop internal processing
+    if (e.defaultPrevented) return;
 
     // Check if mouse is in axis area for dragging
     const axes = this.getAxesLayout();
@@ -325,12 +330,7 @@ export class InteractionManager {
     }
 
     // Check if mouse is in plot area
-    if (
-      mouseX >= plotArea.x &&
-      mouseX <= plotArea.x + plotArea.width &&
-      mouseY >= plotArea.y &&
-      mouseY <= plotArea.y + plotArea.height
-    ) {
+    if (inPlotArea) {
       switch (this.mode) {
         case 'pan':
           this.isDragging = true;
@@ -384,6 +384,8 @@ export class InteractionManager {
     // Update cursor position
     this.callbacks.onCursorMove(mouseX, mouseY);
 
+    if (e.defaultPrevented) return;
+
     if (this.isDragging) {
       const deltaX = e.clientX - this.lastMousePos.x;
       const deltaY = e.clientY - this.lastMousePos.y;
@@ -418,6 +420,15 @@ export class InteractionManager {
       preventDefault: () => e.preventDefault(),
       defaultPrevented: e.defaultPrevented,
     });
+
+    if (e.defaultPrevented) {
+        this.isDragging = false;
+        this.panningAxisId = undefined;
+        this.isBoxSelecting = false;
+        this.isBoxZooming = false;
+        this.container.style.cursor = "";
+        return;
+    }
 
     if (this.isBoxZooming) {
       const x = Math.min(this.selectionStart.x, mouseX);
