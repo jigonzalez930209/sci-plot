@@ -50,6 +50,7 @@
 - **Changelog**: Completado el historial desde la v1.5.1 hasta la v1.9.0 basado en los logs de Git (Sankey, Gauges, Polar, LaTeX, etc.).
 - **Build Verification**: Ejecutado `pnpm build` con éxito, verificando que los cambios en tipos e interfaces no afectan la compilación.
 - **Documentación**: Actualizadas todas las referencias a plugins para usar el nuevo patrón de acceso directo (`chart.roi`, `chart.dataExport`).
+- **NPM Package**: Actualizado el campo `exports` en `package.json` para incluir los 15+ nuevos plugins (ROI, Virtualization, Offscreen, Snapshot, etc.).
 
 ---
 
