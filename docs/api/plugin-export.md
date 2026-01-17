@@ -14,7 +14,7 @@ import { createChart, PluginSnapshot } from 'scichart-engine';
 const chart = createChart({ container });
 await chart.use(PluginSnapshot({ defaultFormat: 'png' }));
 
-// Capture and download
+// Direct access to Snapshot API
 const dataUrl = await chart.snapshot.downloadSnapshot({
   filename: 'experiment-results',
   format: 'jpeg',
@@ -47,7 +47,7 @@ import { createChart, PluginVideoRecorder } from 'scichart-engine';
 const chart = createChart({ container });
 await chart.use(PluginVideoRecorder({ fps: 60, bitrate: 5000000 }));
 
-// Control recording
+// Control recording via direct property
 chart.videoRecorder.start();
 
 // After some interaction or data streaming...
@@ -78,8 +78,8 @@ import { createChart, PluginDataExport } from 'scichart-engine';
 const chart = createChart({ container });
 await chart.use(PluginDataExport());
 
-// Download current series data as CSV
-chart.export.download('csv', {
+// Download current series data as CSV via direct property
+chart.dataExport.download('csv', {
   seriesIds: ['channel-1', 'channel-2'],
   precision: 8,
   includeHeaders: true

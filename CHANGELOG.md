@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.0] - 2026-01-16
+
+### Added
+- **PluginOffscreen**: High-performance multi-threaded rendering using Worker Pool and OffscreenCanvas.
+- **PluginVirtualization**: Modern data virtualization for 1M+ points using LTTB and Min-Max downsampling.
+- **PluginROI**: Region of Interest selection tools (Lasso, Circle, Polygon, Rectangle) with data masking capabilities.
+- **PluginBrokenAxis**: Specialized axis rendering for datasets with significant gaps.
+- **PluginSnapshot**: Professional high-resolution image export (up to 8K) with custom watermarks.
+- **Unified Plugin Discovery**: Direct API access on the chart instance (e.g., `chart.snapshot`, `chart.dataExport`, `chart.roi`, `chart.videoRecorder`).
+- **Plugin Discovery API**: New `chart.getPluginNames()` method to introspect loaded plugins.
+
+### Improved
+- **Interaction Engine**: Robust `onInteraction` hook allowing plugins to capture, transform, or block native gestures.
+- **Automatic Framing**: Improved `autoScale` logic for animated series and dynamically generated data in demos.
+- **TypeScript Experience**: Complete `Chart` interface with all plugin properties for full IntelliSense support.
+- **Data Integrity**: New `invalidateBuffers()` method on Series to force cached data refreshes.
+
+### Fixed
+- Initialization crash in `PluginSnapshot` when attempting to overwrite read-only getters.
+- Interaction blocking bug in `PluginDragEdit` during point manipulation.
+- Rendering inconsistencies in the 2D Overlay for polygon and lasso tools.
+- Visibility issues in `ChartImpl` for the `events` property.
+
+## [1.8.1] - 2026-01-16
+
+### Added
+- **PluginLaTeX**: Integrated LaTeX rendering for chart labels, titles, and annotations using a compressed math engine.
+- **Ternary Charts**: Support for three-variable data visualization (A+B+C=100%) with ternary coordinate helpers.
+
+## [1.8.0] - 2026-01-14
+
+### Added
+- **Sankey Diagrams**: Specialized high-performance renderer for visualizing flows, energy distribution, and process monitoring.
+- **Gauge Charts**: Support for linear and radial needle-based gauges with customizable ranges and bands.
+- **Data Transform Plugin**: Real-time signal processing pipeline support for Detrending, Baseline Correction, and Calibration.
+- **PluginML**: Initial machine learning integration suite for time-series forecasting and classification.
+- **PluginRadar**: Multi-variable radar/spider charts for comparative analysis.
+
+## [1.7.2] - 2026-01-14
+
+### Improved
+- **Polar Grids**: Enhanced grid generation with support for angular subdivisions and radial scaling.
+
+## [1.7.1] - 2026-01-14
+
+### Added
+- **Anomaly Detection Plugin**: Real-time outlier detection using Z-score, IQR, and adaptive thresholding.
+
+## [1.7.0] - 2026-01-14
+
+### Added
+- **Polar Chart Core**: Native high-performance polar coordinate system with support for standard scientific series.
+
+## [1.6.0] - 2026-01-12
+
+### Added
+- **Directional Indicators**: Real-time trend arrows and direction highlights for cyclic data (e.g., Cyclic Voltammetry).
+- **Serialization API**: New hooks for plugins to participate in chart state save/load cycles.
+
+## [1.5.3] - 2026-01-12
+
+### Fixed
+- **Streaming Axis Switching**: Resolved visual jump/flicker when switching axes during high-frequency data updates.
+
 ## [1.5.1] - 2026-01-10
 
 ### Added

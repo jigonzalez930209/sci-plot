@@ -73,6 +73,24 @@ await chart.use(PluginAnalysis());
 await chart.use(PluginAnnotations());
 ```
 
+## Accessing Plugin APIs
+
+Starting from version 1.9.0, most plugins register their public API directly on the `chart` object for easier access. This makes the code cleaner and provides better TypeScript IntelliSense.
+
+| Plugin Property | Source Plugin | Description |
+| :--- | :--- | :--- |
+| `chart.snapshot` | `PluginSnapshot` | Export high-res images. |
+| `chart.videoRecorder` | `PluginVideoRecorder` | Record chart animations. |
+| `chart.dataExport` | `PluginDataExport` | Export raw data to CSV/JSON/XLSX. |
+| `chart.roi` | `PluginROI` | Manage selection regions and masking. |
+| `chart.analysis` | `PluginAnalysis` | Advanced signal processing. |
+| `chart.regression` | `PluginRegression` | Linear and non-linear fitting. |
+| `chart.virtualization` | `PluginVirtualization` | Big data management. |
+| `chart.themeEditor` | `PluginThemeEditor` | Interactive style editing. |
+
+> [!TIP]
+> You can introspect all currently loaded and registered plugins using `chart.getPluginNames()`.
+
 ## Creating a Custom Plugin
 
 The recommended way to create a plugin is using the `createPlugin` or `createConfigurablePlugin` helpers.
