@@ -402,6 +402,6 @@ chart.use(PluginContextMenu({
 ## See Also
 
 - [Context Menu Demo](/examples/context-menu) - Interactive demo
-- [Data Export Plugin](/api/plugin-data-export) - Export functionality
+- [Data Export Plugin](/api/plugin-export#data-export-plugin) - Export functionality
 - [Annotations](/api/annotations) - Chart annotations
 - [Plugin System](/guide/plugins) - Plugin architecture

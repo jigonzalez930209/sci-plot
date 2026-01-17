@@ -127,9 +127,7 @@ async function handleDownload() {
 onMounted(async () => {
   if (typeof window === 'undefined' || !chartContainer.value) return;
   
-  const { createChart } = await import('@src/index');
-  const { PluginTools } = await import('@src/plugins/tools');
-  const { PluginDataExport } = await import('@src/plugins/data-export');
+  const { createChart, PluginDataExport, PluginTools } = await import('@src/index');
   
   chart = createChart({
     container: chartContainer.value,

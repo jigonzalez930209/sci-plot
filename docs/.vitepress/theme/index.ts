@@ -20,10 +20,13 @@ import TernaryDemo from './demos/TernaryDemo.vue'
 import DragEditDemo from './demos/DragEditDemo.vue'
 import CachingDemo from "./demos/CachingDemo.vue";
 import LazyLoadDemo from "./demos/LazyLoadDemo.vue";
-// import BrokenAxisDemo from "./demos/BrokenAxisDemo.vue";
+import BrokenAxisDemo from "./demos/BrokenAxisDemo.vue";
+import VirtualizationDemo from "./demos/VirtualizationDemo.vue";
 import SnapshotDemo from "./demos/SnapshotDemo.vue";
 import DataExportDemo from "./demos/DataExportDemo.vue";
 import VideoRecorderDemo from "./demos/VideoRecorderDemo.vue";
+import RoiDemo from "./demos/RoiDemo.vue";
+import OffscreenDemo from "./demos/OffscreenDemo.vue";
 // import ContextMenu from "./components/ContextMenu.vue";
 import './custom.css'
 
@@ -55,7 +58,10 @@ export default {
     app.component('SnapshotDemo', SnapshotDemo)
     app.component('DataExportDemo', DataExportDemo)
     app.component('VideoRecorderDemo', VideoRecorderDemo)
-    // app.component('BrokenAxisDemo', BrokenAxisDemo) // This was already commented in the original, keeping it as is.
+    app.component('RoiDemo', RoiDemo)
+    app.component('OffscreenDemo', OffscreenDemo)
+    app.component('BrokenAxisDemo', BrokenAxisDemo)
+    app.component('VirtualizationDemo', VirtualizationDemo)
     // app.component('ContextMenu', ContextMenu)
   }
 }

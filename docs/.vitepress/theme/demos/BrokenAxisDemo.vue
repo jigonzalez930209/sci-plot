@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { createChart, PluginBrokenAxis } from '../../../../src';
+import { createChart, PluginBrokenAxis } from '@src/index';
 
 const chartContainer = ref<HTMLDivElement | null>(null);
 let chart: any = null;

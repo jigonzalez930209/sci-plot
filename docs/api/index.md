@@ -71,9 +71,16 @@ Many high-level features are provided as plugins. Load them using `chart.use()`.
 | [`PluginTools`](/api/interactive-tools) | Tooltips, Delta Tool, Peak Tool |
 | [`PluginAnalysis`](/api/analysis) | FFT, Regression, Smoothing |
 | [`PluginAnnotations`](/api/annotations) | Lines, Shapes, Text |
+| [`PluginPatternRecognition`](/api/plugin-pattern-recognition) | Detect chart patterns (Head & Shoulders, etc.) |
+| [`PluginStreaming`](/api/plugin-streaming) | Real-time WebSocket streaming |
+| [`PluginGpu`](/api/plugin-gpu) | WebGPU & GPGPU acceleration |
 | [`StatsPlugin`](/api/statistics-panel) | Real-time statistics panel |
 | [`PluginDataTransform`](/api/plugin-data-transform) | Real-time data transformation pipeline |
-| [`PluginLoading`](/api/chart#loading-state) | Custom loading indicators |
+| [`PluginLoading`](/api/plugin-utilities#loading-indicators) | Custom loading indicators |
+| [`PluginROI`](/api/plugin-roi) | Selection tools (Rectangle, Lasso, Polygon) |
+| [`PluginVirtualization`](/api/plugin-virtualization) | Render massive datasets (10M+ points) |
+| [`PluginOffscreen`](/api/plugin-offscreen) | Rendering in background Workers |
+| [`PluginExport`](/api/plugin-export) | Snapshots, Video recording, Data export |
 | [`DirectionIndicatorPlugin`](/examples/cyclic-voltammetry#direction-indicator-plugin) | Real-time trend arrows |
 
 ### Annotations
@@ -233,6 +240,17 @@ Nuevos tipos de visualización altamente especializados para KPIs y flujos.
 | [`LIGHT_THEME`](/api/themes) | Light theme preset |
 | [`MIDNIGHT_THEME`](/api/themes) | Midnight blue theme |
 | [`createTheme()`](/api/custom-themes) | Create custom theme |
+
+## Utilities
+
+| Feature | Description | Link |
+|---------|-------------|------|
+| **Keyboard** | Shortcut management | [Keyboard API](/api/plugin-utilities#keyboard-shortcuts) |
+| **I18n** | Localization & Locales | [I18n API](/api/plugin-utilities#internationalization) |
+| **Clipboard** | Copy data to system | [Clipboard API](/api/plugin-utilities#clipboard-manager) |
+| **Videos** | Record chart animations | [Video Recorder](/api/plugin-export#video-recorder-plugin) |
+| **Streaming** | Real-time data feeds | [Streaming API](/api/plugin-streaming) |
+| **GPU** | Hardware acceleration | [GPU & WebGPU](/api/plugin-gpu) |
 
 ## Types
 

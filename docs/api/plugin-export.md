@@ -4,58 +4,98 @@ This suite provides tools for high-resolution image generation, real-time video 
 
 ## Snapshot Plugin (`PluginSnapshot`)
 
-The snapshot plugin allows capturing the current state of the chart as a high-resolution image.
+The `PluginSnapshot` allows capturing the current state of the chart as a high-resolution image, respecting device pixel ratios and including all layers (WebGL, SVG, Canvas).
 
-### Configuration
+### Basic Usage
+
 ```typescript
-{
-  defaultFormat: 'png' | 'jpeg' | 'webp';
-  quality?: number; // 0-1
-}
+import { createChart, PluginSnapshot } from 'scichart-engine';
+
+const chart = createChart({ container });
+await chart.use(PluginSnapshot({ defaultFormat: 'png' }));
+
+// Capture and download
+const dataUrl = await chart.snapshot.downloadSnapshot({
+  filename: 'experiment-results',
+  format: 'jpeg',
+  quality: 0.95
+});
 ```
 
-### API
-- `takeSnapshot(options)`: Returns a data URL of the capture.
-- `downloadSnapshot(options)`: Triggers a browser download.
+### Configuration & API
+
+| Option | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `defaultFormat` | `string` | `'png'` | Format used if not specified in call. |
+| `quality` | `number` | `0.9` | Compression quality for JPEG/WebP. |
+
+**Methods:**
+- `takeSnapshot(options)`: Returns `Promise<string>` (Data URL).
+- `downloadSnapshot(options)`: Returns `Promise<string>` and triggers file download.
 
 ---
 
 ## Video Recorder Plugin (`PluginVideoRecorder`)
 
-Captures the chart's animation loop and overlays directly into a video file.
+Captures the chart's animation loop, including transitions, real-time data streaming, and tooltips, directly into a video file (WebM or MP4).
 
-### Configuration
+### Basic Usage
+
 ```typescript
-{
-  fps?: number; // default: 30
-  bitrate?: number; // default: 2.5Mbps
-  mimeType?: string;
-}
+import { createChart, PluginVideoRecorder } from 'scichart-engine';
+
+const chart = createChart({ container });
+await chart.use(PluginVideoRecorder({ fps: 60, bitrate: 5000000 }));
+
+// Control recording
+chart.videoRecorder.start();
+
+// After some interaction or data streaming...
+const videoBlob = await chart.videoRecorder.stop();
+// Or auto-download via config
 ```
 
-### API
-- `start()`: Begins recording.
-- `stop()`: Ends recording and returns a `Blob`.
+### API Reference
+
+```typescript
+chart.videoRecorder.start();      // Start capturing
+chart.videoRecorder.pause();      // Pause capture
+chart.videoRecorder.resume();     // Resume capture
+await chart.videoRecorder.stop(); // Stop and get Blob
+```
 
 ---
 
 ## Data Export Plugin (`PluginDataExport`)
 
-Extracts scientific data from series into various standard formats.
+Extracts scientific data from chart series into various standard formats for external processing in tools like Excel, MATLAB, or Python.
 
-### Configuration
+### Basic Usage
+
 ```typescript
-{
-  defaultFormat: 'csv';
-  precision?: number;
-}
+import { createChart, PluginDataExport } from 'scichart-engine';
+
+const chart = createChart({ container });
+await chart.use(PluginDataExport());
+
+// Download current series data as CSV
+chart.export.download('csv', {
+  seriesIds: ['channel-1', 'channel-2'],
+  precision: 8,
+  includeHeaders: true
+});
 ```
 
-### API
-- `export(format, options)`: Returns string or binary content.
-- `download(format, options)`: Triggers a file download.
+### Supported Formats & Capabilities
 
-### Supported Formats
-- **Textual**: `csv`, `tsv`, `json`, `xlsx` (Excel CSV).
-- **Scientific**: `matlab`, `python` (NumPy).
-- **Binary**: `binary` (TypedArray buffers).
+| Format | Type | Extension | Note |
+| :--- | :--- | :--- | :--- |
+| `csv` | Text | `.csv` | Standard comma-separated values. |
+| `json` | Text | `.json` | Full series metadata and structure. |
+| `binary` | Binary | `.bin` | Raw Float32Array buffers. |
+| `xlsx` | Text | `.xlsx` | Tab-separated values for Excel. |
+
+**Advanced Options:**
+- `precision`: Number of decimal places for numeric output.
+- `delimiter`: Custom separator for text formats.
+- `filter`: Callback to exclude specific data ranges during export.

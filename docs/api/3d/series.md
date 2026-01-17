@@ -5,7 +5,24 @@ description: Reference for all available 3D data interfaces and series types in 
 
 # 3D Series Types
 
-All available series types for 3D charts.
+All available series types for the 3D rendering module. These are added using the `renderer.addSeries()` method of a 3D renderer instance.
+
+## Usage Example
+
+```typescript
+import { Waterfall3DRenderer } from 'scichart-engine/plugins/3d';
+
+const renderer = new Waterfall3DRenderer({ container: 'my-div' });
+
+renderer.addSeries({
+  type: 'surface',
+  id: 'height-map',
+  xValues: new Float32Array([0, 1, 2]),
+  zValues: new Float32Array([0, 1, 2]),
+  yValues: new Float32Array([10, 20, 15, 12, 25, 18, 5, 15, 10]),
+  colormap: 'viridis'
+});
+```
 
 ## Series Data Interfaces
 

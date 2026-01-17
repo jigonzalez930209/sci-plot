@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { createChart, PluginVideoRecorder } from '../../../../src';
+import { createChart, PluginVideoRecorder } from '@src/index';
 
 const chartContainer = ref<HTMLDivElement | null>(null);
 let chart: any = null;

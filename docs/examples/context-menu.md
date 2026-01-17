@@ -199,5 +199,5 @@ interface PluginContextMenuConfig {
 ## See Also
 
 - [Context Menu Plugin API](/api/plugin-context-menu) - Complete API reference
-- [Data Export Plugin](/api/plugin-data-export) - Export functionality
+- [Data Export Plugin](/api/plugin-export#data-export-plugin) - Export functionality
 - [Annotations](/api/annotations) - Chart annotations
