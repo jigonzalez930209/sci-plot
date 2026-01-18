@@ -21,11 +21,15 @@ import type {
 /**
  * Format a number for display
  */
-function formatValue(value: number): string {
+function formatValue(value: number | null | undefined): string {
+  if (value === null || value === undefined || isNaN(value)) {
+    return "N/A";
+  }
+
   const absVal = Math.abs(value);
-  
-  if (absVal === 0) return '0';
-  if (absVal !== 0 && (absVal < 0.0001 || absVal >= 10000)) {
+
+  if (absVal === 0) return "0";
+  if (absVal < 0.0001 || absVal >= 10000) {
     return value.toExponential(3);
   }
   if (absVal < 0.01) return value.toPrecision(4);
@@ -124,6 +128,7 @@ export class HeatmapTooltipTemplate implements TooltipTemplate<HeatmapTooltip> {
     ctx: CanvasRenderingContext2D,
     data: HeatmapTooltip,
     position: TooltipPosition,
+    measurement: TooltipMeasurement,
     theme: TooltipTheme
   ): void {
     const { x, y } = position;
@@ -146,8 +151,6 @@ export class HeatmapTooltipTemplate implements TooltipTemplate<HeatmapTooltip> {
     
     // Draw separator
     if (theme.showHeaderSeparator) {
-      const measurement = this.measure(ctx, data, theme);
-      
       ctx.strokeStyle = theme.separatorColor;
       ctx.lineWidth = 1;
       ctx.globalAlpha = 0.4;

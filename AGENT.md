@@ -1140,3 +1140,38 @@ Unificación de todas las herramientas de salida de datos y medios en una experi
 - Fase 2 funcionalmente completa al 100%. 
 - Plugin de Ejes Rotos en fase de "Revisión/Debug".
 - Documentación de Exportación simplificada y mejorada.
+
+---
+
+## 🚀 FASE 4: Nueva Generación (v1.10.x) - INICIADA 2026-01-17
+
+### Feature 1: PluginForecasting ✅ COMPLETADO
+
+**Objetivo**: Implementar una suite de predicción de series temporales nativa para análisis prospectivo.
+
+**Implementación**:
+- ✅ **Algoritmos Nativos**: Implementaciones de SMA, EMA, Regresión Lineal, Holt (Doble) y Holt-Winters (Triple).
+- ✅ **Soporte Estacional**: Triple Smoothing capaz de modelar ciclos periódicos complejos.
+- ✅ **Capa de Visualización**: Renderizado automático en overlay con líneas discontinuas y bandas de confianza sombreadas.
+- ✅ **API Fluida**: Integración con `chart.forecasting.forecastSeries()` para uso inmediato sobre series existentes.
+- ✅ **Caché de Fit**: Optimización de cálculos para parámetros α, β, γ.
+- ✅ **Corrección de Inicialización**: Se añadió el getter `forecasting` a `ChartCore` y se actualizó la interfaz `Chart` para permitir el acceso directo a la API del plugin.
+- ✅ **Soporte Async**: Se actualizó `chart.use()` para ser asíncrono, asegurando que la API esté disponible inmediatamente después de `await chart.use()`.
+
+**Archivos Creados/Modificados**:
+- `src/plugins/forecasting/` - Implementación completa (Types, Algorithms, Plugin).
+- `src/plugins/index.ts` - Exportación global y registro de tipos.
+- `docs/api/plugin-forecasting.md` - Referenecia técnica de la API.
+- `docs/examples/forecasting.md` - Guía de implementación con ejemplos de código.
+- `docs/.vitepress/theme/demos/ForecastingDemo.vue` - Demo interactiva con controles deslizantes para parámetros y horizonte.
+
+**Progreso Phase 4**: 100% (Features activas completadas)
+- ✅ PluginForecasting: Implementación de algoritmos de predicción estadística.
+- ✅ PluginBrokenAxis: Soporte para ejes discontinuos con indicadores visuales.
+- ✅ PluginVideoRecorder: Captura de video nativa del canvas del chart.
+- ✅ PluginWasm: Bridge de alto rendimiento para procesamiento de datos pesado implementado totalmente en **Rust**, compilado a WebAssembly para FFT, filtros FIR y estadísticas aceleradas.
+- ✅ Bindings para Python: Librería de serialización y configuración para integración con Python.
+- ❌ PluginCollaboration (CANCELADO)
+- ❌ PluginVoice (CANCELADO)
+
+**Actualizado**: `docs/ROADMAP.md` - Phase 4 iniciada y marcada como en progreso.

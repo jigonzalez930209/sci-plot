@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.10.0] - 2026-01-17
+
+### Added
+- **PluginForecasting**: Native time-series prediction suite featuring Holt-Winters (Triple Exponential Smoothing), Holt (Double), Linear Trend, and Moving Averages.
+- **Improved Forecasting Visuals**: Automatic rendering of forecast projections with dashed lines and shaded confidence intervals.
+- **Seasonal Analysis**: Built-in support for modeling periodic cycles in data for more accurate long-term predictions.
+
+### Improved
+- **Roadmap Phase 4**: Commenced the 'New Generation' phase with advanced analytical capabilities.
+
 ## [1.9.0] - 2026-01-16
 
 ### Added

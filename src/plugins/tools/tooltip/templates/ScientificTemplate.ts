@@ -22,31 +22,47 @@ import type {
 /**
  * Convert number to scientific notation with Unicode superscripts
  */
-function toScientificUnicode(value: number, precision: number = 3): string {
-  if (value === 0) return '0';
-  
+function toScientificUnicode(
+  value: number | null | undefined,
+  precision: number = 3
+): string {
+  if (value === null || value === undefined || isNaN(value)) {
+    return "N/A";
+  }
+
+  if (value === 0) return "0";
+
   const exp = Math.floor(Math.log10(Math.abs(value)));
   const mantissa = value / Math.pow(10, exp);
-  
+
   if (Math.abs(exp) <= 2) {
     // Don't use scientific notation for small exponents
     return value.toPrecision(precision);
   }
-  
+
   // Superscript map
   const superscripts: Record<string, string> = {
-    '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
-    '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
-    '-': '⁻', '+': '⁺'
+    "0": "⁰",
+    "1": "¹",
+    "2": "²",
+    "3": "³",
+    "4": "⁴",
+    "5": "⁵",
+    "6": "⁶",
+    "7": "⁷",
+    "8": "⁸",
+    "9": "⁹",
+    "-": "⁻",
+    "+": "⁺",
   };
-  
+
   // Convert exponent to superscript
   const expStr = exp.toString();
-  let superExp = '';
+  let superExp = "";
   for (const char of expStr) {
     superExp += superscripts[char] || char;
   }
-  
+
   return `${mantissa.toFixed(precision - 1)} × 10${superExp}`;
 }
 
@@ -172,6 +188,7 @@ export class ScientificTooltipTemplate implements TooltipTemplate<DataPointToolt
     ctx: CanvasRenderingContext2D,
     data: DataPointTooltip,
     position: TooltipPosition,
+    measurement: TooltipMeasurement,
     theme: TooltipTheme
   ): void {
     const { x, y } = position;
@@ -206,7 +223,6 @@ export class ScientificTooltipTemplate implements TooltipTemplate<DataPointToolt
     
     // Separator
     if (theme.showHeaderSeparator) {
-      const measurement = this.measure(ctx, data, theme);
       ctx.strokeStyle = theme.separatorColor;
       ctx.lineWidth = 1;
       ctx.globalAlpha = 0.4;
@@ -253,7 +269,6 @@ export class ScientificTooltipTemplate implements TooltipTemplate<DataPointToolt
       ctx.strokeStyle = theme.separatorColor;
       ctx.globalAlpha = 0.3;
       ctx.beginPath();
-      const measurement = this.measure(ctx, data, theme);
       ctx.moveTo(currentX, currentY - theme.itemGap / 2);
       ctx.lineTo(currentX + measurement.width, currentY - theme.itemGap / 2);
       ctx.stroke();

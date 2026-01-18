@@ -22,14 +22,21 @@ import type {
 /**
  * Format a number for display
  */
-function formatValue(value: number, precision: number = 4): string {
+function formatValue(
+  value: number | null | undefined,
+  precision: number = 4
+): string {
+  if (value === null || value === undefined || isNaN(value)) {
+    return "N/A";
+  }
+
   const absVal = Math.abs(value);
-  
+
   // Use scientific notation for very large/small numbers
   if (absVal !== 0 && (absVal < 0.0001 || absVal >= 10000)) {
     return value.toExponential(2);
   }
-  
+
   // Smart precision based on magnitude
   if (absVal < 0.01) {
     return value.toPrecision(precision);
@@ -139,6 +146,7 @@ export class DefaultTooltipTemplate implements TooltipTemplate<DataPointTooltip>
     ctx: CanvasRenderingContext2D,
     data: DataPointTooltip,
     position: TooltipPosition,
+    measurement: TooltipMeasurement,
     theme: TooltipTheme
   ): void {
     const { x, y } = position;
@@ -149,6 +157,7 @@ export class DefaultTooltipTemplate implements TooltipTemplate<DataPointTooltip>
     let currentY = y + padding.top;
     
     // Explicitly set alignment to avoid inheritance issues
+    ctx.save();
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     
@@ -166,17 +175,14 @@ export class DefaultTooltipTemplate implements TooltipTemplate<DataPointTooltip>
     }
     
     // Draw title (series name)
-    ctx.save();
     ctx.font = `${theme.titleFontWeight} ${theme.titleFontSize}px ${theme.fontFamily}`;
     ctx.fillStyle = theme.textColor;
     ctx.fillText(data.seriesName, currentX, currentY);
-    ctx.restore();
     
     currentY += theme.titleFontSize * theme.lineHeight + 2; // Extra space
     
     // Draw separator
     if (theme.showHeaderSeparator) {
-      const measurement = this.measure(ctx, data, theme);
       const separatorWidth = measurement.width;
       
       ctx.save();
@@ -194,7 +200,6 @@ export class DefaultTooltipTemplate implements TooltipTemplate<DataPointTooltip>
     currentX = x + padding.left; // Reset X
     
     // Draw content
-    ctx.save();
     ctx.font = `400 ${theme.contentFontSize}px ${theme.fontFamily}`;
     
     // X value

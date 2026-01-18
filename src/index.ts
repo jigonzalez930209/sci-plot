@@ -604,6 +604,7 @@ export {
   PluginOffscreen,
   PluginVirtualization,
   PluginROI,
+  PluginForecasting,
   BuiltinPlugins,
 } from "./plugins";
 
@@ -681,6 +682,7 @@ export type {
   PluginOffscreenConfig,
   PluginVirtualizationConfig,
   PluginROIConfig,
+  PluginForecastingConfig,
   
   // API & Result Types
   RegressionAPI,
@@ -733,6 +735,10 @@ export type {
   AnomalyMethod,
   PatternRecognitionAPI,
   PatternMatch,
-  PatternDetectionResult
+  PatternDetectionResult,
+  ForecastingAPI,
+  ForecastingOptions,
+  ForecastingResult,
+  ForecastingParams
 } from "./plugins";
 

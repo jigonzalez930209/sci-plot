@@ -128,6 +128,7 @@ export { PluginRadar, type PluginRadarConfig, type RadarAPI, type RadarSeriesDat
 export { PluginSnapshot, type PluginSnapshotConfig, type SnapshotExportAPI, type SnapshotExportOptions, type SnapshotResolution, type SnapshotFormat } from "./snapshot";
 export { PluginDataTransform, type PluginDataTransformConfig, type DataTransformAPI, type TransformOp, type TransformType } from "./data-transform";
 export { PluginLaTeX, type PluginLaTeXConfig, type LaTeXPluginAPI, type LaTeXDimensions } from "./latex";
+export * from "./forecasting";
 
 // Drag & Drop Editing
 export { PluginDragEdit, type PluginDragEditConfig, type DragEditAPI, type DragEditEvent } from "./drag-edit";

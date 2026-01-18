@@ -1,6 +1,6 @@
 {
   "name": "scichart-engine",
-  "version": "1.9.1",
+  "version": "1.10.0",
   "author": "jigonzalez930209",
   "license": "MIT",
   "repository": {
@@ -149,6 +149,10 @@
     "./plugins/pattern-recognition": {
       "types": "./dist/plugins/pattern-recognition.d.ts",
       "import": "./dist/plugins/pattern-recognition.js"
+    },
+    "./plugins/forecasting": {
+      "types": "./dist/plugins/forecasting.d.ts",
+      "import": "./dist/plugins/forecasting.js"
     }
   },
   "files": [

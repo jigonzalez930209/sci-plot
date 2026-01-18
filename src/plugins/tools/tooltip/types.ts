@@ -435,6 +435,7 @@ export interface TooltipTemplate<T extends TooltipData = TooltipData> {
     ctx: CanvasRenderingContext2D,
     data: T,
     position: TooltipPosition,
+    measurement: TooltipMeasurement,
     theme: TooltipTheme
   ): void;
 }

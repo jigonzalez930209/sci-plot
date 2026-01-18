@@ -67,7 +67,7 @@ export class TooltipRenderer {
     }
 
     // Let template render content
-    template.render(this.ctx, data, position, this.theme);
+    template.render(this.ctx, data, position, measurement, this.theme);
 
     this.ctx.restore();
   }
