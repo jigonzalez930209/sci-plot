@@ -16,20 +16,44 @@ import type {
   TooltipType,
 } from "../types";
 
+// Constants for spacing and layout
+const SPACING = {
+  INDICATOR_MARGIN: 8,
+  MIN_LABEL_WIDTH: 60,
+  LINE_SPACING: 2,
+  SAFETY_BUFFER: 4,
+  HEADER_SPACING: 2,
+  GAP_SPACING: 2,
+} as const;
+
 /**
  * Format a number for display
  */
-function formatValue(value: number): string {
+function formatValue(value: number | null | undefined): string {
+  if (value === null || value === undefined || isNaN(value)) {
+    return "N/A";
+  }
+
   const absVal = Math.abs(value);
 
   if (absVal === 0) return "0";
-  if (absVal !== 0 && (absVal < 0.0001 || absVal >= 10000)) {
+  if (absVal < 0.0001 || absVal >= 10000) {
     return value.toExponential(2);
   }
   if (absVal < 0.01) return value.toPrecision(3);
   if (absVal < 1) return value.toFixed(4);
   if (absVal < 100) return value.toFixed(3);
   return value.toFixed(1);
+}
+
+/**
+ * Formatted series data for caching
+ */
+interface FormattedSeriesData {
+  name: string;
+  value: string;
+  color: string;
+  isInterpolated: boolean;
 }
 
 /**
@@ -52,6 +76,48 @@ export class CrosshairTooltipTemplate implements TooltipTemplate<CrosshairToolti
   // Cached measurements
   private cachedKey: string = "";
   private cachedMeasurement: TooltipMeasurement | null = null;
+  private formattedData: {
+    header: string;
+    series: FormattedSeriesData[];
+  } | null = null;
+
+  /**
+   * Generate cache key from data and theme
+   */
+  private getCacheKey(data: CrosshairTooltip, theme: TooltipTheme): string {
+    const seriesHash = data.interpolatedValues
+      .map((s) => `${s.seriesName}-${s.y}`)
+      .join("|");
+    
+    return [
+      data.dataX,
+      seriesHash,
+      theme.fontFamily,
+      theme.titleFontSize,
+      theme.contentFontSize,
+      theme.showSeriesIndicator,
+      theme.seriesIndicatorSize,
+      `${theme.padding.top}-${theme.padding.right}-${theme.padding.bottom}-${theme.padding.left}`,
+    ].join(":");
+  }
+
+  /**
+   * Format data for rendering
+   */
+  private formatData(data: CrosshairTooltip): {
+    header: string;
+    series: FormattedSeriesData[];
+  } {
+    return {
+      header: `⌖ X = ${formatValue(data.dataX)}`,
+      series: data.interpolatedValues.map((s) => ({
+        name: s.seriesName,
+        value: formatValue(s.y),
+        color: s.seriesColor,
+        isInterpolated: s.isInterpolated,
+      })),
+    };
+  }
 
   /**
    * Measure tooltip dimensions
@@ -61,44 +127,54 @@ export class CrosshairTooltipTemplate implements TooltipTemplate<CrosshairToolti
     data: CrosshairTooltip,
     theme: TooltipTheme,
   ): TooltipMeasurement {
-    // Cache key
-    const cacheKey = `${data.dataX}-${data.interpolatedValues.length}-${theme.fontFamily}-${theme.titleFontSize}`;
+    // Validate input
+    if (!data.interpolatedValues || data.interpolatedValues.length === 0) {
+      return {
+        width: 100,
+        height: theme.titleFontSize * theme.lineHeight,
+        padding: theme.padding,
+      };
+    }
+
+    // Check cache
+    const cacheKey = this.getCacheKey(data, theme);
     if (cacheKey === this.cachedKey && this.cachedMeasurement) {
       return this.cachedMeasurement;
     }
 
+    // Format data once
+    this.formattedData = this.formatData(data);
+
     // Set title font
     ctx.font = `${theme.titleFontWeight} ${theme.titleFontSize}px ${theme.fontFamily}`;
 
-    // Header: "⌖ X = value"
-    const headerText = `⌖ X = ${formatValue(data.dataX)}`;
-    let maxWidth = ctx.measureText(headerText).width;
+    // Measure header
+    let maxWidth = ctx.measureText(this.formattedData.header).width;
 
     // Content font
     ctx.font = `400 ${theme.contentFontSize}px ${theme.fontFamily}`;
 
     // Measure each series line
     const indicatorWidth = theme.showSeriesIndicator
-      ? theme.seriesIndicatorSize + 8
+      ? theme.seriesIndicatorSize + SPACING.INDICATOR_MARGIN
       : 0;
-    const labelColumnWidth = 60; // From render
 
-    for (const series of data.interpolatedValues) {
-      const nameWidth = ctx.measureText(`${series.seriesName}:`).width;
-      const valWidth = ctx.measureText(formatValue(series.y)).width;
+    for (const series of this.formattedData.series) {
+      const nameWidth = ctx.measureText(`${series.name}:`).width;
+      const valWidth = ctx.measureText(series.value).width;
       const lineWidth =
-        indicatorWidth + Math.max(nameWidth, labelColumnWidth) + valWidth;
+        indicatorWidth + Math.max(nameWidth, SPACING.MIN_LABEL_WIDTH) + valWidth;
       maxWidth = Math.max(maxWidth, lineWidth);
     }
 
     // Calculate height
     const headerHeight = theme.titleFontSize * theme.lineHeight;
-    const seriesCount = data.interpolatedValues.length;
+    const seriesCount = this.formattedData.series.length;
     const contentHeight =
-      seriesCount * (theme.contentFontSize * theme.lineHeight + 2);
+      seriesCount * (theme.contentFontSize * theme.lineHeight + SPACING.LINE_SPACING);
 
     this.cachedMeasurement = {
-      width: maxWidth + 4, // Safety buffer
+      width: maxWidth + SPACING.SAFETY_BUFFER,
       height: headerHeight + theme.headerGap + contentHeight,
       padding: theme.padding,
     };
@@ -114,8 +190,17 @@ export class CrosshairTooltipTemplate implements TooltipTemplate<CrosshairToolti
     ctx: CanvasRenderingContext2D,
     data: CrosshairTooltip,
     position: TooltipPosition,
+    measurement: TooltipMeasurement,
     theme: TooltipTheme,
   ): void {
+    // Validate input
+    if (!data.interpolatedValues || data.interpolatedValues.length === 0) {
+      return;
+    }
+
+    // Use cached formatted data if available
+    const formatted = this.formattedData || this.formatData(data);
+
     const { x, y } = position;
     const { padding } = theme;
 
@@ -129,15 +214,12 @@ export class CrosshairTooltipTemplate implements TooltipTemplate<CrosshairToolti
     ctx.font = `${theme.titleFontWeight} ${theme.titleFontSize}px ${theme.fontFamily}`;
     ctx.fillStyle = theme.textColor;
 
-    const headerText = `⌖ X = ${formatValue(data.dataX)}`;
-    ctx.fillText(headerText, contentX, currentY);
+    ctx.fillText(formatted.header, contentX, currentY);
 
-    currentY += theme.titleFontSize * theme.lineHeight + 2;
+    currentY += theme.titleFontSize * theme.lineHeight + SPACING.HEADER_SPACING;
 
     // Draw separator
     if (theme.showHeaderSeparator) {
-      const measurement = this.measure(ctx, data, theme);
-
       ctx.strokeStyle = theme.separatorColor;
       ctx.lineWidth = 1;
       ctx.globalAlpha = 0.4;
@@ -148,54 +230,48 @@ export class CrosshairTooltipTemplate implements TooltipTemplate<CrosshairToolti
       ctx.globalAlpha = 1.0;
     }
 
-    currentY += theme.headerGap + 2;
+    currentY += theme.headerGap + SPACING.GAP_SPACING;
 
     // Draw each series
     ctx.font = `400 ${theme.contentFontSize}px ${theme.fontFamily}`;
 
-    for (const series of data.interpolatedValues) {
+    for (const series of formatted.series) {
       let itemX = contentX;
 
       // Series indicator
-      if (theme.showSeriesIndicator) {
+      if (theme.showSeriesIndicator && theme.seriesIndicatorSize > 0) {
         const indicatorY = currentY + theme.contentFontSize / 2;
+        const radius = theme.seriesIndicatorSize / 2;
 
-        // Use filled circle for exact points, empty circle for interpolated
         ctx.save();
         ctx.beginPath();
-        ctx.arc(
-          itemX + theme.seriesIndicatorSize / 2,
-          indicatorY,
-          theme.seriesIndicatorSize / 2,
-          0,
-          Math.PI * 2,
-        );
+        ctx.arc(itemX + radius, indicatorY, radius, 0, Math.PI * 2);
 
         if (series.isInterpolated) {
-          ctx.strokeStyle = series.seriesColor;
+          ctx.strokeStyle = series.color;
           ctx.lineWidth = 1.5;
           ctx.stroke();
         } else {
-          ctx.fillStyle = series.seriesColor;
+          ctx.fillStyle = series.color;
           ctx.fill();
         }
         ctx.restore();
 
-        itemX += theme.seriesIndicatorSize + 8;
+        itemX += theme.seriesIndicatorSize + SPACING.INDICATOR_MARGIN;
       }
 
       // Series name
       ctx.fillStyle = theme.textSecondaryColor;
-      ctx.fillText(`${series.seriesName}:`, itemX, currentY);
+      ctx.fillText(`${series.name}:`, itemX, currentY);
 
-      const nameWidth = ctx.measureText(`${series.seriesName}: `).width;
-      const labelOffset = Math.max(nameWidth, 60); // At least 60px for name
+      const nameWidth = ctx.measureText(`${series.name}: `).width;
+      const labelOffset = Math.max(nameWidth, SPACING.MIN_LABEL_WIDTH);
 
       // Series value
       ctx.fillStyle = theme.textColor;
-      ctx.fillText(formatValue(series.y), itemX + labelOffset, currentY);
+      ctx.fillText(series.value, itemX + labelOffset, currentY);
 
-      currentY += theme.contentFontSize * theme.lineHeight + 2;
+      currentY += theme.contentFontSize * theme.lineHeight + SPACING.LINE_SPACING;
     }
 
     ctx.restore();

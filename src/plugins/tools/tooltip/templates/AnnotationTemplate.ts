@@ -21,9 +21,13 @@ import type {
 /**
  * Format a number for display
  */
-function formatValue(value: number): string {
+function formatValue(value: number | null | undefined): string {
+  if (value === null || value === undefined || isNaN(value)) {
+    return "N/A";
+  }
+
   const absVal = Math.abs(value);
-  if (absVal === 0) return '0';
+  if (absVal === 0) return "0";
   if (absVal < 0.0001 || absVal >= 10000) return value.toExponential(2);
   if (absVal < 1) return value.toFixed(4);
   return value.toFixed(2);
@@ -94,6 +98,7 @@ export class AnnotationTooltipTemplate implements TooltipTemplate<AnnotationTool
     ctx: CanvasRenderingContext2D,
     data: AnnotationTooltip,
     position: TooltipPosition,
+    measurement: TooltipMeasurement,
     theme: TooltipTheme
   ): void {
     const { x, y } = position;
@@ -116,12 +121,11 @@ export class AnnotationTooltipTemplate implements TooltipTemplate<AnnotationTool
 
     // Separator
     if (theme.showHeaderSeparator) {
-      const m = this.measure(ctx, data, theme);
       ctx.strokeStyle = theme.separatorColor;
       ctx.globalAlpha = 0.4;
       ctx.beginPath();
       ctx.moveTo(contentX, currentY + theme.headerGap / 2);
-      ctx.lineTo(contentX + m.width, currentY + theme.headerGap / 2);
+      ctx.lineTo(contentX + measurement.width, currentY + theme.headerGap / 2);
       ctx.stroke();
       ctx.globalAlpha = 1.0;
     }
