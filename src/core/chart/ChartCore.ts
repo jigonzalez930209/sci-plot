@@ -390,7 +390,7 @@ export class ChartImpl implements Chart {
       selectionRect: this.selectionRect,
       events: this.events,
       selectionManager: this.selectionManager,
-      hoveredSeriesId: this.hoveredSeriesId,
+      getHoveredSeriesId: () => this.hoveredSeriesId,
       pluginManager: this.pluginManager,
       updateSeriesBuffer: (s) => updateSeriesBuffer(this.getSeriesContext(), s),
       getPlotArea: () => this.getPlotArea(),
@@ -431,6 +431,20 @@ export class ChartImpl implements Chart {
         onBoxZoom: (rect) => this.handleBoxZoom(rect),
         onCursorMove: (x, y) => {
           this.cursorPosition = { x, y };
+          const plotArea = this.getPlotArea();
+          const isInPlotArea =
+            x >= plotArea.x &&
+            x <= plotArea.x + plotArea.width &&
+            y >= plotArea.y &&
+            y <= plotArea.y + plotArea.height;
+          if (isInPlotArea) {
+            const hit = this.selectionManager.hitTest(x, y);
+            const nextHoveredId = hit?.seriesId ?? null;
+            if (this.hoveredSeriesId !== nextHoveredId) {
+              this.hoveredSeriesId = nextHoveredId;
+              this.requestRender();
+            }
+          }
           if (this.tooltip) {
             this.tooltip.handleCursorMove(x, y);
           }
@@ -438,6 +452,10 @@ export class ChartImpl implements Chart {
         },
         onCursorLeave: () => {
           this.cursorPosition = null;
+          if (this.hoveredSeriesId) {
+            this.hoveredSeriesId = null;
+            this.requestRender();
+          }
           if (this.tooltip) {
             this.tooltip.handleCursorLeave();
           }

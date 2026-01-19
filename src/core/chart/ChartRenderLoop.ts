@@ -35,7 +35,7 @@ export interface RenderLoopContext {
   selectionRect: { x: number; y: number; width: number; height: number } | null;
   events: EventEmitter<ChartEventMap>;
   selectionManager: SelectionManager;
-  hoveredSeriesId: string | null;
+  getHoveredSeriesId: () => string | null;
   pluginManager: PluginManagerImpl;
   
   // Methods
@@ -144,7 +144,7 @@ export class ChartRenderLoop {
       pixelToDataX: this.ctx.pixelToDataX,
       pixelToDataY: this.ctx.pixelToDataY,
       selectionManager: this.ctx.selectionManager,
-      hoveredSeriesId: this.ctx.hoveredSeriesId,
+      hoveredSeriesId: this.ctx.getHoveredSeriesId(),
     };
 
     const now = performance.now();
