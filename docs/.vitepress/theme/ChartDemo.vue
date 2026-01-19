@@ -23,6 +23,7 @@ import StatisticsDemo from './demos/2d/StatisticsDemo.vue'
 import AnnotationsDemo from './demos/2d/AnnotationsDemo.vue'
 import MultiAxisDemo from './demos/2d/MultiAxisDemo.vue'
 import TooltipsDemo from './demos/2d/TooltipsDemo.vue'
+import CrosshairDemo from './demos/2d/CrosshairDemo.vue'
 import ResponsiveDemo from './demos/2d/ResponsiveDemo.vue'
 import PersistenceDemo from './demos/2d/PersistenceDemo.vue'
 import SelectionDemo from './demos/2d/SelectionDemo.vue'
@@ -65,6 +66,7 @@ const demoComponent = computed(() => {
     case 'multi-axis':
     case 'multiaxis': return MultiAxisDemo
     case 'tooltips': return TooltipsDemo
+    case 'crosshair': return CrosshairDemo
     case 'responsive': return ResponsiveDemo
     case 'persistence': return PersistenceDemo
     case 'selection': return SelectionDemo

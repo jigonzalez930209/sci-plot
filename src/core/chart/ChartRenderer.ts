@@ -349,7 +349,7 @@ export function renderOverlay(
     return;
   }
 
-  ctx.overlay.clear(rect.width, rect.height);
+  ctx.overlay.clear();
   
   // Detect special series types
   let hasPolarSeries = false;

@@ -385,8 +385,8 @@ export class ChartImpl implements Chart {
       overlay: this.overlay,
       backgroundColor: this.backgroundColor,
       plotAreaBackground: this.plotAreaBackground,
-      cursorOptions: this.cursorOptions,
-      cursorPosition: this.cursorPosition,
+      getCursorOptions: () => this.cursorOptions,
+      getCursorPosition: () => this.cursorPosition,
       selectionRect: this.selectionRect,
       events: this.events,
       selectionManager: this.selectionManager,
@@ -438,12 +438,17 @@ export class ChartImpl implements Chart {
             y >= plotArea.y &&
             y <= plotArea.y + plotArea.height;
           if (isInPlotArea) {
+            if (this.cursorOptions?.enabled) {
+              this.container.style.cursor = "crosshair";
+            }
             const hit = this.selectionManager.hitTest(x, y);
             const nextHoveredId = hit?.seriesId ?? null;
             if (this.hoveredSeriesId !== nextHoveredId) {
               this.hoveredSeriesId = nextHoveredId;
               this.requestRender();
             }
+          } else if (this.cursorOptions?.enabled) {
+            this.container.style.cursor = "default";
           }
           if (this.tooltip) {
             this.tooltip.handleCursorMove(x, y);
@@ -452,6 +457,9 @@ export class ChartImpl implements Chart {
         },
         onCursorLeave: () => {
           this.cursorPosition = null;
+          if (this.cursorOptions?.enabled) {
+            this.container.style.cursor = "default";
+          }
           if (this.hoveredSeriesId) {
             this.hoveredSeriesId = null;
             this.requestRender();

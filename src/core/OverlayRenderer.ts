@@ -33,8 +33,12 @@ export class OverlayRenderer {
   /**
    * Clear the overlay
    */
-  clear(width: number, height: number): void {
-    this.ctx.clearRect(0, 0, width, height);
+  clear(): void {
+    const canvas = this.ctx.canvas;
+    this.ctx.save();
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    this.ctx.restore();
   }
 
   /**

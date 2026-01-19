@@ -30,8 +30,8 @@ export interface RenderLoopContext {
   overlay: OverlayRenderer;
   backgroundColor: [number, number, number, number];
   plotAreaBackground: [number, number, number, number];
-  cursorOptions: CursorOptions | null;
-  cursorPosition: { x: number; y: number } | null;
+  getCursorOptions: () => CursorOptions | null;
+  getCursorPosition: () => { x: number; y: number } | null;
   selectionRect: { x: number; y: number; width: number; height: number } | null;
   events: EventEmitter<ChartEventMap>;
   selectionManager: SelectionManager;
@@ -135,8 +135,8 @@ export class ChartRenderLoop {
       renderer: this.ctx.renderer,
       overlay: this.ctx.overlay,
       backgroundColor: this.ctx.backgroundColor,
-      cursorOptions: this.ctx.cursorOptions,
-      cursorPosition: this.ctx.cursorPosition,
+      cursorOptions: this.ctx.getCursorOptions(),
+      cursorPosition: this.ctx.getCursorPosition(),
       selectionRect: this.ctx.selectionRect,
       events: this.ctx.events,
       updateSeriesBuffer: this.ctx.updateSeriesBuffer,
