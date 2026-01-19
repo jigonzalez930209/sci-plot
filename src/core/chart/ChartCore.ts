@@ -23,7 +23,7 @@ import {
   parseColor,
   brightenColor,
 } from "../../renderer/NativeWebGLRenderer";
-import { LinearScale, LogScale, type Scale } from "../../scales";
+import type { Scale } from "../../scales";
 import { 
   getThemeByName, 
   type ChartTheme,
@@ -49,11 +49,6 @@ import {
   type ResponsiveState,
 } from "../responsive";
 import {
-  SERIALIZATION_VERSION,
-  encodeFloat32Array,
-  decodeFloat32Array,
-  stateToUrlHash,
-  urlHashToState,
   type ChartState,
   type SerializeOptions,
   type DeserializeOptions,
@@ -75,7 +70,6 @@ import {
   animateToBounds,
   type AnimatedNavigationContext,
 } from "./ChartAnimatedNavigation";
-import { prepareSeriesData, renderOverlay } from "./ChartRenderer";
 import {
   addSeries as addSeriesImpl,
   removeSeries as removeSeriesImpl,
@@ -100,6 +94,10 @@ import {
   markInitComplete,
 } from "../ChartInitQueue";
 import { PluginLoading } from "../../plugins/loading";
+import { ChartPluginBridge } from "./ChartPluginBridge";
+import { ChartAxisManager } from "./ChartAxisManager";
+import { ChartStateManager } from "./ChartStateManager";
+import { ChartRenderLoop } from "./ChartRenderLoop";
 // ============================================
 // Chart Implementation
 // ============================================
@@ -144,16 +142,10 @@ export class ChartImpl implements Chart {
   private showControls: boolean;
   private toolbarOptions?: import("../../types").ToolbarOptions;
   private controls: ChartControls | null = null;
-  private animationFrameId: number | null = null;
-  private needsFullRender = false;
-  private needsOverlayRender = false;
   private _isDestroyed = false;
   private autoScroll = false;
   private showStatistics = false;
   private initQueueId: string | null = null;
-  private initStarted = false;
-  private frameCount = 0;
-  private lastRenderTime = performance.now();
   private commandQueue: Array<{ fn: () => void; name: string }> = [];
   private annotationQueue: any[] = [];
   private annotationIdCounter = 0;
@@ -173,31 +165,42 @@ export class ChartImpl implements Chart {
   } | null = null;
   private pluginManager: PluginManagerImpl;
   private initialOptions: ChartOptions;
+  
+  // Composed modules
+  private pluginBridge: ChartPluginBridge;
+  private axisManager: ChartAxisManager;
+  private stateManager: ChartStateManager;
+  private renderLoop: ChartRenderLoop;
 
   setXScale(scale: Scale): void {
       this.xScale = scale;
-      this.needsFullRender = true;
+      this.requestRender();
   }
 
   setYScale(yAxisId: string, scale: Scale): void {
       this.yScales.set(yAxisId, scale);
-      this.needsFullRender = true;
+      this.requestRender();
   }
 
-  get analysis(): any {
-    const api = this.getPluginAPI<any>("scichart-analysis");
-    if (api) return api;
-    
-    // Fallback object to prevent crashes while plugin is loading
-    return {
-      integrate: () => 0,
-      detectPeaks: () => [],
-      detectCycles: () => [],
-      movingAverage: (data: any) => data,
-      sma: () => [],
-      ema: () => [],
-    };
-  }
+  // Delegate plugin access to bridge
+  get analysis(): any { return this.pluginBridge.analysis; }
+  get tooltip(): any { return this.pluginBridge.tooltip; }
+  get loading(): any { return this.pluginBridge.loading; }
+  get deltaTool(): any { return this.pluginBridge.deltaTool; }
+  get peakTool(): any { return this.pluginBridge.peakTool; }
+  get regression(): any { return this.pluginBridge.regression; }
+  get radar(): any { return this.pluginBridge.radar; }
+  get ml(): any { return this.pluginBridge.ml; }
+  get snapshot(): any { return this.pluginBridge.snapshot; }
+  get dataExport(): any { return this.pluginBridge.dataExport; }
+  get roi(): any { return this.pluginBridge.roi; }
+  get videoRecorder(): any { return this.pluginBridge.videoRecorder; }
+  get offscreen(): any { return this.pluginBridge.offscreen; }
+  get virtualization(): any { return this.pluginBridge.virtualization; }
+  get themeEditor(): any { return this.pluginBridge.themeEditor; }
+  get sync(): any { return this.pluginBridge.sync; }
+  get brokenAxis(): any { return this.pluginBridge.brokenAxis; }
+  get forecasting(): any { return this.pluginBridge.forecasting; }
 
   private animationEngine: AnimationEngine;
   private animationConfig: ChartAnimationConfig;
@@ -206,93 +209,6 @@ export class ChartImpl implements Chart {
   }
   private selectionManager: SelectionManager;
   private responsiveManager: ResponsiveManager;
-
-  get tooltip(): any {
-    const manager = this.getPluginAPI<any>("scichart-tools")?.getTooltipManager();
-    if (manager) return manager;
-    
-    return {
-      configure: (config: any) => {
-        this.tooltipConfigQueue.push(config);
-      },
-      handleCursorMove: () => {},
-      handleCursorLeave: () => {},
-      setSuspended: () => {},
-      updateChartTheme: () => {},
-    };
-  }
-
-  get loading(): any {
-    const api = this.getPluginAPI<any>("scichart-loading");
-    if (api) return api;
-    
-    return {
-      show: () => {},
-      hide: () => {},
-      setProgress: () => {},
-      setMessage: () => {}
-    };
-  }
-
-  get deltaTool(): any {
-    return this.getPluginAPI<any>("scichart-tools")?.getDeltaTool() ?? null;
-  }
-
-  get peakTool(): any {
-    return this.getPluginAPI<any>("scichart-tools")?.getPeakTool() ?? null;
-  }
-
-  get regression(): any {
-    return this.getPluginAPI<any>("regression");
-  }
-
-  get radar(): any {
-    return this.getPluginAPI<any>("scichart-radar");
-  }
-
-  get ml(): any {
-    return this.getPluginAPI<any>("scichart-ml-integration");
-  }
-
-  get snapshot(): any {
-    return this.getPluginAPI<any>("scichart-snapshot");
-  }
-
-  get dataExport(): any {
-    return this.getPluginAPI<any>("scichart-data-export");
-  }
-
-  get roi(): any {
-    return this.getPluginAPI<any>("roi");
-  }
-
-  get videoRecorder(): any {
-    return this.getPluginAPI<any>("scichart-video-recorder");
-  }
-
-  get offscreen(): any {
-    return this.getPluginAPI<any>("scichart-offscreen");
-  }
-
-  get virtualization(): any {
-    return this.getPluginAPI<any>("scichart-virtualization");
-  }
-
-  get themeEditor(): any {
-    return this.getPluginAPI<any>("scichart-theme-editor");
-  }
-
-  get sync(): any {
-    return this.getPluginAPI<any>("scichart-sync");
-  }
-
-  get brokenAxis(): any {
-    return this.getPluginAPI<any>("scichart-broken-axis");
-  }
-
-  get forecasting(): any {
-    return this.getPluginAPI<any>("scichart-forecasting");
-  }
 
   constructor(options: ChartOptions) {
     this.initialOptions = options;
@@ -348,6 +264,9 @@ export class ChartImpl implements Chart {
       findNearestPoint: (px, py, radius) => this.selectionManager?.hitTest(px, py, radius) ?? null,
       getPlugin: (name) => this.pluginManager?.get(name) as any
     });
+    
+    // Initialize composed modules
+    this.pluginBridge = new ChartPluginBridge(this.pluginManager);
     
     // 3. Show loading indicator INSTANTLY if enabled
     if (options.loading !== false) {
@@ -415,6 +334,70 @@ export class ChartImpl implements Chart {
       },
       responsiveConfig
     );
+    
+    // Initialize axis manager
+    this.axisManager = new ChartAxisManager({
+      xAxisOptions: this.xAxisOptions,
+      xScale: this.xScale,
+      yAxisOptionsMap: this.yAxisOptionsMap,
+      yScales: this.yScales,
+      primaryYAxisId: this.primaryYAxisId,
+      series: this.series,
+      requestRender: () => this.requestRender(),
+    });
+    
+    // Initialize state manager
+    this.stateManager = new ChartStateManager({
+      viewBounds: this.viewBounds,
+      xAxisOptions: this.xAxisOptions,
+      xScale: this.xScale,
+      yScales: this.yScales,
+      primaryYAxisId: this.primaryYAxisId,
+      series: this.series,
+      pluginManager: this.pluginManager,
+      showLegend: this.showLegend,
+      showControls: this.showControls,
+      showStatistics: this.showStatistics,
+      autoScroll: this.autoScroll,
+      getAnnotations: () => this.getAnnotations(),
+      clearAnnotations: () => this.clearAnnotations(),
+      addAnnotation: (a) => this.addAnnotation(a),
+      updateYAxis: (id, opts) => this.axisManager.updateYAxis(id, opts),
+      removeSeries: (id) => this.removeSeries(id),
+      addSeries: (opts) => this.addSeries(opts),
+      requestRender: () => this.requestRender(),
+    });
+    
+    // Initialize render loop
+    this.renderLoop = new ChartRenderLoop({
+      webglCanvas: this.webglCanvas,
+      overlayCanvas: this.overlayCanvas,
+      overlayCtx: this.overlayCtx,
+      container: this.container,
+      series: this.series,
+      viewBounds: this.viewBounds,
+      xScale: this.xScale,
+      yScales: this.yScales,
+      yAxisOptionsMap: this.yAxisOptionsMap,
+      xAxisOptions: this.xAxisOptions,
+      primaryYAxisId: this.primaryYAxisId,
+      renderer: this.renderer,
+      overlay: this.overlay,
+      backgroundColor: this.backgroundColor,
+      plotAreaBackground: this.plotAreaBackground,
+      cursorOptions: this.cursorOptions,
+      cursorPosition: this.cursorPosition,
+      selectionRect: this.selectionRect,
+      events: this.events,
+      selectionManager: this.selectionManager,
+      hoveredSeriesId: this.hoveredSeriesId,
+      pluginManager: this.pluginManager,
+      updateSeriesBuffer: (s) => updateSeriesBuffer(this.getSeriesContext(), s),
+      getPlotArea: () => this.getPlotArea(),
+      pixelToDataX: (px) => this.pixelToDataX(px),
+      pixelToDataY: (py, yAxisId) => this.pixelToDataY(py, yAxisId),
+      get yScale() { return this.yScales.get(this.primaryYAxisId) || this.yScales.values().next().value as Scale; },
+    });
 
     this.interaction = new InteractionManager(
       this.container,
@@ -551,8 +534,8 @@ export class ChartImpl implements Chart {
    * This performs the actual render startup that was deferred from constructor
    */
   startInit(): void {
-    if (this.initStarted || this._isDestroyed) return;
-    this.initStarted = true;
+    if (this.renderLoop.isInitStarted() || this._isDestroyed) return;
+    this.renderLoop.startInit();
 
     this.resize();
     this.startRenderLoop();
@@ -595,7 +578,7 @@ export class ChartImpl implements Chart {
   }
 
   private executeOrQueue(name: string, fn: () => void): void {
-    if (this.initStarted) {
+    if (this.renderLoop.isInitStarted()) {
       fn();
     } else {
       this.commandQueue.push({ fn, name });
@@ -1147,87 +1130,21 @@ export class ChartImpl implements Chart {
    * Add a new Y axis dynamically
    */
   addYAxis(options: AxisOptions): string {
-    const existingIds = Array.from(this.yAxisOptionsMap.keys());
-    const id = options.id || `y${existingIds.length}`;
-
-    if (this.yAxisOptionsMap.has(id)) {
-      console.warn(`[SciChartEngine] Y axis with id '${id}' already exists`);
-      return id;
-    }
-
-    const position = options.position || "right";
-    const fullOptions: AxisOptions = {
-      scale: "linear",
-      auto: true,
-      position,
-      ...options,
-      id,
-    };
-
-    this.yAxisOptionsMap.set(id, fullOptions);
-
-    // Create scale for this axis
-    const scale =
-      fullOptions.scale === "log" ? new LogScale() : new LinearScale();
-    this.yScales.set(id, scale);
-
-    this.requestRender();
-    return id;
+    return this.axisManager.addYAxis(options);
   }
 
   /**
    * Remove a Y axis by ID
    */
   removeYAxis(id: string): boolean {
-    if (id === this.primaryYAxisId) {
-      console.warn(`[SciChartEngine] Cannot remove primary Y axis '${id}'`);
-      return false;
-    }
-
-    if (!this.yAxisOptionsMap.has(id)) {
-      return false;
-    }
-
-    this.yAxisOptionsMap.delete(id);
-    this.yScales.delete(id);
-
-    // Update any series using this axis
-    this.series.forEach((s) => {
-      if (s.getYAxisId() === id) {
-        // Move to primary axis
-        s.setYAxisId(this.primaryYAxisId);
-      }
-    });
-
-    this.requestRender();
-    return true;
+    return this.axisManager.removeYAxis(id);
   }
 
   /**
    * Update Y axis configuration
    */
   updateYAxis(id: string, options: Partial<AxisOptions>): void {
-    const existing = this.yAxisOptionsMap.get(id);
-    if (!existing) {
-      console.warn(`[SciChartEngine] Y axis '${id}' not found`);
-      return;
-    }
-
-    const updated: AxisOptions = { ...existing, ...options, id };
-    this.yAxisOptionsMap.set(id, updated);
-
-    // Update scale if scale type changed
-    if (options.scale && options.scale !== existing.scale) {
-      const newScale =
-        options.scale === "log" ? new LogScale() : new LinearScale();
-      const oldScale = this.yScales.get(id);
-      if (oldScale) {
-        newScale.setDomain(oldScale.domain[0], oldScale.domain[1]);
-      }
-      this.yScales.set(id, newScale);
-    }
-
-    this.requestRender();
+    this.axisManager.updateYAxis(id, options);
   }
 
   /**
@@ -1253,38 +1170,28 @@ export class ChartImpl implements Chart {
    * Update X axis configuration
    */
   updateXAxis(options: Partial<AxisOptions>): void {
-    this.xAxisOptions = { ...this.xAxisOptions, ...options };
-
-    // Update scale if scale type changed
-    if (options.scale && options.scale !== this.xAxisOptions.scale) {
-      const newScale =
-        options.scale === "log" ? new LogScale() : new LinearScale();
-      newScale.setDomain(this.xScale.domain[0], this.xScale.domain[1]);
-      this.xScale = newScale;
-    }
-
-    this.requestRender();
+    this.axisManager.updateXAxis(options);
   }
 
   /**
    * Get Y axis configuration by ID
    */
   getYAxis(id: string): AxisOptions | undefined {
-    return this.yAxisOptionsMap.get(id);
+    return this.axisManager.getYAxis(id);
   }
 
   /**
    * Get all Y axes configurations
    */
   getAllYAxes(): AxisOptions[] {
-    return Array.from(this.yAxisOptionsMap.values());
+    return this.axisManager.getAllYAxes();
   }
 
   /**
    * Get the primary Y axis ID
    */
   getPrimaryYAxisId(): string {
-    return this.primaryYAxisId;
+    return this.axisManager.getPrimaryYAxisId();
   }
 
   // ============================================
@@ -1471,140 +1378,28 @@ export class ChartImpl implements Chart {
    * Export complete chart state
    */
   serialize(options: SerializeOptions = {}): ChartState {
-    const { includeData = true, includeAnnotations = true } = options;
-
-    const state: ChartState = {
-      version: SERIALIZATION_VERSION,
-      timestamp: Date.now(),
-      viewBounds: { ...this.viewBounds },
-      xAxis: {
-        id: "primary-x",
-        position: this.xAxisOptions.position,
-        label: this.xAxisOptions.label,
-        scale: this.xScale.type,
-        min: this.xScale.domain[0],
-        max: this.xScale.domain[1],
-        auto:
-          (this.xScale as any).auto !== undefined
-            ? (this.xScale as any).auto
-            : true,
-      },
-      yAxes: Array.from(this.yScales.values()).map((s: any) => ({
-        id: s.id || "y",
-        position: s.position || "left",
-        label: s.label || "",
-        scale: s.type,
-        min: s.domain[0],
-        max: s.domain[1],
-        auto: s.auto !== undefined ? s.auto : true,
-      })),
-      primaryYAxisId: this.primaryYAxisId,
-      series: Array.from(this.series.values()).map((s) => ({
-        id: s.getId(),
-        name: s.getName(),
-        type: s.getType(),
-        yAxisId: s.getYAxisId(),
-        style: s.getStyle(),
-        visible: s.isVisible(),
-        data: includeData
-          ? {
-            x: encodeFloat32Array(s.getData().x),
-            y: encodeFloat32Array(s.getData().y),
-          }
-          : { x: "", y: "" },
-      })),
-      annotations: includeAnnotations ? this.getAnnotations() : [],
-      options: {
-        showLegend: this.showLegend,
-        showControls: this.showControls,
-        showStatistics: this.showStatistics,
-        autoScroll: this.autoScroll,
-      },
-      plugins: this.pluginManager.collectSerializationData(),
-    };
-
-    return state;
+    return this.stateManager.serialize(options);
   }
 
   /**
    * Restore chart from saved state
    */
   deserialize(state: ChartState, options: DeserializeOptions = {}): void {
-    const { skipData = false, skipAnnotations = false } = options;
-
-    // Restore view/axis settings
-    this.viewBounds = { ...state.viewBounds };
-    this.primaryYAxisId = state.primaryYAxisId;
-
-    // Restore Y axes
-    state.yAxes.forEach((ax) => {
-      this.updateYAxis(ax.id, {
-        label: ax.label,
-        scale: ax.scale,
-        min: ax.min,
-        max: ax.max,
-        auto: ax.auto,
-      });
-    });
-
-    // Restore series
-    if (!skipData) {
-      // Clear existing first
-      const seriesIds = Array.from(this.series.keys());
-      seriesIds.forEach((id) => this.removeSeries(id));
-
-      state.series.forEach((s) => {
-        this.addSeries({
-          id: s.id,
-          name: s.name,
-          type: s.type,
-          yAxisId: s.yAxisId,
-          data: {
-            x: decodeFloat32Array(s.data.x),
-            y: decodeFloat32Array(s.data.y),
-          },
-          style: s.style as any,
-        });
-      });
-    }
-
-    // Restore annotations
-    if (!skipAnnotations && state.annotations) {
-      this.clearAnnotations();
-      state.annotations.forEach((a) => this.addAnnotation(a));
-    }
-
-    // Restore UI options
-    if (state.options) {
-      this.showLegend = state.options.showLegend ?? this.showLegend;
-      this.showControls = state.options.showControls ?? this.showControls;
-      this.showStatistics = state.options.showStatistics ?? this.showStatistics;
-      this.autoScroll = state.options.autoScroll ?? this.autoScroll;
-    }
-
-    // Restore plugin data
-    if (state.plugins) {
-      this.pluginManager.restoreSerializationData(state.plugins);
-    }
-
-    this.requestRender();
+    this.stateManager.deserialize(state, options);
   }
 
   /**
    * Convert current state to URL-safe hash
    */
   toUrlHash(compress: boolean = true): string {
-    return stateToUrlHash(this.serialize({ includeData: true }), compress);
+    return this.stateManager.toUrlHash(compress);
   }
 
   /**
    * Load state from URL hash
    */
   fromUrlHash(hash: string, compressed: boolean = true): void {
-    const state = urlHashToState(hash, compressed);
-    if (state) {
-      this.deserialize(state);
-    }
+    this.stateManager.fromUrlHash(hash, compressed);
   }
 
   async use(plugin: any): Promise<void> {
@@ -1660,99 +1455,21 @@ export class ChartImpl implements Chart {
 
   requestRender(): void {
     this.executeOrQueue("requestRender", () => {
-      this.needsFullRender = true;
-      this.scheduleRenderFrame();
+      this.renderLoop.requestRender();
     });
   }
 
   requestOverlayRender(): void {
     this.executeOrQueue("requestOverlayRender", () => {
-      this.needsOverlayRender = true;
-      this.scheduleRenderFrame();
+      this.renderLoop.requestOverlayRender();
     });
   }
 
-  render(full: boolean = true): void {
-    if (!this.initStarted) {
-      this.commandQueue.push({ fn: () => this.render(full), name: "render" });
-      return;
-    }
-    if (this.isDestroyed) return;
-    const start = performance.now();
-    const plotArea = this.getPlotArea();
-    if (this.webglCanvas.width === 0 || this.webglCanvas.height === 0) return;
-
-    const renderCtx = {
-      webglCanvas: this.webglCanvas,
-      overlayCanvas: this.overlayCanvas,
-      overlayCtx: this.overlayCtx,
-      container: this.container,
-      series: this.series,
-      viewBounds: this.viewBounds,
-      xScale: this.xScale,
-      yScales: this.yScales,
-      yAxisOptionsMap: this.yAxisOptionsMap as any,
-      xAxisOptions: this.xAxisOptions as any,
-      primaryYAxisId: this.primaryYAxisId,
-      renderer: this.renderer,
-      overlay: this.overlay,
-      backgroundColor: this.backgroundColor,
-      cursorOptions: this.cursorOptions,
-      cursorPosition: this.cursorPosition,
-      selectionRect: this.selectionRect,
-      events: this.events,
-      updateSeriesBuffer: (s: Series) =>
-        updateSeriesBuffer(this.getSeriesContext(), s),
-      getPlotArea: () => plotArea,
-      pixelToDataX: (px: number) => this.pixelToDataX(px),
-      pixelToDataY: (py: number) => this.pixelToDataY(py),
-      selectionManager: this.selectionManager,
-      hoveredSeriesId: this.hoveredSeriesId,
-    };
-
-    const now = performance.now();
-    const beforeEvent = {
-      timestamp: now,
-      deltaTime: now - this.lastRenderTime,
-      frameNumber: ++this.frameCount,
-      first: !this.initStarted,
-      forced: full
-    };
-    this.lastRenderTime = now;
-
-    if (!this.pluginManager.notifyBeforeRender(beforeEvent)) {
-      return; // Plugin requested to skip render
-    }
-
-    if (full) {
-      const seriesData = prepareSeriesData(renderCtx, plotArea);
-      this.renderer.render(seriesData, {
-        bounds: this.viewBounds,
-        backgroundColor: this.backgroundColor,
-        plotAreaBackground: this.plotAreaBackground,
-        plotArea,
-      });
-      const webglEvent = {
-        ...beforeEvent,
-        renderTime: performance.now() - start,
-      };
-      this.pluginManager.notifyRenderWebGL(webglEvent);
-      renderOverlay(renderCtx, plotArea, this.yScale);
-    } else {
-      // Overlay only render
-      renderOverlay(renderCtx, plotArea, this.yScale);
-    }
-
-    const renderTime = performance.now() - start;
-    const afterEvent = { ...beforeEvent, renderTime };
-
-    this.pluginManager.notifyRenderOverlay(afterEvent);
-    this.pluginManager.notifyAfterRender(afterEvent);
-
-    this.events.emit("render", {
-      fps: 1000 / renderTime,
-      frameTime: renderTime,
-    });
+  /**
+   * Trigger an immediate full render (public API compatibility)
+   */
+  render(): void {
+    this.requestRender();
   }
 
   private pixelToDataX(px: number): number {
@@ -1765,32 +1482,8 @@ export class ChartImpl implements Chart {
   }
 
   private startRenderLoop(): void {
-    // On-demand render loop - only runs when there's work to do
-    // This dramatically improves performance with multiple charts
-    this.scheduleRenderFrame();
-  }
-
-  private scheduleRenderFrame(): void {
-    if (this.animationFrameId !== null || this.isDestroyed) return;
-
-    this.animationFrameId = requestAnimationFrame(() => {
-      this.animationFrameId = null;
-      if (this.isDestroyed) return;
-
-      if (this.needsFullRender) {
-        this.render(true);
-        this.needsFullRender = false;
-        this.needsOverlayRender = false;
-      } else if (this.needsOverlayRender) {
-        this.render(false);
-        this.needsOverlayRender = false;
-      }
-
-      // If there are animations running, keep the loop going
-      if (this.animationEngine.isAnimating()) {
-        this.scheduleRenderFrame();
-      }
-    });
+    // Initial render request to kick off the loop
+    this.renderLoop.requestRender();
   }
 
   on<K extends keyof ChartEventMap>(
@@ -1808,7 +1501,7 @@ export class ChartImpl implements Chart {
 
   destroy(): void {
     this._isDestroyed = true;
-    if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+    this.renderLoop.cancelPendingRender();
     this.animationEngine.destroy();
     this.selectionManager.destroy();
     this.responsiveManager.destroy();
