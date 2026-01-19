@@ -12,6 +12,8 @@ A high-performance, WebGL-powered scientific charting engine built for precision
 -   **📊 Specialized Series**: Support for Lines, Scatter (SDF symbols), Step charts, Band series, Area charts, **Candlesticks** (OHLC), and **Stacked Charts**.
 -   **↕️ Multi-Axis Engine**: Independent scales and units with axis-specific scrolling and zooming.
 -   **📏 Professional Tooling**: Real-time Statistics panel, Annotations (Lines/Shapes/Text), and **high-fidelity SVG/PNG export**.
+-   **🎨 Color Schemes**: **5 professional palettes** with 20 colors each for multi-series charts, auto-assigned when colors aren't specified.
+-   **✨ Interactive Legend**: Hover over series in legend to **bring to front** and highlight with distinct color.
 -   **🔌 Extensible**: **Plugin System** with lifecycle hooks for custom drawing and data analysis.
 -   **⚛️ Framework First**: Native React support via hooks and high-level components.
 -   **🎨 Dynamic Theming**: Sleek built-in themes (Light/Midnight) with support for custom CSS-based skins.
@@ -58,14 +60,49 @@ import { createChart } from 'scichart-engine';
 
 const chart = createChart({
   container: document.getElementById('chart-container'),
-  title: 'Real-time Signal'
+  theme: 'dark',
+  colorScheme: 'vibrant', // Auto-assigns colors from vibrant palette
+  showLegend: true
 });
 
+// Series without explicit colors get auto-assigned from the scheme
 chart.addSeries({
-  id: 'signal',
+  id: 'signal1',
   type: 'line',
   data: { x: [...], y: [...] }
 });
+
+chart.addSeries({
+  id: 'signal2',
+  type: 'line',
+  data: { x: [...], y: [...] }
+});
+
+// Change color scheme at runtime
+chart.setColorScheme('ocean');
+```
+
+### Multi-Series with Color Schemes
+
+```typescript
+// Create chart with 20+ series - colors auto-cycle
+const chart = createChart({
+  container: document.getElementById('chart'),
+  colorScheme: 'neon', // 'vibrant', 'pastel', 'neon', 'earth', 'ocean'
+  showLegend: true
+});
+
+// Add multiple series - colors assigned automatically
+for (let i = 0; i < 20; i++) {
+  chart.addSeries({
+    id: `series${i}`,
+    name: `Dataset ${i + 1}`,
+    type: 'line',
+    data: generateData(i)
+  });
+}
+
+// Hover over series in legend → brings to front + highlights! ✨
 ```
 
 ## 📖 Documentation

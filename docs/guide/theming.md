@@ -317,3 +317,109 @@ chart.addSeries({
   },
 })
 ```
+
+## Color Schemes
+
+For multi-series charts, SciChart Engine provides **5 professional color schemes** with 20 distinct colors each, plus a unique highlight color for hover states.
+
+### Available Schemes
+
+| Scheme | Colors | Highlight | Best For |
+|--------|--------|-----------|----------|
+| `vibrant` | High saturation, energetic | White | Dark themes, dashboards |
+| `pastel` | Soft, muted tones | Black | Light themes, reports |
+| `neon` | Electric, fluorescent | White | Modern UIs, gaming |
+| `earth` | Natural, organic | Black | Environmental data |
+| `ocean` | Blue, aquatic tones | Gold | Marine/water data |
+
+### Using Color Schemes
+
+Color schemes automatically assign colors to series that don't have explicit colors:
+
+```typescript
+const chart = createChart({
+  container,
+  theme: 'dark',
+  colorScheme: 'vibrant',  // Auto-assign colors from scheme
+  showLegend: true
+})
+
+// Add series without colors - auto-assigned from scheme
+chart.addSeries({ id: 's1', type: 'line', data: { x, y } })  // Gets color #1
+chart.addSeries({ id: 's2', type: 'line', data: { x, y } })  // Gets color #2
+chart.addSeries({ id: 's3', type: 'line', data: { x, y } })  // Gets color #3
+```
+
+### Changing Schemes
+
+```typescript
+// Change at runtime
+chart.setColorScheme('ocean')
+
+// Get current scheme
+const scheme = chart.getColorScheme()
+console.log(scheme.name)  // 'ocean'
+console.log(scheme.colors.length)  // 20
+console.log(scheme.highlightColor)  // '#FFD700' (gold)
+```
+
+### Custom Color Schemes
+
+```typescript
+import { type ColorScheme } from 'scichart-engine'
+
+const customScheme: ColorScheme = {
+  name: 'my-scheme',
+  colors: [
+    '#FF0000', '#00FF00', '#0000FF',
+    // ... 17 more colors (20 total)
+  ],
+  highlightColor: '#FFFF00',  // Must be distinct from the 20 colors
+  isDark: true
+}
+
+chart.setColorScheme(customScheme)
+```
+
+### Auto-Selection
+
+If no color scheme is specified, one is automatically selected based on the theme:
+- **Dark themes** → `vibrant` scheme
+- **Light themes** → `pastel` scheme
+
+```typescript
+const chart = createChart({
+  container,
+  theme: 'dark'  // Auto-selects 'vibrant' scheme
+})
+```
+
+### Explicit Colors Override
+
+Series with explicit colors ignore the color scheme:
+
+```typescript
+chart.addSeries({
+  id: 's1',
+  type: 'line',
+  data: { x, y },
+  style: { color: '#FF00FF' }  // Uses this, not from scheme
+})
+```
+
+### Color Cycling
+
+For charts with 20+ series, colors cycle through the palette:
+
+```typescript
+// Series 0-19 get colors[0-19]
+// Series 20 gets colors[0], series 21 gets colors[1], etc.
+for (let i = 0; i < 25; i++) {
+  chart.addSeries({
+    id: `series${i}`,
+    type: 'line',
+    data: generateData(i)
+    // Colors auto-assigned and cycle
+  })
+}
+```

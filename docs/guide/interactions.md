@@ -48,6 +48,46 @@ When in `pan` mode (default), click and drag with the left mouse button to pan t
 ### Box Zoom
 
 When in `boxZoom` mode, click and drag to draw a selection rectangle. The view will zoom to fit the selected area.
+
+## Legend Interactions
+
+### Bring-to-Front on Hover
+
+When you hover over a series name in the legend:
+
+- **Series brought to front**: The series renders on top of all others
+- **Highlighted color**: The series changes to the highlight color from the active color scheme
+- **Instant response**: Changes happen smoothly in real-time
+
+This feature is particularly useful for dense multi-series charts where you need to identify a specific series.
+
+```typescript
+const chart = createChart({
+  container,
+  showLegend: true,
+  colorScheme: 'vibrant'  // Provides highlight color
+})
+
+// Add multiple series
+for (let i = 0; i < 10; i++) {
+  chart.addSeries({
+    id: `series${i}`,
+    type: 'line',
+    data: generateData(i)
+  })
+}
+
+// Hover over any series in legend → brings to front + highlights
+```
+
+### Toggle Series Visibility
+
+Click on a series name in the legend to toggle its visibility on/off.
+
+```typescript
+// Series visibility is automatically managed
+// Clicking the legend item shows/hides the series
+```
 Alternatively, you can always **Right-click + Drag** to perform a box zoom regardless of the current mode.
 
 ### Point Selection
