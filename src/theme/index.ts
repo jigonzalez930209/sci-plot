@@ -396,3 +396,20 @@ export function getThemeByName(name: string): ChartTheme {
 
 /** Default theme export */
 export const DEFAULT_THEME = DARK_THEME;
+
+// ============================================
+// Color Schemes
+// ============================================
+
+export {
+  type ColorScheme,
+  COLOR_SCHEMES,
+  VIBRANT_SCHEME,
+  PASTEL_SCHEME,
+  NEON_SCHEME,
+  EARTH_SCHEME,
+  OCEAN_SCHEME,
+  getColorScheme,
+  getColorFromScheme,
+  getDefaultSchemeForTheme,
+} from "./colorSchemes";

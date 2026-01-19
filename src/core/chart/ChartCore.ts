@@ -24,7 +24,13 @@ import {
   brightenColor,
 } from "../../renderer/NativeWebGLRenderer";
 import { LinearScale, LogScale, type Scale } from "../../scales";
-import { getThemeByName, type ChartTheme } from "../../theme";
+import { 
+  getThemeByName, 
+  type ChartTheme,
+  type ColorScheme,
+  getColorScheme,
+  getDefaultSchemeForTheme,
+} from "../../theme";
 import { OverlayRenderer } from "../OverlayRenderer";
 import { InteractionManager } from "../InteractionManager";
 import { ChartControls } from "../ChartControls";
@@ -128,11 +134,13 @@ export class ChartImpl implements Chart {
   }
   public theme: ChartTheme;
   public baseTheme: ChartTheme;
+  private colorScheme: ColorScheme;
   private cursorOptions: CursorOptions | null = null;
   private cursorPosition: { x: number; y: number } | null = null;
   private showLegend: boolean;
   private legend: ChartLegend | null = null;
   private originalSeriesStyles = new Map<string, any>();
+  private hoveredSeriesId: string | null = null;
   private showControls: boolean;
   private toolbarOptions?: import("../../types").ToolbarOptions;
   private controls: ChartControls | null = null;
@@ -295,6 +303,9 @@ export class ChartImpl implements Chart {
 
     this.baseTheme = setup.theme;
     this.theme = setup.theme;
+    this.colorScheme = options.colorScheme 
+      ? getColorScheme(options.colorScheme)
+      : getDefaultSchemeForTheme(setup.theme.isDark);
     this.backgroundColor = setup.backgroundColor;
     this.plotAreaBackground = setup.plotAreaColor;
     this.showLegend = setup.showLegend;
@@ -676,8 +687,10 @@ export class ChartImpl implements Chart {
         onSeriesHoverStart: (s) => {
           const original = s.getStyle();
           this.originalSeriesStyles.set(s.getId(), { ...original });
+          this.hoveredSeriesId = s.getId();
           
-          const newColor = brightenColor(original.color || "#ff0055", this.theme.isDark);
+          // Use highlight color from color scheme, fallback to brightenColor
+          const newColor = this.colorScheme?.highlightColor || brightenColor(original.color || "#ff0055", this.theme.isDark);
           s.setStyle({ 
             color: newColor 
           });
@@ -689,6 +702,7 @@ export class ChartImpl implements Chart {
           if (original) {
             s.setStyle(original);
             this.originalSeriesStyles.delete(s.getId());
+            this.hoveredSeriesId = null;
             this.legend?.updateSeriesStyle(s);
             this.requestRender();
           }
@@ -707,11 +721,9 @@ export class ChartImpl implements Chart {
     this.baseTheme = typeof theme === "string" ? getThemeByName(theme) : theme;
     this.theme = this.responsiveManager.scaleTheme(this.baseTheme);
     
-    const bgColor = parseColor(this.theme.backgroundColor);
-    this.backgroundColor = [bgColor[0], bgColor[1], bgColor[2], bgColor[3]];
-    
-    const paColor = parseColor(this.theme.plotAreaBackground);
-    this.plotAreaBackground = [paColor[0], paColor[1], paColor[2], paColor[3]];
+    // Parse colors
+    this.backgroundColor = parseColor(this.theme.backgroundColor);
+    this.plotAreaBackground = parseColor(this.theme.plotAreaBackground || this.theme.backgroundColor);
 
     this.container.style.backgroundColor = this.theme.backgroundColor;
 
@@ -720,12 +732,34 @@ export class ChartImpl implements Chart {
     if (this.controls) this.controls.updateTheme(this.theme);
     if (this.legend) this.legend.updateTheme(this.theme);
 
+    // Update color scheme to match new theme if not explicitly set
+    if (!this.initialOptions.colorScheme) {
+      this.colorScheme = getDefaultSchemeForTheme(this.theme.isDark);
+    }
+
     this.requestRender();
+  }
+
+  /**
+   * Set the color scheme for multi-series charts
+   * @param scheme - Color scheme name ('vibrant', 'pastel', 'neon', 'earth', 'ocean') or ColorScheme object
+   */
+  setColorScheme(scheme: string | ColorScheme): void {
+    this.colorScheme = typeof scheme === "string" ? getColorScheme(scheme) : scheme;
+    this.requestRender();
+  }
+
+  /**
+   * Get the current color scheme
+   */
+  getColorScheme(): ColorScheme {
+    return this.colorScheme;
   }
 
   getPlotArea() {
     return calculatePlotArea(this.container, this.yAxisOptionsMap as any);
   }
+
   private getInteractedBounds(axisId?: string): Bounds {
     if (axisId) {
       const scale = this.yScales.get(axisId);
@@ -1673,6 +1707,7 @@ export class ChartImpl implements Chart {
       pixelToDataX: (px: number) => this.pixelToDataX(px),
       pixelToDataY: (py: number) => this.pixelToDataY(py),
       selectionManager: this.selectionManager,
+      hoveredSeriesId: this.hoveredSeriesId,
     };
 
     const now = performance.now();

@@ -42,6 +42,7 @@ export interface RenderContext {
   pixelToDataX: (px: number) => number;
   pixelToDataY: (py: number) => number;
   selectionManager: SelectionManager;
+  hoveredSeriesId: string | null;
 }
 
 /**
@@ -310,6 +311,24 @@ export function prepareSeriesData(
       }
     }
   });
+
+  // Bring-to-front: If a series is hovered, move it to the end of the array
+  // so it renders last (on top of all other series)
+  if (ctx.hoveredSeriesId) {
+    const hoveredIndex = seriesData.findIndex(sd => sd.id === ctx.hoveredSeriesId || sd.id.startsWith(ctx.hoveredSeriesId + '_'));
+    if (hoveredIndex !== -1) {
+      // Find all render data items related to the hovered series (including bullish/bearish for candlesticks)
+      const hoveredItems: SeriesRenderData[] = [];
+      for (let i = seriesData.length - 1; i >= 0; i--) {
+        const item = seriesData[i];
+        if (item.id === ctx.hoveredSeriesId || item.id.startsWith(ctx.hoveredSeriesId + '_')) {
+          hoveredItems.unshift(seriesData.splice(i, 1)[0]);
+        }
+      }
+      // Add hovered items at the end to render on top
+      seriesData.push(...hoveredItems);
+    }
+  }
 
   return seriesData;
 }

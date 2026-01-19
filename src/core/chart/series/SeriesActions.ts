@@ -13,6 +13,16 @@ export function addSeries(
   ctx: any,
   options: SeriesOptions | HeatmapOptions
 ): void {
+  // Auto-assign color from scheme if not provided (skip for heatmaps)
+  if (options.type !== 'heatmap' && !options.style?.color && !(options as any).color && ctx.colorScheme) {
+    const seriesIndex = ctx.series.size;
+    const schemeColor = ctx.colorScheme.colors[seriesIndex % ctx.colorScheme.colors.length];
+    if (!options.style) {
+      options.style = {};
+    }
+    (options.style as any).color = schemeColor;
+  }
+  
   const s = new Series(options);
   ctx.series.set(s.getId(), s);
   updateSeriesBuffer(ctx, s);

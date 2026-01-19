@@ -629,6 +629,8 @@ export interface ChartOptions {
   devicePixelRatio?: number;
   /** Theme name or custom theme object */
   theme?: string | object;
+  /** Color scheme for multi-series charts (default: auto-selected based on theme) */
+  colorScheme?: string;
   /** Show legend (default: from theme) */
   showLegend?: boolean;
   /** Initial legend position {x, y} in pixels relative to chart area */
