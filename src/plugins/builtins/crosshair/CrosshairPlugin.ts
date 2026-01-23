@@ -4,6 +4,10 @@ import type {
     InteractionEvent,
 } from "../../types";
 import { definePlugin } from "../../PluginRegistry";
+import type {
+    CrosshairValueMode,
+    CornerPosition
+} from "../../../core/layout";
 
 export interface CrosshairPluginConfig {
     /** Show vertical line (default: true) */
@@ -16,10 +20,31 @@ export interface CrosshairPluginConfig {
     lineStyle?: "solid" | "dashed" | "dotted";
     /** Line width (default: 1) */
     lineWidth?: number;
-    /** Show axis labels (default: true) */
+    /** 
+     * @deprecated Use valueDisplayMode instead
+     * Show axis labels (will be converted to valueDisplayMode)
+     */
     showAxisLabels?: boolean;
+    /**
+     * Display mode for X,Y coordinate values (default: 'disabled')
+     * - 'disabled': Never show coordinate values
+     * - 'corner': Show values in a fixed corner position
+     * - 'floating': Show values next to the cursor (axis labels)
+     */
+    valueDisplayMode?: CrosshairValueMode;
+    /**
+     * Corner position when valueDisplayMode is 'corner' (default: 'top-left')
+     */
+    cornerPosition?: CornerPosition;
     /** Snap to nearest data point (default: false) */
     snapToData?: boolean;
+    /** Value format options */
+    valueFormat?: {
+        /** X value precision (default: 4) */
+        xPrecision?: number;
+        /** Y value precision (default: 4) */
+        yPrecision?: number;
+    };
 }
 
 const crosshairManifest: PluginManifest = {
@@ -39,9 +64,16 @@ export const CrosshairPlugin = definePlugin<CrosshairPluginConfig>(
             color,
             lineStyle = "dashed",
             lineWidth = 1,
-            showAxisLabels = true,
             snapToData = false,
+            valueFormat = { xPrecision: 4, yPrecision: 4 },
         } = config;
+
+        // Handle deprecated showAxisLabels -> convert to valueDisplayMode
+        let valueDisplayMode: CrosshairValueMode = config.valueDisplayMode ?? 'disabled';
+        if (config.showAxisLabels !== undefined && config.valueDisplayMode === undefined) {
+            valueDisplayMode = config.showAxisLabels ? 'floating' : 'disabled';
+        }
+        const cornerPosition: CornerPosition = config.cornerPosition ?? 'top-left';
 
         let cursorX = -1;
         let cursorY = -1;
@@ -158,13 +190,16 @@ export const CrosshairPlugin = definePlugin<CrosshairPluginConfig>(
 
             ctx.restore();
 
-            // Axis labels
-            if (showAxisLabels) {
-                drawAxisLabels(pluginCtx, ctx, cursorX, cursorY, lineColor);
+            // Value display based on mode
+            if (valueDisplayMode === 'floating') {
+                drawFloatingLabels(pluginCtx, ctx, cursorX, cursorY, lineColor);
+            } else if (valueDisplayMode === 'corner') {
+                drawCornerLabels(pluginCtx, ctx, cursorX, cursorY, lineColor);
             }
+            // 'disabled' mode: don't draw any labels
         }
 
-        function drawAxisLabels(
+        function drawFloatingLabels(
             pluginCtx: PluginContext,
             ctx: CanvasRenderingContext2D,
             x: number,
@@ -181,7 +216,7 @@ export const CrosshairPlugin = definePlugin<CrosshairPluginConfig>(
             ctx.textBaseline = "top";
 
             // X axis label
-            const xText = dataX.toPrecision(4);
+            const xText = dataX.toPrecision(valueFormat.xPrecision);
             const xMetrics = ctx.measureText(xText);
             const xLabelWidth = xMetrics.width + 8;
             const xLabelHeight = 18;
@@ -196,7 +231,7 @@ export const CrosshairPlugin = definePlugin<CrosshairPluginConfig>(
             // Y axis label
             ctx.textAlign = "right";
             ctx.textBaseline = "middle";
-            const yText = dataY.toPrecision(4);
+            const yText = dataY.toPrecision(valueFormat.yPrecision);
             const yMetrics = ctx.measureText(yText);
             const yLabelWidth = yMetrics.width + 8;
             const yLabelHeight = 18;
@@ -210,5 +245,78 @@ export const CrosshairPlugin = definePlugin<CrosshairPluginConfig>(
 
             ctx.restore();
         }
+
+        function drawCornerLabels(
+            pluginCtx: PluginContext,
+            ctx: CanvasRenderingContext2D,
+            x: number,
+            y: number,
+            bgColor: string
+        ) {
+            const dataX = pluginCtx.coords.pixelToDataX(x);
+            const dataY = pluginCtx.coords.pixelToDataY(y);
+            const plotArea = pluginCtx.render.plotArea;
+
+            ctx.save();
+            ctx.font = "11px system-ui, sans-serif";
+
+            const xText = `X: ${dataX.toPrecision(valueFormat.xPrecision)}`;
+            const yText = `Y: ${dataY.toPrecision(valueFormat.yPrecision)}`;
+
+            const xMetrics = ctx.measureText(xText);
+            const yMetrics = ctx.measureText(yText);
+            const maxWidth = Math.max(xMetrics.width, yMetrics.width);
+            const padding = 6;
+            const lineHeight = 16;
+            const boxWidth = maxWidth + padding * 2;
+            const boxHeight = lineHeight * 2 + padding * 2;
+
+            // Determine corner position
+            let boxX: number;
+            let boxY: number;
+
+            switch (cornerPosition) {
+                case 'top-left':
+                    boxX = plotArea.x + 8;
+                    boxY = plotArea.y + 8;
+                    break;
+                case 'top-right':
+                    boxX = plotArea.x + plotArea.width - boxWidth - 8;
+                    boxY = plotArea.y + 8;
+                    break;
+                case 'bottom-left':
+                    boxX = plotArea.x + 8;
+                    boxY = plotArea.y + plotArea.height - boxHeight - 8;
+                    break;
+                case 'bottom-right':
+                    boxX = plotArea.x + plotArea.width - boxWidth - 8;
+                    boxY = plotArea.y + plotArea.height - boxHeight - 8;
+                    break;
+                default:
+                    boxX = plotArea.x + 8;
+                    boxY = plotArea.y + 8;
+            }
+
+            // Draw background
+            ctx.fillStyle = bgColor;
+            ctx.globalAlpha = 0.85;
+            ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+            ctx.globalAlpha = 1.0;
+
+            // Draw border
+            ctx.strokeStyle = "rgba(255,255,255,0.3)";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+
+            // Draw text
+            ctx.fillStyle = "#ffffff";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+            ctx.fillText(xText, boxX + padding, boxY + padding);
+            ctx.fillText(yText, boxX + padding, boxY + padding + lineHeight);
+
+            ctx.restore();
+        }
     }
 );
+
