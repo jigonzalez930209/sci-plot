@@ -170,13 +170,11 @@ export function PluginLaTeX(config: PluginLaTeXConfig = {}): ChartPlugin<PluginL
     },
 
     onInit(ctx: PluginContext) {
-      // Extend chart with LaTeX API
-      (ctx.chart as any).latex = api;
+      // API is accessed via plugin bridge, no need to set property on chart which has only a getter
       ctx.log.info('LaTeX plugin initialized');
     },
 
     onDestroy(ctx: PluginContext) {
-      delete (ctx.chart as any).latex;
       clearCache();
       ctx.log.info('LaTeX plugin destroyed');
     },
