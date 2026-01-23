@@ -14,6 +14,11 @@ export interface UIContext {
   showControls: boolean;
   toolbar?: import("../../types").ToolbarOptions;
   showLegend: boolean;
+  /** Legend behavior options */
+  legendOptions?: {
+    highlightOnHover?: boolean;
+    bringToFrontOnHover?: boolean;
+  };
   series: Map<string, Series>;
   autoScale: () => void;
   resetZoom: () => void;
@@ -28,8 +33,10 @@ export interface UIContext {
   onInteractionEnd?: () => void;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
-  onSeriesHoverStart?: (series: Series) => void;
-  onSeriesHoverEnd?: (series: Series) => void;
+  /** @param highlightColor - Whether to apply color highlighting */
+  onSeriesHoverStart?: (series: Series, highlightColor: boolean) => void;
+  /** @param highlightColor - Whether color highlighting was applied */
+  onSeriesHoverEnd?: (series: Series, highlightColor: boolean) => void;
   onToggleVisibility?: (series: Series) => void;
 }
 
@@ -80,18 +87,26 @@ export function initControls(ctx: UIContext): ChartControls | null {
 
 export function initLegend(ctx: UIContext, options: ChartOptions): ChartLegend | null {
   if (!ctx.showLegend) return null;
+
+  // Merge legend options from layout config and legacy legendPosition
+  const legendOpts = {
+    ...options.legendPosition,
+    highlightOnHover: ctx.legendOptions?.highlightOnHover ?? options.layout?.legend?.highlightOnHover ?? false,
+    bringToFrontOnHover: ctx.legendOptions?.bringToFrontOnHover ?? options.layout?.legend?.bringToFrontOnHover ?? true,
+  };
+
   const legend = new ChartLegend(
     ctx.container,
     ctx.theme,
-    options.legendPosition || {},
+    legendOpts,
     {
       onMove: (x, y) => ctx.onLegendMove(x, y),
       onInteractionStart: () => ctx.onInteractionStart?.(),
       onInteractionEnd: () => ctx.onInteractionEnd?.(),
       onHoverStart: () => ctx.onHoverStart?.(),
       onHoverEnd: () => ctx.onHoverEnd?.(),
-      onSeriesHoverStart: (s) => ctx.onSeriesHoverStart?.(s),
-      onSeriesHoverEnd: (s) => ctx.onSeriesHoverEnd?.(s),
+      onSeriesHoverStart: (s, highlightColor) => ctx.onSeriesHoverStart?.(s, highlightColor),
+      onSeriesHoverEnd: (s, highlightColor) => ctx.onSeriesHoverEnd?.(s, highlightColor),
       onToggleVisibility: (s) => ctx.onToggleVisibility?.(s),
     }
   );
