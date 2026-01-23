@@ -53,3 +53,49 @@ const cssTheme = createTheme({
   }
 });
 ```
+
+## Layout Configuration
+
+Beyond visual styling, SciChart provides a dedicated `layout` system for controlling component positioning and behavior. See [Layout & Positioning Guide](./layout-positioning.md) for full details.
+
+### Key Layout Options
+
+```typescript
+const chart = createChart({
+  theme: 'midnight',
+  layout: {
+    // Legend behavior
+    legend: {
+      highlightOnHover: false,   // Don't change color (default)
+      bringToFrontOnHover: true, // Bring to front (default)
+      position: 'top-right',
+    },
+    
+    // Crosshair value display
+    crosshair: {
+      valueDisplayMode: 'corner', // 'disabled' | 'corner' | 'floating'
+      cornerPosition: 'top-left',
+    },
+    
+    // Margins around the chart
+    margins: { top: 30, right: 40, bottom: 60, left: 80 },
+    
+    // Axis spacing
+    xAxisLayout: { titleGap: 12, labelGap: 6 },
+    yAxisLayout: { titleGap: 10, labelGap: 4 },
+  },
+});
+```
+
+### Layout vs Theme
+
+| Concern | Use Theme | Use Layout |
+|---------|-----------|------------|
+| Colors | ✅ | ❌ |
+| Fonts | ✅ | ❌ |
+| Grid styling | ✅ | ❌ |
+| Component positions | ❌ | ✅ |
+| Hover behavior | ❌ | ✅ |
+| Margins/Padding | ❌ | ✅ |
+| Axis spacing | ❌ | ✅ |
+
