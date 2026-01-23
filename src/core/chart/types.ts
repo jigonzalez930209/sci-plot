@@ -141,6 +141,8 @@ export interface Chart {
   getAllYAxes(): AxisOptions[];
   /** Get the primary Y axis ID */
   getPrimaryYAxisId(): string;
+  /** Update unified layout configuration */
+  updateLayout(options: Partial<import("../layout").LayoutOptions>): void;
 
   // ============================================
   // Selection API
