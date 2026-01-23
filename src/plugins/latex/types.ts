@@ -42,6 +42,7 @@ export interface PluginLaTeXConfig {
  */
 export type LaTeXNodeType =
   | 'text'
+  | 'textgroup'
   | 'superscript'
   | 'subscript'
   | 'fraction'
