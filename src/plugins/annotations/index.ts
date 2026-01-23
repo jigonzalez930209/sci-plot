@@ -49,11 +49,16 @@ export function PluginAnnotations(_config: PluginAnnotationsConfig = {}): ChartP
             const plotArea = ctx.render.plotArea;
             const viewBounds = ctx.data.getViewBounds();
 
+            // Get LaTeX API if plugin is available
+            const latexPlugin = ctx.getPlugin<any>("scichart-latex");
+            const latexAPI = latexPlugin?.api;
+
             // Render all annotations using the manager and provided contexts
             annotationManager.render(
                 ctx.render.ctx2d!,
                 plotArea,
-                viewBounds
+                viewBounds,
+                latexAPI
             );
         },
 
