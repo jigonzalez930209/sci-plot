@@ -8,17 +8,38 @@
 import type { PluginManagerImpl } from "../../plugins";
 
 export class ChartPluginBridge {
-  constructor(private pluginManager: PluginManagerImpl) {}
+  constructor(private pluginManager: PluginManagerImpl) { }
 
   private getAPI<T>(name: string): T | null {
+    // 1. Try by manifest name
     const plugin = this.pluginManager.get(name) as any;
-    return plugin ? plugin.api : null;
+    if (plugin?.api) return plugin.api;
+
+    // 2. Try by capability (provides)
+    const manifests = this.pluginManager.getManifests();
+    const manifestWithCapability = manifests.find(m => m.provides?.includes(name));
+    if (manifestWithCapability) {
+      const p = this.pluginManager.get(manifestWithCapability.name) as any;
+      if (p?.api) return p.api;
+    }
+
+    // 3. Special case for latex if name is 'latex' but manifest is 'scichart-latex'
+    if (name === "latex" || name === "scichart-latex") {
+      const latex = this.pluginManager.get("scichart-latex") as any;
+      if (latex?.api) return latex.api;
+      const providesLatex = manifests.find(m => m.provides?.includes("latex"));
+      if (providesLatex) {
+        return (this.pluginManager.get(providesLatex.name) as any)?.api || null;
+      }
+    }
+
+    return null;
   }
 
   get analysis(): any {
     const api = this.getAPI<any>("scichart-analysis");
     if (api) return api;
-    
+
     return {
       integrate: () => 0,
       detectPeaks: () => [],
@@ -32,25 +53,25 @@ export class ChartPluginBridge {
   get tooltip(): any {
     const manager = this.getAPI<any>("scichart-tools")?.getTooltipManager();
     if (manager) return manager;
-    
+
     return {
-      configure: () => {},
-      handleCursorMove: () => {},
-      handleCursorLeave: () => {},
-      setSuspended: () => {},
-      updateChartTheme: () => {},
+      configure: () => { },
+      handleCursorMove: () => { },
+      handleCursorLeave: () => { },
+      setSuspended: () => { },
+      updateChartTheme: () => { },
     };
   }
 
   get loading(): any {
     const api = this.getAPI<any>("scichart-loading");
     if (api) return api;
-    
+
     return {
-      show: () => {},
-      hide: () => {},
-      setProgress: () => {},
-      setMessage: () => {}
+      show: () => { },
+      hide: () => { },
+      setProgress: () => { },
+      setMessage: () => { }
     };
   }
 
@@ -112,6 +133,10 @@ export class ChartPluginBridge {
 
   get forecasting(): any {
     return this.getAPI<any>("scichart-forecasting");
+  }
+
+  get latex(): any {
+    return this.getAPI<any>("scichart-latex");
   }
 
   /**

@@ -13,20 +13,48 @@ export function renderNodes(
   ctx: LaTeXRenderContext
 ): LaTeXDimensions {
   let currentX = ctx.x;
-  let maxHeight = 0;
-  let maxBaseline = 0;
+  let maxAscent = 0;
+  let maxDescent = 0;
 
-  for (const node of nodes) {
-    const dims = renderNode(node, { ...ctx, x: currentX });
-    currentX += dims.width;
-    maxHeight = Math.max(maxHeight, dims.height);
-    maxBaseline = Math.max(maxBaseline, dims.baseline);
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+
+    // Check if we have adjacent subscript and superscript (stacking)
+    const isSub = node.type === 'subscript';
+    const isSuper = node.type === 'superscript';
+    const nextNode = nodes[i + 1];
+    const isNextSub = nextNode?.type === 'subscript';
+    const isNextSuper = nextNode?.type === 'superscript';
+
+    if ((isSub && isNextSuper) || (isSuper && isNextSub)) {
+      // Stack subscript and superscript at the same X coordinate
+      const dims1 = renderNode(node, { ...ctx, x: currentX });
+      const dims2 = renderNode(nextNode, { ...ctx, x: currentX });
+
+      const width = Math.max(dims1.width, dims2.width);
+      currentX += width + (ctx.fontSize * 0.15); // Scaled padding after scripts
+
+      maxAscent = Math.max(maxAscent, dims1.baseline, dims2.baseline);
+      maxDescent = Math.max(maxDescent, dims1.height - dims1.baseline, dims2.height - dims2.baseline);
+      i++; // Skip next node
+    } else {
+      const dims = renderNode(node, { ...ctx, x: currentX });
+      currentX += dims.width;
+
+      // Add a small gap after scripts to prevent overlap with next character (Chemistry fix)
+      if (isSub || isSuper) {
+        currentX += ctx.fontSize * 0.12;
+      }
+
+      maxAscent = Math.max(maxAscent, dims.baseline);
+      maxDescent = Math.max(maxDescent, dims.height - dims.baseline);
+    }
   }
 
   return {
     width: currentX - ctx.x,
-    height: maxHeight,
-    baseline: maxBaseline,
+    height: maxAscent + maxDescent,
+    baseline: maxAscent,
   };
 }
 
@@ -36,6 +64,9 @@ export function renderNodes(
 function renderNode(node: LaTeXNode, ctx: LaTeXRenderContext): LaTeXDimensions {
   switch (node.type) {
     case 'text':
+      return renderText(node.content || '', ctx);
+
+    case 'textgroup':
       return renderText(node.content || '', ctx);
 
     case 'symbol':
@@ -72,6 +103,7 @@ function renderText(text: string, ctx: LaTeXRenderContext): LaTeXDimensions {
   ctx.ctx.save();
   ctx.ctx.font = `${ctx.fontSize}px ${ctx.fontFamily}`;
   ctx.ctx.fillStyle = ctx.color;
+  ctx.ctx.textAlign = 'left';
   ctx.ctx.textBaseline = 'alphabetic';
 
   const metrics = ctx.ctx.measureText(text);
@@ -97,6 +129,7 @@ function renderSymbol(symbol: string, ctx: LaTeXRenderContext): LaTeXDimensions 
   ctx.ctx.save();
   ctx.ctx.font = `${ctx.fontSize * 1.1}px ${ctx.fontFamily}`;
   ctx.ctx.fillStyle = ctx.color;
+  ctx.ctx.textAlign = 'left';
   ctx.ctx.textBaseline = 'alphabetic';
 
   const metrics = ctx.ctx.measureText(symbol);
@@ -130,10 +163,13 @@ function renderSuperscript(
     y: ctx.y + yOffset,
   });
 
+  const subAscent = dims.baseline;
+  const subDescent = dims.height - dims.baseline;
+
   return {
     width: dims.width,
-    height: ctx.fontSize,
-    baseline: ctx.fontSize * 0.75,
+    height: (subAscent - yOffset) + (subDescent + yOffset),
+    baseline: subAscent - yOffset,
   };
 }
 
@@ -153,10 +189,13 @@ function renderSubscript(
     y: ctx.y + yOffset,
   });
 
+  const subAscent = dims.baseline;
+  const subDescent = dims.height - dims.baseline;
+
   return {
     width: dims.width,
-    height: ctx.fontSize,
-    baseline: ctx.fontSize * 0.75,
+    height: (subAscent - yOffset) + (subDescent + yOffset),
+    baseline: subAscent - yOffset,
   };
 }
 

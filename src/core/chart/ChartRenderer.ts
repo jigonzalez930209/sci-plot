@@ -43,6 +43,8 @@ export interface RenderContext {
   pixelToDataY: (py: number) => number;
   selectionManager: SelectionManager;
   hoveredSeriesId: string | null;
+  layout: import("../layout").LayoutOptions;
+  latexAPI?: any;
 }
 
 /**
@@ -54,12 +56,18 @@ export function prepareSeriesData(
 ): SeriesRenderData[] {
   const seriesData: SeriesRenderData[] = [];
 
-  // Update all scales with current plot area range and domain
-  ctx.xScale.setRange(plotArea.x, plotArea.x + plotArea.width);
+  // Update all scales with current plot area range and domain (considering padding)
+  const padding = ctx.layout.plotPadding;
+  const padLeft = padding?.left ?? 0;
+  const padRight = padding?.right ?? 0;
+  const padTop = padding?.top ?? 0;
+  const padBottom = padding?.bottom ?? 0;
+
+  ctx.xScale.setRange(plotArea.x + padLeft, plotArea.x + plotArea.width - padRight);
   ctx.xScale.setDomain(ctx.viewBounds.xMin, ctx.viewBounds.xMax);
 
   ctx.yScales.forEach((scale, id) => {
-    scale.setRange(plotArea.y + plotArea.height, plotArea.y);
+    scale.setRange(plotArea.y + plotArea.height - padBottom, plotArea.y + padTop);
     if (id === ctx.primaryYAxisId) {
       scale.setDomain(ctx.viewBounds.yMin, ctx.viewBounds.yMax);
     }
@@ -144,7 +152,7 @@ export function prepareSeriesData(
             }
           }
         }
-        
+
         // Handle Boxplot (extract both buffers)
         if (seriesType === "boxplot") {
           const linesBuf = ctx.renderer.getBuffer(`${s.getId()}_box_lines`);
@@ -157,7 +165,7 @@ export function prepareSeriesData(
           }
         }
       }
-      
+
       // For boxplot without main buffer, create renderData with sub-buffers
       if (seriesType === "boxplot" && !renderData) {
         const linesBuf = ctx.renderer.getBuffer(`${s.getId()}_box_lines`);
@@ -169,7 +177,7 @@ export function prepareSeriesData(
           if (scale) {
             yBounds = { min: scale.domain[0], max: scale.domain[1] };
           }
-          
+
           renderData = {
             id: s.getId(),
             buffer: linesBuf, // Use lines buffer as main buffer for reference
@@ -185,14 +193,14 @@ export function prepareSeriesData(
           };
         }
       }
-      
+
       // For waterfall without main buffer, create renderData with sub-buffers
       if (seriesType === "waterfall" && !renderData) {
         const positiveBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_positive`);
         const negativeBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_negative`);
         const subtotalBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_subtotal`);
         const connectorBuf = ctx.renderer.getBuffer(`${s.getId()}_wf_connectors`);
-        
+
         if (positiveBuf || negativeBuf || subtotalBuf) {
           const axisId = s.getYAxisId() || ctx.primaryYAxisId;
           const scale = ctx.yScales.get(axisId);
@@ -200,9 +208,9 @@ export function prepareSeriesData(
           if (scale) {
             yBounds = { min: scale.domain[0], max: scale.domain[1] };
           }
-          
+
           const wfCounts = s.waterfallCounts || { positive: 0, negative: 0, subtotal: 0, connectors: 0 };
-          
+
           renderData = {
             id: s.getId(),
             buffer: positiveBuf || negativeBuf || subtotalBuf!, // Use any available buffer as reference
@@ -350,17 +358,23 @@ export function renderOverlay(
   }
 
   ctx.overlay.clear();
-  
+  ctx.overlay.setLatexAPI(ctx.latexAPI);
+
+  // Draw Title if configured
+  if (ctx.layout.title?.visible && ctx.layout.title.text) {
+    ctx.overlay.drawChartTitle(plotArea, ctx.layout.title);
+  }
+
   // Detect special series types
   let hasPolarSeries = false;
   let hasGaugeSeries = false;
   let hasSankeySeries = false;
-  
+
   let maxRadius = 0;
   let polarAngleMode: 'degrees' | 'radians' = 'degrees';
   let polarRadialDivisions = 5;
   let polarAngularDivisions = 12;
-  
+
   ctx.series.forEach((s) => {
     const type = s.getType();
     if (!s.isVisible()) return;
@@ -385,7 +399,7 @@ export function renderOverlay(
   });
 
   const isSpecialChart = hasPolarSeries || hasGaugeSeries || hasSankeySeries;
-  
+
   // Draw appropriate grid
   if (hasPolarSeries && maxRadius > 0) {
     ctx.overlay.drawPolarGrid(
@@ -399,12 +413,12 @@ export function renderOverlay(
   } else if (!hasGaugeSeries && !hasSankeySeries) {
     ctx.overlay.drawGrid(plotArea, ctx.xScale, primaryYScale);
   }
-  
+
   // Draw series-specific overlay elements (Gauge, Sankey)
   ctx.series.forEach((s) => {
     if (!s.isVisible()) return;
     const type = s.getType();
-    
+
     if (type === 'gauge') {
       const gData = s.getGaugeData();
       const gStyle = s.getGaugeStyle();
@@ -480,12 +494,12 @@ export function renderOverlay(
 
   // Cursor
   if (ctx.cursorOptions?.enabled && ctx.cursorPosition) {
-    const cursor: CursorState = {
-      enabled: true,
-      x: ctx.cursorPosition.x,
-      y: ctx.cursorPosition.y,
-      crosshair: ctx.cursorOptions.crosshair ?? false,
-      tooltipText: ctx.cursorOptions.formatter
+    const valueDisplayMode = ctx.cursorOptions.valueDisplayMode ?? 'floating';
+
+    // Only generate tooltipText if not disabled
+    let tooltipText: string | undefined;
+    if (valueDisplayMode !== 'disabled') {
+      tooltipText = ctx.cursorOptions.formatter
         ? ctx.cursorOptions.formatter(
           ctx.pixelToDataX(ctx.cursorPosition.x),
           ctx.pixelToDataY(ctx.cursorPosition.y),
@@ -493,8 +507,18 @@ export function renderOverlay(
         )
         : `X: ${ctx.pixelToDataX(ctx.cursorPosition.x).toFixed(3)}\nY: ${ctx
           .pixelToDataY(ctx.cursorPosition.y)
-          .toExponential(2)}`,
+          .toExponential(2)}`;
+    }
+
+    const cursor: CursorState = {
+      enabled: true,
+      x: ctx.cursorPosition.x,
+      y: ctx.cursorPosition.y,
+      crosshair: ctx.cursorOptions.crosshair ?? false,
+      tooltipText,
+      valueDisplayMode,
+      cornerPosition: ctx.cursorOptions.cornerPosition ?? 'top-left',
     };
-    ctx.overlay.drawCursor(plotArea, cursor);
+    ctx.overlay.drawCursor(plotArea, cursor, ctx.cursorOptions.lineStyle);
   }
 }

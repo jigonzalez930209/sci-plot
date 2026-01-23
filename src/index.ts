@@ -140,6 +140,26 @@ export {
 } from "./theme";
 
 // ============================================
+// Layout & Positioning
+// ============================================
+export {
+  DEFAULT_LAYOUT,
+  mergeLayoutOptions,
+  type LayoutOptions,
+  type LegendOptions,
+  type CrosshairOptions,
+  type CrosshairValueMode,
+  type CornerPosition,
+  type ChartTitleOptions,
+  type AxisLayoutOptions,
+  type ChartMargins,
+  type PlotAreaPadding,
+  type LegendPositionPreset,
+  type ToolbarPositionPreset,
+  type ToolbarPosition,
+} from "./core/layout";
+
+// ============================================
 // Overlay
 // ============================================
 export {
@@ -175,7 +195,7 @@ export type {
 // ============================================
 // Tooltip System
 // ============================================
-  export {
+export {
   TooltipManager,
   TOOLTIP_THEMES,
   getTooltipThemeForChartTheme,
@@ -683,7 +703,7 @@ export type {
   PluginVirtualizationConfig,
   PluginROIConfig,
   PluginForecastingConfig,
-  
+
   // API & Result Types
   RegressionAPI,
   RegressionResult,

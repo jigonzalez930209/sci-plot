@@ -37,7 +37,9 @@ export interface RenderLoopContext {
   selectionManager: SelectionManager;
   getHoveredSeriesId: () => string | null;
   pluginManager: PluginManagerImpl;
-  
+  getLayout: () => import("../layout").LayoutOptions;
+  getLatex: () => any;
+
   // Methods
   updateSeriesBuffer: (s: Series) => void;
   getPlotArea: () => PlotArea;
@@ -54,7 +56,7 @@ export class ChartRenderLoop {
   private lastRenderTime = performance.now();
   private initStarted = false;
 
-  constructor(private ctx: RenderLoopContext) {}
+  constructor(private ctx: RenderLoopContext) { }
 
   /**
    * Mark that initialization has started
@@ -145,6 +147,8 @@ export class ChartRenderLoop {
       pixelToDataY: this.ctx.pixelToDataY,
       selectionManager: this.ctx.selectionManager,
       hoveredSeriesId: this.ctx.getHoveredSeriesId(),
+      layout: this.ctx.getLayout(),
+      latexAPI: this.ctx.getLatex(),
     };
 
     const now = performance.now();

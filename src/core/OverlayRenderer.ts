@@ -9,6 +9,7 @@ import type { Scale } from "../scales";
 import type { ChartTheme } from "../theme";
 import type { Series } from "./Series";
 import type { PlotArea, CursorState, AxisOptions } from "../types";
+import type { ChartTitleOptions } from "./layout/types";
 
 // ============================================
 // Overlay Renderer Class
@@ -17,10 +18,97 @@ import type { PlotArea, CursorState, AxisOptions } from "../types";
 export class OverlayRenderer {
   private ctx: CanvasRenderingContext2D;
   private theme: ChartTheme;
+  private latexAPI: any = null;
 
   constructor(ctx: CanvasRenderingContext2D, theme: ChartTheme) {
     this.ctx = ctx;
     this.theme = theme;
+  }
+
+  /**
+   * Set LaTeX API for rendering mathematical expressions
+   */
+  setLatexAPI(api: any): void {
+    this.latexAPI = api;
+  }
+
+  /**
+   * Helper to draw text or LaTeX
+   */
+  private drawLatexOrText(
+    text: string,
+    x: number,
+    y: number,
+    options: {
+      fontSize: number;
+      fontFamily: string;
+      fontWeight?: string | number;
+      color: string;
+      align?: CanvasTextAlign;
+      baseline?: CanvasTextBaseline;
+      rotation?: number;
+    }
+  ): void {
+    const { ctx, latexAPI } = this;
+
+    // Check if it's LaTeX (heuristic: contains backslash, caret, underscore, or braces)
+    const isLatex = !!latexAPI && (typeof latexAPI.render === 'function') && (
+      text.includes('\\') ||
+      text.includes('^') ||
+      text.includes('_') ||
+      (text.includes('{') && text.includes('}'))
+    );
+
+    if (isLatex) {
+      ctx.save();
+      ctx.translate(x, y);
+      if (options.rotation) ctx.rotate(options.rotation);
+
+      const dims = latexAPI.measure(text, {
+        fontSize: options.fontSize,
+        fontFamily: options.fontFamily,
+        color: options.color
+      });
+
+      let lx = 0;
+      let ly = 0;
+
+      // Handle Horizontal Alignment
+      const align = options.align ?? "left";
+      if (align === "center") lx = -dims.width / 2;
+      else if (align === "right") lx = -dims.width;
+
+      // Handle Vertical Alignment based on alphabetic baseline of the plugin
+      // The plugin draws with textBaseline = 'alphabetic' at the provided y
+      const baseline = options.baseline ?? "alphabetic";
+      if (baseline === "middle") {
+        ly = -dims.height / 2 + dims.baseline;
+      } else if (baseline === "top" || baseline === "hanging") {
+        ly = dims.baseline;
+      } else if (baseline === "bottom" || baseline === "ideographic") {
+        ly = -(dims.height - dims.baseline);
+      } else {
+        // 'alphabetic' or default
+        ly = 0;
+      }
+
+      latexAPI.render(text, ctx, lx, ly, {
+        fontSize: options.fontSize,
+        fontFamily: options.fontFamily,
+        color: options.color
+      });
+      ctx.restore();
+    } else {
+      ctx.save();
+      ctx.font = `${options.fontWeight ?? ''} ${options.fontSize}px ${options.fontFamily}`;
+      ctx.fillStyle = options.color;
+      ctx.textAlign = options.align ?? "left";
+      ctx.textBaseline = options.baseline ?? "alphabetic";
+      ctx.translate(x, y);
+      if (options.rotation) ctx.rotate(options.rotation);
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
+    }
   }
 
   /**
@@ -129,7 +217,7 @@ export class OverlayRenderer {
 
     const { ctx } = this;
     const grid = this.theme.grid;
-    
+
     // The center of a polar plot is ALWAYS (0,0) in data coordinates
     const centerX = xScale.transform(0);
     const centerY = yScale.transform(0);
@@ -149,7 +237,7 @@ export class OverlayRenderer {
     }
 
     ctx.save();
-    
+
     // Clip grid to plot area
     ctx.beginPath();
     ctx.rect(plotArea.x, plotArea.y, plotArea.width, plotArea.height);
@@ -169,7 +257,7 @@ export class OverlayRenderer {
     }
 
     // Draw angular spokes (radial lines)
-    const angleStep = angleMode === 'degrees' 
+    const angleStep = angleMode === 'degrees'
       ? (360 / angularDivisions) * (Math.PI / 180)
       : (2 * Math.PI) / angularDivisions;
 
@@ -178,7 +266,7 @@ export class OverlayRenderer {
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
       ctx.lineTo(
-        centerX + maxPixelRadius * Math.cos(angle), 
+        centerX + maxPixelRadius * Math.cos(angle),
         centerY - maxPixelRadius * Math.sin(angle) // Subtract because Canvas Y is inverted
       );
       ctx.stroke();
@@ -224,21 +312,25 @@ export class OverlayRenderer {
         ctx.stroke();
 
         // Label
-        ctx.fillText(this.formatXTick(tick, options), x, axisY + axis.tickLength + 3);
+        this.drawLatexOrText(this.formatXTick(tick, options), x, axisY + axis.tickLength + 3, {
+          fontSize: axis.labelSize,
+          fontFamily: axis.fontFamily,
+          color: axis.labelColor,
+          align: "center",
+          baseline: "top",
+        });
       }
     });
 
     // Axis title
     if (label) {
-      ctx.fillStyle = axis.titleColor;
-      ctx.font = `${axis.titleSize}px ${axis.fontFamily}`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "bottom";
-      ctx.fillText(
-        label,
-        plotArea.x + plotArea.width / 2,
-        plotArea.y + plotArea.height + 45
-      );
+      this.drawLatexOrText(label, plotArea.x + plotArea.width / 2, plotArea.y + plotArea.height + 45, {
+        fontSize: axis.titleSize,
+        fontFamily: axis.fontFamily,
+        color: axis.titleColor,
+        align: "center",
+        baseline: "bottom",
+      });
     }
   }
 
@@ -246,9 +338,9 @@ export class OverlayRenderer {
    * Draw Y axis with ticks and labels
    */
   drawYAxis(
-    plotArea: PlotArea, 
-    yScale: Scale, 
-    options?: AxisOptions, 
+    plotArea: PlotArea,
+    yScale: Scale,
+    options?: AxisOptions,
     position: "left" | "right" = "left",
     offset: number = 0
   ): void {
@@ -287,28 +379,32 @@ export class OverlayRenderer {
 
         // Label
         const labelX = axisX + (axis.tickLength + 3) * tickDir;
-        ctx.fillText(this.formatYTick(tick, options), labelX, y);
+        this.drawLatexOrText(this.formatYTick(tick, options), labelX, y, {
+          fontSize: axis.labelSize,
+          fontFamily: axis.fontFamily,
+          color: axis.labelColor,
+          align: position === 'left' ? "right" : "left",
+          baseline: "middle",
+        });
       }
     });
 
     // Axis title
     if (label) {
-      ctx.save();
-      ctx.fillStyle = axis.titleColor;
-      ctx.font = `${axis.titleSize}px ${axis.fontFamily}`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "top";
-      
-      const titleX = position === 'left' 
+      const titleX = position === 'left'
         ? axisX - 40 // Adjust padding for left title
         : axisX + 40; // Adjust padding for right title
-      
+
       const titleY = plotArea.y + plotArea.height / 2;
-      
-      ctx.translate(titleX, titleY);
-      ctx.rotate(position === 'left' ? -Math.PI / 2 : Math.PI / 2);
-      ctx.fillText(label, 0, 0);
-      ctx.restore();
+
+      this.drawLatexOrText(label, titleX, titleY, {
+        fontSize: axis.titleSize,
+        fontFamily: axis.fontFamily,
+        color: axis.titleColor,
+        align: "center",
+        baseline: "top",
+        rotation: position === 'left' ? -Math.PI / 2 : Math.PI / 2,
+      });
     }
   }
 
@@ -320,6 +416,59 @@ export class OverlayRenderer {
     ctx.strokeStyle = this.theme.plotBorderColor;
     ctx.lineWidth = 1;
     ctx.strokeRect(plotArea.x, plotArea.y, plotArea.width, plotArea.height);
+  }
+
+  /**
+   * Draw chart title
+   */
+  drawChartTitle(plotArea: PlotArea, options: ChartTitleOptions): void {
+    if (!options.visible || !options.text) return;
+
+    const { ctx } = this;
+    const fontSize = options.fontSize ?? 16;
+    const fontFamily = options.fontFamily ?? "Inter, system-ui, sans-serif";
+    const fontWeight = options.fontWeight ?? 600;
+    const color = options.color ?? "#ffffff";
+
+    ctx.save();
+    ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+    ctx.fillStyle = color;
+    ctx.textAlign = options.align ?? "center";
+    ctx.textBaseline = options.position === "bottom" ? "top" : "bottom";
+
+    // Calculate position
+    let x: number;
+    let y: number;
+
+    // X alignment
+    if (options.align === "left") {
+      x = plotArea.x;
+    } else if (options.align === "right") {
+      x = plotArea.x + plotArea.width;
+    } else {
+      x = plotArea.x + plotArea.width / 2;
+    }
+
+    // Y positioning
+    const padding = typeof options.padding === "number" ? options.padding : 10;
+    const padTop = (options.padding as any)?.top ?? padding;
+    const padBottom = (options.padding as any)?.bottom ?? padding;
+
+    if (options.position === "bottom") {
+      y = plotArea.y + plotArea.height + 45 + padTop; // Below X-axis title
+    } else {
+      y = plotArea.y - padBottom; // Above plot area
+    }
+
+    this.drawLatexOrText(options.text, x, y, {
+      fontSize,
+      fontFamily,
+      fontWeight,
+      color,
+      align: options.align ?? "center",
+      baseline: options.position === "bottom" ? "top" : "bottom",
+    });
+    ctx.restore();
   }
 
   /**
@@ -337,11 +486,19 @@ export class OverlayRenderer {
     const items = series.map((s) => {
       const label = s.getId();
       const style = s.getStyle();
-      const width = ctx.measureText(label).width;
+
+      const isLatex = this.latexAPI && (label.includes('\\') || label.includes('^') || label.includes('_'));
+      let width = 0;
+      if (isLatex) {
+        width = this.latexAPI.measure(label, { fontSize: legend.fontSize }).width;
+      } else {
+        width = ctx.measureText(label).width;
+      }
+
       maxWidth = Math.max(maxWidth, width);
-      return { 
-        id: s.getId(), 
-        color: style.color ?? "#ff0055", 
+      return {
+        id: s.getId(),
+        color: style.color ?? "#ff0055",
         label,
         type: s.getType(),
         symbol: style.symbol,
@@ -419,7 +576,7 @@ export class OverlayRenderer {
       // EXTREME FALLBACK DETECTION
       const typeStr = String(item.type).toLowerCase();
       const hasSymbol = !!item.symbol && item.symbol !== 'circle';
-      
+
       const isScatter = typeStr === 'scatter' || typeStr === '1' || (typeStr === 'line' && hasSymbol);
       const isLineScatter = typeStr.includes('scatter') || typeStr === '2';
 
@@ -431,7 +588,7 @@ export class OverlayRenderer {
         ctx.moveTo(swatchX, centerY);
         ctx.lineTo(swatchX + size, centerY);
         ctx.stroke();
-        
+
         this.drawLegendSymbol(ctx, item.symbol ?? 'circle', centerX, centerY, size * 0.6);
       } else {
         // Pure line or step
@@ -443,12 +600,13 @@ export class OverlayRenderer {
       ctx.restore();
 
       // Label
-      ctx.fillStyle = legend.textColor;
-      ctx.fillText(
-        item.label,
-        x + legend.padding + legend.swatchSize + 8,
-        centerY
-      );
+      this.drawLatexOrText(item.label, x + legend.padding + legend.swatchSize + 8, centerY, {
+        fontSize: legend.fontSize,
+        fontFamily: legend.fontFamily,
+        color: legend.textColor,
+        align: "left",
+        baseline: "middle",
+      });
     });
   }
 
@@ -531,7 +689,7 @@ export class OverlayRenderer {
   /**
    * Draw cursor/crosshair
    */
-  drawCursor(plotArea: PlotArea, cursor: CursorState): void {
+  drawCursor(plotArea: PlotArea, cursor: CursorState, lineStyle?: 'solid' | 'dashed' | 'dotted'): void {
     if (!cursor.enabled) return;
 
     const { ctx } = this;
@@ -557,7 +715,16 @@ export class OverlayRenderer {
     // Crosshair style
     ctx.strokeStyle = cursorTheme.lineColor;
     ctx.lineWidth = cursorTheme.lineWidth;
-    ctx.setLineDash(cursorTheme.lineDash);
+
+    // Apply line style
+    const style = lineStyle ?? 'dashed';
+    if (style === 'dashed') {
+      ctx.setLineDash(cursorTheme.lineDash);
+    } else if (style === 'dotted') {
+      ctx.setLineDash([2, 2]);
+    } else {
+      ctx.setLineDash([]);
+    }
 
     if (cursor.crosshair) {
       // Vertical line
@@ -581,9 +748,15 @@ export class OverlayRenderer {
 
     ctx.restore();
 
-    // Draw tooltip
+    // Draw tooltip based on valueDisplayMode
     if (cursor.tooltipText) {
-      this.drawTooltip(cursor.x, cursor.y, cursor.tooltipText, plotArea);
+      const valueDisplayMode = cursor.valueDisplayMode ?? 'floating';
+      if (valueDisplayMode === 'corner') {
+        this.drawCornerTooltip(cursor.tooltipText, plotArea, cursor.cornerPosition ?? 'top-left');
+      } else if (valueDisplayMode === 'floating') {
+        this.drawTooltip(cursor.x, cursor.y, cursor.tooltipText, plotArea);
+      }
+      // 'disabled' mode: no tooltip drawn
     }
   }
 
@@ -602,14 +775,26 @@ export class OverlayRenderer {
     const lineHeight = cursor.tooltipSize + 5;
     const padding = 8;
 
-    ctx.font = `${cursor.tooltipSize}px ${this.theme.xAxis.fontFamily}`;
     let maxWidth = 0;
+    const lineHeights: number[] = [];
+    let totalContentHeight = 0;
     lines.forEach((line) => {
-      maxWidth = Math.max(maxWidth, ctx.measureText(line).width);
+      const isLatex = !!this.latexAPI && (line.includes('\\') || line.includes('^') || line.includes('_') || (line.includes('{') && line.includes('}')));
+      if (isLatex) {
+        const dims = this.latexAPI.measure(line, { fontSize: cursor.tooltipSize });
+        maxWidth = Math.max(maxWidth, dims.width);
+        const h = Math.max(lineHeight, dims.height);
+        lineHeights.push(h);
+        totalContentHeight += h;
+      } else {
+        maxWidth = Math.max(maxWidth, ctx.measureText(line).width);
+        lineHeights.push(lineHeight);
+        totalContentHeight += lineHeight;
+      }
     });
 
     const boxWidth = maxWidth + padding * 2;
-    const boxHeight = lines.length * lineHeight + padding * 2 - 5;
+    const boxHeight = totalContentHeight + padding * 2 - 4;
 
     // Position tooltip
     let tooltipX = x + 15;
@@ -642,15 +827,108 @@ export class OverlayRenderer {
     ctx.stroke();
 
     // Text
-    ctx.fillStyle = cursor.tooltipColor;
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
+    let currentY = tooltipY + padding;
     lines.forEach((line, i) => {
-      ctx.fillText(
-        line,
-        tooltipX + padding,
-        tooltipY + padding + i * lineHeight
-      );
+      this.drawLatexOrText(line, tooltipX + padding, currentY, {
+        fontSize: cursor.tooltipSize,
+        fontFamily: this.theme.xAxis.fontFamily,
+        color: cursor.tooltipColor,
+        align: "left",
+        baseline: "top",
+      });
+      currentY += lineHeights[i];
+    });
+  }
+
+  /**
+   * Draw tooltip in a fixed corner position
+   */
+  private drawCornerTooltip(
+    text: string,
+    plotArea: PlotArea,
+    cornerPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  ): void {
+    const { ctx } = this;
+    const cursor = this.theme.cursor;
+    const lines = text.split("\n");
+    const lineHeight = cursor.tooltipSize + 5;
+    const padding = 8;
+    const margin = 10;
+
+    let maxWidth = 0;
+    const lineHeights: number[] = [];
+    let totalContentHeight = 0;
+    lines.forEach((line) => {
+      const isLatex = !!this.latexAPI && (line.includes('\\') || line.includes('^') || line.includes('_') || (line.includes('{') && line.includes('}')));
+      if (isLatex) {
+        const dims = this.latexAPI.measure(line, { fontSize: cursor.tooltipSize });
+        maxWidth = Math.max(maxWidth, dims.width);
+        const h = Math.max(lineHeight, dims.height);
+        lineHeights.push(h);
+        totalContentHeight += h;
+      } else {
+        maxWidth = Math.max(maxWidth, ctx.measureText(line).width);
+        lineHeights.push(lineHeight);
+        totalContentHeight += lineHeight;
+      }
+    });
+
+    const boxWidth = maxWidth + padding * 2;
+    const boxHeight = totalContentHeight + padding * 2 - 4;
+
+    // Calculate position based on corner
+    let tooltipX: number;
+    let tooltipY: number;
+
+    switch (cornerPosition) {
+      case 'top-left':
+        tooltipX = plotArea.x + margin;
+        tooltipY = plotArea.y + margin;
+        break;
+      case 'top-right':
+        tooltipX = plotArea.x + plotArea.width - boxWidth - margin;
+        tooltipY = plotArea.y + margin;
+        break;
+      case 'bottom-left':
+        tooltipX = plotArea.x + margin;
+        tooltipY = plotArea.y + plotArea.height - boxHeight - margin;
+        break;
+      case 'bottom-right':
+        tooltipX = plotArea.x + plotArea.width - boxWidth - margin;
+        tooltipY = plotArea.y + plotArea.height - boxHeight - margin;
+        break;
+    }
+
+    // Background
+    ctx.fillStyle = cursor.tooltipBackground;
+    ctx.strokeStyle = cursor.tooltipBorder;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    const r = 4;
+    ctx.moveTo(tooltipX + r, tooltipY);
+    ctx.lineTo(tooltipX + boxWidth - r, tooltipY);
+    ctx.arcTo(tooltipX + boxWidth, tooltipY, tooltipX + boxWidth, tooltipY + r, r);
+    ctx.lineTo(tooltipX + boxWidth, tooltipY + boxHeight - r);
+    ctx.arcTo(tooltipX + boxWidth, tooltipY + boxHeight, tooltipX + boxWidth - r, tooltipY + boxHeight, r);
+    ctx.lineTo(tooltipX + r, tooltipY + boxHeight);
+    ctx.arcTo(tooltipX, tooltipY + boxHeight, tooltipX, tooltipY + boxHeight - r, r);
+    ctx.lineTo(tooltipX, tooltipY + r);
+    ctx.arcTo(tooltipX, tooltipY, tooltipX + r, tooltipY, r);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Text
+    let currentY = tooltipY + padding;
+    lines.forEach((line, i) => {
+      this.drawLatexOrText(line, tooltipX + padding, currentY, {
+        fontSize: cursor.tooltipSize,
+        fontFamily: this.theme.xAxis.fontFamily,
+        color: cursor.tooltipColor,
+        align: "left",
+        baseline: "top",
+      });
+      currentY += lineHeights[i];
     });
   }
 

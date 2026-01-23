@@ -12,9 +12,29 @@
 - `chart.appendData(id, x, y)`: Efficiently append real-time data.
 - `chart.removeSeries(id)`: Remove a series.
 
-## Interactions & Cursor
-- `chart.enableCursor(options)`: Enable crosshair cursor with snapping.
+## Cursor & Crosshair
+- `chart.enableCursor(options)`: Enable cursor with crosshair and tooltips.
 - `chart.disableCursor()`: Hide the cursor.
+
+### Cursor Options
+```typescript
+chart.enableCursor({
+  enabled: true,
+  crosshair: true,                    // Show crosshair lines
+  snap: true,                         // Snap to data points
+  valueDisplayMode: 'corner',         // 'disabled' | 'floating' | 'corner'
+  cornerPosition: 'top-right',        // 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  lineStyle: 'dashed',                // 'solid' | 'dashed' | 'dotted'
+  formatter: (x, y, seriesId) => `X: ${x.toFixed(2)}\nY: ${y.toFixed(4)}`,
+});
+```
+
+**Value Display Modes:**
+- `'floating'` (default): Tooltip follows cursor
+- `'corner'`: Fixed position in corner of plot area
+- `'disabled'`: No coordinate values shown (crosshair lines only)
+
+## Interaction Modes
 - `chart.setMode(mode)`: Change interaction mode (`pan`, `boxZoom`, `select`, `delta`, `peak`).
 
 ## Annotations
@@ -43,3 +63,20 @@ Subscribe using `chart.on(event, callback)`:
 ## Themes
 - `chart.setTheme(themeNameOrConfig)`: Predefined: `midnight`, `electrochemistry`, `dark`, `light`.
 - `createTheme(config)`: Create a brand-new design system.
+
+## Layout Configuration
+Configure via `createChart({ layout: {...} })`:
+
+- **Legend Options**:
+  - `legend.highlightOnHover`: Change color on hover (default: `false`)
+  - `legend.bringToFrontOnHover`: Bring series to front (default: `true`)
+  - `legend.position`: Position preset or `{x, y}` coordinates
+
+- **Margins & Spacing**:
+  - `margins`: `{ top, right, bottom, left }` - Container to chart spacing
+  - `plotPadding`: `{ top, right, bottom, left }` - Plot area internal padding
+  - `xAxisLayout.titleGap`, `yAxisLayout.titleGap`: Axis to title spacing
+
+- **Other**:
+  - `title`: Chart title configuration
+  - `toolbarPosition`: Toolbar placement preset or custom

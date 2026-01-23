@@ -64,6 +64,7 @@ export default defineConfig({
           items: [
             { text: "Interactions", link: "/guide/interactions" },
             { text: "Theming System", link: "/guide/theming" },
+            { text: "Layout & Positioning", link: "/guide/layout" },
             { text: "Annotations & UI", link: "/api/annotations" },
           ],
         },
@@ -270,7 +271,7 @@ export default defineConfig({
           text: "Developer Experience",
           items: [
             { text: "Financial Indicators", link: "/examples/indicators" },
-           // { text: "Chart Synchronization", link: "/examples/chart-sync" },
+            // { text: "Chart Synchronization", link: "/examples/chart-sync" },
             { text: "Theme Editor", link: "/examples/theme-editor" },
             { text: "Waveform Generators", link: "/examples/waveforms" },
             { text: "Backpressure Demo", link: "/examples/backpressure" },

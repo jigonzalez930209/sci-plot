@@ -11,33 +11,30 @@ const chartContainer = ref<HTMLElement | null>(null)
 const fps = ref(0)
 const pointCount = ref(0)
 let chart: any = null
+let chartModules: { createChart: any } | null = null
 
 const chartTheme = computed(() => (isDark.value ? 'midnight' : 'light'))
+
+// Interactive controls
+const valueDisplayMode = ref<'disabled' | 'corner' | 'floating'>('corner')
+const cornerPosition = ref<'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'>('top-right')
+const lineStyle = ref<'solid' | 'dashed' | 'dotted'>('dashed')
+const snapToData = ref(false)
+
+// Signal data (cached for recreation)
+let signalData: { x: Float32Array; y1: Float32Array; y2: Float32Array } | null = null
 
 onMounted(async () => {
   if (typeof window === 'undefined' || !chartContainer.value) return
 
-  const { createChart } = await import('@src/index')
-  const { PluginTools } = await import('@src/plugins')
+  const indexModule = await import('@src/index')
+  chartModules = { createChart: indexModule.createChart }
 
-  chart = createChart({
-    container: chartContainer.value,
-    xAxis: { label: 'Time (s)', auto: true },
-    yAxis: { label: 'Amplitude', auto: true },
-    theme: chartTheme.value,
-    showControls: true,
-  })
-
-  await chart.use(PluginTools({ useEnhancedTooltips: true }))
-
-  chart.on('render', (e: any) => {
-    fps.value = Math.round(e.fps)
-  })
-
-  initCrosshairDemo()
+  generateSignalData()
+  await createChartWithConfig()
 })
 
-function initCrosshairDemo() {
+function generateSignalData() {
   const n = 2000
   const x = new Float32Array(n)
   const y1 = new Float32Array(n)
@@ -50,11 +47,38 @@ function initCrosshairDemo() {
     y2[i] = Math.cos(t * 0.7) * 1.2 - 1
   }
 
+  signalData = { x, y1, y2 }
+  pointCount.value = n * 2
+}
+
+async function createChartWithConfig() {
+  if (!chartModules || !chartContainer.value || !signalData) return
+
+  // Destroy existing chart if any
+  if (chart) {
+    chart.destroy()
+    chart = null
+  }
+
+  const { createChart } = chartModules
+
+  chart = createChart({
+    container: chartContainer.value,
+    xAxis: { label: 'Time (s)', auto: true },
+    yAxis: { label: 'Amplitude', auto: true },
+    theme: chartTheme.value,
+    showControls: true,
+  })
+
+  chart.on('render', (e: any) => {
+    fps.value = Math.round(e.fps)
+  })
+
   chart.addSeries({
     id: 'signal-a',
     name: 'Signal A',
     type: 'line',
-    data: { x, y: y1 },
+    data: { x: signalData.x, y: signalData.y1 },
     style: { color: '#00f2ff', width: 2 },
   })
 
@@ -62,18 +86,19 @@ function initCrosshairDemo() {
     id: 'signal-b',
     name: 'Signal B',
     type: 'line',
-    data: { x, y: y2 },
+    data: { x: signalData.x, y: signalData.y2 },
     style: { color: '#ff9f1c', width: 1.6, lineDash: [6, 6] },
   })
 
+  // Use native cursor with new options
   chart.enableCursor({
     enabled: true,
-    snap: true,
     crosshair: true,
-    formatter: (xVal, yVal) => `X: ${xVal.toFixed(2)}\nY: ${yVal.toFixed(2)}`,
+    snap: snapToData.value,
+    valueDisplayMode: valueDisplayMode.value,
+    cornerPosition: cornerPosition.value,
+    lineStyle: lineStyle.value,
   })
-
-  pointCount.value = n * 2
 
   setTimeout(() => {
     if (chart) {
@@ -85,9 +110,8 @@ function initCrosshairDemo() {
 }
 
 function resetDemo() {
-  if (!chart) return
-  chart.getAllSeries().forEach((s: any) => chart.removeSeries(s.getId()))
-  initCrosshairDemo()
+  generateSignalData()
+  createChartWithConfig()
 }
 
 onUnmounted(() => {
@@ -102,6 +126,9 @@ watch(isDark, () => {
     chart.render()
   }, 100)
 })
+
+// Recreate chart when cursor settings change
+watch([valueDisplayMode, cornerPosition, lineStyle, snapToData], createChartWithConfig)
 </script>
 
 <template>
@@ -119,6 +146,45 @@ watch(isDark, () => {
         <button @click="resetDemo" class="btn">🔄 Reset</button>
       </div>
     </div>
+
+    <!-- Interactive Controls Panel -->
+    <div class="controls-panel">
+      <div class="control-group">
+        <label>Value Display:</label>
+        <select v-model="valueDisplayMode" class="control-select">
+          <option value="disabled">Disabled</option>
+          <option value="corner">Corner Box</option>
+          <option value="floating">Floating</option>
+        </select>
+      </div>
+
+      <div class="control-group" v-if="valueDisplayMode === 'corner'">
+        <label>Corner:</label>
+        <select v-model="cornerPosition" class="control-select">
+          <option value="top-left">Top Left</option>
+          <option value="top-right">Top Right</option>
+          <option value="bottom-left">Bottom Left</option>
+          <option value="bottom-right">Bottom Right</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label>Line Style:</label>
+        <select v-model="lineStyle" class="control-select">
+          <option value="solid">Solid</option>
+          <option value="dashed">Dashed</option>
+          <option value="dotted">Dotted</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label class="checkbox-label">
+          <input type="checkbox" v-model="snapToData" />
+          Snap to Data
+        </label>
+      </div>
+    </div>
+
     <div ref="chartContainer" class="chart-container" :style="{ height: height || '400px' }"></div>
     <p class="chart-hint">Hover to see crosshair • Scroll to zoom • Drag to pan</p>
   </div>
@@ -126,4 +192,60 @@ watch(isDark, () => {
 
 <style scoped>
 @import "../../demos.css";
+
+.controls-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.dark .controls-panel {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.control-group label {
+  color: #666;
+  font-weight: 500;
+}
+
+.dark .control-group label {
+  color: #aaa;
+}
+
+.control-select {
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.dark .control-select {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #eee;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  cursor: pointer;
+}
 </style>

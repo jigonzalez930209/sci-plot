@@ -8,7 +8,7 @@
 // Base Types
 // ============================================
 
-export type AnnotationType = 
+export type AnnotationType =
   | 'horizontal-line'
   | 'vertical-line'
   | 'rectangle'
@@ -29,6 +29,8 @@ export interface BaseAnnotation {
   zIndex?: number;
   /** Tooltip text or configuration */
   tooltip?: string | any;
+  /** Use LaTeX rendering for labels/text (default: auto-detect) */
+  latex?: boolean;
 }
 
 // ============================================
@@ -145,8 +147,8 @@ export interface TextAnnotation extends BaseAnnotation {
   /** Rotation in degrees */
   rotation?: number;
   /** Anchor point for positioning */
-  anchor?: 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 
-           'top-center' | 'bottom-center' | 'left-center' | 'right-center';
+  anchor?: 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' |
+  'top-center' | 'bottom-center' | 'left-center' | 'right-center';
 }
 
 // ============================================
@@ -179,7 +181,7 @@ export interface ArrowAnnotation extends BaseAnnotation {
 // Union Type
 // ============================================
 
-export type Annotation = 
+export type Annotation =
   | HorizontalLineAnnotation
   | VerticalLineAnnotation
   | RectangleAnnotation

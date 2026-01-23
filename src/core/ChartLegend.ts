@@ -12,9 +12,39 @@ export interface ChartLegendCallbacks {
   onInteractionEnd?: () => void;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
-  onSeriesHoverStart?: (series: Series) => void;
-  onSeriesHoverEnd?: (series: Series) => void;
+  /** 
+   * Called when mouse enters a series item in legend
+   * @param series - The series being hovered
+   * @param highlightColor - Whether to apply color highlighting (from options)
+   */
+  onSeriesHoverStart?: (series: Series, highlightColor: boolean) => void;
+  /** 
+   * Called when mouse leaves a series item in legend
+   * @param series - The series that was hovered
+   * @param highlightColor - Whether color highlighting was applied
+   */
+  onSeriesHoverEnd?: (series: Series, highlightColor: boolean) => void;
   onToggleVisibility?: (series: Series) => void;
+}
+
+/** Options for ChartLegend component */
+export interface ChartLegendOptions {
+  x?: number;
+  y?: number;
+  width?: number;
+  /** 
+   * Highlight series color on hover (default: false)
+   * When false, series still comes to foreground but color doesn't change
+   */
+  highlightOnHover?: boolean;
+  /** 
+   * Bring series to foreground (z-index) on hover (default: true)
+   */
+  bringToFrontOnHover?: boolean;
+  /** Allow dragging the legend (default: true) */
+  draggable?: boolean;
+  /** Allow resizing the legend (default: true) */
+  resizable?: boolean;
 }
 
 export class ChartLegend {
@@ -26,6 +56,7 @@ export class ChartLegend {
   private series: Series[] = [];
   private callbacks: ChartLegendCallbacks;
   private swatchCanvases = new Map<string, HTMLCanvasElement>();
+  private options: Required<ChartLegendOptions>;
 
   private isDragging = false;
   private isResizing = false;
@@ -35,22 +66,27 @@ export class ChartLegend {
   constructor(
     parent: HTMLElement,
     theme: ChartTheme,
-    options: { x?: number; y?: number; width?: number },
+    options: ChartLegendOptions,
     callbacks: ChartLegendCallbacks
   ) {
     this.theme = theme;
     this.callbacks = callbacks;
 
-    const width = options.width ?? 120;
+    // Merge with defaults
+    this.options = {
+      x: options.x ?? parent.clientWidth - 150,
+      y: options.y ?? 55,
+      width: options.width ?? 120,
+      highlightOnHover: options.highlightOnHover ?? false,
+      bringToFrontOnHover: options.bringToFrontOnHover ?? true,
+      draggable: options.draggable ?? true,
+      resizable: options.resizable ?? true,
+    };
+
+    const { width, x, y } = this.options;
 
     this.container = document.createElement("div");
     this.container.className = "scichart-legend";
-
-    // Default position (top-right, below controls toolbar)
-    // Controls toolbar height is ~32px (24px buttons + 4px padding*2 + borders) + 8px top margin = ~40px
-    // Add extra margin to ensure no overlap
-    const x = options.x ?? parent.clientWidth - 150;
-    const y = options.y ?? 55;
 
     this.container.style.cssText = `
       position: absolute;
@@ -61,7 +97,7 @@ export class ChartLegend {
       padding: 4px;
       user-select: none;
     `;
-    
+
     // Stop pointer events from reaching the chart, but ALLOW release events to bubble to document for drag logic
     const stopPropagation = (e: Event) => e.stopPropagation();
     ["mousedown", "mousemove", "pointerdown", "pointermove", "wheel", "touchstart", "touchmove"].forEach(
@@ -95,7 +131,7 @@ export class ChartLegend {
 
     this.visualContainer.appendChild(this.header);
     this.visualContainer.appendChild(this.content);
-    
+
     // Resize handle
     const resizeHandle = document.createElement("div");
     resizeHandle.style.cssText = `
@@ -253,7 +289,7 @@ export class ChartLegend {
     this.container.addEventListener("wheel", (e) => e.stopPropagation());
     this.container.addEventListener("click", (e) => e.stopPropagation());
     this.container.addEventListener("dblclick", (e) => e.stopPropagation());
-    
+
     const stopIfNoDrag = (e: Event) => {
       if (!this.isDragging && !this.isResizing) {
         e.stopPropagation();
@@ -296,14 +332,15 @@ export class ChartLegend {
         item.style.background = "rgba(128, 128, 128, 0.1)";
         item.style.transform = "translateX(2px)";
         if (this.callbacks.onSeriesHoverStart) {
-          this.callbacks.onSeriesHoverStart(s);
+          // Pass whether to highlight color based on options
+          this.callbacks.onSeriesHoverStart(s, this.options.highlightOnHover);
         }
       };
       item.onmouseleave = () => {
         item.style.background = "transparent";
         item.style.transform = "none";
         if (this.callbacks.onSeriesHoverEnd) {
-          this.callbacks.onSeriesHoverEnd(s);
+          this.callbacks.onSeriesHoverEnd(s, this.options.highlightOnHover);
         }
       };
 
@@ -345,7 +382,7 @@ export class ChartLegend {
     if (swatch) {
       this.paintSwatch(swatch, s);
     }
-    
+
     // Also update item look
     this.series.forEach((series, i) => {
       if (series.getId() === s.getId()) {
@@ -561,7 +598,7 @@ export class ChartLegend {
         padding +
         i * (swatchSize + itemGap) +
         swatchSize / 2;
-      
+
       const centerX = x + padding + swatchSize / 2;
       const centerY = itemY;
       const style = s.getStyle();

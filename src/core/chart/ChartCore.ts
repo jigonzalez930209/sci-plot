@@ -24,8 +24,8 @@ import {
   brightenColor,
 } from "../../renderer/NativeWebGLRenderer";
 import type { Scale } from "../../scales";
-import { 
-  getThemeByName, 
+import {
+  getThemeByName,
   type ChartTheme,
   type ColorScheme,
   getColorScheme,
@@ -95,6 +95,7 @@ import {
 } from "../ChartInitQueue";
 import { PluginLoading } from "../../plugins/loading";
 import { ChartPluginBridge } from "./ChartPluginBridge";
+import { mergeLayoutOptions } from "../layout";
 import { ChartAxisManager } from "./ChartAxisManager";
 import { ChartStateManager } from "./ChartStateManager";
 import { ChartRenderLoop } from "./ChartRenderLoop";
@@ -142,6 +143,7 @@ export class ChartImpl implements Chart {
   private showControls: boolean;
   private toolbarOptions?: import("../../types").ToolbarOptions;
   private controls: ChartControls | null = null;
+  private layout: import("../layout").LayoutOptions;
   private _isDestroyed = false;
   private autoScroll = false;
   private showStatistics = false;
@@ -165,7 +167,7 @@ export class ChartImpl implements Chart {
   } | null = null;
   private pluginManager: PluginManagerImpl;
   private initialOptions: ChartOptions;
-  
+
   // Composed modules
   private pluginBridge: ChartPluginBridge;
   private axisManager: ChartAxisManager;
@@ -173,13 +175,13 @@ export class ChartImpl implements Chart {
   private renderLoop: ChartRenderLoop;
 
   setXScale(scale: Scale): void {
-      this.xScale = scale;
-      this.requestRender();
+    this.xScale = scale;
+    this.requestRender();
   }
 
   setYScale(yAxisId: string, scale: Scale): void {
-      this.yScales.set(yAxisId, scale);
-      this.requestRender();
+    this.yScales.set(yAxisId, scale);
+    this.requestRender();
   }
 
   // Delegate plugin access to bridge
@@ -201,6 +203,9 @@ export class ChartImpl implements Chart {
   get sync(): any { return this.pluginBridge.sync; }
   get brokenAxis(): any { return this.pluginBridge.brokenAxis; }
   get forecasting(): any { return this.pluginBridge.forecasting; }
+  get latex(): any {
+    return this.pluginBridge?.latex ?? this.getPluginAPI("scichart-latex");
+  }
 
   private animationEngine: AnimationEngine;
   private animationConfig: ChartAnimationConfig;
@@ -219,7 +224,7 @@ export class ChartImpl implements Chart {
 
     this.baseTheme = setup.theme;
     this.theme = setup.theme;
-    this.colorScheme = options.colorScheme 
+    this.colorScheme = options.colorScheme
       ? getColorScheme(options.colorScheme)
       : getDefaultSchemeForTheme(setup.theme.isDark);
     this.backgroundColor = setup.backgroundColor;
@@ -238,6 +243,18 @@ export class ChartImpl implements Chart {
     this.webglCanvas = setup.webglCanvas;
     this.overlayCanvas = setup.overlayCanvas;
     this.overlayCtx = setup.overlayCtx;
+    this.layout = setup.layout;
+
+    // Initialize cursor from layout if provided
+    if (this.layout.crosshair) {
+      this.enableCursor({
+        enabled: this.layout.crosshair.enabled !== false,
+        crosshair: true,
+        snap: this.layout.crosshair.snapToData,
+        valueDisplayMode: this.layout.crosshair.valueDisplayMode,
+        cornerPosition: this.layout.crosshair.cornerPosition,
+      });
+    }
 
     // 2. Initialize Plugin Manager with full bridge (getters handle uninit state)
     this.pluginManager = new PluginManagerImpl({
@@ -247,9 +264,9 @@ export class ChartImpl implements Chart {
       getGL: () => this.renderer?.getGL(),
       get2DContext: () => this.overlayCtx,
       getPixelRatio: () => this.dpr,
-      getCanvasSize: () => ({ 
-        width: this.webglCanvas?.width || 0, 
-        height: this.webglCanvas?.height || 0 
+      getCanvasSize: () => ({
+        width: this.webglCanvas?.width || 0,
+        height: this.webglCanvas?.height || 0
       }),
       getPlotArea: () => this.getPlotArea(),
       getViewBounds: () => this.viewBounds,
@@ -264,10 +281,10 @@ export class ChartImpl implements Chart {
       findNearestPoint: (px, py, radius) => this.selectionManager?.hitTest(px, py, radius) ?? null,
       getPlugin: (name) => this.pluginManager?.get(name) as any
     });
-    
+
     // Initialize composed modules
     this.pluginBridge = new ChartPluginBridge(this.pluginManager);
-    
+
     // 3. Show loading indicator INSTANTLY if enabled
     if (options.loading !== false) {
       const loadingConfig = typeof options.loading === 'object' ? options.loading : {
@@ -334,7 +351,7 @@ export class ChartImpl implements Chart {
       },
       responsiveConfig
     );
-    
+
     // Initialize axis manager
     this.axisManager = new ChartAxisManager({
       xAxisOptions: this.xAxisOptions,
@@ -345,7 +362,7 @@ export class ChartImpl implements Chart {
       series: this.series,
       requestRender: () => this.requestRender(),
     });
-    
+
     // Initialize state manager
     this.stateManager = new ChartStateManager({
       viewBounds: this.viewBounds,
@@ -367,7 +384,7 @@ export class ChartImpl implements Chart {
       addSeries: (opts) => this.addSeries(opts),
       requestRender: () => this.requestRender(),
     });
-    
+
     // Initialize render loop
     this.renderLoop = new ChartRenderLoop({
       webglCanvas: this.webglCanvas,
@@ -392,6 +409,8 @@ export class ChartImpl implements Chart {
       selectionManager: this.selectionManager,
       getHoveredSeriesId: () => this.hoveredSeriesId,
       pluginManager: this.pluginManager,
+      getLayout: () => this.layout,
+      getLatex: () => this.latex,
       updateSeriesBuffer: (s) => updateSeriesBuffer(this.getSeriesContext(), s),
       getPlotArea: () => this.getPlotArea(),
       pixelToDataX: (px) => this.pixelToDataX(px),
@@ -664,12 +683,19 @@ export class ChartImpl implements Chart {
   }
 
   private initLegend(options: ChartOptions): void {
+    // Get legend options from layout config
+    const legendConfig = options.layout?.legend;
+
     this.legend = createLegend(
       {
         container: this.container,
         theme: this.theme,
         showControls: this.showControls,
         showLegend: this.showLegend,
+        legendOptions: {
+          highlightOnHover: legendConfig?.highlightOnHover ?? false,
+          bringToFrontOnHover: legendConfig?.bringToFrontOnHover ?? true,
+        },
         series: this.series,
         autoScale: () => this.autoScale(),
         resetZoom: () => this.resetZoom(),
@@ -693,28 +719,40 @@ export class ChartImpl implements Chart {
         onHoverEnd: () => {
           if (this.tooltip) this.tooltip.setSuspended(false);
         },
-        onSeriesHoverStart: (s) => {
-          const original = s.getStyle();
-          this.originalSeriesStyles.set(s.getId(), { ...original });
+        onSeriesHoverStart: (s, highlightColor) => {
+          // Always bring series to front (z-index) by setting hoveredSeriesId
           this.hoveredSeriesId = s.getId();
-          
-          // Use highlight color from color scheme, fallback to brightenColor
-          const newColor = this.colorScheme?.highlightColor || brightenColor(original.color || "#ff0055", this.theme.isDark);
-          s.setStyle({ 
-            color: newColor 
-          });
-          this.legend?.updateSeriesStyle(s);
+
+          // Only change color if highlightOnHover is true
+          if (highlightColor) {
+            const original = s.getStyle();
+            this.originalSeriesStyles.set(s.getId(), { ...original });
+
+            // Use highlight color from color scheme, fallback to brightenColor
+            const newColor = this.colorScheme?.highlightColor || brightenColor(original.color || "#ff0055", this.theme.isDark);
+            s.setStyle({
+              color: newColor
+            });
+            this.legend?.updateSeriesStyle(s);
+          }
+
           this.requestRender();
         },
-        onSeriesHoverEnd: (s) => {
-          const original = this.originalSeriesStyles.get(s.getId());
-          if (original) {
-            s.setStyle(original);
-            this.originalSeriesStyles.delete(s.getId());
-            this.hoveredSeriesId = null;
-            this.legend?.updateSeriesStyle(s);
-            this.requestRender();
+        onSeriesHoverEnd: (s, highlightColor) => {
+          // Clear the hovered series
+          this.hoveredSeriesId = null;
+
+          // Only restore color if we changed it
+          if (highlightColor) {
+            const original = this.originalSeriesStyles.get(s.getId());
+            if (original) {
+              s.setStyle(original);
+              this.originalSeriesStyles.delete(s.getId());
+              this.legend?.updateSeriesStyle(s);
+            }
           }
+
+          this.requestRender();
         },
         onToggleVisibility: (s) => {
           s.setVisible(!s.isVisible());
@@ -729,7 +767,7 @@ export class ChartImpl implements Chart {
   setTheme(theme: string | ChartTheme): void {
     this.baseTheme = typeof theme === "string" ? getThemeByName(theme) : theme;
     this.theme = this.responsiveManager.scaleTheme(this.baseTheme);
-    
+
     // Parse colors
     this.backgroundColor = parseColor(this.theme.backgroundColor);
     this.plotAreaBackground = parseColor(this.theme.plotAreaBackground || this.theme.backgroundColor);
@@ -766,7 +804,7 @@ export class ChartImpl implements Chart {
   }
 
   getPlotArea() {
-    return calculatePlotArea(this.container, this.yAxisOptionsMap as any);
+    return calculatePlotArea(this.container, this.yAxisOptionsMap as any, this.layout);
   }
 
   private getInteractedBounds(axisId?: string): Bounds {
@@ -878,7 +916,7 @@ export class ChartImpl implements Chart {
     if (api && api.addFitLine) {
       return api.addFitLine(seriesId, type, options);
     }
-    
+
     // Queue the fit line request if plugin not yet loaded
     const id = `fit-${Math.random().toString(36).substr(2, 9)}`;
     this.fitLineQueue.push({ id, seriesId, type, options });
@@ -1171,6 +1209,7 @@ export class ChartImpl implements Chart {
    */
   updateYAxis(id: string, options: Partial<AxisOptions>): void {
     this.axisManager.updateYAxis(id, options);
+    this.requestRender();
   }
 
   /**
@@ -1197,6 +1236,15 @@ export class ChartImpl implements Chart {
    */
   updateXAxis(options: Partial<AxisOptions>): void {
     this.axisManager.updateXAxis(options);
+    this.requestRender();
+  }
+
+  updateLayout(options: Partial<import("../layout").LayoutOptions>): void {
+    this.layout = mergeLayoutOptions({
+      ...this.layout,
+      ...options
+    });
+    this.requestRender();
   }
 
   /**
@@ -1457,6 +1505,8 @@ export class ChartImpl implements Chart {
       });
       this.fitLineQueue = [];
     }
+
+    this.requestOverlayRender();
   }
 
   // Rendering

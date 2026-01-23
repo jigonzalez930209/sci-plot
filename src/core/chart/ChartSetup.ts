@@ -9,6 +9,7 @@ import { parseColor } from "../../renderer/NativeWebGLRenderer";
 import { LinearScale, LogScale, type Scale } from "../../scales";
 import { DEFAULT_THEME, getThemeByName, type ChartTheme } from "../../theme";
 import { MARGINS } from "./types";
+import { mergeLayoutOptions, type LayoutOptions } from "../layout";
 
 export interface SetupResult {
   theme: ChartTheme;
@@ -27,6 +28,7 @@ export interface SetupResult {
   webglCanvas: HTMLCanvasElement;
   overlayCanvas: HTMLCanvasElement;
   overlayCtx: CanvasRenderingContext2D;
+  layout: LayoutOptions;
 }
 
 /**
@@ -40,6 +42,9 @@ export function initializeChart(
 
   const dpr = options.devicePixelRatio ?? window.devicePixelRatio;
 
+  // Initialize layout
+  const layout = mergeLayoutOptions(options.layout);
+
   // Initialize theme
   const theme = typeof options.theme === "string"
     ? getThemeByName(options.theme)
@@ -47,7 +52,7 @@ export function initializeChart(
 
   const bgColor = parseColor(options.background ?? theme.backgroundColor);
   const backgroundColor: [number, number, number, number] = [bgColor[0], bgColor[1], bgColor[2], bgColor[3]];
-  
+
   const paColor = parseColor(theme.plotAreaBackground);
   const plotAreaColor: [number, number, number, number] = [paColor[0], paColor[1], paColor[2], paColor[3]];
 
@@ -65,7 +70,7 @@ export function initializeChart(
   const yScales = new Map<string, Scale>();
   let primaryYAxisId = 'default';
 
-  const providedYAxes = options.yAxis 
+  const providedYAxes = options.yAxis
     ? (Array.isArray(options.yAxis) ? options.yAxis : [options.yAxis])
     : [{}];
 
@@ -73,7 +78,7 @@ export function initializeChart(
     const isFirst = index === 0;
     const defaultId = isFirst ? 'default' : `y${index}`;
     const id = axisOpt.id || defaultId;
-    
+
     if (isFirst) primaryYAxisId = id;
     const position = axisOpt.position || (isFirst ? 'left' : 'right');
     const fullOptions: AxisOptions = { scale: "linear", auto: true, position, ...axisOpt, id };
@@ -117,6 +122,7 @@ export function initializeChart(
     webglCanvas,
     overlayCanvas,
     overlayCtx: ctx,
+    layout,
   };
 }
 
@@ -135,18 +141,24 @@ export function createCanvas(type: "webgl" | "overlay"): HTMLCanvasElement {
  */
 export function getPlotArea(
   container: HTMLDivElement,
-  yAxisOptionsMap: Map<string, AxisOptions>
+  yAxisOptionsMap: Map<string, AxisOptions>,
+  layout?: LayoutOptions
 ): { x: number; y: number; width: number; height: number } {
   const rect = container.getBoundingClientRect();
   const leftAxisCount = Array.from(yAxisOptionsMap.values()).filter(a => a.position !== 'right').length;
   const rightAxisCount = Array.from(yAxisOptionsMap.values()).filter(a => a.position === 'right').length;
-  const leftMargin = MARGINS.left + Math.max(0, leftAxisCount - 1) * 65;
-  const rightMargin = MARGINS.right + rightAxisCount * 65;
+
+  const margins = layout?.margins || MARGINS;
+  const leftMargin = (margins.left ?? MARGINS.left) + Math.max(0, leftAxisCount - 1) * 65;
+  const rightMargin = (margins.right ?? MARGINS.right) + rightAxisCount * 65;
+  const topMargin = margins.top ?? MARGINS.top;
+  const bottomMargin = margins.bottom ?? MARGINS.bottom;
+
   return {
     x: leftMargin,
-    y: MARGINS.top,
+    y: topMargin,
     width: Math.max(1, rect.width - leftMargin - rightMargin),
-    height: Math.max(1, rect.height - MARGINS.top - MARGINS.bottom),
+    height: Math.max(1, rect.height - topMargin - bottomMargin),
   };
 }
 
@@ -164,7 +176,7 @@ export function getAxesLayout(
   yAxisOptionsMap.forEach((opts, id) => {
     const position = (opts.position === 'right' ? 'right' : 'left') as 'left' | 'right';
     const offset = position === 'left' ? leftIndex * 65 : rightIndex * 65;
-    
+
     if (position === 'left') leftIndex++;
     else rightIndex++;
 

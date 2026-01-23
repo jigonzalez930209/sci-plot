@@ -120,6 +120,15 @@ export const MATH_OPERATORS: Record<string, string> = {
   Leftarrow: '⇐',
   Leftrightarrow: '⇔',
   mapsto: '↦',
+  to: '→',
+  langle: '⟨',
+  rangle: '⟩',
+  rightleftharpoons: '⇌',
+  log: 'log',
+  ln: 'ln',
+  sin: 'sin',
+  cos: 'cos',
+  tan: 'tan',
 };
 
 /**

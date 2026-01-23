@@ -55,30 +55,49 @@ When in `boxZoom` mode, click and drag to draw a selection rectangle. The view w
 
 When you hover over a series name in the legend:
 
-- **Series brought to front**: The series renders on top of all others
-- **Highlighted color**: The series changes to the highlight color from the active color scheme
+- **Series brought to front**: The series renders on top of all others (z-index)
+- **No color change** (default): The series color stays the same
 - **Instant response**: Changes happen smoothly in real-time
 
-This feature is particularly useful for dense multi-series charts where you need to identify a specific series.
+::: tip New Default (v2.x)
+By default, hovering over a legend item **does not change** the series color. This provides cleaner visual feedback without unexpected color shifts.
+:::
 
 ```typescript
 const chart = createChart({
   container,
   showLegend: true,
-  colorScheme: 'vibrant'  // Provides highlight color
+  // Default behavior: bring to front, no color change
 })
-
-// Add multiple series
-for (let i = 0; i < 10; i++) {
-  chart.addSeries({
-    id: `series${i}`,
-    type: 'line',
-    data: generateData(i)
-  })
-}
-
-// Hover over any series in legend → brings to front + highlights
 ```
+
+### Enable Color Highlighting
+
+To restore the previous behavior where series color changes on hover:
+
+```typescript
+const chart = createChart({
+  container,
+  showLegend: true,
+  layout: {
+    legend: {
+      highlightOnHover: true,  // Enable color change
+      bringToFrontOnHover: true, // Still bring to front (default)
+    },
+  },
+})
+```
+
+### Legend Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `highlightOnHover` | `false` | Change series color on hover |
+| `bringToFrontOnHover` | `true` | Bring series to front (z-index) |
+| `draggable` | `true` | Allow dragging the legend |
+| `resizable` | `true` | Allow resizing the legend |
+
+See [Layout & Positioning](/guide/layout) for complete legend configuration.
 
 ### Toggle Series Visibility
 
@@ -127,22 +146,65 @@ Enable an interactive cursor with crosshair and tooltips.
 
 ```typescript
 chart.enableCursor({
-  snap: true,      // Snap to nearest data point
+  enabled: true,
   crosshair: true, // Show crosshair lines
+  snap: true,      // Snap to nearest data point
 })
 ```
 
-### Custom Tooltip
+### Value Display Modes
+
+Control how and where coordinate values are displayed:
+
+| Mode | Description |
+|------|-------------|
+| `'floating'` | Tooltip follows cursor (default) |
+| `'corner'` | Fixed position in corner of plot area |
+| `'disabled'` | No values shown, crosshair lines only |
 
 ```typescript
 chart.enableCursor({
-  snap: true,
+  enabled: true,
   crosshair: true,
+  valueDisplayMode: 'corner',        // 'disabled' | 'floating' | 'corner'
+  cornerPosition: 'top-right',       // For 'corner' mode
+  lineStyle: 'dashed',               // 'solid' | 'dashed' | 'dotted'
+})
+```
+
+### Corner Positions
+
+When using `valueDisplayMode: 'corner'`, choose where to display the tooltip:
+
+- `'top-left'` (default)
+- `'top-right'`
+- `'bottom-left'`
+- `'bottom-right'`
+
+### Custom Tooltip Formatter
+
+```typescript
+chart.enableCursor({
+  enabled: true,
+  crosshair: true,
+  valueDisplayMode: 'floating',
   formatter: (x, y) => {
     return `Time: ${x.toFixed(2)}s\nValue: ${y.toFixed(4)}`
   },
 })
 ```
+
+### Cursor Options Reference
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | `boolean` | `true` | Enable cursor |
+| `crosshair` | `boolean` | `false` | Show crosshair lines |
+| `snap` | `boolean` | `false` | Snap to nearest data point |
+| `valueDisplayMode` | `'disabled' \| 'floating' \| 'corner'` | `'floating'` | Where to show values |
+| `cornerPosition` | `'top-left' \| 'top-right' \| ...` | `'top-left'` | Corner for 'corner' mode |
+| `lineStyle` | `'solid' \| 'dashed' \| 'dotted'` | `'dashed'` | Crosshair line style |
+| `formatter` | `(x, y, seriesId) => string` | — | Custom value formatter |
 
 ### Disable Cursor
 

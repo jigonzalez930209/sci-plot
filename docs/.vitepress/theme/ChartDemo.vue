@@ -29,10 +29,18 @@ import PersistenceDemo from './demos/2d/PersistenceDemo.vue'
 import SelectionDemo from './demos/2d/SelectionDemo.vue'
 import CyclicVoltammetryDemo from './demos/2d/CyclicVoltammetryDemo.vue'
 
+interface CrosshairConfig {
+  valueDisplayMode?: 'disabled' | 'corner' | 'floating'
+  cornerPosition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  lineStyle?: 'solid' | 'dashed' | 'dotted'
+  snapToData?: boolean
+}
+
 const props = defineProps<{
   type: string
   height?: string
   points?: number
+  crosshairConfig?: CrosshairConfig
 }>()
 
 // Charts are now visible by default. The core ChartInitQueue handles sequential loading.
@@ -79,7 +87,13 @@ const demoComponent = computed(() => {
 
 <template>
   <div ref="containerRef" :style="{ minHeight: height || '400px' }">
-    <component v-if="isVisible" :is="demoComponent" :height="height" :points="points" />
+    <component 
+      v-if="isVisible" 
+      :is="demoComponent" 
+      :height="height" 
+      :points="points"
+      :crosshairConfig="crosshairConfig"
+    />
     <div v-else class="chart-placeholder" :style="{ height: height || '400px' }">
       <div class="loading-indicator">
         <span>📊</span>
