@@ -50,11 +50,11 @@ export interface AxisOptions {
   auto?: boolean;
   /** Force scientific notation (e.g., 1.2 × 10⁵) */
   scientific?: boolean;
-  
+
   // ============================================
   // Advanced Multi-Axis Options
   // ============================================
-  
+
   /** Axis color (line, ticks, labels) - defaults to theme */
   color?: string;
   /** Axis line width in pixels (default: 1) */
@@ -333,6 +333,15 @@ export interface CursorState {
   y: number;
   crosshair: boolean;
   tooltipText?: string;
+  /**
+   * Value display mode for cursor coordinates
+   * - 'disabled': No coordinate values shown
+   * - 'floating': Values shown next to cursor (default)
+   * - 'corner': Values shown in fixed corner position
+   */
+  valueDisplayMode?: 'disabled' | 'floating' | 'corner';
+  /** Corner position when valueDisplayMode is 'corner' */
+  cornerPosition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 }
 
 export interface AxisLabels {
@@ -653,34 +662,44 @@ export interface ChartOptions {
   plugins?: any[];
   /** Loading indicator configuration */
   loading?: boolean | import("./plugins/loading").PluginLoadingConfig;
-  
+
+  // ============================================
+  // Layout & Positioning Options
+  // ============================================
+
+  /** 
+   * Detailed layout configuration for chart components
+   * Controls positioning, spacing, and behavior of legend, crosshair, toolbar, etc.
+   */
+  layout?: import("./core/layout").LayoutOptions;
+
   // ============================================
   // Interaction Options
   // ============================================
-  
+
   /** Read-only mode: disable all interactions (default: false) */
   readOnly?: boolean;
   /** Enable debug overlay showing FPS, memory, etc. (default: false) */
   debug?: boolean | import("./core/debug").DebugOverlayOptions;
-  
+
   // ============================================
   // Internationalization Options
   // ============================================
-  
+
   /** Locale configuration for number/date formatting (default: 'en-US') */
   locale?: string | import("./core/locale").LocaleConfig;
-  
+
   // ============================================
   // Keyboard Shortcuts Options
   // ============================================
-  
+
   /** Enable keyboard shortcuts (default: true if not readOnly) */
   keyBindings?: boolean | import("./core/keybindings").KeyBinding[];
-  
+
   // ============================================
   // Clipboard Options
   // ============================================
-  
+
   /** Enable clipboard operations (default: true) */
   clipboard?: boolean | import("./core/clipboard").ClipboardOptions;
 }
@@ -732,6 +751,21 @@ export interface CursorOptions {
   crosshair?: boolean;
   /** Custom tooltip formatter */
   formatter?: (x: number, y: number, seriesId: string) => string;
+  /**
+   * Value display mode for X,Y coordinates (default: 'floating')
+   * - 'disabled': No coordinate values shown (crosshair lines only)
+   * - 'floating': Values shown in tooltip next to cursor
+   * - 'corner': Values shown in fixed corner position
+   */
+  valueDisplayMode?: 'disabled' | 'floating' | 'corner';
+  /**
+   * Corner position when valueDisplayMode is 'corner' (default: 'top-left')
+   */
+  cornerPosition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  /**
+   * Crosshair line style (default: 'dashed')
+   */
+  lineStyle?: 'solid' | 'dashed' | 'dotted';
 }
 
 // ============================================
