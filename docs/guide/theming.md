@@ -423,3 +423,30 @@ for (let i = 0; i < 25; i++) {
   })
 }
 ```
+
+## Layout vs Theme
+
+Beyond visual styling (colors, fonts, etc.), SciChart Engine provides a separate **layout system** for controlling component positioning and behavior.
+
+| Concern | Use Theme | Use Layout |
+|---------|-----------|------------|
+| Colors, fonts, gradients | ✅ | ❌ |
+| Grid styling | ✅ | ❌ |
+| Component positions | ❌ | ✅ |
+| Legend hover behavior | ❌ | ✅ |
+| Margins & padding | ❌ | ✅ |
+| Axis spacing | ❌ | ✅ |
+
+```typescript
+const chart = createChart({
+  theme: 'midnight',  // Visual styling
+  layout: {           // Positioning & behavior
+    legend: { highlightOnHover: false },
+    crosshair: { valueDisplayMode: 'corner' },
+    margins: { top: 40, left: 80 },
+  },
+})
+```
+
+See [Layout & Positioning](/guide/layout) for complete details.
+
