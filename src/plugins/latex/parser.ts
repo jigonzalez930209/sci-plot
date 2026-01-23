@@ -15,6 +15,23 @@ export function parseLaTeX(latex: string): LaTeXNode[] {
 }
 
 /**
+ * Extract text content from nodes recursively
+ */
+function extractTextContent(nodes: LaTeXNode[]): string {
+  let result = '';
+  for (const node of nodes) {
+    if (node.type === 'text' || node.type === 'textgroup') {
+      result += node.content || '';
+    } else if (node.type === 'symbol') {
+      result += node.content || '';
+    } else if (node.children) {
+      result += extractTextContent(node.children);
+    }
+  }
+  return result;
+}
+
+/**
  * Tokenize LaTeX string
  */
 function tokenize(latex: string): string[] {
@@ -48,17 +65,19 @@ function tokenize(latex: string): string[] {
       tokens.push(char);
       i++;
     }
-    // Skip whitespace
+    // Whitespace: preserve as single space token for text commands
     else if (/\s/.test(char)) {
+      tokens.push(' ');
       i++;
+      // Skip additional whitespace
+      while (i < latex.length && /\s/.test(latex[i])) {
+        i++;
+      }
     }
-    // Alphanumeric characters - keep them individual
-    else if (/[a-zA-Z0-9]/.test(char)) {
-      tokens.push(char);
-      i++;
-    }
-    // Other characters (operators like +, -, etc.) - keep individual
+    // Single characters: keep separate for proper subscript/superscript handling
     else {
+      // Group text only if we're in a "text" context (not math/chemistry)
+      // For chemistry formulas, keep each letter/digit separate
       tokens.push(char);
       i++;
     }
@@ -124,8 +143,28 @@ function parseTokens(tokens: string[]): LaTeXNode[] {
         });
         i = content.nextIndex;
       }
+      // Text command - render as a single grouped string for proper kerning
+      else if (command === 'text') {
+        i++;
+        const content = parseGroup(tokens, i);
+        // Concatenate all text content from the group into a single string
+        const textContent = extractTextContent(content.nodes);
+        nodes.push({
+          type: 'textgroup',
+          content: textContent,
+        });
+        i = content.nextIndex;
+      }
       // Symbol
       else if (isSymbol(command)) {
+        nodes.push({
+          type: 'symbol',
+          content: getSymbol(command),
+        });
+        i++;
+      }
+      // Common operators that might be commands
+      else if (command === 'times' || command === 'cdot' || command === 'pm' || command === 'mp') {
         nodes.push({
           type: 'symbol',
           content: getSymbol(command),
