@@ -31,6 +31,9 @@ export default defineConfig({
   themeConfig: {
     logo: '/logo.svg',
     siteTitle: 'SciChart Engine',
+    search: {
+      provider: 'local',
+    },
     nav: [
       { text: "Home", link: "/" },
       { text: "Guide", link: "/guide/" },

@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.11.0]
+
+### Added
+- **Help Search**: Local VitePress search enabled in the docs site so the help behaves like a searchable reference.
+- **Inverted Axis Coverage**: New inverted-axis documentation and examples for IR-style chart presentation.
+
+### Improved
+- **Axis Spacing**: Refined axis label spacing defaults and layout handling for clearer title placement.
+- **Docs Navbar Layout**: Search was moved into the header gap and the docs navbar layout was tightened to match the intended placement.
+
+### Fixed
+- **Docs Search Overlay**: Resolved search panel clipping and stacking issues in the documentation navbar by correcting the local search overlay z-index and wrapper sizing.
+
 ## [1.10.0] - 2026-01-17
 
 ### Added

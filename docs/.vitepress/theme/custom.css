@@ -218,7 +218,18 @@ body::after {
   max-width: none !important;
   padding: 0 !important;
   display: flex !important;
-  justify-content: flex-end !important;
+  justify-content: flex-start !important;
+}
+
+.VPNavBarSearch {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  width: auto !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .VPNavBar .content-body {
@@ -227,6 +238,30 @@ body::after {
   padding: 0 !important;
   display: flex !important;
   align-items: center !important;
+  width: 100% !important;
+  gap: 16px !important;
+}
+
+.VPNavBarSearch {
+  position: relative !important;
+  z-index: 320 !important;
+  margin-left: 0 !important;
+}
+
+.VPNavBarSearch .DocSearch-Button {
+  margin-left: 0 !important;
+}
+
+.VPLocalSearchBox {
+  z-index: 1300 !important;
+}
+
+.VPLocalSearchBox .backdrop {
+  z-index: 0 !important;
+}
+
+.VPLocalSearchBox .shell {
+  z-index: 1 !important;
 }
 
 .VPNavBar .divider {
