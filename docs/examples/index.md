@@ -40,6 +40,16 @@ Real-time CV simulation with stable X-axis during streaming.
 
 ---
 
+### Inverted Axes
+
+IR-style spectra and other descending domains rendered with `invertAxis`.
+
+<InvertedAxisDemo />
+
+[View full example →](/examples/inverted-axis)
+
+---
+
 ### Large Datasets
 
 1 million points rendered at 60 FPS.
@@ -127,6 +137,7 @@ Interactive tools for selecting and analyzing specific data regions.
 | [Basic Chart](/examples/basic) | Simple line chart | Core API usage |
 | [Real-time](/examples/realtime) | Streaming data | `requestAnimationFrame` |
 | [Cyclic Voltammetry](/examples/cyclic-voltammetry) | CV simulation | Stable X-axis streaming |
+| [Inverted Axes](/examples/inverted-axis) | Descending scientific axes | `invertAxis` |
 | [Large Datasets](/examples/large-datasets) | 1M+ points | WebGL performance |
 | [React](/examples/react) | React integration | Components & hooks |
 | [Curve Fitting](/examples/curve-fitting) | Regression analysis | Trend lines & labels |

@@ -34,6 +34,9 @@ interface UseSciChartOptions {
 }
 ```
 
+Axis options accept the same fields as `createChart`, including `invertAxis` for descending scales.
+The hook also inherits `layout`, so `layout.xAxisLayout.titleGap` and `layout.yAxisLayout.titleGap` can move axis labels away from the plot border.
+
 ## Returns
 
 ```typescript
@@ -57,8 +60,12 @@ import { useSciChart } from 'scichart-engine/react'
 
 function MyChart() {
   const { containerRef, addSeries, isReady } = useSciChart({
-    xAxis: { label: 'X', auto: true },
+    xAxis: { label: 'Wavenumber (cm^-1)', auto: true, invertAxis: true },
     yAxis: { label: 'Y', auto: true },
+    layout: {
+      xAxisLayout: { titleGap: 48 },
+      yAxisLayout: { titleGap: 24 },
+    },
   })
 
   useEffect(() => {

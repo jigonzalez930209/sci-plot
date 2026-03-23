@@ -295,3 +295,5 @@ interface ChartOptions {
   showLegend?: boolean
 }
 ```
+
+Axis options support descending scales via `invertAxis: true` for domains like IR wavenumbers.

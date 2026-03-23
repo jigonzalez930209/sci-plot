@@ -209,6 +209,7 @@ export default defineConfig({
             { text: "Scatter Symbols", link: "/examples/scatter-symbols" },
             { text: "Crosshair Cursor", link: "/examples/crosshair" },
             { text: "Polar Charts", link: "/examples/polar-charts" },
+            { text: "Inverted Axes", link: "/examples/inverted-axis" },
             { text: "Radar Charts", link: "/examples/radar-charts" },
             { text: "Gauge & Sankey", link: "/examples/gauge-sankey" },
             { text: "Ternary Charts", link: "/examples/ternary-charts" },

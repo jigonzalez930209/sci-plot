@@ -29,6 +29,7 @@ function createChart(options: ChartOptions): Chart
 | `loading` | `boolean \| LoadingConfig` | `true` | Show loading indicator on init |
 | `animations` | `boolean \| AnimationConfig` | `true` | Enable navigation animations |
 | `responsive` | `boolean \| ResponsiveConfig` | `true` | Auto-resize on container change |
+| `layout` | `LayoutOptions` | defaults | Control margins and axis title spacing |
 
 ::: tip Modular Architecture
 From version 1.5.0, SciChart Engine uses a highly modular plugin-based architecture. To maintain a small core bundle, advanced features like **Tooltips**, **Analysis**, and **Annotations** must be explicitly loaded using `chart.use()`.
@@ -42,8 +43,46 @@ interface AxisOptions {
   auto?: boolean            // Auto-scale to fit data
   min?: number              // Fixed minimum (if auto=false)
   max?: number              // Fixed maximum (if auto=false)
+  invertAxis?: boolean      // Render the axis in descending order
 }
 ```
+
+### Inverted Axes
+
+Set `invertAxis: true` when a domain conventionally reads high-to-low. The data arrays stay in their natural order, but the rendered axis direction and interaction coordinates are reversed.
+
+```typescript
+const chart = createChart({
+  container: document.getElementById('chart'),
+  xAxis: {
+    label: 'Wavenumber (cm^-1)',
+    auto: true,
+    invertAxis: true,
+  },
+  yAxis: {
+    label: 'Transmittance (%)',
+    auto: true,
+  },
+})
+```
+
+### Axis Label Spacing
+
+Adjust the distance between the axis label and the plot border with layout settings:
+
+```typescript
+const chart = createChart({
+  container: document.getElementById('chart'),
+  layout: {
+    xAxisLayout: { titleGap: 48 },
+    yAxisLayout: { titleGap: 24 },
+  },
+})
+```
+
+`xAxisLayout.titleGap` moves the X-axis label vertically. `yAxisLayout.titleGap` moves Y-axis labels horizontally.
+
+By default, the X-axis label gap is `45` and the Y-axis label gap is `50`.
 
 ## Returns
 

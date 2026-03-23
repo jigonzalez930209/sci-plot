@@ -28,6 +28,7 @@ import VideoRecorderDemo from "./demos/VideoRecorderDemo.vue";
 import RoiDemo from "./demos/RoiDemo.vue";
 import OffscreenDemo from "./demos/OffscreenDemo.vue";
 import ForecastingDemo from "./demos/ForecastingDemo.vue";
+import InvertedAxisDemo from "./demos/InvertedAxisDemo.vue";
 // import ContextMenu from "./components/ContextMenu.vue";
 import './custom.css'
 
@@ -64,6 +65,7 @@ export default {
     app.component('BrokenAxisDemo', BrokenAxisDemo)
     app.component('VirtualizationDemo', VirtualizationDemo)
     app.component('ForecastingDemo', ForecastingDemo)
+    app.component('InvertedAxisDemo', InvertedAxisDemo)
     // app.component('ContextMenu', ContextMenu)
   }
 }

@@ -20,14 +20,15 @@ import { SciChart } from 'scichart-engine'
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `series` | `SciChartSeries[]` | `[]` | Array of series to display |
-| `xAxis` | `AxisOptions` | `{ auto: true }` | X-axis configuration |
-| `yAxis` | `AxisOptions` | `{ auto: true }` | Y-axis configuration |
+| `xAxis` | `AxisOptions` | `{ auto: true }` | X-axis configuration, including `invertAxis` |
+| `yAxis` | `AxisOptions` | `{ auto: true }` | Y-axis configuration, including `invertAxis` |
 | `theme` | `string \| ChartTheme` | `'dark'` | Theme name or object |
 | `background` | `string` | Theme default | Background color |
 | `height` | `string \| number` | `'100%'` | Chart height |
 | `width` | `string \| number` | `'100%'` | Chart width |
 | `showControls` | `boolean` | `false` | Show toolbar |
 | `showLegend` | `boolean` | `false` | Show legend |
+| `layout` | `LayoutOptions` | defaults | Margin and axis title spacing configuration |
 | `cursor` | `CursorOptions` | `undefined` | Cursor configuration |
 | `ref` | `React.Ref<SciChartRef>` | - | Ref for imperative access |
 
@@ -69,6 +70,34 @@ function MyChart() {
     />
   )
 }
+```
+
+## Axis Label Spacing
+
+Because the React props inherit `ChartOptions`, you can tune axis title spacing with `layout.xAxisLayout.titleGap` and `layout.yAxisLayout.titleGap`.
+
+```tsx
+<SciChart
+  series={series}
+  layout={{
+    xAxisLayout: { titleGap: 48 },
+    yAxisLayout: { titleGap: 24 },
+  }}
+  height="400px"
+/>
+```
+
+## Inverted Axes
+
+Use `invertAxis: true` for descending scientific domains such as IR wavenumbers.
+
+```tsx
+<SciChart
+  series={series}
+  xAxis={{ label: 'Wavenumber (cm^-1)', auto: true, invertAxis: true }}
+  yAxis={{ label: 'Transmittance (%)', auto: true }}
+  height="400px"
+/>
 ```
 
 ## With Controls and Legend
