@@ -211,10 +211,26 @@ export function resizeCanvases(
   return true;
 }
 
-export function pixelToDataX(px: number, plotArea: { x: number, width: number }, viewBounds: { xMin: number, xMax: number }): number {
-  return viewBounds.xMin + ((px - plotArea.x) / plotArea.width) * (viewBounds.xMax - viewBounds.xMin);
+export function pixelToDataX(
+  px: number,
+  plotArea: { x: number, width: number },
+  viewBounds: { xMin: number, xMax: number },
+  invertAxis = false,
+): number {
+  const normalized = (px - plotArea.x) / plotArea.width;
+  const xMin = invertAxis ? viewBounds.xMax : viewBounds.xMin;
+  const xMax = invertAxis ? viewBounds.xMin : viewBounds.xMax;
+  return xMin + normalized * (xMax - xMin);
 }
 
-export function pixelToDataY(py: number, plotArea: { y: number, height: number }, viewBounds: { yMin: number, yMax: number }): number {
-  return viewBounds.yMin + (1 - (py - plotArea.y) / plotArea.height) * (viewBounds.yMax - viewBounds.yMin);
+export function pixelToDataY(
+  py: number,
+  plotArea: { y: number, height: number },
+  viewBounds: { yMin: number, yMax: number },
+  invertAxis = false,
+): number {
+  const normalized = (py - plotArea.y) / plotArea.height;
+  const yMin = invertAxis ? viewBounds.yMin : viewBounds.yMax;
+  const yMax = invertAxis ? viewBounds.yMax : viewBounds.yMin;
+  return yMin + normalized * (yMax - yMin);
 }

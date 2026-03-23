@@ -24,6 +24,7 @@ export interface StateManagerContext {
   viewBounds: { xMin: number; xMax: number; yMin: number; yMax: number };
   xAxisOptions: AxisOptions;
   xScale: Scale;
+  yAxisOptionsMap: Map<string, AxisOptions>;
   yScales: Map<string, Scale>;
   primaryYAxisId: string;
   series: Map<string, Series>;
@@ -37,6 +38,7 @@ export interface StateManagerContext {
   getAnnotations: () => Annotation[];
   clearAnnotations: () => void;
   addAnnotation: (annotation: Annotation) => void;
+  updateXAxis: (options: Partial<AxisOptions>) => void;
   updateYAxis: (id: string, options: Partial<AxisOptions>) => void;
   removeSeries: (id: string) => void;
   addSeries: (options: any) => void;
@@ -60,23 +62,25 @@ export class ChartStateManager {
         id: "primary-x",
         position: this.ctx.xAxisOptions.position,
         label: this.ctx.xAxisOptions.label,
-        scale: this.ctx.xScale.type,
+        scale: this.ctx.xAxisOptions.scale ?? this.ctx.xScale.type,
         min: this.ctx.xScale.domain[0],
         max: this.ctx.xScale.domain[1],
-        auto:
-          (this.ctx.xScale as any).auto !== undefined
-            ? (this.ctx.xScale as any).auto
-            : true,
+        auto: this.ctx.xAxisOptions.auto ?? true,
+        invertAxis: this.ctx.xAxisOptions.invertAxis ?? false,
       },
-      yAxes: Array.from(this.ctx.yScales.values()).map((s: any) => ({
-        id: s.id || "y",
-        position: s.position || "left",
-        label: s.label || "",
-        scale: s.type,
-        min: s.domain[0],
-        max: s.domain[1],
-        auto: s.auto !== undefined ? s.auto : true,
-      })),
+      yAxes: Array.from(this.ctx.yAxisOptionsMap.entries()).map(([id, axisOptions]) => {
+        const scale = this.ctx.yScales.get(id);
+        return {
+          id,
+          position: axisOptions.position,
+          label: axisOptions.label,
+          scale: axisOptions.scale ?? scale?.type,
+          min: scale?.domain[0] ?? axisOptions.min,
+          max: scale?.domain[1] ?? axisOptions.max,
+          auto: axisOptions.auto ?? true,
+          invertAxis: axisOptions.invertAxis ?? false,
+        };
+      }),
       primaryYAxisId: this.ctx.primaryYAxisId,
       series: Array.from(this.ctx.series.values()).map((s) => ({
         id: s.getId(),
@@ -115,14 +119,28 @@ export class ChartStateManager {
     this.ctx.viewBounds = { ...state.viewBounds };
     this.ctx.primaryYAxisId = state.primaryYAxisId;
 
+    if (state.xAxis) {
+      this.ctx.updateXAxis({
+        position: state.xAxis.position,
+        label: state.xAxis.label,
+        scale: state.xAxis.scale,
+        min: state.xAxis.min,
+        max: state.xAxis.max,
+        auto: state.xAxis.auto,
+        invertAxis: state.xAxis.invertAxis,
+      });
+    }
+
     // Restore Y axes
     state.yAxes.forEach((ax) => {
       this.ctx.updateYAxis(ax.id, {
+        position: ax.position,
         label: ax.label,
         scale: ax.scale,
         min: ax.min,
         max: ax.max,
         auto: ax.auto,
+        invertAxis: ax.invertAxis,
       });
     });
 

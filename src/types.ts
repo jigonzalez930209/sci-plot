@@ -48,6 +48,8 @@ export interface AxisOptions {
   max?: number;
   /** Enable autoscaling */
   auto?: boolean;
+  /** Invert the axis direction when painting values */
+  invertAxis?: boolean;
   /** Force scientific notation (e.g., 1.2 × 10⁵) */
   scientific?: boolean;
 

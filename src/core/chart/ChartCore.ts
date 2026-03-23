@@ -83,7 +83,6 @@ import {
   getPlotArea as calculatePlotArea,
   getAxesLayout,
   resizeCanvases,
-  pixelToDataX as pxToDataX,
 } from "./ChartSetup";
 import { PluginManagerImpl } from "../../plugins";
 import {
@@ -368,6 +367,7 @@ export class ChartImpl implements Chart {
       viewBounds: this.viewBounds,
       xAxisOptions: this.xAxisOptions,
       xScale: this.xScale,
+      yAxisOptionsMap: this.yAxisOptionsMap,
       yScales: this.yScales,
       primaryYAxisId: this.primaryYAxisId,
       series: this.series,
@@ -379,6 +379,7 @@ export class ChartImpl implements Chart {
       getAnnotations: () => this.getAnnotations(),
       clearAnnotations: () => this.clearAnnotations(),
       addAnnotation: (a) => this.addAnnotation(a),
+      updateXAxis: (opts) => this.axisManager.updateXAxis(opts),
       updateYAxis: (id, opts) => this.axisManager.updateYAxis(id, opts),
       removeSeries: (id) => this.removeSeries(id),
       addSeries: (opts) => this.addSeries(opts),
@@ -1549,7 +1550,7 @@ export class ChartImpl implements Chart {
   }
 
   private pixelToDataX(px: number): number {
-    return pxToDataX(px, this.getPlotArea(), this.viewBounds);
+    return this.xScale.invert(px);
   }
 
   private pixelToDataY(py: number, yAxisId?: string): number {

@@ -47,6 +47,32 @@ export interface RenderContext {
   latexAPI?: any;
 }
 
+function setAxisRangeForRender(
+  scale: Scale,
+  plotArea: PlotArea,
+  options: AxisOptions | undefined,
+  orientation: 'x' | 'y',
+  padding?: { left?: number; right?: number; top?: number; bottom?: number }
+): void {
+  const padLeft = padding?.left ?? 0;
+  const padRight = padding?.right ?? 0;
+  const padTop = padding?.top ?? 0;
+  const padBottom = padding?.bottom ?? 0;
+
+  if (orientation === 'x') {
+    const left = plotArea.x + padLeft;
+    const right = plotArea.x + plotArea.width - padRight;
+    const invertAxis = options?.invertAxis ?? false;
+    scale.setRange(invertAxis ? right : left, invertAxis ? left : right);
+    return;
+  }
+
+  const top = plotArea.y + padTop;
+  const bottom = plotArea.y + plotArea.height - padBottom;
+  const invertAxis = options?.invertAxis ?? false;
+  scale.setRange(invertAxis ? top : bottom, invertAxis ? bottom : top);
+}
+
 /**
  * Prepare series data for WebGL rendering
  */
@@ -56,18 +82,20 @@ export function prepareSeriesData(
 ): SeriesRenderData[] {
   const seriesData: SeriesRenderData[] = [];
 
-  // Update all scales with current plot area range and domain (considering padding)
   const padding = ctx.layout.plotPadding;
-  const padLeft = padding?.left ?? 0;
-  const padRight = padding?.right ?? 0;
-  const padTop = padding?.top ?? 0;
-  const padBottom = padding?.bottom ?? 0;
 
-  ctx.xScale.setRange(plotArea.x + padLeft, plotArea.x + plotArea.width - padRight);
+  setAxisRangeForRender(
+    ctx.xScale,
+    plotArea,
+    ctx.xAxisOptions,
+    'x',
+    padding
+  );
   ctx.xScale.setDomain(ctx.viewBounds.xMin, ctx.viewBounds.xMax);
 
   ctx.yScales.forEach((scale, id) => {
-    scale.setRange(plotArea.y + plotArea.height - padBottom, plotArea.y + padTop);
+    const axisOptions = ctx.yAxisOptionsMap.get(id);
+    setAxisRangeForRender(scale, plotArea, axisOptions, 'y', padding);
     if (id === ctx.primaryYAxisId) {
       scale.setDomain(ctx.viewBounds.yMin, ctx.viewBounds.yMax);
     }
@@ -436,7 +464,7 @@ export function renderOverlay(
 
   // Only draw cartesian axes if not special
   if (!isSpecialChart) {
-    ctx.overlay.drawXAxis(plotArea, ctx.xScale, ctx.xAxisOptions);
+    ctx.overlay.drawXAxis(plotArea, ctx.xScale, ctx.xAxisOptions, ctx.layout.xAxisLayout);
   }
 
   // Group axes by position
@@ -456,7 +484,7 @@ export function renderOverlay(
       const opts = ctx.yAxisOptionsMap.get(id);
       if (scale && opts) {
         const offset = index * 65;
-        ctx.overlay.drawYAxis(plotArea, scale, opts, "left", offset);
+        ctx.overlay.drawYAxis(plotArea, scale, opts, "left", offset, ctx.layout.yAxisLayout);
       }
     });
 
@@ -466,7 +494,7 @@ export function renderOverlay(
       const opts = ctx.yAxisOptionsMap.get(id);
       if (scale && opts) {
         const offset = index * 65;
-        ctx.overlay.drawYAxis(plotArea, scale, opts, "right", offset);
+        ctx.overlay.drawYAxis(plotArea, scale, opts, "right", offset, ctx.layout.yAxisLayout);
       }
     });
   }

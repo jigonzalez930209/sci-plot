@@ -27,6 +27,7 @@ export interface SerializedAxis {
   min?: number;
   max?: number;
   auto?: boolean;
+  invertAxis?: boolean;
 }
 
 /** Serialized series data */

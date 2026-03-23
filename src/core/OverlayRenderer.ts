@@ -10,6 +10,7 @@ import type { ChartTheme } from "../theme";
 import type { Series } from "./Series";
 import type { PlotArea, CursorState, AxisOptions } from "../types";
 import type { ChartTitleOptions } from "./layout/types";
+import type { AxisLayoutOptions } from "./layout/types";
 
 // ============================================
 // Overlay Renderer Class
@@ -279,7 +280,12 @@ export class OverlayRenderer {
   /**
    * Draw X axis with ticks and labels
    */
-  drawXAxis(plotArea: PlotArea, xScale: Scale, options?: AxisOptions): void {
+  drawXAxis(
+    plotArea: PlotArea,
+    xScale: Scale,
+    options?: AxisOptions,
+    layout?: AxisLayoutOptions
+  ): void {
     const { ctx } = this;
     const axis = this.theme.xAxis;
     const xTicks = xScale.ticks(8);
@@ -324,7 +330,8 @@ export class OverlayRenderer {
 
     // Axis title
     if (label) {
-      this.drawLatexOrText(label, plotArea.x + plotArea.width / 2, plotArea.y + plotArea.height + 45, {
+      const titleGap = layout?.titleGap ?? 45;
+      this.drawLatexOrText(label, plotArea.x + plotArea.width / 2, plotArea.y + plotArea.height + titleGap, {
         fontSize: axis.titleSize,
         fontFamily: axis.fontFamily,
         color: axis.titleColor,
@@ -342,7 +349,8 @@ export class OverlayRenderer {
     yScale: Scale,
     options?: AxisOptions,
     position: "left" | "right" = "left",
-    offset: number = 0
+    offset: number = 0,
+    layout?: AxisLayoutOptions
   ): void {
     const { ctx } = this;
     const axis = this.theme.yAxis;
@@ -391,9 +399,10 @@ export class OverlayRenderer {
 
     // Axis title
     if (label) {
+      const titleGap = layout?.titleGap ?? 50;
       const titleX = position === 'left'
-        ? axisX - 40 // Adjust padding for left title
-        : axisX + 40; // Adjust padding for right title
+        ? axisX - titleGap // Adjust padding for left title
+        : axisX + titleGap; // Adjust padding for right title
 
       const titleY = plotArea.y + plotArea.height / 2;
 

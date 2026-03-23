@@ -259,13 +259,13 @@ export const DEFAULT_LAYOUT: Required<LayoutOptions> = {
         left: 0,
     },
     xAxisLayout: {
-        titleGap: 8,
+        titleGap: 45,
         labelGap: 4,
         tickGap: 2,
         axisPadding: 0,
     },
     yAxisLayout: {
-        titleGap: 8,
+        titleGap: 50,
         labelGap: 4,
         tickGap: 2,
         axisPadding: 0,

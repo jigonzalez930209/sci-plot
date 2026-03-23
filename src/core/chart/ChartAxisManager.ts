@@ -112,14 +112,16 @@ export class ChartAxisManager {
    * Update X axis configuration
    */
   updateXAxis(options: Partial<AxisOptions>): void {
-    this.ctx.xAxisOptions = { ...this.ctx.xAxisOptions, ...options };
+    const previousScale = this.ctx.xAxisOptions.scale;
+    Object.assign(this.ctx.xAxisOptions, options);
 
     // Update scale if scale type changed
-    if (options.scale && options.scale !== this.ctx.xAxisOptions.scale) {
+    if (options.scale && options.scale !== previousScale) {
       const newScale =
         options.scale === "log" ? new LogScale() : new LinearScale();
       newScale.setDomain(this.ctx.xScale.domain[0], this.ctx.xScale.domain[1]);
-      this.ctx.xScale = newScale;
+      Object.setPrototypeOf(this.ctx.xScale, Object.getPrototypeOf(newScale));
+      Object.assign(this.ctx.xScale, newScale);
     }
 
     this.ctx.requestRender();
