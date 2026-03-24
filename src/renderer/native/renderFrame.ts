@@ -67,7 +67,7 @@ export function renderFrame(
     gl.clear(gl.COLOR_BUFFER_BIT);
   }
 
-  const uniforms = calculateUniforms(bounds);
+  const uniforms = calculateUniforms(bounds, options.invertX);
 
   for (const s of series) {
     // Skip invisible series or series with no data

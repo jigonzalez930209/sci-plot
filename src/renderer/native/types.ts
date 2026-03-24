@@ -52,6 +52,7 @@ export interface NativeSeriesRenderData {
 
 export interface NativeRenderOptions {
   bounds: Bounds;
+  invertX?: boolean;
   backgroundColor?: [number, number, number, number];
   plotArea?: { x: number; y: number; width: number; height: number };
   plotAreaBackground?: [number, number, number, number];

@@ -169,6 +169,7 @@ export class ChartRenderLoop {
       const seriesData = prepareSeriesData(renderCtx, plotArea);
       this.ctx.renderer.render(seriesData, {
         bounds: this.ctx.viewBounds,
+        invertX: Boolean(this.ctx.xAxisOptions.invertAxis),
         backgroundColor: this.ctx.backgroundColor,
         plotAreaBackground: this.ctx.plotAreaBackground,
         plotArea,

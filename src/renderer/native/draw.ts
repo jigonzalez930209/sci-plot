@@ -2,17 +2,20 @@ import type { Bounds } from "../../types";
 import type { ShaderProgram } from "./types";
 import { parseColor } from "./utils";
 
-export function calculateUniforms(bounds: Bounds): {
+export function calculateUniforms(
+  bounds: Bounds,
+  invertX: boolean = false
+): {
   scale: [number, number];
   translate: [number, number];
 } {
   const dataWidth = bounds.xMax - bounds.xMin;
   const dataHeight = bounds.yMax - bounds.yMin;
 
-  const scaleX = dataWidth > 0 ? 2 / dataWidth : 1;
+  const scaleX = dataWidth > 0 ? (invertX ? -2 : 2) / dataWidth : 1;
   const scaleY = dataHeight > 0 ? 2 / dataHeight : 1;
 
-  const translateX = -1 - bounds.xMin * scaleX;
+  const translateX = invertX ? 1 - bounds.xMin * scaleX : -1 - bounds.xMin * scaleX;
   const translateY = -1 - bounds.yMin * scaleY;
 
   return {
