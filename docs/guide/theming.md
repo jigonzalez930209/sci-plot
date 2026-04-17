@@ -26,7 +26,7 @@ Sci Plot includes four pre-built themes:
 ### Using Themes
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 // Use theme by name
 const chart = createChart({
@@ -38,7 +38,7 @@ const chart = createChart({
 ### Theme Objects
 
 ```typescript
-import { DARK_THEME, LIGHT_THEME, MIDNIGHT_THEME } from 'sci-plot'
+import { DARK_THEME, LIGHT_THEME, MIDNIGHT_THEME } from 'velo-plot'
 
 const chart = createChart({
   container,
@@ -86,7 +86,7 @@ function setTheme(themeName) {
 Create your own theme with `createTheme`:
 
 ```typescript
-import { createTheme } from 'sci-plot'
+import { createTheme } from 'velo-plot'
 
 const myTheme = createTheme({
   name: 'my-custom-theme',
@@ -140,7 +140,7 @@ const chart = createChart({
 Base your theme on an existing one:
 
 ```typescript
-import { DARK_THEME, createTheme } from 'sci-plot'
+import { DARK_THEME, createTheme } from 'velo-plot'
 
 const customDark = createTheme({
   ...DARK_THEME,
@@ -366,7 +366,7 @@ console.log(scheme.highlightColor)  // '#FFD700' (gold)
 ### Custom Color Schemes
 
 ```typescript
-import { type ColorScheme } from 'sci-plot'
+import { type ColorScheme } from 'velo-plot'
 
 const customScheme: ColorScheme = {
   name: 'my-scheme',
