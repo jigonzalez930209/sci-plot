@@ -24,7 +24,7 @@ Even with high-frequency updates, the UI remains perfectly responsive.
 ## Implementation
 
 ```typescript
-import { createChart, PluginOffscreen } from 'sci-plot';
+import { createChart, PluginOffscreen } from 'velo-plot';
 
 const chart = createChart({ container });
 
