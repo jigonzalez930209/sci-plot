@@ -17,9 +17,9 @@ export interface PluginDebugConfig extends Partial<DebugOverlayOptions> {
 }
 
 const manifestDebug: PluginManifest = {
-    name: "sci-plot-debug",
+    name: "velo-plot-debug",
     version: "1.0.0",
-    description: "Performance monitoring and debugging overlay for sci-plot",
+    description: "Performance monitoring and debugging overlay for velo-plot",
     provides: ["ui"],
     tags: ["debug", "performance", "fps", "monitoring"],
 };
