@@ -14,7 +14,7 @@ The `analysis` module includes a high-performance FFT (Fast Fourier Transform) i
 
 ### Compute Spectrum
 ```typescript
-import { analyzeSpectrum } from 'sci-plot';
+import { analyzeSpectrum } from 'velo-plot';
 
 const data = new Float32Array([/* ... signal ... */]);
 const sampleRate = 1000; // 1kHz
@@ -27,7 +27,7 @@ console.log(result.magnitude); // Magnitude spectrum
 
 ### Power Spectrum (dB)
 ```typescript
-import { powerSpectrum } from 'sci-plot';
+import { powerSpectrum } from 'velo-plot';
 
 const ps = powerSpectrum(data, sampleRate);
 // Plot ps.frequency vs ps.powerDb for an industry-standard PSD plot
@@ -35,7 +35,7 @@ const ps = powerSpectrum(data, sampleRate);
 
 ### Dominant Frequency
 ```typescript
-import { dominantFrequency } from 'sci-plot';
+import { dominantFrequency } from 'velo-plot';
 
 const { frequency, magnitude } = dominantFrequency(data, sampleRate);
 console.log(`Peak at ${frequency} Hz with amplitude ${magnitude}`);
@@ -52,7 +52,7 @@ Apply windows to reduce spectral leakage before FFT:
 For advanced signal processing, you can access the full complex spectrum with separate real and imaginary components:
 
 ```typescript
-import { analyzeComplexSpectrum, type ComplexFFTResult } from 'sci-plot';
+import { analyzeComplexSpectrum, type ComplexFFTResult } from 'velo-plot';
 
 const signal = new Float32Array([/* ... */]);
 const sampleRate = 1000;
@@ -73,7 +73,7 @@ console.log(result.nyquist);   // Nyquist index (length / 2)
 Process complex signals (e.g., I/Q data, previous FFT results):
 
 ```typescript
-import { fftFromComplexInput } from 'sci-plot';
+import { fftFromComplexInput } from 'velo-plot';
 
 // Separate real and imaginary arrays
 const realPart = new Float32Array([1, 0, -1, 0, 1, 0, -1, 0]);
@@ -92,7 +92,7 @@ import {
   ifftFromArrays,
   ifftComplex,
   getPositiveFrequencies 
-} from 'sci-plot';
+} from 'velo-plot';
 
 // Convert Complex[] to separate arrays
 const { real, imag } = complexToArrays(spectrum.complex);
@@ -116,7 +116,7 @@ Standard FIR and IIR filters for noise reduction and feature extraction.
 
 ### Low-pass / High-pass / Band-pass
 ```typescript
-import { lowPassFilter, butterworth } from 'sci-plot';
+import { lowPassFilter, butterworth } from 'velo-plot';
 
 // Simple FIR Low-pass
 const smoothed = lowPassFilter(data, 50, 1000); // 50Hz cutoff
@@ -149,7 +149,7 @@ const cleaned = singleFrequencyFilter(data, {
 Detect outliers or unusual patterns in real-time.
 
 ```typescript
-import { detectAnomalies } from 'sci-plot';
+import { detectAnomalies } from 'velo-plot';
 
 const result = detectAnomalies(data, {
   method: 'zscore', // or 'mad', 'iqr', 'isolation'
@@ -163,7 +163,7 @@ console.log('Outlier indices:', result.indices);
 Find similarities between signals or lag times.
 
 ```typescript
-import { crossCorrelation } from 'sci-plot';
+import { crossCorrelation } from 'velo-plot';
 
 const corr = crossCorrelation(signal1, signal2);
 console.log(`Signals align at lag: ${corr.lagAtMax}`);
@@ -173,7 +173,7 @@ console.log(`Signals align at lag: ${corr.lagAtMax}`);
 Calculate area under the curve.
 
 ```typescript
-import { trapezoidalIntegration, simpsonsIntegration } from 'sci-plot';
+import { trapezoidalIntegration, simpsonsIntegration } from 'velo-plot';
 
 const area = trapezoidalIntegration(yData, xData);
 const refinedArea = simpsonsIntegration(yData, 0.1); // For uniform spacing
@@ -183,7 +183,7 @@ const refinedArea = simpsonsIntegration(yData, 0.1); // For uniform spacing
 Compare datasets for scientific significance.
 
 ```typescript
-import { tTest } from 'sci-plot';
+import { tTest } from 'velo-plot';
 
 const result = tTest(groupA, groupB);
 if (result.significant) {
