@@ -14,7 +14,7 @@ The Impulse 3D chart renders vertical stems from a base plane to data points, si
 ## Basic Usage
 
 ```typescript
-import { Chart3D } from 'sci-plot/core/3d';
+import { Chart3D } from 'velo-plot/core/3d';
 
 const chart = new Chart3D({
   canvas: document.getElementById('canvas'),
