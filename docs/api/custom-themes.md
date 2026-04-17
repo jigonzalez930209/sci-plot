@@ -5,7 +5,7 @@ Create your own themes to match your application's design.
 ## createTheme
 
 ```typescript
-import { createTheme } from 'sci-plot'
+import { createTheme } from 'velo-plot'
 
 const myTheme = createTheme({
   name: 'my-theme',
@@ -59,7 +59,7 @@ createChart({
 ## Extending Existing Themes
 
 ```typescript
-import { DARK_THEME, createTheme } from 'sci-plot'
+import { DARK_THEME, createTheme } from 'velo-plot'
 
 const customDark = createTheme({
   ...DARK_THEME,
