@@ -211,7 +211,7 @@ chart.destroy()
 ## Example
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 // Create chart
 const chart = createChart({
@@ -267,7 +267,7 @@ const chart = createChart({
 })
 
 // Use custom theme
-import { createTheme } from 'sci-plot'
+import { createTheme } from 'velo-plot'
 
 const myTheme = createTheme({
   name: 'custom',
