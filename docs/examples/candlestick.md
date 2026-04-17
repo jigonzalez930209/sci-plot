@@ -15,7 +15,7 @@ import { ref } from 'vue'
 Candlestick charts require a specific data structure with `open`, `high`, `low`, and `close` fields.
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
