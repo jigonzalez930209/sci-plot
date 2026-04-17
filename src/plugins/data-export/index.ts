@@ -8,8 +8,8 @@
  * 
  * @example
  * ```typescript
- * import { createChart } from 'sci-plot';
- * import { PluginDataExport } from 'sci-plot/plugins/data-export';
+ * import { createChart } from 'velo-plot';
+ * import { PluginDataExport } from 'velo-plot/plugins/data-export';
  * 
  * const chart = createChart({ container });
  * chart.use(PluginDataExport({
@@ -54,9 +54,9 @@ export * from "./types";
 // ============================================
 
 const manifestDataExport: PluginManifest = {
-  name: "sci-plot-data-export",
+  name: "velo-plot-data-export",
   version: "1.0.0",
-  description: "Advanced data export capabilities for sci-plot",
+  description: "Advanced data export capabilities for velo-plot",
   author: "Sci Plot Team",
   provides: ["export"],
   tags: ["export", "csv", "json", "matlab", "python", "data"],
@@ -159,7 +159,7 @@ export function PluginDataExport(
       : `${seriesIds.length}_series`;
     
     const config = FORMAT_CONFIGS[format];
-    return `sci-plot_${seriesPart}_${timestamp}${config.extension}`;
+    return `velo-plot_${seriesPart}_${timestamp}${config.extension}`;
   }
 
   /**
