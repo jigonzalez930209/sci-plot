@@ -143,7 +143,7 @@ function updateView(centerIndex) {
 For datasets too large to display, use LTTB downsampling:
 
 ```typescript
-import { downsampleLTTB } from 'sci-plot'
+import { downsampleLTTB } from 'velo-plot'
 
 // Reduce 10M points to 10k for display
 const { x: sampledX, y: sampledY } = downsampleLTTB(
