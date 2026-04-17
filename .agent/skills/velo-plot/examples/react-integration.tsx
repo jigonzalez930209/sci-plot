@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { createChart, type Chart } from 'sci-plot';
+import { createChart, type Chart } from 'velo-plot';
 
 /**
  * React Component pattern for Sci Plot
