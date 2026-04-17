@@ -44,9 +44,9 @@ export interface PluginGpuConfig {
 }
 
 const manifestGpu: PluginManifest = {
-    name: "sci-plot-gpu",
+    name: "velo-plot-gpu",
     version: "1.0.0",
-    description: "GPU acceleration and WebGPU support for sci-plot",
+    description: "GPU acceleration and WebGPU support for velo-plot",
     provides: ["renderer", "compute"],
     tags: ["gpu", "webgpu", "webgl2", "performance"],
 };
