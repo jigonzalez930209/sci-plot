@@ -20,8 +20,8 @@ The **PluginContextMenu** provides a fully customizable right-click context menu
 ## Installation
 
 ```typescript
-import { createChart } from 'sci-plot';
-import { PluginContextMenu } from 'sci-plot/plugins/context-menu';
+import { createChart } from 'velo-plot';
+import { PluginContextMenu } from 'velo-plot/plugins/context-menu';
 
 const chart = createChart({ container });
 chart.use(PluginContextMenu({
@@ -56,7 +56,7 @@ chart.use(PluginContextMenu({
 Show the context menu programmatically at specified coordinates.
 
 ```typescript
-const menu = chart.getPlugin('sci-plot-context-menu');
+const menu = chart.getPlugin('velo-plot-context-menu');
 menu.api.show(200, 300);
 
 // With custom items
@@ -382,8 +382,8 @@ chart.use(PluginContextMenu({
 ### With Export Integration
 
 ```typescript
-import { PluginDataExport } from 'sci-plot/plugins/data-export';
-import { PluginContextMenu } from 'sci-plot/plugins/context-menu';
+import { PluginDataExport } from 'velo-plot/plugins/data-export';
+import { PluginContextMenu } from 'velo-plot/plugins/context-menu';
 
 chart.use(PluginDataExport({ autoDownload: true }));
 chart.use(PluginContextMenu({
@@ -392,7 +392,7 @@ chart.use(PluginContextMenu({
       label: 'Export to MATLAB',
       icon: '📊',
       onClick: () => {
-        chart.getPlugin('sci-plot-data-export').api.download('matlab');
+        chart.getPlugin('velo-plot-data-export').api.download('matlab');
       }
     }
   ]
