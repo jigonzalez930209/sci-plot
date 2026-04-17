@@ -1,9 +1,9 @@
 ---
-description: Guide on how to create custom Plugins and Render Series in sci-plot for AI Agents
+description: Guide on how to create custom Plugins and Render Series in velo-plot for AI Agents
 ---
 # AI SYSTEM INSTRUCTION: Component Creation Guide
 
-**CRITICAL DIRECTIVE**: Follow these exact steps when expanding `sci-plot`. Because this is a WebGL engine, you do not "create a React component" to draw a line; you create a Renderer or a Plugin.
+**CRITICAL DIRECTIVE**: Follow these exact steps when expanding `velo-plot`. Because this is a WebGL engine, you do not "create a React component" to draw a line; you create a Renderer or a Plugin.
 
 ---
 
