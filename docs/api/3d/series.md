@@ -10,7 +10,7 @@ All available series types for the 3D rendering module. These are added using th
 ## Usage Example
 
 ```typescript
-import { Waterfall3DRenderer } from 'sci-plot/plugins/3d';
+import { Waterfall3DRenderer } from 'velo-plot/plugins/3d';
 
 const renderer = new Waterfall3DRenderer({ container: 'my-div' });
 
