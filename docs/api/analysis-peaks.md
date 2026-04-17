@@ -5,7 +5,7 @@ description: Find local maxima and minima in your data using the detectPeaks fun
 
 # Peak Detection
 
-Find local maxima and minima in data. Available via `import { detectPeaks } from 'sci-plot'` or `chart.analysis.detectPeaks()`.
+Find local maxima and minima in data. Available via `import { detectPeaks } from 'velo-plot'` or `chart.analysis.detectPeaks()`.
 
 ::: tip Requirement
 To use peak detection as part of the chart lifecycle (e.g., within a custom plugin or reactive workflow), loading `PluginAnalysis` is recommended.
@@ -14,7 +14,7 @@ To use peak detection as part of the chart lifecycle (e.g., within a custom plug
 ## detectPeaks
 
 ```typescript
-import { detectPeaks } from 'sci-plot';
+import { detectPeaks } from 'velo-plot';
 
 const peaks = detectPeaks(x, y, { minProminence: 0.1 });
 // Or via chart:
@@ -54,7 +54,7 @@ The algorithm finds local extrema by comparing each point to its neighbors:
 ### Example: Find All Peaks
 
 ```typescript
-import { detectPeaks } from 'sci-plot'
+import { detectPeaks } from 'velo-plot'
 
 const peaks = detectPeaks(x, y)
 
@@ -79,7 +79,7 @@ const maxima = detectPeaks(x, y, { type: 'max' })
 ### Example: Visualize Peaks
 
 ```typescript
-import { detectPeaks } from 'sci-plot'
+import { detectPeaks } from 'velo-plot'
 
 const peaks = detectPeaks(x, y, { minProminence: 0.05 })
 
