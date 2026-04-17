@@ -1,6 +1,6 @@
 ---
 title: 3D Series Types
-description: Reference for all available 3D data interfaces and series types in SciChart Engine, including bubble, surface, pointline, column, and waterfall metrics.
+description: Reference for all available 3D data interfaces and series types in Sci Plot, including bubble, surface, pointline, column, and waterfall metrics.
 ---
 
 # 3D Series Types
@@ -10,7 +10,7 @@ All available series types for the 3D rendering module. These are added using th
 ## Usage Example
 
 ```typescript
-import { Waterfall3DRenderer } from 'scichart-engine/plugins/3d';
+import { Waterfall3DRenderer } from 'sci-plot/plugins/3d';
 
 const renderer = new Waterfall3DRenderer({ container: 'my-div' });
 

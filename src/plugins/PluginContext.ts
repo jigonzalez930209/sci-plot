@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Plugin Context Implementation
+ * Sci Plot - Plugin Context Implementation
  * 
  * Provides the comprehensive context object that gives plugins
  * access to all chart functionality in a controlled manner.
@@ -84,7 +84,7 @@ class PluginLoggerImpl implements PluginLogger {
     private enabled: boolean;
 
     constructor(pluginName: string, enabled = true) {
-        this.prefix = `[SciChartEngine:${pluginName}]`;
+        this.prefix = `[SciPlot:${pluginName}]`;
         this.enabled = enabled;
     }
 
@@ -151,7 +151,7 @@ class EventContextImpl implements EventContext {
                 try {
                     handler(data);
                 } catch (e) {
-                    console.error(`[SciChartEngine] Error in plugin event handler for "${event}":`, e);
+                    console.error(`[SciPlot] Error in plugin event handler for "${event}":`, e);
                 }
             });
         }
@@ -208,7 +208,7 @@ class UIContextImpl implements UIContext {
         }
 
         const overlay = document.createElement("div");
-        overlay.id = `scichart-plugin-${id}`;
+        overlay.id = `sci-plot-plugin-${id}`;
         overlay.className = options.className || "";
         overlay.style.cssText = `
       position: absolute;
@@ -249,7 +249,7 @@ class UIContextImpl implements UIContext {
         // Create notifications container if needed
         if (!this.notifications) {
             this.notifications = document.createElement("div");
-            this.notifications.className = "scichart-notifications";
+            this.notifications.className = "sci-plot-notifications";
             this.notifications.style.cssText = `
         position: absolute;
         ${position.includes("top") ? "top: 10px;" : "bottom: 10px;"}
@@ -265,7 +265,7 @@ class UIContextImpl implements UIContext {
 
         // Create notification element
         const notification = document.createElement("div");
-        notification.className = `scichart-notification scichart-notification-${type}`;
+        notification.className = `sci-plot-notification sci-plot-notification-${type}`;
 
         const colors = {
             info: { bg: "#3b82f6", text: "#fff" },

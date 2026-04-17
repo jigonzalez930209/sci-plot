@@ -1,5 +1,5 @@
 /**
- * SciChartEngine Engine - Chart Sync Plugin
+ * SciPlot Engine - Chart Sync Plugin
  * 
  * Provides synchronization between multiple chart instances.
  * 
@@ -18,15 +18,15 @@ export interface PluginSyncConfig {
 }
 
 const manifestSync: PluginManifest = {
-    name: "scichart-sync",
+    name: "sci-plot-sync",
     version: "1.0.0",
-    description: "Multi-chart synchronization for scichart-engine",
+    description: "Multi-chart synchronization for sci-plot",
     provides: ["interaction"],
     tags: ["sync", "multi-chart", "coordination"],
 };
 
 /**
- * SciChartEngine Sync Plugin
+ * SciPlot Sync Plugin
  * 
  * Enables smooth coordination and synchronization between separate chart instances.
  */

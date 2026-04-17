@@ -1,7 +1,7 @@
 /**
- * SciChart - React Component for Scientific Charts
+ * SciPlot - React Component for Scientific Charts
  *
- * A declarative React component that wraps the SciChart Engine.
+ * A declarative React component that wraps the Sci Plot.
  */
 
 import {
@@ -12,7 +12,7 @@ import {
   useMemo,
   type CSSProperties,
 } from "react";
-import { useSciChart, type UseSciChartOptions } from "./useSciChart";
+import { useSciPlot, type UseSciPlotOptions } from "./useSciPlot";
 import type {
   SeriesOptions,
   ZoomOptions,
@@ -25,7 +25,7 @@ import type { Chart } from "../core/Chart";
 // Types
 // ============================================
 
-export interface SciChartSeries {
+export interface SciPlotSeries {
   id: string;
   x: Float32Array | Float64Array;
   y: Float32Array | Float64Array;
@@ -34,9 +34,9 @@ export interface SciChartSeries {
   visible?: boolean;
 }
 
-export interface SciChartProps extends UseSciChartOptions {
+export interface SciPlotProps extends UseSciPlotOptions {
   /** Series data to display */
-  series?: SciChartSeries[];
+  series?: SciPlotSeries[];
   /** Zoom state (controlled) */
   zoom?: ZoomOptions;
   /** Callback when zoom changes */
@@ -55,7 +55,7 @@ export interface SciChartProps extends UseSciChartOptions {
   debug?: boolean;
 }
 
-export interface SciChartRef {
+export interface SciPlotRef {
   /** Get the chart instance */
   getChart: () => Chart | null;
   /** Reset zoom to show all data */
@@ -69,11 +69,11 @@ export interface SciChartRef {
 // ============================================
 
 /**
- * SciChart React Component
+ * SciPlot React Component
  *
  * @example
  * ```tsx
- * <SciChart
+ * <SciPlot
  *   series={[
  *     { id: 'cv-1', x: potentialData, y: currentData, color: '#ff0055' }
  *   ]}
@@ -85,8 +85,8 @@ export interface SciChartRef {
  * />
  * ```
  */
-export const SciChart = forwardRef<SciChartRef, SciChartProps>(
-  function SciChart(
+export const SciPlot = forwardRef<SciPlotRef, SciPlotProps>(
+  function SciPlot(
     {
       series = [],
       zoom: zoomProp,
@@ -102,7 +102,7 @@ export const SciChart = forwardRef<SciChartRef, SciChartProps>(
     ref
   ) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const previousSeriesRef = useRef<Map<string, SciChartSeries>>(new Map());
+    const previousSeriesRef = useRef<Map<string, SciPlotSeries>>(new Map());
 
     const {
       chart,
@@ -112,7 +112,7 @@ export const SciChart = forwardRef<SciChartRef, SciChartProps>(
       updateSeries,
       removeSeries,
       resetZoom,
-    } = useSciChart(containerRef, chartOptions);
+    } = useSciPlot(containerRef, chartOptions);
 
     // Expose methods via ref
     useImperativeHandle(
@@ -220,7 +220,7 @@ export const SciChart = forwardRef<SciChartRef, SciChartProps>(
     return (
       <div
         ref={containerRef}
-        className={`scichart-container ${className}`}
+        className={`sci-plot-container ${className}`}
         style={containerStyle}
       >
         {/* Debug overlay */}
@@ -253,4 +253,4 @@ export const SciChart = forwardRef<SciChartRef, SciChartProps>(
   }
 );
 
-export default SciChart;
+export default SciPlot;

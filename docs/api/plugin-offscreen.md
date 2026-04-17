@@ -5,7 +5,7 @@ description: Move heavy chart rendering and data processing to background Worker
 
 # Offscreen Rendering Plugin
 
-The Offscreen plugin enables `OffscreenCanvas` support, allowing SciChart Engine to perform all WebGL rendering and heavy data calculations in a separate Web Worker. This ensures that the UI remains butter-smooth and responsive even during intensive data updates or ultra-high resolution rendering.
+The Offscreen plugin enables `OffscreenCanvas` support, allowing Sci Plot to perform all WebGL rendering and heavy data calculations in a separate Web Worker. This ensures that the UI remains butter-smooth and responsive even during intensive data updates or ultra-high resolution rendering.
 
 ## Features
 
@@ -18,7 +18,7 @@ The Offscreen plugin enables `OffscreenCanvas` support, allowing SciChart Engine
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginOffscreen } from 'scichart-engine';
+import { createChart, PluginOffscreen } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')!

@@ -20,7 +20,7 @@ import { ref } from 'vue'
 To stack series, simply assign them the same `stackId`. The engine handles the accumulation logic automatically.
 
 ```typescript
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),

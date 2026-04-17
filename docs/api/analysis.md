@@ -5,7 +5,7 @@ description: Built-in utilities for scientific data analysis, including peak det
 
 # Data Analysis
 
-SciChart Engine includes built-in utilities for common data analysis tasks.
+Sci Plot includes built-in utilities for common data analysis tasks.
 
 ## Overview
 
@@ -20,7 +20,7 @@ import {
   movingAverage,
   downsampleLTTB,
   validateData,
-} from 'scichart-engine'
+} from 'sci-plot'
 
 const stats = calculateStats(myData);
 ```
@@ -29,7 +29,7 @@ const stats = calculateStats(myData);
 By loading the `PluginAnalysis`, you gain access to all analysis tools directly through the `chart` instance, which handles coordinate conversion and series-aware analysis automatically.
 
 ```typescript
-import { PluginAnalysis } from 'scichart-engine/plugins';
+import { PluginAnalysis } from 'sci-plot/plugins';
 
 await chart.use(PluginAnalysis());
 
@@ -167,7 +167,7 @@ import {
   detectPeaks, 
   calculateStats,
   downsampleLTTB 
-} from 'scichart-engine'
+} from 'sci-plot'
 
 // Detect cycles in oscillating data
 const cycles = detectCycles(signalData)

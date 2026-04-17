@@ -1,6 +1,6 @@
-# Contributing to SciChart Engine
+# Contributing to Sci Plot
 
-First off, thank you for considering contributing to SciChart Engine! It's people like you that make it a great tool for the scientific community.
+First off, thank you for considering contributing to Sci Plot! It's people like you that make it a great tool for the scientific community.
 
 ## Code of Conduct
 
@@ -16,7 +16,7 @@ We are committed to providing a friendly, safe, and welcoming environment for al
 ## Development Guidelines
 
 ### 1. Performance First
-SciChart Engine is built for performance. Any change that significantly degrades rendering speed or increases memory consumption without a very strong justification will be rejected.
+Sci Plot is built for performance. Any change that significantly degrades rendering speed or increases memory consumption without a very strong justification will be rejected.
 - Use `TypedArrays` for data.
 - Avoid unnecessary React re-renders.
 - Minimize garbage collection during the render loop.

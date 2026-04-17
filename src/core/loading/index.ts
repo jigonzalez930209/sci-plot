@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Loading Indicator Module
+ * Sci Plot - Loading Indicator Module
  * 
  * Provides visual loading/progress indicators for chart operations.
  * Supports progress bars, spinners, and skeleton placeholders.
@@ -81,7 +81,7 @@ export class LoadingIndicator {
       backgroundColor: 'rgba(0, 0, 0, 0.7)',
       textColor: '#ffffff',
       size: 'medium',
-      className: 'scichart-loading',
+      className: 'sci-plot-loading',
       autoHide: true,
       hideDelay: 200,
       ...options,
@@ -258,20 +258,20 @@ export class LoadingIndicator {
     switch (type) {
       case 'spinner':
         content = `
-          <div class="scichart-loading-spinner" style="
+          <div class="sci-plot-loading-spinner" style="
             width: ${spinnerSize}px;
             height: ${spinnerSize}px;
             border: 3px solid rgba(255,255,255,0.2);
             border-top-color: ${accentColor};
             border-radius: 50%;
-            animation: scichart-spin 0.8s linear infinite;
+            animation: sci-plot-spin 0.8s linear infinite;
           "></div>
         `;
         break;
 
       case 'progress':
         content = `
-          <div class="scichart-loading-progress" style="
+          <div class="sci-plot-loading-progress" style="
             width: 200px;
             height: 8px;
             background: rgba(255,255,255,0.2);
@@ -298,25 +298,25 @@ export class LoadingIndicator {
 
       case 'skeleton':
         content = `
-          <div class="scichart-loading-skeleton" style="
+          <div class="sci-plot-loading-skeleton" style="
             width: 80%;
             max-width: 300px;
           ">
-            <div class="scichart-skeleton-line" style="height: 20px; margin-bottom: 8px;"></div>
-            <div class="scichart-skeleton-line" style="height: 16px; width: 60%; margin-bottom: 8px;"></div>
-            <div class="scichart-skeleton-line" style="height: 40px;"></div>
+            <div class="sci-plot-skeleton-line" style="height: 20px; margin-bottom: 8px;"></div>
+            <div class="sci-plot-skeleton-line" style="height: 16px; width: 60%; margin-bottom: 8px;"></div>
+            <div class="sci-plot-skeleton-line" style="height: 40px;"></div>
           </div>
         `;
         break;
 
       case 'pulse':
         content = `
-          <div class="scichart-loading-pulse" style="
+          <div class="sci-plot-loading-pulse" style="
             width: ${spinnerSize}px;
             height: ${spinnerSize}px;
             background: ${accentColor};
             border-radius: 50%;
-            animation: scichart-pulse 1.2s ease-in-out infinite;
+            animation: sci-plot-pulse 1.2s ease-in-out infinite;
           "></div>
         `;
         break;
@@ -350,27 +350,27 @@ export class LoadingIndicator {
   }
 
   private injectStyles(): void {
-    const styleId = 'scichart-loading-styles';
+    const styleId = 'sci-plot-loading-styles';
     if (document.getElementById(styleId)) return;
 
     const style = document.createElement('style');
     style.id = styleId;
     style.textContent = `
-      @keyframes scichart-spin {
+      @keyframes sci-plot-spin {
         to { transform: rotate(360deg); }
       }
       
-      @keyframes scichart-pulse {
+      @keyframes sci-plot-pulse {
         0%, 100% { transform: scale(1); opacity: 1; }
         50% { transform: scale(1.2); opacity: 0.7; }
       }
       
-      @keyframes scichart-skeleton-shimmer {
+      @keyframes sci-plot-skeleton-shimmer {
         0% { background-position: -200% 0; }
         100% { background-position: 200% 0; }
       }
       
-      .scichart-skeleton-line {
+      .sci-plot-skeleton-line {
         background: linear-gradient(
           90deg,
           rgba(255,255,255,0.1) 25%,
@@ -378,7 +378,7 @@ export class LoadingIndicator {
           rgba(255,255,255,0.1) 75%
         );
         background-size: 200% 100%;
-        animation: scichart-skeleton-shimmer 1.5s infinite;
+        animation: sci-plot-skeleton-shimmer 1.5s infinite;
         border-radius: 4px;
       }
     `;

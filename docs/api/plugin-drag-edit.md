@@ -20,7 +20,7 @@ The Drag & Drop Editing plugin enables interactive modification of data points d
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginDragEdit } from 'scichart-engine';
+import { createChart, PluginDragEdit } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')!

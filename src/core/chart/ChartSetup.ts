@@ -38,7 +38,7 @@ export function initializeChart(
   container: HTMLDivElement,
   options: ChartOptions
 ): SetupResult {
-  if (!container) throw new Error("[SciChartEngine] Container element is required");
+  if (!container) throw new Error("[SciPlot] Container element is required");
 
   const dpr = options.devicePixelRatio ?? window.devicePixelRatio;
 

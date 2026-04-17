@@ -1,6 +1,6 @@
 # Events
 
-SciChart Engine emits events for various chart interactions and state changes.
+Sci Plot emits events for various chart interactions and state changes.
 
 ## Subscribing to Events
 

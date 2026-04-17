@@ -1,7 +1,7 @@
 /**
  * PluginDataTransform - Implementation
  * 
- * Provides a pipeline-based data transformation system for SciChart Engine.
+ * Provides a pipeline-based data transformation system for Sci Plot.
  */
 
 import type { 
@@ -31,7 +31,7 @@ const manifest: PluginManifest = {
   version: '1.0.0',
   description: 'Advanced data transformation pipeline',
   provides: ['data-transform', 'processing'],
-  author: 'SciChart Engine Team'
+  author: 'Sci Plot Team'
 };
 
 export function PluginDataTransform(

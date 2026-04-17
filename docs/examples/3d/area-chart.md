@@ -11,7 +11,7 @@ The Area 3D chart fills the space between a line and a base plane, creating a cu
 ## Basic Usage
 
 ```typescript
-import { Chart3D } from 'scichart-engine/core/3d';
+import { Chart3D } from 'sci-plot/core/3d';
 
 const chart = new Chart3D({
   canvas: document.getElementById('canvas'),

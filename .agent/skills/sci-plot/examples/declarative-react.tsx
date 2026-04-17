@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
-import { SciChart, type SciChartRef } from 'scichart-engine/react';
+import { SciPlot, type SciPlotRef } from 'sci-plot/react';
 
 /**
- * Declarative React pattern using the built-in SciChart component
+ * Declarative React pattern using the built-in SciPlot component
  */
 export const DeclarativeChart: React.FC = () => {
-    const chartRef = useRef<SciChartRef>(null);
+    const chartRef = useRef<SciPlotRef>(null);
 
     const series = [
         {
@@ -40,7 +40,7 @@ export const DeclarativeChart: React.FC = () => {
             <button onClick={handleExport} style={{ alignSelf: 'flex-start', marginBottom: '10px' }}>
                 Export Snapshot
             </button>
-            <SciChart
+            <SciPlot
                 ref={chartRef}
                 series={series}
                 xAxis={{ label: 'Time (s)', auto: true }}

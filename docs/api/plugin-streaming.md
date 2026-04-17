@@ -18,7 +18,7 @@ The Streaming plugin provides a robust foundation for building real-time dashboa
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginStreaming } from 'scichart-engine';
+import { createChart, PluginStreaming } from 'sci-plot';
 
 const chart = createChart({ container });
 await chart.use(PluginStreaming());
@@ -39,7 +39,7 @@ stream.connect();
 When data arrives at thousands of points per second, the `BackpressureManager` helps maintain a stable frame rate.
 
 ```typescript
-import { createBackpressureManager } from 'scichart-engine/streaming';
+import { createBackpressureManager } from 'sci-plot/streaming';
 
 const bp = createBackpressureManager({
   maxBufferSize: 5000,

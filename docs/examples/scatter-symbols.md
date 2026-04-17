@@ -5,7 +5,7 @@ description: Interactive demo showcasing multiple scatter marker shapes
 
 # Scatter Symbols Demo
 
-This demo showcases the high-performance WebGL-rendered scatter symbols available in SciChart Engine. Each symbol is rendered using optimal GPU fragment shaders for maximum sharpness and performance.
+This demo showcases the high-performance WebGL-rendered scatter symbols available in Sci Plot. Each symbol is rendered using optimal GPU fragment shaders for maximum sharpness and performance.
 
 ## Interactive Example
 

@@ -4,7 +4,7 @@
  * Demonstrates the layout system for fine-grained control over
  * chart component positioning and behavior.
  */
-import { createChart, type LayoutOptions } from 'scichart-engine';
+import { createChart, type LayoutOptions } from 'sci-plot';
 
 // Create chart with comprehensive layout configuration
 const chart = createChart({

@@ -1,5 +1,5 @@
 import math
-from scichart_engine import PythonChart
+from sci_plot import PythonChart
 
 # 1. Create a new chart
 chart = PythonChart("my-chart")

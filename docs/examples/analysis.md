@@ -5,7 +5,7 @@ description: Baseline correction and peak integration tools
 
 # Peak Analysis Demo
 
-Scientific data often requires pre-processing before meaningful parameters can be extracted. This demo showcases the **Baseline Subtraction** and **Numerical Integration** tools provided by the `scichart-analysis` plugin.
+Scientific data often requires pre-processing before meaningful parameters can be extracted. This demo showcases the **Baseline Subtraction** and **Numerical Integration** tools provided by the `sci-plot-analysis` plugin.
 
 ## Interactive Example
 
@@ -25,7 +25,7 @@ Experimental backgrounds can be modeled as a linear trend between two points.
 
 ```typescript
 // Access analysis via the chart instance
-const analysis = chart.getPluginAPI('scichart-analysis');
+const analysis = chart.getPluginAPI('sci-plot-analysis');
 
 // Correct raw data using points at x=10 and x=90 as background anchors
 const correctedY = analysis.subtractBaseline(rawX, rawY, 10, 90);
@@ -42,7 +42,7 @@ chart.addSeries({
 Calculates the area under a curve within a specific range using the **Trapezoidal Rule**.
 
 ```typescript
-const analysis = chart.getPluginAPI('scichart-analysis');
+const analysis = chart.getPluginAPI('sci-plot-analysis');
 
 // Calculate area between specific X bounds
 const area = analysis.integrate(xData, yData, { xMin: 0.2, xMax: 0.8 });
@@ -52,7 +52,7 @@ console.log(`Integrated Area: ${area.toFixed(6)} units²`);
 
 ## Advanced Tools
 
-For more complex analysis, you can use the **Peak Tool** from the `scichart-tools` plugin:
+For more complex analysis, you can use the **Peak Tool** from the `sci-plot-tools` plugin:
 
 ```typescript
 // Enable interactive peak analysis tool

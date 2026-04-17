@@ -33,7 +33,7 @@ The current response reveals information about electrochemical reactions occurri
 ## Basic Usage
 
 ```typescript
-import { createChart } from '@scichart/engine';
+import { createChart } from '@sci-plot/engine';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -152,7 +152,7 @@ console.log('Cathodic peak:', peaks[1]);
 The demo includes a **DirectionIndicator** plugin that **replaces the last data point** with an arrow indicating the **continuous direction** of the streaming data. The arrow renders every frame for smooth, jump-free visualization of the data trend.
 
 ```typescript
-import { DirectionIndicatorPlugin } from '@scichart/engine/plugins';
+import { DirectionIndicatorPlugin } from '@sci-plot/engine/plugins';
 
 // Add the direction indicator plugin
 await chart.use(DirectionIndicatorPlugin({

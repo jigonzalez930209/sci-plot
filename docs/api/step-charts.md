@@ -10,7 +10,7 @@ Step charts display data as a series of horizontal and vertical line segments, c
 ## Quick Example
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -32,7 +32,7 @@ chart.addSeries({
 
 ## Step Modes
 
-SciChart Engine supports three step modes that control where the step transition occurs:
+Sci Plot supports three step modes that control where the step transition occurs:
 
 ### After (Default)
 

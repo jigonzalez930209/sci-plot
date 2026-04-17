@@ -1,6 +1,6 @@
 # Bar Charts
 
-SciChart Engine supports high-performance bar charts for categorical data or discrete measurements.
+Sci Plot supports high-performance bar charts for categorical data or discrete measurements.
 
 ## Live Demo
 
@@ -11,7 +11,7 @@ SciChart Engine supports high-performance bar charts for categorical data or dis
 You can add a bar series using the `addSeries` method with `type: 'bar'` or the convenience method `addBar`.
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -45,7 +45,7 @@ Bar charts support several specific styling options:
 
 ### Automatic Bar Width
 
-If `barWidth` is not specified, SciChart Engine automatically calculates an optimal width based on the spacing between consecutive X values, ensuring bars don't overlap.
+If `barWidth` is not specified, Sci Plot automatically calculates an optimal width based on the spacing between consecutive X values, ensuring bars don't overlap.
 
 ```typescript
 chart.addSeries({

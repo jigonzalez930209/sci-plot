@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Chart Synchronization Module
+ * Sci Plot - Chart Synchronization Module
  * 
  * Provides synchronization between multiple charts:
  * - Synchronized zoom/pan (X, Y, or both)

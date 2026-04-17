@@ -1,6 +1,6 @@
 # Examples
 
-Interactive examples demonstrating SciChart Engine capabilities.
+Interactive examples demonstrating Sci Plot capabilities.
 
 <script setup>
 import { ref } from 'vue'
@@ -154,7 +154,7 @@ Interactive tools for selecting and analyzing specific data regions.
 ### Minimal Example
 
 ```typescript
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -172,9 +172,9 @@ chart.addSeries({
 ### React Minimal
 
 ```tsx
-import { SciChart } from 'scichart-engine/react'
+import { SciPlot } from 'sci-plot/react'
 
-<SciChart
+<SciPlot
   series={[{
     id: 'data',
     x: new Float32Array([0, 1, 2, 3, 4]),

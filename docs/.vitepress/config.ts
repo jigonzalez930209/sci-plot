@@ -4,11 +4,11 @@ import path from "path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const base = '/scichart-engine/';
+const base = '/sci-plot/';
 
 export default defineConfig({
   base,
-  title: "SciChart Engine | Ultra-fast WebGL Charts",
+  title: "Sci Plot | Ultra-fast WebGL Charts",
   description:
     "Open-source high-performance WebGL2 scientific charting engine for real-time visualization of millions of data points at 60 FPS. Supports 2D and 3D charts with zero-copy architecture.",
   ignoreDeadLinks: true,
@@ -30,7 +30,7 @@ export default defineConfig({
   },
   themeConfig: {
     logo: '/logo.svg',
-    siteTitle: 'SciChart Engine',
+    siteTitle: 'Sci Plot',
     search: {
       provider: 'local',
     },
@@ -41,7 +41,7 @@ export default defineConfig({
       { text: "Examples", link: "/examples/" },
       {
         text: "Contributing",
-        link: "https://github.com/jigonzalez930209/scichart-engine/blob/main/CONTRIBUTING.md",
+        link: "https://github.com/jigonzalez930209/sci-plot/blob/main/CONTRIBUTING.md",
       },
     ],
     sidebar: {
@@ -159,7 +159,7 @@ export default defineConfig({
         {
           text: "Ecosystem",
           items: [
-            { text: "React Components", link: "/api/react-scichart" },
+            { text: "React Components", link: "/api/react-sci-plot" },
             { text: "React Hooks", link: "/api/react-hook" },
             { text: "Theming API", link: "/api/themes" },
             { text: "Chart Sync", link: "/api/chart-sync" },
@@ -296,12 +296,12 @@ export default defineConfig({
     socialLinks: [
       {
         icon: "github",
-        link: "https://github.com/jigonzalez930209/scichart-engine",
+        link: "https://github.com/jigonzalez930209/sci-plot",
       },
     ],
     footer: {
       message: "Released under the MIT License.",
-      copyright: "Copyright © 2025-present SciChart Engine",
+      copyright: "Copyright © 2025-present Sci Plot",
     },
   },
 });

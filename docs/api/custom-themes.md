@@ -5,7 +5,7 @@ Create your own themes to match your application's design.
 ## createTheme
 
 ```typescript
-import { createTheme } from 'scichart-engine'
+import { createTheme } from 'sci-plot'
 
 const myTheme = createTheme({
   name: 'my-theme',
@@ -59,7 +59,7 @@ createChart({
 ## Extending Existing Themes
 
 ```typescript
-import { DARK_THEME, createTheme } from 'scichart-engine'
+import { DARK_THEME, createTheme } from 'sci-plot'
 
 const customDark = createTheme({
   ...DARK_THEME,
@@ -79,7 +79,7 @@ function ThemedChart({ isDark }) {
   const theme = isDark ? 'midnight' : 'light'
   
   return (
-    <SciChart
+    <SciPlot
       series={series}
       theme={theme}
     />

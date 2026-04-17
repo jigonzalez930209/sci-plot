@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Data Export Plugin
+ * Sci Plot - Data Export Plugin
  * 
  * Advanced data export capabilities for scientific chart data.
  * Supports multiple formats including CSV, JSON, MATLAB, and Python.
@@ -8,8 +8,8 @@
  * 
  * @example
  * ```typescript
- * import { createChart } from 'scichart-engine';
- * import { PluginDataExport } from 'scichart-engine/plugins/data-export';
+ * import { createChart } from 'sci-plot';
+ * import { PluginDataExport } from 'sci-plot/plugins/data-export';
  * 
  * const chart = createChart({ container });
  * chart.use(PluginDataExport({
@@ -54,16 +54,16 @@ export * from "./types";
 // ============================================
 
 const manifestDataExport: PluginManifest = {
-  name: "scichart-data-export",
+  name: "sci-plot-data-export",
   version: "1.0.0",
-  description: "Advanced data export capabilities for scichart-engine",
-  author: "SciChart Engine Team",
+  description: "Advanced data export capabilities for sci-plot",
+  author: "Sci Plot Team",
   provides: ["export"],
   tags: ["export", "csv", "json", "matlab", "python", "data"],
 };
 
 /**
- * SciChart Engine Data Export Plugin
+ * Sci Plot Data Export Plugin
  * 
  * Provides comprehensive data export functionality with support for
  * multiple scientific and standard data formats.
@@ -159,7 +159,7 @@ export function PluginDataExport(
       : `${seriesIds.length}_series`;
     
     const config = FORMAT_CONFIGS[format];
-    return `scichart_${seriesPart}_${timestamp}${config.extension}`;
+    return `sci-plot_${seriesPart}_${timestamp}${config.extension}`;
   }
 
   /**

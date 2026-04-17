@@ -1,5 +1,5 @@
 /**
- * SciChartEngine Engine - Data Analysis Plugin
+ * SciPlot Engine - Data Analysis Plugin
  * 
  * Provides mathematical and statistical tools including:
  * - FFT (Fast Fourier Transform)
@@ -182,15 +182,15 @@ export interface PluginAnalysisConfig {
 }
 
 const manifestAnalysis: PluginManifest = {
-    name: "scichart-analysis",
+    name: "sci-plot-analysis",
     version: "1.0.0",
-    description: "Data analysis and signal processing for scichart-engine",
+    description: "Data analysis and signal processing for sci-plot",
     provides: ["analysis"],
     tags: ["fft", "filters", "statistics", "math"],
 };
 
 /**
- * SciChartEngine Analysis Plugin
+ * SciPlot Analysis Plugin
  * 
  * Adds comprehensive data analysis capabilities to the chart.
  */

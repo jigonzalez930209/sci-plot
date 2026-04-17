@@ -19,7 +19,7 @@ The `PluginForecasting` provides a suite of algorithms to predict future values 
 To use forecasting, register the plugin and then call the forecasting API.
 
 ```typescript
-import { createChart, PluginForecasting } from 'scichart-engine';
+import { createChart, PluginForecasting } from 'sci-plot';
 
 const chart = createChart({ container: 'chart-id' });
 

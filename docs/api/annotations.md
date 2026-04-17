@@ -10,7 +10,7 @@ Annotations allow you to add visual markers, lines, text, and shapes to your cha
 ## Quick Example
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -231,7 +231,7 @@ All annotations support common styling options:
 ## React Usage
 
 ```tsx
-import { SciChart } from 'scichart-engine/react';
+import { SciPlot } from 'sci-plot/react';
 import { useRef, useEffect } from 'react';
 
 function ChartWithAnnotations() {
@@ -250,7 +250,7 @@ function ChartWithAnnotations() {
   }, []);
 
   return (
-    <SciChart
+    <SciPlot
       ref={chartRef}
       series={[{ id: 'data', x: xData, y: yData }]}
       xAxis={{ label: 'X' }}
@@ -273,5 +273,5 @@ import type {
   BandAnnotation,
   TextAnnotation,
   ArrowAnnotation
-} from 'scichart-engine';
+} from 'sci-plot';
 ```

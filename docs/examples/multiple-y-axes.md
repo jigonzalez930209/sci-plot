@@ -5,7 +5,7 @@ description: Display multiple data series with independent Y-axis scales
 
 # Multiple Y-Axes
 
-SciChart Engine supports multiple Y-axes, allowing you to plot series with different units or vastly different ranges on the same chart. Each series can be associated with a specific Y-axis using the `yAxisId` property.
+Sci Plot supports multiple Y-axes, allowing you to plot series with different units or vastly different ranges on the same chart. Each series can be associated with a specific Y-axis using the `yAxisId` property.
 
 ## Interactive Example
 

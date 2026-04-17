@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Testing Utilities
+ * Sci Plot - Testing Utilities
  * 
  * Provides utilities for testing chart applications:
  * - Mock data generators

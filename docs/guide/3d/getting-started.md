@@ -1,10 +1,10 @@
 # Getting Started with 3D Charts
 
-Learn how to create interactive 3D visualizations with scichart-engine.
+Learn how to create interactive 3D visualizations with sci-plot.
 
 ## Overview
 
-scichart-engine provides a lightweight, high-performance WebGL2-based 3D rendering system with:
+sci-plot provides a lightweight, high-performance WebGL2-based 3D rendering system with:
 
 - **100,000+ data points** rendered in a single draw call
 - **Interactive orbit camera** with rotate, zoom, and pan
@@ -16,9 +16,9 @@ scichart-engine provides a lightweight, high-performance WebGL2-based 3D renderi
 ### 1. Installation
 
 ```bash
-npm install scichart-engine
+npm install sci-plot
 # or
-pnpm add scichart-engine
+pnpm add sci-plot
 ```
 
 ### 2. Create a Container
@@ -30,7 +30,7 @@ pnpm add scichart-engine
 ### 3. Initialize the Renderer
 
 ```typescript
-import { Bubble3DRenderer } from 'scichart-engine/core/3d';
+import { Bubble3DRenderer } from 'sci-plot/core/3d';
 
 const canvas = document.createElement('canvas');
 document.getElementById('chart-container').appendChild(canvas);
@@ -239,7 +239,7 @@ renderer.on('cameraChange', (event) => {
 ## Complete Example
 
 ```typescript
-import { Bubble3DRenderer } from 'scichart-engine/core/3d';
+import { Bubble3DRenderer } from 'sci-plot/core/3d';
 
 async function createChart() {
   const container = document.getElementById('chart');

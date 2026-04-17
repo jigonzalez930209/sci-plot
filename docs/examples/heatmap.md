@@ -11,7 +11,7 @@ Heatmaps allow you to visualize 3D data (X, Y, and Z intensity) as a 2D colored 
 Heatmaps use a specialized `addHeatmap` method because they require a 2D data matrix.
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -55,7 +55,7 @@ chart.addHeatmap({
 
 ### Color Scales
 
-SciChart Engine includes several built-in colormaps:
+Sci Plot includes several built-in colormaps:
 
 - `viridis` (default) - Perceptually uniform green-yellow
 - `plasma` - Vibrant purple-yellow
@@ -70,4 +70,4 @@ The `zValues` array must be a flattened 1D array of length `xValues.length * yVa
 
 ### Interaction
 
-Like all SciChart components, heatmaps support real-time zoom and pan. The color scale mapping remains consistent even when zooming in on specific data features.
+Like all SciPlot components, heatmaps support real-time zoom and pan. The color scale mapping remains consistent even when zooming in on specific data features.

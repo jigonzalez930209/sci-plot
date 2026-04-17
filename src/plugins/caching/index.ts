@@ -16,7 +16,7 @@ import type {
 } from '../types';
 
 const manifest: PluginManifest = {
-  name: 'scichart-caching',
+  name: 'sci-plot-caching',
   version: '1.0.0',
   description: 'Advanced caching system for performance optimization',
   provides: ['caching', 'performance'],

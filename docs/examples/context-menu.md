@@ -25,8 +25,8 @@ The **PluginContextMenu** provides a fully customizable right-click context menu
 ## Basic Usage
 
 ```typescript
-import { createChart } from 'scichart-engine';
-import { PluginContextMenu } from 'scichart-engine/plugins/context-menu';
+import { createChart } from 'sci-plot';
+import { PluginContextMenu } from 'sci-plot/plugins/context-menu';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -159,7 +159,7 @@ chart.use(PluginContextMenu({
 ## Programmatic Control
 
 ```typescript
-const menu = chart.getPlugin('scichart-context-menu');
+const menu = chart.getPlugin('sci-plot-context-menu');
 
 // Show menu at specific position
 menu.api.show(200, 300);

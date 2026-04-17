@@ -1,5 +1,5 @@
 /**
- * SciChartEngine Engine - Interactive Tools Plugin
+ * SciPlot Engine - Interactive Tools Plugin
  * 
  * Provides specialized interaction tools:
  * - Delta Tool: Measurement between two points
@@ -24,15 +24,15 @@ export interface PluginToolsConfig {
 }
 
 const manifestTools: PluginManifest = {
-    name: "scichart-tools",
+    name: "sci-plot-tools",
     version: "1.0.0",
-    description: "Advanced interaction and measurement tools for scichart-engine",
+    description: "Advanced interaction and measurement tools for sci-plot",
     provides: ["interaction"],
     tags: ["delta-tool", "peak-tool", "tooltip"],
 };
 
 /**
- * SciChartEngine Tools Plugin
+ * SciPlot Tools Plugin
  * 
  * Adds specialized tools for scientific data analysis and interaction.
  */

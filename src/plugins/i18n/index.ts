@@ -1,5 +1,5 @@
 /**
- * SciChartEngine Engine - Internationalization (i18n) Plugin
+ * SciPlot Engine - Internationalization (i18n) Plugin
  * 
  * Provides localization support for dates, numbers, and strings.
  * 
@@ -19,15 +19,15 @@ export interface PluginI18nConfig {
 }
 
 const manifestI18n: PluginManifest = {
-    name: "scichart-i18n",
+    name: "sci-plot-i18n",
     version: "1.0.0",
-    description: "Internationalization and localization for scichart-engine",
+    description: "Internationalization and localization for sci-plot",
     provides: ["ui"],
     tags: ["i18n", "l10n", "locale", "language"],
 };
 
 /**
- * SciChartEngine i18n Plugin
+ * SciPlot i18n Plugin
  * 
  * Adds support for multiple languages and local data formatting.
  */

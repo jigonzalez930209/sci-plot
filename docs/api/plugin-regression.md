@@ -10,8 +10,8 @@ The `PluginRegression` provides advanced scientific regression capabilities beyo
 ## Installation
 
 ```typescript
-import { createChart } from 'scichart-engine';
-import { PluginRegression, PluginAnnotations } from 'scichart-engine/plugins';
+import { createChart } from 'sci-plot';
+import { PluginRegression, PluginAnnotations } from 'sci-plot/plugins';
 
 const chart = createChart({ container });
 

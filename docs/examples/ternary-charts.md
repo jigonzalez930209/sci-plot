@@ -124,7 +124,7 @@ Then the composition is: **A=50%, B=30%, C=20%**
 ## Basic Implementation
 
 ```typescript
-import { renderTernaryPlot } from 'scichart-engine/renderer/ternary';
+import { renderTernaryPlot } from 'sci-plot/renderer/ternary';
 
 // Prepare canvas
 const canvas = document.getElementById('ternary') as HTMLCanvasElement;
@@ -219,7 +219,7 @@ const data = {
 Convert between ternary and Cartesian coordinates:
 
 ```typescript
-import { ternaryToCartesian } from 'scichart-engine/renderer/ternary';
+import { ternaryToCartesian } from 'sci-plot/renderer/ternary';
 
 const point = ternaryToCartesian(0.5, 0.3, 0.2);
 // Returns: { x: 0.35, y: 0.2598... }

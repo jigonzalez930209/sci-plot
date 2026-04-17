@@ -19,7 +19,7 @@ The Pattern Recognition plugin provides a powerful engine for identifying geomet
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginPatternRecognition } from 'scichart-engine';
+import { createChart, PluginPatternRecognition } from 'sci-plot';
 
 const chart = createChart({ container });
 

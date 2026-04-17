@@ -1,5 +1,5 @@
-import { createChart } from 'scichart-engine';
-import { PluginAnalysis } from 'scichart-engine/plugins/analysis';
+import { createChart } from 'sci-plot';
+import { PluginAnalysis } from 'sci-plot/plugins/analysis';
 
 /**
  * Advanced analysis: Peak detection and FFT

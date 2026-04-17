@@ -19,7 +19,7 @@ Polar charts display data in polar coordinates, where each point is defined by a
 ## Basic Usage
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -279,7 +279,7 @@ y = r × sin(θ)
 You can access the conversion utilities directly:
 
 ```typescript
-import { polarToCartesian } from 'scichart-engine';
+import { polarToCartesian } from 'sci-plot';
 
 const cartesian = polarToCartesian(
   new Float32Array([1, 2, 3]),
@@ -294,7 +294,7 @@ const cartesian = polarToCartesian(
 Polar charts use symmetric bounds centered at the origin:
 
 ```typescript
-import { calculatePolarBounds } from 'scichart-engine';
+import { calculatePolarBounds } from 'sci-plot';
 
 const bounds = calculatePolarBounds(polarData);
 // Returns: { xMin, xMax, yMin, yMax, maxRadius }

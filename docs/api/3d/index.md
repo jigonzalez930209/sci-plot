@@ -1,6 +1,6 @@
 ---
 title: 3D API Reference
-description: Documentation for SciChart Engine's high-performance 3D rendering module, featuring specialized renderers for waterfall, point cloud, and volumetric visualizations.
+description: Documentation for Sci Plot's high-performance 3D rendering module, featuring specialized renderers for waterfall, point cloud, and volumetric visualizations.
 ---
 
 # 3D API Reference
@@ -9,7 +9,7 @@ Complete API documentation for the 3D rendering module.
 
 ## Architecture
 
-SciChart Engine 3D uses specialized renderer classes that manage their own WebGL2 context, camera, and interaction. This provides maximum performance for complex visualizations like surface meshes or high-density point clouds.
+Sci Plot 3D uses specialized renderer classes that manage their own WebGL2 context, camera, and interaction. This provides maximum performance for complex visualizations like surface meshes or high-density point clouds.
 
 ## Core Renderers
 
@@ -17,7 +17,7 @@ SciChart Engine 3D uses specialized renderer classes that manage their own WebGL
 Renders filled 3D areas (curtain effect) with lighting and tooltips.
 
 ```typescript
-import { Area3DRenderer } from 'scichart-engine/plugins/3d';
+import { Area3DRenderer } from 'sci-plot/plugins/3d';
 
 const renderer = new Area3DRenderer({
   canvas: document.getElementById('my-canvas'),
@@ -30,7 +30,7 @@ const renderer = new Area3DRenderer({
 Specialized for cascading spectral results or time-series profiles.
 
 ```typescript
-import { Waterfall3DRenderer } from 'scichart-engine/plugins/3d';
+import { Waterfall3DRenderer } from 'sci-plot/plugins/3d';
 ```
 
 ## Specialized Renderer Classes

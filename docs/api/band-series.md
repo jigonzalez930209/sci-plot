@@ -67,7 +67,7 @@ chart.addSeries({
 Highlight the area being integrated in peak analysis:
 
 ```typescript
-import { subtractBaseline, integrate } from 'scichart-engine/analysis';
+import { subtractBaseline, integrate } from 'sci-plot/analysis';
 
 // Define integration range
 const x1 = 0.2, x2 = 0.8;

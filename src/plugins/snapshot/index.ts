@@ -1,5 +1,5 @@
 /**
- * SciChartEngine - Snapshot Plugin
+ * SciPlot - Snapshot Plugin
  * 
  * Provides high-resolution image export capabilities.
  * Supports different formats (PNG, JPEG, WebP) and resolutions (Standard, 2K, 4K, 8K).
@@ -21,9 +21,9 @@ import type {
 } from './types';
 
 const manifestSnapshot: PluginManifest = {
-  name: "scichart-snapshot",
+  name: "sci-plot-snapshot",
   version: "1.0.0",
-  description: "High-resolution image export for scichart-engine",
+  description: "High-resolution image export for sci-plot",
   provides: ["export", "snapshot"],
   tags: ["snapshot", "export", "publication", "image"],
 };
@@ -36,7 +36,7 @@ const DEFAULT_OPTIONS: Required<SnapshotExportOptions> = {
   includeOverlays: true,
   watermarkText: '',
   transparent: false,
-  fileName: 'scichart-snapshot-export',
+  fileName: 'sci-plot-snapshot-export',
   download: false
 };
 
@@ -52,7 +52,7 @@ function resolutionToScale(res: SnapshotResolution): number {
 }
 
 /**
- * SciChartEngine Snapshot Plugin
+ * SciPlot Snapshot Plugin
  * 
  * Captures the current chart view with all layers (WebGL + Overlay).
  */

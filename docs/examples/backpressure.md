@@ -39,7 +39,7 @@ import {
   BackpressureManager,
   createBackpressureManager,
   createRealtimeBackpressure,
-} from 'scichart-engine';
+} from 'sci-plot';
 
 // Create a backpressure manager
 const bp = createBackpressureManager(10000, 'drop-oldest');
@@ -102,7 +102,7 @@ const bp = new BackpressureManager({
 For custom implementations, use the CircularBuffer directly:
 
 ```typescript
-import { CircularBuffer } from 'scichart-engine';
+import { CircularBuffer } from 'sci-plot';
 
 const buffer = new CircularBuffer(1000);
 

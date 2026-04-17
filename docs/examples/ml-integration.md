@@ -5,7 +5,7 @@ description: Bringing neural networks to your data visualizations
 
 # AI Integration Demo
 
-The SciChart Engine provides a powerful bridge for integrating your own AI models. This allows for real-time predictions, forecasting, and advanced signal analysis directly in the browser.
+The Sci Plot provides a powerful bridge for integrating your own AI models. This allows for real-time predictions, forecasting, and advanced signal analysis directly in the browser.
 
 ## Interactive Forecasting
 

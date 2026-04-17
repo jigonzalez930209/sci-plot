@@ -5,7 +5,7 @@ description: Native mathematical expressions without external dependencies
 
 # LaTeX Rendering
 
-The SciChart Engine includes a **native LaTeX rendering plugin** that allows you to display mathematical expressions directly in your charts without requiring external libraries like KaTeX or MathJax.
+The Sci Plot includes a **native LaTeX rendering plugin** that allows you to display mathematical expressions directly in your charts without requiring external libraries like KaTeX or MathJax.
 
 ## Interactive Demo
 
@@ -61,8 +61,8 @@ Present equations with proper notation:
 Use LaTeX for axis labels to display units and mathematical expressions:
 
 ```typescript
-import { createChart } from 'scichart-engine';
-import { PluginLaTeX } from 'scichart-engine/plugins';
+import { createChart } from 'sci-plot';
+import { PluginLaTeX } from 'sci-plot/plugins';
 
 const chart = createChart({ container });
 await chart.use(PluginLaTeX());

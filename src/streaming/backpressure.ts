@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Backpressure Management Module
+ * Sci Plot - Backpressure Management Module
  * 
  * Provides advanced backpressure handling for streaming data:
  * - Configurable buffer limits

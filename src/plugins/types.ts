@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Plugin System Types
+ * Sci Plot - Plugin System Types
  * 
  * Comprehensive type definitions for the extensible plugin architecture.
  * Designed to allow third-party developers to extend the chart with
@@ -70,7 +70,7 @@ export interface PluginManifest {
     /** Optional plugins that enhance this one if present */
     optionalDependencies?: string[];
 
-    /** Minimum SciChart Engine version required */
+    /** Minimum Sci Plot version required */
     engineVersion?: PluginVersion;
 
     /** Plugin-specific configuration schema (JSON Schema format) */

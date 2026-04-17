@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Annotations Plugin
+ * Sci Plot - Annotations Plugin
  * 
  * Provides annotation capabilities including:
  * - Line, Rectangle, Band, Text, Arrow annotations
@@ -18,15 +18,15 @@ export interface PluginAnnotationsConfig {
 }
 
 const manifestAnnotations: PluginManifest = {
-    name: "scichart-annotations",
+    name: "sci-plot-annotations",
     version: "1.0.0",
-    description: "Annotation support for scichart-engine",
+    description: "Annotation support for sci-plot",
     provides: ["annotation"],
     tags: ["annotation", "overlay", "label"],
 };
 
 /**
- * SciChartEngine Annotations Plugin
+ * SciPlot Annotations Plugin
  * 
  * Adds support for drawing lines, shapes, and labels on the chart.
  */
@@ -50,7 +50,7 @@ export function PluginAnnotations(_config: PluginAnnotationsConfig = {}): ChartP
             const viewBounds = ctx.data.getViewBounds();
 
             // Get LaTeX API if plugin is available
-            const latexPlugin = ctx.getPlugin<any>("scichart-latex");
+            const latexPlugin = ctx.getPlugin<any>("sci-plot-latex");
             const latexAPI = latexPlugin?.api;
 
             // Render all annotations using the manager and provided contexts

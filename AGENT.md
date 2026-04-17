@@ -356,7 +356,7 @@ Iso Forest: score = isolation_depth(value, random_trees)
 ---
 
 ## 2026-01-12
-- Created `ENGINE_AI_GUIDE.md`: A comprehensive, single-file technical guide for AI agents to implement and integrate the SciChart Engine.
+- Created `ENGINE_AI_GUIDE.md`: A comprehensive, single-file technical guide for AI agents to implement and integrate the Sci Plot.
 - The guide covers architecture, data management, plugins (Analysis, Tools, Loading), theming, and interaction modes.
 - Added implementation checklist for AI agents.
 

@@ -21,7 +21,7 @@ import { ref } from 'vue'
 ## Code
 
 ```typescript
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 // Create chart
 const chart = createChart({
@@ -132,7 +132,7 @@ chart.addSeries({
 ## React Version
 
 ```tsx
-import { SciChart } from 'scichart-engine/react'
+import { SciPlot } from 'sci-plot/react'
 
 function BasicChart() {
   const n = 10000
@@ -146,7 +146,7 @@ function BasicChart() {
   }
 
   return (
-    <SciChart
+    <SciPlot
       series={[{ id: 'signal', x, y, color: '#00f2ff' }]}
       xAxis={{ label: 'X', auto: true }}
       yAxis={{ label: 'Y', auto: true }}

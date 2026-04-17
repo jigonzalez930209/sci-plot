@@ -19,7 +19,7 @@ import { ref } from 'vue'
 ## Code
 
 ```typescript
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -77,7 +77,7 @@ const x = new Float64Array(1000000)
 
 ### 3. Why It's Fast
 
-SciChart Engine uses WebGL:
+Sci Plot uses WebGL:
 
 - Data uploaded to GPU once
 - Zoom/pan only updates shader uniforms
@@ -88,7 +88,7 @@ SciChart Engine uses WebGL:
 For even larger datasets, use LTTB downsampling:
 
 ```typescript
-import { downsampleLTTB } from 'scichart-engine'
+import { downsampleLTTB } from 'sci-plot'
 
 // Original: 10 million points
 const originalX = new Float32Array(10000000)
@@ -180,7 +180,7 @@ largeArray = null
 
 ```tsx
 import { useMemo } from 'react'
-import { SciChart } from 'scichart-engine/react'
+import { SciPlot } from 'sci-plot/react'
 
 function LargeDatasetChart() {
   const series = useMemo(() => {
@@ -197,7 +197,7 @@ function LargeDatasetChart() {
   }, [])
 
   return (
-    <SciChart
+    <SciPlot
       series={series}
       xAxis={{ label: 'Index', auto: true }}
       yAxis={{ label: 'Value', auto: true }}

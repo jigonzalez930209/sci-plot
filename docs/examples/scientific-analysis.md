@@ -48,7 +48,7 @@ chart.addSeries({
 
 ### 📊 Error Bars (Measurement Uncertainty)
 
-Error bars visualize the uncertainty or variability in measurements. SciChart Engine supports:
+Error bars visualize the uncertainty or variability in measurements. Sci Plot supports:
 
 - **Symmetric errors**: Single ±error value
 - **Asymmetric errors**: Separate positive and negative errors
@@ -95,7 +95,7 @@ data: {
 The ML Integration plugin provides native statistical functions without external dependencies:
 
 ```typescript
-import { PluginMLIntegration } from 'scichart-engine'
+import { PluginMLIntegration } from 'sci-plot'
 
 // Initialize plugin
 chart.use(PluginMLIntegration())

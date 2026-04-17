@@ -230,7 +230,7 @@ chart.use(PluginAnomalyDetection({
 ### Basic Detection
 
 ```typescript
-import { createChart, PluginAnomalyDetection } from 'scichart-engine';
+import { createChart, PluginAnomalyDetection } from 'sci-plot';
 
 const chart = createChart({ container });
 

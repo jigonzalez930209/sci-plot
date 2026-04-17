@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Internationalization (i18n) Module
+ * Sci Plot - Internationalization (i18n) Module
  * 
  * Provides locale-aware formatting for numbers, dates, and chart UI.
  * Supports custom format functions and predefined locales.

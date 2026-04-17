@@ -21,7 +21,7 @@ const initChart = async () => {
   await chart.use(PluginVideoRecorder({
     fps: 60,
     bitrate: 4000000,
-    filename: 'scichart-demo',
+    filename: 'sci-plot-demo',
     debug: true
   }));
 
@@ -53,7 +53,7 @@ const initChart = async () => {
 };
 
 const startRecording = () => {
-    const videoRecorder = chart.getPlugin('scichart-video-recorder') || chart.videoRecorder;
+    const videoRecorder = chart.getPlugin('sci-plot-video-recorder') || chart.videoRecorder;
     if (!videoRecorder) {
         console.error('Video Recorder plugin not found');
         return;
@@ -65,7 +65,7 @@ const startRecording = () => {
 };
 
 const stopRecording = async () => {
-    const videoRecorder = chart.getPlugin('scichart-video-recorder') || chart.videoRecorder;
+    const videoRecorder = chart.getPlugin('sci-plot-video-recorder') || chart.videoRecorder;
     if (!videoRecorder) return;
     const blob = await videoRecorder.stop();
     isRecording.value = false;
@@ -106,7 +106,7 @@ onUnmounted(() => {
         <h4>Preview Last Recording:</h4>
         <video :src="videoUrl" controls class="preview-video"></video>
         <div class="video-actions">
-            <a :href="videoUrl" :download="'scichart-recording.' + (isMP4Supported ? 'mp4' : 'webm')" class="btn-download">Download Video</a>
+            <a :href="videoUrl" :download="'sci-plot-recording.' + (isMP4Supported ? 'mp4' : 'webm')" class="btn-download">Download Video</a>
         </div>
     </div>
   </div>

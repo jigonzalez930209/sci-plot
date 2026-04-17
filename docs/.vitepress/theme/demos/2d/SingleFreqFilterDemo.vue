@@ -13,7 +13,7 @@ const isInitialized = ref(false)
 const initError = ref<string | null>(null)
 
 let chart: any = null
-let SciChartEngine: any = null
+let SciPlot: any = null
 
 const N = 2048
 const SAMPLE_RATE = 1000
@@ -38,8 +38,8 @@ onMounted(async () => {
   }
   
   try {
-    SciChartEngine = await import('@src/index')
-    const { createChart, PluginTools, PluginAnalysis, PluginAnnotations } = SciChartEngine;
+    SciPlot = await import('@src/index')
+    const { createChart, PluginTools, PluginAnalysis, PluginAnnotations } = SciPlot;
     
     chart = createChart({
       container: chartContainer.value,
@@ -82,10 +82,10 @@ function generateSignal() {
 }
 
 async function draw() {
-  if (!chart || chart.isDestroyed || !SciChartEngine) return
+  if (!chart || chart.isDestroyed || !SciPlot) return
 
   try {
-    const { singleFrequencyFilter, powerSpectrum } = SciChartEngine;
+    const { singleFrequencyFilter, powerSpectrum } = SciPlot;
     const { t, yClean, yNoisy } = generateSignal()
     
     const yFiltered = singleFrequencyFilter(yNoisy, {

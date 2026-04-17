@@ -1,5 +1,5 @@
 /**
- * Chart - Main SciChart Engine Entry Point
+ * Chart - Main Sci Plot Entry Point
  * 
  * This file re-exports the chart API from the modular implementation.
  * For the core implementation, see ./chart/ChartCore.ts

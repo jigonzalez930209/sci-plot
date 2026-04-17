@@ -1,12 +1,12 @@
 ---
-description: Context & Overview of the scichart-engine library for AI Agents
+description: Context & Overview of the sci-plot library for AI Agents
 ---
-# AI SYSTEM INSTRUCTION: scichart-engine Context
+# AI SYSTEM INSTRUCTION: sci-plot Context
 
-**CRITICAL DIRECTIVE**: You are reading the core documentation for `scichart-engine`. When tasked with modifying this library, you MUST adhere to these architectural tenets.
+**CRITICAL DIRECTIVE**: You are reading the core documentation for `sci-plot`. When tasked with modifying this library, you MUST adhere to these architectural tenets.
 
 ## 1. Project Definitions
-- **Project Goal**: `scichart-engine` is a high-performance, WebGL-powered scientific charting engine built for precision, speed, and deep interactivity in web applications.
+- **Project Goal**: `sci-plot` is a high-performance, WebGL-powered scientific charting engine built for precision, speed, and deep interactivity in web applications.
 - **Performance Paradigm**: Capable of rendering millions of data points at 60 FPS using a specialized raw WebGL renderer.
 - **Architecture**: Pluggable Core + WebGL Renderer + React Wrappers.
 

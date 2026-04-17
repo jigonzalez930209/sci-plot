@@ -6,8 +6,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        'scichart-engine': resolve(__dirname, 'src/index.core.ts'),
-        'scichart-engine.full': resolve(__dirname, 'src/index.ts'),
+        'sci-plot': resolve(__dirname, 'src/index.core.ts'),
+        'sci-plot.full': resolve(__dirname, 'src/index.ts'),
         'plugins/3d': resolve(__dirname, 'src/plugins/3d/index.ts'),
         'plugins/gpu': resolve(__dirname, 'src/plugins/gpu/index.ts'),
         'plugins/analysis': resolve(__dirname, 'src/plugins/analysis/index.ts'),
@@ -24,7 +24,7 @@ export default defineConfig({
         'plugins/data-export': resolve(__dirname, 'src/plugins/data-export/index.ts'),
         'plugins/context-menu': resolve(__dirname, 'src/plugins/context-menu/index.ts'),
       },
-      name: 'SciChartEngine',
+      name: 'SciPlot',
       formats: ['es']
     },
     rollupOptions: {

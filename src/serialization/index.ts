@@ -213,18 +213,18 @@ export function urlHashToState(hash: string, compressed: boolean = true): ChartS
     
     // Validate version
     if (typeof state.version !== 'number') {
-      console.warn('[SciChartEngine] Invalid state: missing version');
+      console.warn('[SciPlot] Invalid state: missing version');
       return null;
     }
     
     // Migration could happen here for future versions
     if (state.version > SERIALIZATION_VERSION) {
-      console.warn('[SciChartEngine] State version is newer than supported');
+      console.warn('[SciPlot] State version is newer than supported');
     }
     
     return state;
   } catch (e) {
-    console.error('[SciChartEngine] Failed to parse URL hash:', e);
+    console.error('[SciPlot] Failed to parse URL hash:', e);
     return null;
   }
 }

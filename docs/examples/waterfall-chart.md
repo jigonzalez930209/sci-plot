@@ -30,7 +30,7 @@ Optional horizontal lines connect consecutive bars, making it easy to follow the
 ## Usage
 
 ```typescript
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 const chart = createChart({ container: '#chart' })
 

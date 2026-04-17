@@ -1,4 +1,4 @@
-# SciChart Engine API Summary
+# Sci Plot API Summary
 
 ## Creation & Lifecycle
 - `createChart(options)`: Initialize a chart.

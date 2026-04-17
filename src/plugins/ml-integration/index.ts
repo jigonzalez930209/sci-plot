@@ -20,9 +20,9 @@ import type {
 } from '../types';
 
 const manifestML: PluginManifest = {
-  name: "scichart-ml-integration",
+  name: "sci-plot-ml-integration",
   version: "1.0.0",
-  description: "Machine Learning Integration Bridge for SciChart Engine",
+  description: "Machine Learning Integration Bridge for Sci Plot",
   provides: ["ml", "prediction", "inference"],
   tags: ["ml", "ai", "analysis"],
 };

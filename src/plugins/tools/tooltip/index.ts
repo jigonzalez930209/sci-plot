@@ -1,5 +1,5 @@
 /**
- * Tooltip System - High-performance, customizable tooltips for SciChart Engine
+ * Tooltip System - High-performance, customizable tooltips for Sci Plot
  * 
  * This module provides a comprehensive tooltip system with:
  * - Multiple tooltip types (datapoint, crosshair, heatmap, etc.)

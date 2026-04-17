@@ -1,7 +1,7 @@
 /**
  * Annotation Types
  * 
- * Type definitions for all annotation types supported by SciChart Engine.
+ * Type definitions for all annotation types supported by Sci Plot.
  */
 
 // ============================================

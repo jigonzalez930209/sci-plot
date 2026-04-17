@@ -5,7 +5,7 @@ description: Interactive demo showcasing chart annotations
 
 # Annotations Demo
 
-This demo showcases all annotation types available in SciChart Engine. The chart displays a cyclic voltammetry simulation with various annotations highlighting key features.
+This demo showcases all annotation types available in Sci Plot. The chart displays a cyclic voltammetry simulation with various annotations highlighting key features.
 
 ## Interactive Example
 
@@ -22,7 +22,7 @@ This demo showcases all annotation types available in SciChart Engine. The chart
 ## Code
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),

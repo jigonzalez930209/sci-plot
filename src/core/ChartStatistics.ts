@@ -26,7 +26,7 @@ export class ChartStatistics {
     this.series = series;
 
     this.container = document.createElement("div");
-    this.container.className = "scichart-stats-panel";
+    this.container.className = "sci-plot-stats-panel";
     this.updateContainerStyle();
 
     const title = document.createElement("div");

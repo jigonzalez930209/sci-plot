@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - High-Performance Scientific Charting
+ * Sci Plot - High-Performance Scientific Charting
  *
  * A WebGL-based charting engine designed for scientific data visualization
  * and high-performance rendering of large datasets.
@@ -310,13 +310,13 @@ export {
 // React bindings
 // ============================================
 export {
-  SciChart,
-  useSciChart,
-  type SciChartProps,
-  type SciChartRef,
-  type SciChartSeries,
-  type UseSciChartOptions,
-  type UseSciChartReturn,
+  SciPlot,
+  useSciPlot,
+  type SciPlotProps,
+  type SciPlotRef,
+  type SciPlotSeries,
+  type UseSciPlotOptions,
+  type UseSciPlotReturn,
 } from "./react";
 
 // ============================================

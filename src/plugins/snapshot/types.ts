@@ -1,5 +1,5 @@
 /**
- * SciChartEngine - Snapshot Export Plugin Types
+ * SciPlot - Snapshot Export Plugin Types
  */
 
 export type SnapshotFormat = 'png' | 'jpeg' | 'webp';

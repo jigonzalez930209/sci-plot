@@ -1,6 +1,6 @@
 # Responsive Design
 
-SciChart Engine automatically adjusts its layout, font sizes, and interaction targets based on the container size and device type.
+Sci Plot automatically adjusts its layout, font sizes, and interaction targets based on the container size and device type.
 
 ## Automatic Scaling
 

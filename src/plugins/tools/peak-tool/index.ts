@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Peak Tool Module
+ * Sci Plot - Peak Tool Module
  * 
  * Provides interactive measurement tool for measuring distances,
  * differences, and slopes between two data points on the chart.
@@ -140,7 +140,7 @@ export class PeakTool {
       labelColor: '#ffffff',
       showPeak: true,
       precision: 4,
-      className: 'scichart-peak-tool',
+      className: 'sci-plot-peak-tool',
       highlightSize: 12,
       highlightColor: '#00f2ff',
       snapRadius: 30,

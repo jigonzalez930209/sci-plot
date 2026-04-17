@@ -26,7 +26,7 @@ Create your first chart in minutes.
 
 ```javascript
 // main.js
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -60,7 +60,7 @@ chart.addSeries({
 ### 1. Create Component
 
 ```tsx
-import { SciChart } from 'scichart-engine/react'
+import { SciPlot } from 'sci-plot/react'
 
 function MyChart() {
   // Generate data
@@ -81,7 +81,7 @@ function MyChart() {
   }]
 
   return (
-    <SciChart
+    <SciPlot
       series={series}
       xAxis={{ label: 'X', auto: true }}
       yAxis={{ label: 'Y', auto: true }}
@@ -117,7 +117,7 @@ function App() {
 To enable advanced interactions like tooltips or the delta tool, you must load the `PluginTools`.
 
 ```typescript
-import { PluginTools } from 'scichart-engine';
+import { PluginTools } from 'sci-plot';
 
 await chart.use(PluginTools());
 

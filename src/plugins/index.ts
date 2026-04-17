@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Plugin System
+ * Sci Plot - Plugin System
  * 
  * Comprehensive plugin architecture for extending chart functionality.
  * 

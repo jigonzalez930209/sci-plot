@@ -15,7 +15,7 @@ const rSquared = ref(0)
 const bestModel = ref('')
 
 let chart: any = null
-let SciChartEngine: any = null
+let SciPlot: any = null
 
 const chartTheme = computed(() => isDark.value ? 'midnight' : 'light')
 

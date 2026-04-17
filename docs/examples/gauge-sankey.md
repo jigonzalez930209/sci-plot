@@ -1,6 +1,6 @@
 # Example: Gauge & Sankey Diagrams
 
-This example demonstrates how to implement Gauge (for individual metrics) and Sankey (for data flows) visualizations in SciChart Engine.
+This example demonstrates how to implement Gauge (for individual metrics) and Sankey (for data flows) visualizations in Sci Plot.
 
 <ProcessMonitoringDemo />
 
@@ -10,9 +10,9 @@ Beautiful KPI visualization.
 The Gauge chart is ideal for showing a single value within a predefined range.
 
 ```typescript
-import { SciChartEngine } from 'scichart-engine';
+import { SciPlot } from 'sci-plot';
 
-const chart = new SciChartEngine({
+const chart = new SciPlot({
   container: document.getElementById('chart-container'),
   theme: 'midnight'
 });

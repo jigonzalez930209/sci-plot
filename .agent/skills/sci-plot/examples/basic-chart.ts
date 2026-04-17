@@ -1,5 +1,5 @@
-import { createChart } from 'scichart-engine';
-import { PluginTools } from 'scichart-engine/plugins/tools';
+import { createChart } from 'sci-plot';
+import { PluginTools } from 'sci-plot/plugins/tools';
 
 /**
  * Basic chart setup with a line series and tooltips

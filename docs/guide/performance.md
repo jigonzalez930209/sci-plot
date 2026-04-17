@@ -1,11 +1,11 @@
 ---
 title: Performance Optimization
-description: Learn how SciChart Engine achieves 60 FPS with millions of points using WebGL rendering, zero-copy architecture, and optimized typed arrays.
+description: Learn how Sci Plot achieves 60 FPS with millions of points using WebGL rendering, zero-copy architecture, and optimized typed arrays.
 ---
 
 # Performance
 
-Optimize SciChart Engine for maximum performance with large datasets.
+Optimize Sci Plot for maximum performance with large datasets.
 
 <script setup>
 import { ref } from 'vue'
@@ -15,11 +15,11 @@ import { ref } from 'vue'
 
 <ChartDemo type="large" height="400px" :points="1000000" />
 
-## Why SciChart Engine is Fast
+## Why Sci Plot is Fast
 
 ### WebGL Rendering
 
-Unlike canvas-based libraries, SciChart Engine uses WebGL for hardware-accelerated rendering:
+Unlike canvas-based libraries, Sci Plot uses WebGL for hardware-accelerated rendering:
 
 - **GPU Processing**: Data is rendered on the GPU, not CPU
 - **Parallel Execution**: Thousands of points rendered simultaneously
@@ -143,7 +143,7 @@ function updateView(centerIndex) {
 For datasets too large to display, use LTTB downsampling:
 
 ```typescript
-import { downsampleLTTB } from 'scichart-engine'
+import { downsampleLTTB } from 'sci-plot'
 
 // Reduce 10M points to 10k for display
 const { x: sampledX, y: sampledY } = downsampleLTTB(
@@ -238,7 +238,7 @@ chart.on('render', ({ fps, frameTime }) => {
 
 | Library | 10k points | 100k points | 1M points |
 |---------|------------|-------------|-----------|
-| SciChart Engine | 60 FPS | 60 FPS | 60 FPS |
+| Sci Plot | 60 FPS | 60 FPS | 60 FPS |
 | Chart.js | 60 FPS | 15 FPS | ❌ |
 | Plotly | 60 FPS | 30 FPS | 5 FPS |
 | D3.js | 60 FPS | 20 FPS | ❌ |

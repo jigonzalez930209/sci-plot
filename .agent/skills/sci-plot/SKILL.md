@@ -1,18 +1,18 @@
 ---
-name: scichart-engine
-description: High-performance scientific charting and data analysis using SciChart Engine (WebGL).
+name: sci-plot
+description: High-performance scientific charting and data analysis using Sci Plot (WebGL).
 ---
 
-# SciChart Engine Skill
+# Sci Plot Skill
 
-This skill allows agents to integrate and manage the **SciChart Engine**, a high-performance WebGL-based charting library for scientific and analytical applications.
+This skill allows agents to integrate and manage the **Sci Plot**, a high-performance WebGL-based charting library for scientific and analytical applications.
 
 ## Quick Start
 
 To initialize a chart in a DOM element:
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart-id'),
@@ -104,7 +104,7 @@ chart.enableCursor({ crosshair: true, valueDisplayMode: 'disabled' });
 ## Practical Examples
 - [Basic Chart Setup](./examples/basic-chart.ts)
 - [React Component Integration (Imperative)](./examples/react-integration.tsx)
-- [Declarative React (SciChart Component)](./examples/declarative-react.tsx)
+- [Declarative React (SciPlot Component)](./examples/declarative-react.tsx)
 - [Advanced Analysis (FFT & Peaks)](./examples/advanced-analysis.ts)
 - [Real-time Streaming](./examples/real-time-streaming.ts)
 - [Layout Configuration](./examples/layout-example.ts)

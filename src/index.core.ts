@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Core Bundle
+ * Sci Plot - Core Bundle
  * 
  * Minimal bundle containing only the essential features for 2D charts.
  * Achieve ~60KB gzipped by excluding optional plugins.

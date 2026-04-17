@@ -69,7 +69,7 @@ export function initControls(ctx: UIContext): ChartControls | null {
     onSetMode: (mode) => ctx.setMode(mode),
     onExport: () => {
       const link = document.createElement("a");
-      link.download = `scichart-export-${Date.now()}.png`;
+      link.download = `sci-plot-export-${Date.now()}.png`;
       link.href = ctx.exportImage();
       link.click();
     },

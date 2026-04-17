@@ -5,7 +5,7 @@ description: Create charts with multiple Y axes for visualizing different scales
 
 # Multi-Axis Charts
 
-SciChart Engine supports multiple Y axes, allowing you to visualize data with different scales on the same chart. This is essential for scientific applications where you need to correlate variables like current (µA) and potential (V), or temperature and pressure.
+Sci Plot supports multiple Y axes, allowing you to visualize data with different scales on the same chart. This is essential for scientific applications where you need to correlate variables like current (µA) and potential (V), or temperature and pressure.
 
 ## Creating Multi-Axis Charts
 
@@ -14,7 +14,7 @@ SciChart Engine supports multiple Y axes, allowing you to visualize data with di
 Define multiple Y axes when creating the chart:
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),

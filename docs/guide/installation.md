@@ -4,13 +4,13 @@
 
 ```bash
 # npm
-npm install scichart-engine
+npm install sci-plot
 
 # pnpm
-pnpm add scichart-engine
+pnpm add sci-plot
 
 # yarn
-yarn add scichart-engine
+yarn add sci-plot
 ```
 
 ## Imports
@@ -19,21 +19,21 @@ yarn add scichart-engine
 
 ```typescript
 // Core API
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 // Specialized Plugins 
-import { PluginTools, PluginAnalysis, PluginAnnotations } from 'scichart-engine';
+import { PluginTools, PluginAnalysis, PluginAnnotations } from 'sci-plot';
 
 // React components
-import { SciChart, useSciChart } from 'scichart-engine';
+import { SciPlot, useSciPlot } from 'sci-plot';
 
 // Built-in Themes
-import { MIDNIGHT_THEME, DARK_THEME, LIGHT_THEME } from 'scichart-engine';
+import { MIDNIGHT_THEME, DARK_THEME, LIGHT_THEME } from 'sci-plot';
 ```
 
 ### TypeScript Usage
 
-SciChart Engine is written in TypeScript and includes full type definitions.
+Sci Plot is written in TypeScript and includes full type definitions.
 
 ```typescript
 import { 
@@ -41,7 +41,7 @@ import {
   type Chart, 
   type ChartOptions,
   type SeriesData 
-} from 'scichart-engine';
+} from 'sci-plot';
 
 const options: ChartOptions = {
   container: document.getElementById('chart')!,

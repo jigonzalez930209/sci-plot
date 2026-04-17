@@ -1,4 +1,4 @@
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 /**
  * High-performance real-time streaming example

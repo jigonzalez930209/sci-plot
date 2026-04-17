@@ -5,7 +5,7 @@ description: Export chart data to CSV, JSON and PNG formats
 
 # Data Export
 
-SciChart Engine provides built-in methods to export your chart data to CSV, JSON, and PNG/JPEG formats. This is useful for saving experiment results, generating reports, or sharing chart snapshots.
+Sci Plot provides built-in methods to export your chart data to CSV, JSON, and PNG/JPEG formats. This is useful for saving experiment results, generating reports, or sharing chart snapshots.
 
 ## Quick Example
 
@@ -188,7 +188,7 @@ const dataUrl = chart.exportImage('jpeg');
 
 ```tsx
 import { useRef } from 'react';
-import { SciChart } from 'scichart-engine/react';
+import { SciPlot } from 'sci-plot/react';
 
 function ChartWithExport() {
   const chartRef = useRef(null);
@@ -212,7 +212,7 @@ function ChartWithExport() {
 
   return (
     <div>
-      <SciChart ref={chartRef} series={[...]} />
+      <SciPlot ref={chartRef} series={[...]} />
       <button onClick={handleExportCSV}>Export CSV</button>
       <button onClick={handleExportJSON}>Export JSON</button>
     </div>

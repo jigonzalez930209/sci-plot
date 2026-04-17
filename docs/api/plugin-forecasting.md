@@ -1,11 +1,11 @@
 # PluginForecasting API Reference
 
-The `PluginForecasting` adds advanced time-series prediction capabilities to the SciChart Engine. It implements several statistical forecasting models natively in TypeScript.
+The `PluginForecasting` adds advanced time-series prediction capabilities to the Sci Plot. It implements several statistical forecasting models natively in TypeScript.
 
 ## Initialization
 
 ```typescript
-import { createChart, PluginForecasting } from 'scichart-engine';
+import { createChart, PluginForecasting } from 'sci-plot';
 
 const chart = createChart({ ... });
 await chart.use(PluginForecasting({

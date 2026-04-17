@@ -1,9 +1,9 @@
-# SciChart Engine 🚀
+# Sci Plot 🚀
 
 A high-performance, WebGL-powered scientific charting engine built for precision, speed, and deep interactivity. Optimized for electrochemical and scientific data visualization.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![NPM Version](https://img.shields.io/npm/v/scichart-engine.svg)](https://www.npmjs.com/package/scichart-engine)
+[![NPM Version](https://img.shields.io/npm/v/sci-plot.svg)](https://www.npmjs.com/package/sci-plot)
 
 ## ✨ Features
 
@@ -22,9 +22,9 @@ A high-performance, WebGL-powered scientific charting engine built for precision
 ## 🛠️ Installation
 
 ```bash
-npm install scichart-engine
+npm install sci-plot
 # or
-pnpm add scichart-engine
+pnpm add sci-plot
 ```
 
 ## 🚀 Quick Examples
@@ -32,7 +32,7 @@ pnpm add scichart-engine
 ### React (Recommended)
 
 ```tsx
-import { SciChart } from 'scichart-engine/react';
+import { SciPlot } from 'sci-plot/react';
 
 function App() {
   const data = {
@@ -42,7 +42,7 @@ function App() {
 
   return (
     <div style={{ width: '800px', height: '400px' }}>
-      <SciChart 
+      <SciPlot 
         series={[{ id: 's1', ...data, color: '#00f2ff' }]}
         xAxis={{ label: 'Time (s)' }}
         yAxis={{ label: 'Voltage (V)' }}
@@ -56,7 +56,7 @@ function App() {
 ### Vanilla JavaScript
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart-container'),
@@ -107,11 +107,11 @@ for (let i = 0; i < 20; i++) {
 
 ## 📖 Documentation
 
-Visit [SciChart Engine Docs](https://jigonzalez930209.github.io/scichart-engine/) for:
--   [Getting Started Guide](https://jigonzalez930209.github.io/scichart-engine/guide/)
--   [Core Concepts](https://jigonzalez930209.github.io/scichart-engine/guide/concepts)
--   [API Reference](https://jigonzalez930209.github.io/scichart-engine/api/chart)
--   [Interactive Examples](https://jigonzalez930209.github.io/scichart-engine/examples/)
+Visit [Sci Plot Docs](https://jigonzalez930209.github.io/sci-plot/) for:
+-   [Getting Started Guide](https://jigonzalez930209.github.io/sci-plot/guide/)
+-   [Core Concepts](https://jigonzalez930209.github.io/sci-plot/guide/concepts)
+-   [API Reference](https://jigonzalez930209.github.io/sci-plot/api/chart)
+-   [Interactive Examples](https://jigonzalez930209.github.io/sci-plot/examples/)
 
 ## 📄 License
 

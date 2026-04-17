@@ -39,7 +39,7 @@ Fine-tune individual colors using the color pickers:
 Click "Export JSON" to copy your theme configuration. Use it in your code:
 
 ```typescript
-import { createChart, createTheme, DARK_THEME } from 'scichart-engine';
+import { createChart, createTheme, DARK_THEME } from 'sci-plot';
 
 // Use a preset
 const chart = createChart({
@@ -66,7 +66,7 @@ import {
   getPresetTheme,
   getPresetNames,
   THEME_PRESETS 
-} from 'scichart-engine';
+} from 'sci-plot';
 
 // Create embedded theme editor
 const editor = createThemeEditor(container, {

@@ -5,15 +5,15 @@ description: High-performance, customizable tooltip system for scientific charts
 
 # Tooltip System API Reference
 
-The SciChart Engine features a high-performance, customizable tooltip system designed for scientific data visualization. It supports multiple tooltip types, professional themes, and extensible templates.
+The Sci Plot features a high-performance, customizable tooltip system designed for scientific data visualization. It supports multiple tooltip types, professional themes, and extensible templates.
 
 ## Quick Start
 
 The tooltip system is provided by the `PluginTools` module. You must load this plugin to enable tooltips.
 
 ```typescript
-import { createChart } from 'scichart-engine';
-import { PluginTools } from 'scichart-engine/plugins';
+import { createChart } from 'sci-plot';
+import { PluginTools } from 'sci-plot/plugins';
 
 const chart = createChart({
   container: document.getElementById('chart')

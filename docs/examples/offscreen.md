@@ -24,7 +24,7 @@ Even with high-frequency updates, the UI remains perfectly responsive.
 ## Implementation
 
 ```typescript
-import { createChart, PluginOffscreen } from 'scichart-engine';
+import { createChart, PluginOffscreen } from 'sci-plot';
 
 const chart = createChart({ container });
 

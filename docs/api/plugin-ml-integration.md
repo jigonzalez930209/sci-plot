@@ -5,7 +5,7 @@ description: Bridge for integrating custom AI models into your charts
 
 # PluginMLIntegration
 
-The `PluginMLIntegration` provides a standardized interface for connecting machine learning models (e.g., Tensorflow.js, ONNX) to the SciChart Engine. It handles data extraction, asynchronous inference, and high-performance visualization of predictions and confidence intervals.
+The `PluginMLIntegration` provides a standardized interface for connecting machine learning models (e.g., Tensorflow.js, ONNX) to the Sci Plot. It handles data extraction, asynchronous inference, and high-performance visualization of predictions and confidence intervals.
 
 ## Core API
 

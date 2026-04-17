@@ -1,6 +1,6 @@
 /**
- * React bindings for SciChart Engine
+ * React bindings for Sci Plot
  */
 
-export { SciChart, type SciChartProps, type SciChartRef, type SciChartSeries } from './SciChart';
-export { useSciChart, type UseSciChartOptions, type UseSciChartReturn } from './useSciChart';
+export { SciPlot, type SciPlotProps, type SciPlotRef, type SciPlotSeries } from './SciPlot';
+export { useSciPlot, type UseSciPlotOptions, type UseSciPlotReturn } from './useSciPlot';

@@ -1,11 +1,11 @@
 ---
 title: Plugins API
-description: Extend SciChart Engine through its powerful plugin system, allowing custom lifecycle hooks for rendering, series management, and UI overlays.
+description: Extend Sci Plot through its powerful plugin system, allowing custom lifecycle hooks for rendering, series management, and UI overlays.
 ---
 
 # Plugins API
 
-The SciChart Engine provides a powerful, extensible plugin system that allows you to hook into every aspect of the chart's lifecycle.
+The Sci Plot provides a powerful, extensible plugin system that allows you to hook into every aspect of the chart's lifecycle.
 
 ## Plugin Interface
 
@@ -62,8 +62,8 @@ Plugins receive a rich context providing safe access to chart internals:
 Plugins are loaded using the `chart.use()` method. Note that from version 1.5.0, many features like **Tooltips**, **Analysis**, and **Annotations** must be explicitly loaded as plugins.
 
 ```typescript
-import { createChart } from 'scichart-engine';
-import { PluginTools, PluginAnalysis, PluginAnnotations } from 'scichart-engine/plugins';
+import { createChart } from 'sci-plot';
+import { PluginTools, PluginAnalysis, PluginAnnotations } from 'sci-plot/plugins';
 
 const chart = createChart({ container });
 
@@ -96,7 +96,7 @@ Starting from version 1.9.0, most plugins register their public API directly on 
 The recommended way to create a plugin is using the `createPlugin` or `createConfigurablePlugin` helpers.
 
 ```typescript
-import { createConfigurablePlugin } from 'scichart-engine/plugins';
+import { createConfigurablePlugin } from 'sci-plot/plugins';
 
 interface MyPluginConfig {
   color: string;

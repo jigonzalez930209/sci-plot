@@ -18,7 +18,7 @@ Efficient lazy loading system for massive datasets with viewport-based chunking 
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginLazyLoad } from 'scichart-engine';
+import { createChart, PluginLazyLoad } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')!

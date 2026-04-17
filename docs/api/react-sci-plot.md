@@ -1,25 +1,25 @@
 ---
-title: SciChart React Component
-description: Declarative React component for SciChart Engine, simplifying chart integration with props for series, axes, themes, and automated lifecycle management.
+title: SciPlot React Component
+description: Declarative React component for Sci Plot, simplifying chart integration with props for series, axes, themes, and automated lifecycle management.
 ---
 
-# SciChart Component
+# SciPlot Component
 
 React component for declarative chart creation.
 
 ## Import
 
 ```tsx
-import { SciChart } from 'scichart-engine/react'
+import { SciPlot } from 'sci-plot/react'
 // or
-import { SciChart } from 'scichart-engine'
+import { SciPlot } from 'sci-plot'
 ```
 
 ## Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `series` | `SciChartSeries[]` | `[]` | Array of series to display |
+| `series` | `SciPlotSeries[]` | `[]` | Array of series to display |
 | `xAxis` | `AxisOptions` | `{ auto: true }` | X-axis configuration, including `invertAxis` |
 | `yAxis` | `AxisOptions` | `{ auto: true }` | Y-axis configuration, including `invertAxis` |
 | `theme` | `string \| ChartTheme` | `'dark'` | Theme name or object |
@@ -30,12 +30,12 @@ import { SciChart } from 'scichart-engine'
 | `showLegend` | `boolean` | `false` | Show legend |
 | `layout` | `LayoutOptions` | defaults | Margin and axis title spacing configuration |
 | `cursor` | `CursorOptions` | `undefined` | Cursor configuration |
-| `ref` | `React.Ref<SciChartRef>` | - | Ref for imperative access |
+| `ref` | `React.Ref<SciPlotRef>` | - | Ref for imperative access |
 
-### SciChartSeries
+### SciPlotSeries
 
 ```typescript
-interface SciChartSeries {
+interface SciPlotSeries {
   id: string
   x: Float32Array | Float64Array
   y: Float32Array | Float64Array
@@ -51,7 +51,7 @@ interface SciChartSeries {
 ## Basic Usage
 
 ```tsx
-import { SciChart } from 'scichart-engine/react'
+import { SciPlot } from 'sci-plot/react'
 
 function MyChart() {
   const series = [{
@@ -62,7 +62,7 @@ function MyChart() {
   }]
 
   return (
-    <SciChart
+    <SciPlot
       series={series}
       xAxis={{ label: 'X', auto: true }}
       yAxis={{ label: 'Y', auto: true }}
@@ -77,7 +77,7 @@ function MyChart() {
 Because the React props inherit `ChartOptions`, you can tune axis title spacing with `layout.xAxisLayout.titleGap` and `layout.yAxisLayout.titleGap`.
 
 ```tsx
-<SciChart
+<SciPlot
   series={series}
   layout={{
     xAxisLayout: { titleGap: 48 },
@@ -92,7 +92,7 @@ Because the React props inherit `ChartOptions`, you can tune axis title spacing 
 Use `invertAxis: true` for descending scientific domains such as IR wavenumbers.
 
 ```tsx
-<SciChart
+<SciPlot
   series={series}
   xAxis={{ label: 'Wavenumber (cm^-1)', auto: true, invertAxis: true }}
   yAxis={{ label: 'Transmittance (%)', auto: true }}
@@ -103,7 +103,7 @@ Use `invertAxis: true` for descending scientific domains such as IR wavenumbers.
 ## With Controls and Legend
 
 ```tsx
-<SciChart
+<SciPlot
   series={series}
   xAxis={{ label: 'Time (s)', auto: true }}
   yAxis={{ label: 'Value', auto: true }}
@@ -121,10 +121,10 @@ Use a ref to access the underlying chart instance:
 
 ```tsx
 import { useRef } from 'react'
-import { SciChart, type SciChartRef } from 'scichart-engine/react'
+import { SciPlot, type SciPlotRef } from 'sci-plot/react'
 
 function MyChart() {
-  const chartRef = useRef<SciChartRef>(null)
+  const chartRef = useRef<SciPlotRef>(null)
 
   const handleZoomIn = () => {
     const chart = chartRef.current?.getChart()
@@ -145,16 +145,16 @@ function MyChart() {
   return (
     <>
       <button onClick={handleZoomIn}>Zoom In</button>
-      <SciChart ref={chartRef} series={series} />
+      <SciPlot ref={chartRef} series={series} />
     </>
   )
 }
 ```
 
-## SciChartRef Methods
+## SciPlotRef Methods
 
 ```typescript
-interface SciChartRef {
+interface SciPlotRef {
   getChart(): Chart | null
 }
 ```
@@ -198,7 +198,7 @@ function RealtimeChart() {
     color: '#00f2ff',
   }]
 
-  return <SciChart series={series} />
+  return <SciPlot series={series} />
 }
 ```
 
@@ -224,7 +224,7 @@ function MultiSeriesChart() {
   ]
 
   return (
-    <SciChart
+    <SciPlot
       series={series}
       showLegend={true}
       height="400px"
@@ -243,7 +243,7 @@ For high-frequency updates with large datasets:
 
 ```tsx
 function HighPerformanceChart() {
-  const chartRef = useRef<SciChartRef>(null)
+  const chartRef = useRef<SciPlotRef>(null)
   const dataRef = useRef({ x: new Float32Array(0), y: new Float32Array(0) })
 
   useEffect(() => {
@@ -276,6 +276,6 @@ function HighPerformanceChart() {
     return () => cancelAnimationFrame(animationId)
   }, [])
 
-  return <SciChart ref={chartRef} series={[]} />
+  return <SciPlot ref={chartRef} series={[]} />
 }
 ```

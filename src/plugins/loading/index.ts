@@ -1,5 +1,5 @@
 /**
- * SciChartEngine Engine - Loading Indicator Plugin
+ * SciPlot Engine - Loading Indicator Plugin
  * 
  * Provides customizable loading and progress indicators.
  * 
@@ -16,15 +16,15 @@ export interface PluginLoadingConfig extends Partial<LoadingIndicatorOptions> {
 }
 
 const manifestLoading: PluginManifest = {
-    name: "scichart-loading",
+    name: "sci-plot-loading",
     version: "1.0.0",
-    description: "Loading and progress indicators for scichart-engine",
+    description: "Loading and progress indicators for sci-plot",
     provides: ["ui"],
     tags: ["loading", "progress", "ui", "ux"],
 };
 
 /**
- * SciChartEngine Loading Plugin
+ * SciPlot Loading Plugin
  * 
  * Adds sleek loading indicators and progress trackers to the chart.
  */

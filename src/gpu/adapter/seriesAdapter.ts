@@ -1,7 +1,7 @@
 /**
- * Series Adapter - Converts SciChart series data to GPU DrawCalls
+ * Series Adapter - Converts SciPlot series data to GPU DrawCalls
  * 
- * This adapter bridges the gap between the existing SciChartEngine series system
+ * This adapter bridges the gap between the existing SciPlot series system
  * and the new backend-agnostic GPU abstraction layer.
  */
 

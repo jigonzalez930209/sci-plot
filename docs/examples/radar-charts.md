@@ -22,8 +22,8 @@ The following demo compares two different products across six key performance me
 ## Example Code
 
 ```typescript
-import { createChart } from 'scichart-engine';
-import { PluginRadar } from 'scichart-engine/plugins';
+import { createChart } from 'sci-plot';
+import { PluginRadar } from 'sci-plot/plugins';
 
 const chart = createChart({ container });
 
@@ -47,7 +47,7 @@ radar.api.addSeries({
 });
 ```
 
-## Features in SciChart Engine
+## Features in Sci Plot
 
 - **Smooth Animations**: Update series data and the chart will smoothly transition.
 - **Customizable Grid**: Change colors, line styles, and the number of grid levels.

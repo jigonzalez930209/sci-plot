@@ -1,5 +1,5 @@
 /**
- * Theme - Visual styling configuration for SciChart
+ * Theme - Visual styling configuration for SciPlot
  *
  * Provides customizable themes for the chart including:
  * - Grid styling

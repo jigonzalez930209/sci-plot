@@ -1,5 +1,5 @@
 /**
- * useSciChart - React hook for SciChart Engine
+ * useSciPlot - React hook for Sci Plot
  *
  * Manages chart lifecycle and provides a clean React API.
  */
@@ -19,12 +19,12 @@ import type {
   Bounds,
 } from "../types";
 
-export interface UseSciChartOptions extends Omit<ChartOptions, "container"> {
+export interface UseSciPlotOptions extends Omit<ChartOptions, "container"> {
   /** Auto-resize on container changes */
   autoResize?: boolean;
 }
 
-export interface UseSciChartReturn {
+export interface UseSciPlotReturn {
   /** Chart instance (null until initialized) */
   chart: Chart | null;
   /** Whether the chart is ready */
@@ -46,13 +46,13 @@ export interface UseSciChartReturn {
 }
 
 /**
- * React hook for using SciChart Engine
+ * React hook for using Sci Plot
  *
  * @example
  * ```tsx
  * function MyChart() {
  *   const canvasRef = useRef<HTMLCanvasElement>(null);
- *   const { chart, isReady, addSeries, zoom } = useSciChart(canvasRef, {
+ *   const { chart, isReady, addSeries, zoom } = useSciPlot(canvasRef, {
  *     xAxis: { label: 'E / V' },
  *     yAxis: { label: 'I / A' }
  *   });
@@ -72,10 +72,10 @@ export interface UseSciChartReturn {
  * }
  * ```
  */
-export function useSciChart(
+export function useSciPlot(
   containerRef: RefObject<HTMLDivElement>,
-  options: UseSciChartOptions = {}
-): UseSciChartReturn {
+  options: UseSciPlotOptions = {}
+): UseSciPlotReturn {
   const [chart, setChart] = useState<Chart | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -107,7 +107,7 @@ export function useSciChart(
       setError(null);
 
     } catch (err) {
-      console.error("[useSciChart] Failed to initialize chart:", err);
+      console.error("[useSciPlot] Failed to initialize chart:", err);
       setError(err instanceof Error ? err : new Error(String(err)));
       setIsReady(false);
     }

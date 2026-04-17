@@ -4,7 +4,7 @@
 The `PluginROI` provides advanced interactive selection tools (Lasso, Polygon, Rectangle) for scientific data analysis.
 
 ```typescript
-import { PluginROI } from 'scichart-engine/plugins/roi';
+import { PluginROI } from 'sci-plot/plugins/roi';
 
 await chart.use(PluginROI({
   defaultTool: 'lasso', // 'rectangle', 'polygon', 'lasso', 'circle'
@@ -27,7 +27,7 @@ The `PluginAnomalyDetection` uses statistical and ML algorithms to find outliers
 - `isolation-forest`: ML-based random partitioning (best for complex patterns).
 
 ```typescript
-import { PluginAnomalyDetection } from 'scichart-engine/plugins/anomaly-detection';
+import { PluginAnomalyDetection } from 'sci-plot/plugins/anomaly-detection';
 
 chart.use(PluginAnomalyDetection({
   method: 'mad',
@@ -45,7 +45,7 @@ chart.on('anomaly:detected', (result) => {
 The `PluginDataTransform` allows chaining mathematical operations on data series without modifying the original source.
 
 ```typescript
-import { PluginDataTransform } from 'scichart-engine/plugins/data-transform';
+import { PluginDataTransform } from 'sci-plot/plugins/data-transform';
 
 chart.use(PluginDataTransform());
 

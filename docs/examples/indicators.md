@@ -42,7 +42,7 @@ Experience real-time technical analysis indicators for financial charting. Selec
 import { 
   sma, ema, bollingerBands, rsi, macd,
   type IndicatorResult, type OHLCData 
-} from 'scichart-engine';
+} from 'sci-plot';
 
 // Moving averages on close prices
 const prices = chart.getSeries('price').getYValues();

@@ -16,7 +16,7 @@ import type {
 import { BrokenAxisScale } from './BrokenAxisScale';
 
 const manifest: PluginManifest = {
-  name: 'scichart-broken-axis',
+  name: 'sci-plot-broken-axis',
   version: '1.0.1',
   description: 'Support for gaps/breaks in axes with visual indicators',
   provides: ['broken-axis', 'coordinate-transform'],

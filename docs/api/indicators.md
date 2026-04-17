@@ -5,14 +5,14 @@ description: Technical analysis indicators for financial charts - SMA, EMA, RSI,
 
 # Financial/Technical Indicators
 
-SciChart Engine includes a comprehensive library of technical analysis indicators commonly used in financial charting and signal analysis.
+Sci Plot includes a comprehensive library of technical analysis indicators commonly used in financial charting and signal analysis.
 
 ## Moving Averages
 
 ### Simple Moving Average (SMA)
 
 ```typescript
-import { sma } from 'scichart-engine';
+import { sma } from 'sci-plot';
 
 const prices = new Float32Array([10, 11, 12, 11, 13, 14, 15, 14, 16, 17]);
 const sma20 = sma(prices, 20);  // 20-period SMA
@@ -23,7 +23,7 @@ const sma20 = sma(prices, 20);  // 20-period SMA
 EMA gives more weight to recent prices for faster response:
 
 ```typescript
-import { ema, dema, tema } from 'scichart-engine';
+import { ema, dema, tema } from 'sci-plot';
 
 const emaValues = ema(prices, 12);  // 12-period EMA
 const demaValues = dema(prices, 12); // Double EMA (smoother)
@@ -33,7 +33,7 @@ const temaValues = tema(prices, 12); // Triple EMA (smoothest)
 ### Weighted Moving Average (WMA)
 
 ```typescript
-import { wma } from 'scichart-engine';
+import { wma } from 'sci-plot';
 
 const wmaValues = wma(prices, 10); // Linear weighted MA
 ```
@@ -43,7 +43,7 @@ const wmaValues = wma(prices, 10); // Linear weighted MA
 ### RSI (Relative Strength Index)
 
 ```typescript
-import { rsi } from 'scichart-engine';
+import { rsi } from 'sci-plot';
 
 const rsiValues = rsi(prices, 14);  // 14-period RSI (0-100)
 
@@ -54,7 +54,7 @@ const rsiValues = rsi(prices, 14);  // 14-period RSI (0-100)
 ### MACD (Moving Average Convergence Divergence)
 
 ```typescript
-import { macd, type IndicatorResult } from 'scichart-engine';
+import { macd, type IndicatorResult } from 'sci-plot';
 
 const result = macd(prices, 12, 26, 9);
 // result.values: MACD line (Fast EMA - Slow EMA)
@@ -65,7 +65,7 @@ const result = macd(prices, 12, 26, 9);
 ### Stochastic Oscillator
 
 ```typescript
-import { stochastic, type OHLCData } from 'scichart-engine';
+import { stochastic, type OHLCData } from 'sci-plot';
 
 const ohlc: OHLCData = {
   open: openPrices,
@@ -82,7 +82,7 @@ const stoch = stochastic(ohlc, 14, 3);
 ### Momentum & ROC
 
 ```typescript
-import { momentum, roc } from 'scichart-engine';
+import { momentum, roc } from 'sci-plot';
 
 const mom = momentum(prices, 10);  // Price - Price[n periods ago]
 const rocValues = roc(prices, 10); // Percentage change over n periods
@@ -93,7 +93,7 @@ const rocValues = roc(prices, 10); // Percentage change over n periods
 ### Bollinger Bands
 
 ```typescript
-import { bollingerBands } from 'scichart-engine';
+import { bollingerBands } from 'sci-plot';
 
 const bb = bollingerBands(prices, 20, 2);
 // bb.values: Middle band (20-SMA)
@@ -104,7 +104,7 @@ const bb = bollingerBands(prices, 20, 2);
 ### ATR (Average True Range)
 
 ```typescript
-import { atr, type OHLCData } from 'scichart-engine';
+import { atr, type OHLCData } from 'sci-plot';
 
 const atrValues = atr(ohlc, 14);
 // Measures volatility, useful for position sizing
@@ -113,7 +113,7 @@ const atrValues = atr(ohlc, 14);
 ### Standard Deviation
 
 ```typescript
-import { standardDeviation } from 'scichart-engine';
+import { standardDeviation } from 'sci-plot';
 
 const stdDev = standardDeviation(prices, 20);
 ```
@@ -123,7 +123,7 @@ const stdDev = standardDeviation(prices, 20);
 ### VWAP (Volume Weighted Average Price)
 
 ```typescript
-import { vwap, type OHLCData } from 'scichart-engine';
+import { vwap, type OHLCData } from 'sci-plot';
 
 const ohlcWithVolume: OHLCData = {
   ...ohlc,
@@ -137,7 +137,7 @@ const vwapValues = vwap(ohlcWithVolume);
 ### OBV (On-Balance Volume)
 
 ```typescript
-import { obv } from 'scichart-engine';
+import { obv } from 'sci-plot';
 
 const obvValues = obv(closePrices, volumeData);
 // Volume flow indicator
@@ -148,7 +148,7 @@ const obvValues = obv(closePrices, volumeData);
 ### ADX (Average Directional Index)
 
 ```typescript
-import { adx } from 'scichart-engine';
+import { adx } from 'sci-plot';
 
 const adxResult = adx(ohlc, 14);
 // adxResult.values: ADX (trend strength 0-100)
@@ -162,7 +162,7 @@ const adxResult = adx(ohlc, 14);
 ### Aroon Oscillator
 
 ```typescript
-import { aroon } from 'scichart-engine';
+import { aroon } from 'sci-plot';
 
 const aroonResult = aroon(ohlc, 25);
 // aroonResult.values: Aroon Oscillator (Up - Down)
@@ -173,7 +173,7 @@ const aroonResult = aroon(ohlc, 25);
 ## Utility Functions
 
 ```typescript
-import { percentChange, cumsum, normalize } from 'scichart-engine';
+import { percentChange, cumsum, normalize } from 'sci-plot';
 
 // Percentage change
 const returns = percentChange(prices, 1); // Daily returns
@@ -188,7 +188,7 @@ const normalized = normalize(data);
 ## Creating Chart with Indicators
 
 ```typescript
-import { createChart, ema, bollingerBands } from 'scichart-engine';
+import { createChart, ema, bollingerBands } from 'sci-plot';
 
 // Sample OHLC data
 const prices = stockData.close;

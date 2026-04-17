@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Streaming Plugin
+ * Sci Plot - Streaming Plugin
  * 
  * Provides real-time data streaming capabilities including:
  * - WebSocket connections
@@ -41,15 +41,15 @@ export interface PluginStreamingConfig {
 }
 
 const manifestStreaming: PluginManifest = {
-    name: "scichart-streaming",
+    name: "sci-plot-streaming",
     version: "1.0.0",
-    description: "Real-time data streaming support for scichart-engine",
+    description: "Real-time data streaming support for sci-plot",
     provides: ["data-source"],
     tags: ["websocket", "real-time", "streaming", "backpressure"],
 };
 
 /**
- * SciChartEngine Streaming Plugin
+ * SciPlot Streaming Plugin
  * 
  * Enables seamless integration with real-time data sources.
  */

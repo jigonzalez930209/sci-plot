@@ -1,13 +1,13 @@
 ---
-description: Architecture of scichart-engine for AI Agents
+description: Architecture of sci-plot for AI Agents
 ---
-# AI SYSTEM INSTRUCTION: scichart-engine Architecture
+# AI SYSTEM INSTRUCTION: sci-plot Architecture
 
 **CRITICAL DIRECTIVE**: This document defines the engine's architecture. No external AI agent should attempt to rewrite the WebGL buffers or the core charting math unless explicitly instructed.
 
 ## 1. The Rendering Pipeline
 
-`scichart-engine` relies on a pure WebGL rendering pipeline designed for raw data throughput.
+`sci-plot` relies on a pure WebGL rendering pipeline designed for raw data throughput.
 
 - **Data Buffers**: Data pushed to a series is transferred to the GPU via WebGL Buffers (`gl.bufferData`). 
 - **Shaders**: Fragment and Vertex shaders are heavily optimized. Avoid modifying GLSL files unless you are solving an explicit graphical issue.
@@ -28,6 +28,6 @@ Extensions connect to the core `createChart` instance via lifecycle hooks:
 ## 4. React Integration
 
 When modifying `/src/react/`:
-- The React wrapper (`<SciChart />`) instantiates the vanilla `createChart` engine.
+- The React wrapper (`<SciPlot />`) instantiates the vanilla `createChart` engine.
 - A `useRef` binds the engine instance to a DOM element.
 - Updates to `props.series` or `props.options` trigger engine delta-updates. **Do not unmount and remount the canvas** on prop changes; use the engine's `.updateSeries()` techniques.

@@ -16,7 +16,7 @@ Ternary charts (also known as ternary plots or triangle plots) are specialized v
 ## Basic Usage
 
 ```typescript
-import { renderTernaryPlot } from 'scichart-engine/renderer/ternary';
+import { renderTernaryPlot } from 'sci-plot/renderer/ternary';
 
 // Prepare data (3 components that sum to 1)
 const data = {
@@ -122,7 +122,7 @@ function ternaryToCartesian(
 
 **Example:**
 ```typescript
-import { ternaryToCartesian } from 'scichart-engine/renderer/ternary';
+import { ternaryToCartesian } from 'sci-plot/renderer/ternary';
 
 const point = ternaryToCartesian(0.2, 0.3, 0.5);
 console.log(point); // { x: 0.65, y: 0.2598... }

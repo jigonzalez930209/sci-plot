@@ -20,7 +20,7 @@ chart.updateSeries('cv', {
 The `DirectionIndicatorPlugin` tracks the movement of recent data points and renders a smooth arrow showing the trend.
 
 ```typescript
-import { DirectionIndicatorPlugin } from 'scichart-engine/plugins';
+import { DirectionIndicatorPlugin } from 'sci-plot/plugins';
 
 chart.use(DirectionIndicatorPlugin({
   seriesId: 'live-data',
@@ -33,7 +33,7 @@ chart.use(DirectionIndicatorPlugin({
 The `PluginBrokenAxis` allows "skipping" regions with no data, effectively bringing distant clusters together.
 
 ```typescript
-import { PluginBrokenAxis } from 'scichart-engine/plugins/broken-axis';
+import { PluginBrokenAxis } from 'sci-plot/plugins/broken-axis';
 
 chart.use(PluginBrokenAxis({
   axes: {
@@ -50,7 +50,7 @@ chart.use(PluginBrokenAxis({
 Scientific data often requires specific formatting (e.g., `1.5 MHz` or `1.23e-6`). The engine's localization system handles this natively.
 
 ```typescript
-import { createLocaleFormatter } from 'scichart-engine';
+import { createLocaleFormatter } from 'sci-plot';
 
 const formatter = createLocaleFormatter('en-US');
 formatter.formatWithPrefix(1500000, 'Hz'); // "1.5 MHz"

@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Debug Overlay Module
+ * Sci Plot - Debug Overlay Module
  * 
  * Provides a visual debug overlay showing performance metrics,
  * rendering info, and chart state for development and debugging.
@@ -104,7 +104,7 @@ export class DebugOverlay {
       opacity: 0.8,
       fontSize: 11,
       updateInterval: 250,
-      className: 'scichart-debug-overlay',
+      className: 'sci-plot-debug-overlay',
       ...options,
     };
   }
@@ -403,9 +403,9 @@ export function createDebugOverlay(
  * Quick enable debug mode (attaches to first chart container found)
  */
 export function enableDebugMode(options?: DebugOverlayOptions): DebugOverlay | null {
-  const container = document.querySelector('.scichart-container') as HTMLElement;
+  const container = document.querySelector('.sci-plot-container') as HTMLElement;
   if (!container) {
-    console.warn('[SciChartEngine] No chart container found for debug overlay');
+    console.warn('[SciPlot] No chart container found for debug overlay');
     return null;
   }
   

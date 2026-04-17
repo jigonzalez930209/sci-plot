@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Forecasting Plugin
+ * Sci Plot - Forecasting Plugin
  * 
  * Provides time series forecasting capabilities using native statistical models.
  */
@@ -20,15 +20,15 @@ import type {
 } from '../types';
 
 const manifestForecasting: PluginManifest = {
-  name: "scichart-forecasting",
+  name: "sci-plot-forecasting",
   version: "1.0.0",
-  description: "Time series forecasting for scichart-engine",
+  description: "Time series forecasting for sci-plot",
   provides: ["analysis", "forecasting"],
   tags: ["statistics", "forecasting", "analysis"],
 };
 
 /**
- * Forecasting Plugin for SciChart Engine
+ * Forecasting Plugin for Sci Plot
  */
 export function PluginForecasting(
   config: Partial<PluginForecastingConfig> = {}

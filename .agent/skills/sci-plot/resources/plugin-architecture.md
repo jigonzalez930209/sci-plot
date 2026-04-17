@@ -1,6 +1,6 @@
 # Plugin Architecture & Lifecycle
 
-SciChart Engine is built on a modular plugin system. Every advanced feature (Tooltips, Analysis, ROI) is a plugin.
+Sci Plot is built on a modular plugin system. Every advanced feature (Tooltips, Analysis, ROI) is a plugin.
 
 ## Plugin Interface
 A plugin is an object or a factory that implements the `ChartPlugin` interface.
@@ -24,7 +24,7 @@ The context provides safe access to chart internals:
 
 ## Custom Plugin Example
 ```typescript
-import { createConfigurablePlugin } from 'scichart-engine/plugins';
+import { createConfigurablePlugin } from 'sci-plot/plugins';
 
 const ThresholdPlugin = createConfigurablePlugin<{ value: number }>(
   { name: 'threshold-warning' },

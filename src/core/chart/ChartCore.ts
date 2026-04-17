@@ -203,7 +203,7 @@ export class ChartImpl implements Chart {
   get brokenAxis(): any { return this.pluginBridge.brokenAxis; }
   get forecasting(): any { return this.pluginBridge.forecasting; }
   get latex(): any {
-    return this.pluginBridge?.latex ?? this.getPluginAPI("scichart-latex");
+    return this.pluginBridge?.latex ?? this.getPluginAPI("sci-plot-latex");
   }
 
   private animationEngine: AnimationEngine;
@@ -287,7 +287,7 @@ export class ChartImpl implements Chart {
     // 3. Show loading indicator INSTANTLY if enabled
     if (options.loading !== false) {
       const loadingConfig = typeof options.loading === 'object' ? options.loading : {
-        message: 'Loading SciChart...',
+        message: 'Loading SciPlot...',
         overlayOpacity: 0.1,
       };
       this.use(PluginLoading({
@@ -307,7 +307,7 @@ export class ChartImpl implements Chart {
         typeof (globalThis as any).navigator !== "undefined" &&
         typeof (globalThis as any).navigator.gpu !== "undefined";
       console.warn(
-        `[SciChartEngine] 'renderer: "webgpu"' requested but WebGPU renderer is experimental and not yet implemented. ` +
+        `[SciPlot] 'renderer: "webgpu"' requested but WebGPU renderer is experimental and not yet implemented. ` +
         `Falling back to WebGL. WebGPU supported: ${isSupported}`
       );
     }
@@ -593,7 +593,7 @@ export class ChartImpl implements Chart {
           cmd.fn();
         } catch (err) {
           console.error(
-            `[SciChartEngine] Error executing queued command '${cmd.name}':`,
+            `[SciPlot] Error executing queued command '${cmd.name}':`,
             err
           );
         }
@@ -913,7 +913,7 @@ export class ChartImpl implements Chart {
    * Add a line of best fit to a series
    */
   addFitLine(seriesId: string, type: any, options?: any): string {
-    const api = this.getPluginAPI<any>("scichart-analysis");
+    const api = this.getPluginAPI<any>("sci-plot-analysis");
     if (api && api.addFitLine) {
       return api.addFitLine(seriesId, type, options);
     }
@@ -965,7 +965,7 @@ export class ChartImpl implements Chart {
         animation.promise.catch((err) => {
           // Ignore cancellation errors
           if (err.message !== "Animation cancelled") {
-            console.error("[SciChartEngine] Animation error:", err);
+            console.error("[SciPlot] Animation error:", err);
           }
         });
       }
@@ -1009,7 +1009,7 @@ export class ChartImpl implements Chart {
           animation.promise.catch((err) => {
             // Ignore cancellation errors
             if (err.message !== "Animation cancelled") {
-              console.error("[SciChartEngine] Animation error:", err);
+              console.error("[SciPlot] Animation error:", err);
             }
           });
         }
@@ -1062,7 +1062,7 @@ export class ChartImpl implements Chart {
       animation.promise.catch((err) => {
         // Ignore cancellation errors
         if (err.message !== "Animation cancelled") {
-          console.error("[SciChartEngine] Animation error:", err);
+          console.error("[SciPlot] Animation error:", err);
         }
       });
     }
@@ -1124,7 +1124,7 @@ export class ChartImpl implements Chart {
     const id = annotation.id || `annotation-${++this.annotationIdCounter}`;
     const annWithId = { ...annotation, id };
 
-    const api = this.getPluginAPI<any>("scichart-annotations");
+    const api = this.getPluginAPI<any>("sci-plot-annotations");
     if (api) {
       api.add(annWithId);
       this.requestOverlayRender();
@@ -1135,7 +1135,7 @@ export class ChartImpl implements Chart {
   }
 
   removeAnnotation(id: string): boolean {
-    const api = this.getPluginAPI<any>("scichart-annotations");
+    const api = this.getPluginAPI<any>("sci-plot-annotations");
     if (api) {
       const result = api.remove(id);
       this.requestOverlayRender();
@@ -1145,21 +1145,21 @@ export class ChartImpl implements Chart {
   }
 
   updateAnnotation(id: string, updates: Partial<Annotation>): void {
-    const api = this.getPluginAPI<any>("scichart-annotations");
+    const api = this.getPluginAPI<any>("sci-plot-annotations");
     api?.update?.(id, updates);
     this.requestOverlayRender();
   }
 
   getAnnotation(id: string): Annotation | undefined {
-    return this.getPluginAPI<any>("scichart-annotations")?.get(id);
+    return this.getPluginAPI<any>("sci-plot-annotations")?.get(id);
   }
 
   getAnnotations(): Annotation[] {
-    return this.getPluginAPI<any>("scichart-annotations")?.getAll() ?? [];
+    return this.getPluginAPI<any>("sci-plot-annotations")?.getAll() ?? [];
   }
 
   clearAnnotations(): void {
-    this.getPluginAPI<any>("scichart-annotations")?.clear();
+    this.getPluginAPI<any>("sci-plot-annotations")?.clear();
     this.requestOverlayRender();
   }
 
@@ -1345,19 +1345,19 @@ export class ChartImpl implements Chart {
     this.selectionManager.clearSelection();
 
     // Delegate to tools plugin if available
-    const toolsApi = this.getPluginAPI<any>("scichart-tools");
+    const toolsApi = this.getPluginAPI<any>("sci-plot-tools");
     if (mode === 'delta' || mode === 'peak') {
       if (toolsApi) {
         toolsApi.setMode(mode);
       } else {
         // Plugin not yet loaded - retry after a short delay
-        console.info(`[SciChartEngine] Tools plugin not ready, retrying setMode('${mode}')...`);
+        console.info(`[SciPlot] Tools plugin not ready, retrying setMode('${mode}')...`);
         setTimeout(() => {
-          const api = this.getPluginAPI<any>("scichart-tools");
+          const api = this.getPluginAPI<any>("sci-plot-tools");
           if (api) {
             api.setMode(mode);
           } else {
-            console.warn(`[SciChartEngine] Tools plugin still not available for mode '${mode}'`);
+            console.warn(`[SciPlot] Tools plugin still not available for mode '${mode}'`);
           }
         }, 100);
       }
@@ -1380,14 +1380,14 @@ export class ChartImpl implements Chart {
    * Get the Delta Tool instance for advanced measurements
    */
   getDeltaTool(): any | null {
-    return this.getPluginAPI<any>("scichart-tools")?.getDeltaTool() ?? null;
+    return this.getPluginAPI<any>("sci-plot-tools")?.getDeltaTool() ?? null;
   }
 
   /**
    * Get the Peak Tool instance for peak integration
    */
   getPeakTool(): any | null {
-    return this.getPluginAPI<any>("scichart-tools")?.getPeakTool() ?? null;
+    return this.getPluginAPI<any>("sci-plot-tools")?.getPeakTool() ?? null;
   }
 
   // ============================================
@@ -1481,7 +1481,7 @@ export class ChartImpl implements Chart {
     await this.pluginManager.use(plugin);
 
     // If annotations plugin was just added, process queued annotations
-    const annotationsApi = this.getPluginAPI<any>("scichart-annotations");
+    const annotationsApi = this.getPluginAPI<any>("sci-plot-annotations");
     if (annotationsApi && this.annotationQueue.length > 0) {
       this.annotationQueue.forEach((a) => annotationsApi.add(a));
       this.annotationQueue = [];
@@ -1489,7 +1489,7 @@ export class ChartImpl implements Chart {
     }
 
     // Process queued tooltip configurations
-    const toolsApi = this.getPluginAPI<any>("scichart-tools");
+    const toolsApi = this.getPluginAPI<any>("sci-plot-tools");
     if (toolsApi && this.tooltipConfigQueue.length > 0) {
       const manager = toolsApi.getTooltipManager();
       if (manager) {
@@ -1499,7 +1499,7 @@ export class ChartImpl implements Chart {
     }
 
     // Process queued fit lines
-    const analysisApi = this.getPluginAPI<any>("scichart-analysis");
+    const analysisApi = this.getPluginAPI<any>("sci-plot-analysis");
     if (analysisApi && this.fitLineQueue.length > 0) {
       this.fitLineQueue.forEach((q) => {
         analysisApi.addFitLine(q.seriesId, q.type, { ...q.options, id: q.id });

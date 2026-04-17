@@ -1,6 +1,6 @@
 # Serialization & Persistence
 
-The SciChart Engine provides a robust serialization system to save, restore, and share chart configurations and data.
+The Sci Plot provides a robust serialization system to save, restore, and share chart configurations and data.
 
 ## Interactive Demo
 <ChartDemo type="persistence" height="400px" />
@@ -89,7 +89,7 @@ interface DeserializeOptions {
 Numeric data (Float32Array) is encoded as Base64. This provides a ~33% size increase compared to binary, but is much more compact than JSON number arrays (~10-20x smaller for many datasets).
 
 ```typescript
-import { encodeFloat32Array, decodeFloat32Array } from 'scichart-engine';
+import { encodeFloat32Array, decodeFloat32Array } from 'sci-plot';
 
 const encoded = encodeFloat32Array(new Float32Array([1, 2, 3]));
 const decoded = decodeFloat32Array(encoded);
@@ -99,7 +99,7 @@ const decoded = decodeFloat32Array(encoded);
 You can use the `StateHistory` utility to implement undo/redo functionality:
 
 ```typescript
-import { StateHistory } from 'scichart-engine';
+import { StateHistory } from 'sci-plot';
 
 const history = new StateHistory(50); // Keep 50 steps
 

@@ -1,6 +1,6 @@
 # React Integration
 
-Use SciChart Engine with React components and hooks.
+Use Sci Plot with React components and hooks.
 
 <script setup>
 import { ref } from 'vue'
@@ -10,12 +10,12 @@ import { ref } from 'vue'
 
 <ChartDemo type="multi" height="400px" />
 
-## SciChart Component
+## SciPlot Component
 
-The simplest way to use SciChart Engine in React:
+The simplest way to use Sci Plot in React:
 
 ```tsx
-import { SciChart } from 'scichart-engine/react'
+import { SciPlot } from 'sci-plot/react'
 
 function MyChart() {
   const series = [{
@@ -26,7 +26,7 @@ function MyChart() {
   }]
 
   return (
-    <SciChart
+    <SciPlot
       series={series}
       xAxis={{ label: 'X', auto: true }}
       yAxis={{ label: 'Y', auto: true }}
@@ -40,7 +40,7 @@ function MyChart() {
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `series` | `SciChartSeries[]` | `[]` | Data series to display |
+| `series` | `SciPlotSeries[]` | `[]` | Data series to display |
 | `xAxis` | `AxisOptions` | `{ auto: true }` | X-axis config |
 | `yAxis` | `AxisOptions` | `{ auto: true }` | Y-axis config |
 | `theme` | `string` | `'dark'` | Theme name |
@@ -73,7 +73,7 @@ function MultiSeriesChart() {
   ]
 
   return (
-    <SciChart
+    <SciPlot
       series={series}
       showLegend={true}
       showControls={true}
@@ -116,7 +116,7 @@ function DynamicChart() {
   return (
     <div>
       <button onClick={addPoint}>Add Point</button>
-      <SciChart
+      <SciPlot
         series={[{ id: 'data', ...data, color: '#00f2ff' }]}
         height="400px"
       />
@@ -131,10 +131,10 @@ For advanced control, use a ref to access the chart instance:
 
 ```tsx
 import { useRef } from 'react'
-import { SciChart, type SciChartRef } from 'scichart-engine/react'
+import { SciPlot, type SciPlotRef } from 'sci-plot/react'
 
 function ControlledChart() {
-  const chartRef = useRef<SciChartRef>(null)
+  const chartRef = useRef<SciPlotRef>(null)
 
   const zoomIn = () => {
     const chart = chartRef.current?.getChart()
@@ -171,7 +171,7 @@ function ControlledChart() {
         <button onClick={reset}>Reset</button>
         <button onClick={exportPNG}>Export PNG</button>
       </div>
-      <SciChart
+      <SciPlot
         ref={chartRef}
         series={series}
         height="400px"
@@ -187,10 +187,10 @@ For high-performance streaming, use refs to avoid React re-renders:
 
 ```tsx
 import { useRef, useEffect, useState } from 'react'
-import { SciChart, type SciChartRef } from 'scichart-engine/react'
+import { SciPlot, type SciPlotRef } from 'sci-plot/react'
 
 function RealtimeChart() {
-  const chartRef = useRef<SciChartRef>(null)
+  const chartRef = useRef<SciPlotRef>(null)
   const dataRef = useRef({ x: new Float32Array(0), y: new Float32Array(0) })
   const tRef = useRef(0)
   const [pointCount, setPointCount] = useState(0)
@@ -244,7 +244,7 @@ function RealtimeChart() {
   return (
     <div>
       <p>{pointCount.toLocaleString()} points</p>
-      <SciChart
+      <SciPlot
         ref={chartRef}
         series={[]}  // Empty - managed imperatively
         height="400px"
@@ -254,12 +254,12 @@ function RealtimeChart() {
 }
 ```
 
-## useSciChart Hook
+## useSciPlot Hook
 
 For more control, use the hook directly:
 
 ```tsx
-import { useSciChart } from 'scichart-engine/react'
+import { useSciPlot } from 'sci-plot/react'
 
 function HookChart() {
   const { 
@@ -268,7 +268,7 @@ function HookChart() {
     isReady, 
     addSeries, 
     updateSeries 
-  } = useSciChart({
+  } = useSciPlot({
     xAxis: { label: 'X', auto: true },
     yAxis: { label: 'Y', auto: true },
   })
@@ -300,7 +300,7 @@ Sync chart theme with your app's theme:
 ```tsx
 function ThemedChart({ isDark }) {
   return (
-    <SciChart
+    <SciPlot
       series={series}
       theme={isDark ? 'midnight' : 'light'}
       height="400px"

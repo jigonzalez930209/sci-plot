@@ -1,5 +1,5 @@
 /**
- * Core type definitions for SciChart Engine
+ * Core type definitions for Sci Plot
  */
 
 // ============================================

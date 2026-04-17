@@ -18,7 +18,7 @@ The layout system provides detailed control over:
 ## Quick Start
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -224,7 +224,7 @@ layout: {
 ## Complete Example
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -328,5 +328,5 @@ import type {
   CornerPosition,
   ChartMargins,
   AxisLayoutOptions,
-} from 'scichart-engine';
+} from 'sci-plot';
 ```

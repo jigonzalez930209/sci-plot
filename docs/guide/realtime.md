@@ -1,6 +1,6 @@
 # Real-time Data
 
-Stream and visualize data in real-time with SciChart Engine.
+Stream and visualize data in real-time with Sci Plot.
 
 <script setup>
 import { ref } from 'vue'
@@ -15,7 +15,7 @@ import { ref } from 'vue'
 ### Setup
 
 ```typescript
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 const chart = createChart({
   container,
@@ -161,7 +161,7 @@ function onSensorData(sensorId, time, value) {
 
 ```tsx
 function RealtimeChart() {
-  const chartRef = useRef<SciChartRef>(null)
+  const chartRef = useRef<SciPlotRef>(null)
   const dataRef = useRef({ x: new Float32Array(0), y: new Float32Array(0) })
   const tRef = useRef(0)
 
@@ -203,7 +203,7 @@ function RealtimeChart() {
     return () => cancelAnimationFrame(animationId)
   }, [])
 
-  return <SciChart ref={chartRef} series={[]} />
+  return <SciPlot ref={chartRef} series={[]} />
 }
 ```
 

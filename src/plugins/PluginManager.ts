@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Plugin Manager Implementation
+ * Sci Plot - Plugin Manager Implementation
  * 
  * Manages the lifecycle of plugins including:
  * - Loading and unloading plugins
@@ -74,7 +74,7 @@ export class PluginManagerImpl implements PluginManager {
         config?: TConfig
     ): Promise<void> {
         if (this.destroyed) {
-            console.warn("[SciChartEngine] Cannot add plugin to destroyed manager");
+            console.warn("[SciPlot] Cannot add plugin to destroyed manager");
             return;
         }
 
@@ -87,7 +87,7 @@ export class PluginManagerImpl implements PluginManager {
 
         // Check if already registered
         if (this.plugins.has(name)) {
-            console.warn(`[SciChartEngine] Plugin "${name}" is already registered`);
+            console.warn(`[SciPlot] Plugin "${name}" is already registered`);
             return;
         }
 
@@ -95,7 +95,7 @@ export class PluginManagerImpl implements PluginManager {
         const missing = await this.checkDependencies(plugin.manifest);
         if (missing.length > 0) {
             console.error(
-                `[SciChartEngine] Plugin "${name}" requires plugins: ${missing.join(", ")}`
+                `[SciPlot] Plugin "${name}" requires plugins: ${missing.join(", ")}`
             );
             return;
         }
@@ -123,7 +123,7 @@ export class PluginManagerImpl implements PluginManager {
             }
             instance.initialized = true;
         } catch (e) {
-            console.error(`[SciChartEngine] Failed to initialize plugin "${name}":`, e);
+            console.error(`[SciPlot] Failed to initialize plugin "${name}":`, e);
             this.plugins.delete(name);
             context._cleanup();
             return;
@@ -146,7 +146,7 @@ export class PluginManagerImpl implements PluginManager {
         const dependents = this.findDependents(name);
         if (dependents.length > 0) {
             console.warn(
-                `[SciChartEngine] Cannot remove plugin "${name}", required by: ${dependents.join(", ")}`
+                `[SciPlot] Cannot remove plugin "${name}", required by: ${dependents.join(", ")}`
             );
             return false;
         }
@@ -154,7 +154,7 @@ export class PluginManagerImpl implements PluginManager {
         try {
             instance.plugin.onDestroy?.(instance.context);
         } catch (e) {
-            console.error(`[SciChartEngine] Error destroying plugin "${name}":`, e);
+            console.error(`[SciPlot] Error destroying plugin "${name}":`, e);
         }
 
         instance.context._cleanup();
@@ -199,7 +199,7 @@ export class PluginManagerImpl implements PluginManager {
     configure<TConfig>(name: string, config: TConfig): void {
         const instance = this.plugins.get(name);
         if (!instance) {
-            console.warn(`[SciChartEngine] Plugin "${name}" not found`);
+            console.warn(`[SciPlot] Plugin "${name}" not found`);
             return;
         }
 
@@ -213,7 +213,7 @@ export class PluginManagerImpl implements PluginManager {
                 oldConfig as TConfig
             );
         } catch (e) {
-            console.error(`[SciChartEngine] Error in plugin "${name}" config change:`, e);
+            console.error(`[SciPlot] Error in plugin "${name}" config change:`, e);
         }
     }
 
@@ -229,7 +229,7 @@ export class PluginManagerImpl implements PluginManager {
                     handler.call(instance.plugin, instance.context, ...args);
                 } catch (e) {
                     console.error(
-                        `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" hook "${hook}":`,
+                        `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" hook "${hook}":`,
                         e
                     );
                 }
@@ -254,7 +254,7 @@ export class PluginManagerImpl implements PluginManager {
                 }
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" beforeRender:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" beforeRender:`,
                     e
                 );
             }
@@ -271,7 +271,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onAfterRender!(instance.context, event);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" afterRender:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" afterRender:`,
                     e
                 );
             }
@@ -287,7 +287,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onRenderWebGL!(instance.context, event);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" renderWebGL:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" renderWebGL:`,
                     e
                 );
             }
@@ -303,7 +303,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onRenderOverlay!(instance.context, event);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" renderOverlay:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" renderOverlay:`,
                     e
                 );
             }
@@ -323,7 +323,7 @@ export class PluginManagerImpl implements PluginManager {
                 }
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" interaction:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" interaction:`,
                     e
                 );
             }
@@ -340,7 +340,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onViewChange!(instance.context, event);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" viewChange:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" viewChange:`,
                     e
                 );
             }
@@ -356,7 +356,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onDataUpdate!(instance.context, event);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" dataUpdate:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" dataUpdate:`,
                     e
                 );
             }
@@ -372,7 +372,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onSeriesAdd!(instance.context, event);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" seriesAdd:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" seriesAdd:`,
                     e
                 );
             }
@@ -388,7 +388,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onSeriesRemove!(instance.context, event);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" seriesRemove:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" seriesRemove:`,
                     e
                 );
             }
@@ -404,7 +404,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onSeriesChange!(instance.context, event);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" seriesChange:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" seriesChange:`,
                     e
                 );
             }
@@ -420,7 +420,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onResize!(instance.context, size);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" resize:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" resize:`,
                     e
                 );
             }
@@ -441,7 +441,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onThemeChange!(instance.context, theme);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" themeChange:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" themeChange:`,
                     e
                 );
             }
@@ -457,7 +457,7 @@ export class PluginManagerImpl implements PluginManager {
                 instance.plugin.onSelectionChange!(instance.context, points);
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" selectionChange:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" selectionChange:`,
                     e
                 );
             }
@@ -481,7 +481,7 @@ export class PluginManagerImpl implements PluginManager {
                 }
             } catch (e) {
                 console.error(
-                    `[SciChartEngine] Error in plugin "${instance.plugin.manifest.name}" serialize:`,
+                    `[SciPlot] Error in plugin "${instance.plugin.manifest.name}" serialize:`,
                     e
                 );
             }
@@ -514,7 +514,7 @@ export class PluginManagerImpl implements PluginManager {
                     instance.plugin.onDeserialize(instance.context, customData);
                 } catch (e) {
                     console.error(
-                        `[SciChartEngine] Error in plugin "${name}" deserialize:`,
+                        `[SciPlot] Error in plugin "${name}" deserialize:`,
                         e
                     );
                 }
@@ -535,7 +535,7 @@ export class PluginManagerImpl implements PluginManager {
             try {
                 instance.plugin.onDestroy?.(instance.context);
             } catch (e) {
-                console.error(`[SciChartEngine] Error destroying plugin "${name}":`, e);
+                console.error(`[SciPlot] Error destroying plugin "${name}":`, e);
             }
             instance.context._cleanup();
         }

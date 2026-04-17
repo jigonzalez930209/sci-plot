@@ -1,17 +1,17 @@
 # React Integration Guide
 
-Learn how to use SciChart Engine seamlessly within React applications.
+Learn how to use Sci Plot seamlessly within React applications.
 
 ## Official Components
 
-The engine provides a React-first experience through two main paths: the `<SciChart />` component for declarative usage, and the `useSciChart` hook for imperative control.
+The engine provides a React-first experience through two main paths: the `<SciPlot />` component for declarative usage, and the `useSciPlot` hook for imperative control.
 
 ### 1. Declarative Component
 
 The simplest way to add a chart to your React app.
 
 ```tsx
-import { SciChart } from 'scichart-engine/react'
+import { SciPlot } from 'sci-plot/react'
 
 function App() {
   const data = {
@@ -21,7 +21,7 @@ function App() {
 
   return (
     <div style={{ width: '800px', height: '400px' }}>
-      <SciChart
+      <SciPlot
         series={[{
           id: 'sensor-data',
           type: 'line',
@@ -39,14 +39,14 @@ function App() {
 
 ### 2. Imperative Hook
 
-Use `useSciChart` when you need full access to the low-level `Chart` instance (e.g., for specialized analysis, dynamic series management, or custom plugins).
+Use `useSciPlot` when you need full access to the low-level `Chart` instance (e.g., for specialized analysis, dynamic series management, or custom plugins).
 
 ```tsx
-import { useSciChart } from 'scichart-engine/react'
+import { useSciPlot } from 'sci-plot/react'
 import { useEffect } from 'react'
 
 function CustomChart() {
-  const { ref, chart } = useSciChart({
+  const { ref, chart } = useSciPlot({
     theme: 'midnight',
     xAxis: { label: 'Frequency' }
   })
@@ -92,19 +92,19 @@ const [theme, setTheme] = useState('midnight')
 return (
   <>
     <button onClick={() => setTheme('light')}>Light Mode</button>
-    <SciChart theme={theme} ... />
+    <SciPlot theme={theme} ... />
   </>
 )
 ```
 
 ## Performance Tips for React
 
-1. **Keep Containers Small**: Ensure the parent element of `<SciChart />` has a fixed or relative size.
+1. **Keep Containers Small**: Ensure the parent element of `<SciPlot />` has a fixed or relative size.
 2. **Memoize Large Data**: Use `useMemo` for large static datasets to avoid unnecessary prop diffing.
 3. **Clean Up**: Always call `chart.destroy()` if you are creating charts manually. The official components handle this for you automatically.
 
 ## Next Steps
 
-- Explore the [React API Reference](/api/react-scichart)
+- Explore the [React API Reference](/api/react-sci-plot)
 - See the [React Hook Reference](/api/react-hook)
 - View the [React Integration Example](/examples/react)

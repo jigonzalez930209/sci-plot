@@ -18,8 +18,8 @@ The `PluginLaTeX` provides native LaTeX rendering capabilities without any exter
 ## Installation
 
 ```typescript
-import { createChart } from 'scichart-engine';
-import { PluginLaTeX } from 'scichart-engine/plugins';
+import { createChart } from 'sci-plot';
+import { PluginLaTeX } from 'sci-plot/plugins';
 
 const chart = createChart({ container });
 

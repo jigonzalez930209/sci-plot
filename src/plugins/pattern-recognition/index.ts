@@ -6,7 +6,7 @@
  * 
  * @example
  * ```typescript
- * import { PluginPatternRecognition } from 'scichart-engine/plugins/pattern-recognition';
+ * import { PluginPatternRecognition } from 'sci-plot/plugins/pattern-recognition';
  * 
  * chart.use(PluginPatternRecognition({
  *   defaultParameters: {
@@ -70,7 +70,7 @@ const manifestPatternRecognition: PluginManifest = {
   name: 'pattern-recognition',
   version: '1.0.0',
   description: 'Technical pattern recognition for financial and scientific data',
-  author: 'SciChart Engine Team',
+  author: 'Sci Plot Team',
   provides: ['patterns', 'technical-analysis', 'chart-patterns']
 };
 

@@ -9,10 +9,10 @@ See this plugin in action in our [Process Monitoring Dashboard](/examples/gauge-
 ## Installation
 
 ```typescript
-import { SciChartEngine } from 'scichart-engine';
-import { PluginDataTransform } from 'scichart-engine/plugins';
+import { SciPlot } from 'sci-plot';
+import { PluginDataTransform } from 'sci-plot/plugins';
 
-const chart = new SciChartEngine({
+const chart = new SciPlot({
   // ...
 });
 

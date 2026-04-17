@@ -1,11 +1,11 @@
 ---
 title: Built-in Themes
-description: Explore SciChart Engine's high-contrast dark, light, midnight, and specialized electrochemistry themes for professional scientific data visualization.
+description: Explore Sci Plot's high-contrast dark, light, midnight, and specialized electrochemistry themes for professional scientific data visualization.
 ---
 
 # Built-in Themes
 
-SciChart Engine includes several pre-built themes optimized for different use cases.
+Sci Plot includes several pre-built themes optimized for different use cases.
 
 ## Available Themes
 
@@ -112,7 +112,7 @@ import {
   MIDNIGHT_THEME,
   ELECTROCHEM_THEME,
   DEFAULT_THEME,
-} from 'scichart-engine'
+} from 'sci-plot'
 
 // Use directly
 createChart({
@@ -124,7 +124,7 @@ createChart({
 ## Getting Theme by Name
 
 ```typescript
-import { getThemeByName } from 'scichart-engine'
+import { getThemeByName } from 'sci-plot'
 
 const theme = getThemeByName('midnight')
 ```

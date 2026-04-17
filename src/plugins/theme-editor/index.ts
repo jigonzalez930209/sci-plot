@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Theme Editor Plugin
+ * Sci Plot - Theme Editor Plugin
  * 
  * Provides a visual interface for editing chart themes in real-time.
  * 
@@ -18,15 +18,15 @@ export interface PluginThemeEditorConfig {
 }
 
 const manifestThemeEditor: PluginManifest = {
-    name: "scichart-theme-editor",
+    name: "sci-plot-theme-editor",
     version: "1.0.0",
-    description: "Visual theme editor for scichart-engine",
+    description: "Visual theme editor for sci-plot",
     provides: ["ui", "theme"],
     tags: ["theme", "editor", "styling", "ui"],
 };
 
 /**
- * SciChartEngine Theme Editor Plugin
+ * SciPlot Theme Editor Plugin
  * 
  * Adds a visual panel to customize chart colors and styles.
  */

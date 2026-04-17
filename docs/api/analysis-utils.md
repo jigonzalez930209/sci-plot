@@ -9,7 +9,7 @@ While many of these are standalone utilities, the recommended way to use them wi
 Calculate basic statistics for a dataset.
 
 ```typescript
-import { calculateStats } from 'scichart-engine'
+import { calculateStats } from 'sci-plot'
 
 // Use standalone
 const stats = calculateStats(yData)
@@ -33,7 +33,7 @@ interface DataStats {
 ### Example
 
 ```typescript
-import { calculateStats } from 'scichart-engine'
+import { calculateStats } from 'sci-plot'
 
 const stats = calculateStats(yData)
 
@@ -66,7 +66,7 @@ function movingAverage(
 ### Example
 
 ```typescript
-import { movingAverage } from 'scichart-engine'
+import { movingAverage } from 'sci-plot'
 
 // Smooth noisy data with 5-point moving average
 const smoothed = movingAverage(noisyData, 5)
@@ -103,7 +103,7 @@ function downsampleLTTB(
 ### Example
 
 ```typescript
-import { downsampleLTTB } from 'scichart-engine'
+import { downsampleLTTB } from 'sci-plot'
 
 // Reduce 10 million points to 10,000 for display
 const { x: sampledX, y: sampledY } = downsampleLTTB(
@@ -150,7 +150,7 @@ interface ValidationResult {
 ### Example
 
 ```typescript
-import { validateData } from 'scichart-engine'
+import { validateData } from 'sci-plot'
 
 const result = validateData(yData)
 
@@ -185,7 +185,7 @@ function formatWithPrefix(
 ### Example
 
 ```typescript
-import { formatWithPrefix } from 'scichart-engine'
+import { formatWithPrefix } from 'sci-plot'
 
 formatWithPrefix(0.000001, 'A')    // "1.00 µA"
 formatWithPrefix(0.5, 'V')         // "500.00 mV"
@@ -207,7 +207,7 @@ function formatValue(value: number, decimals?: number): string
 ### Example
 
 ```typescript
-import { formatValue } from 'scichart-engine'
+import { formatValue } from 'sci-plot'
 
 formatValue(123.456)      // "123.456"
 formatValue(0.0001)       // "1.000e-4"
@@ -227,7 +227,7 @@ function formatScientific(value: number, decimals?: number): string
 ### Example
 
 ```typescript
-import { formatScientific } from 'scichart-engine'
+import { formatScientific } from 'sci-plot'
 
 formatScientific(123.456)    // "1.23e+2"
 formatScientific(0.001)      // "1.00e-3"
@@ -255,7 +255,7 @@ interface PrefixInfo {
 ### Example
 
 ```typescript
-import { getBestPrefix } from 'scichart-engine'
+import { getBestPrefix } from 'sci-plot'
 
 const prefix = getBestPrefix(0.000001)
 // { symbol: 'µ', factor: 1e-6 }
@@ -291,7 +291,7 @@ function integrate(
 ### Example
 
 ```typescript
-import { integrate } from 'scichart-engine'
+import { integrate } from 'sci-plot'
 
 const area = integrate(xData, yData, 0.2, 0.8)
 // Or via chart: chart.analysis.integrate(...)
@@ -325,7 +325,7 @@ function subtractBaseline(
 ### Example
 
 ```typescript
-import { subtractBaseline } from 'scichart-engine'
+import { subtractBaseline } from 'sci-plot'
 
 // Subtract background using points at x=0.1 and x=0.9
 const correctedY = subtractBaseline(xData, yData, 0.1, 0.9)

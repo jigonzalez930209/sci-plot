@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Financial/Technical Indicators Module
+ * Sci Plot - Financial/Technical Indicators Module
  * 
  * Provides common financial and technical analysis indicators:
  * - Moving Averages (SMA, EMA, WMA)

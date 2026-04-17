@@ -1,7 +1,7 @@
 /**
- * SciChart Engine - Usage Example
+ * Sci Plot - Usage Example
  *
- * This file demonstrates how to use the SciChart Engine
+ * This file demonstrates how to use the Sci Plot
  * for electrochemical data visualization.
  */
 

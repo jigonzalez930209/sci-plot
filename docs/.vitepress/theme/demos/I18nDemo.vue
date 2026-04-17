@@ -60,7 +60,7 @@
     
     <div class="code-preview">
       <pre><code>// Set locale for number/date formatting
-import { setGlobalLocale } from 'scichart-engine';
+import { setGlobalLocale } from 'sci-plot';
 setGlobalLocale('{{ currentLocale }}');
 
 // Formats:

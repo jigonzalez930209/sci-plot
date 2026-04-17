@@ -16,7 +16,7 @@ The Point Cloud 3D renderer is optimized for visualizing massive datasets where 
 ## Basic Usage
 
 ```typescript
-import { PointCloud3DRenderer } from 'scichart-engine/core/3d';
+import { PointCloud3DRenderer } from 'sci-plot/core/3d';
 
 const renderer = new PointCloud3DRenderer({
   canvas: document.getElementById('canvas'),

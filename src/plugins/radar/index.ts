@@ -12,9 +12,9 @@ import type {
 } from '../types';
 
 const manifestRadar: PluginManifest = {
-  name: "scichart-radar",
+  name: "sci-plot-radar",
   version: "1.0.0",
-  description: "Advanced Radar/Spider Charts for scichart-engine",
+  description: "Advanced Radar/Spider Charts for sci-plot",
   provides: ["radar", "spider-chart"],
   tags: ["radar", "visualization", "comparison"],
 };

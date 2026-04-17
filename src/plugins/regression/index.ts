@@ -6,7 +6,7 @@
  * 
  * @example
  * ```typescript
- * import { PluginRegression } from 'scichart-engine/plugins/regression';
+ * import { PluginRegression } from 'sci-plot/plugins/regression';
  * 
  * chart.use(PluginRegression({
  *   defaultMethod: 'polynomial',
@@ -74,7 +74,7 @@ const manifestRegression: PluginManifest = {
   name: 'regression',
   version: '1.0.0',
   description: 'Advanced scientific regression and curve fitting',
-  author: 'SciChart Engine Team',
+  author: 'Sci Plot Team',
   provides: ['regression', 'curve-fitting', 'scientific-analysis']
 };
 

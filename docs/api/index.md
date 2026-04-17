@@ -1,11 +1,11 @@
 ---
 title: API Reference
-description: Comprehensive API documentation for SciChart Engine, covering chart creation, series management, interactions, and scientific data analysis.
+description: Comprehensive API documentation for Sci Plot, covering chart creation, series management, interactions, and scientific data analysis.
 ---
 
 # API Reference
 
-SciChart Engine provides a comprehensive API for creating high-performance scientific charts.
+Sci Plot provides a comprehensive API for creating high-performance scientific charts.
 
 ## Core Modules
 
@@ -215,8 +215,8 @@ Nuevos tipos de visualización altamente especializados para KPIs y flujos.
 
 | Export | Description |
 |--------|-------------|
-| [`SciChart`](/api/react-scichart) | React component |
-| [`useSciChart`](/api/react-hook) | React hook for imperative control |
+| [`SciPlot`](/api/react-sci-plot) | React component |
+| [`useSciPlot`](/api/react-hook) | React hook for imperative control |
 
 ## Data Analysis
 

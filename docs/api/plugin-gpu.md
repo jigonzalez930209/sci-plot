@@ -5,7 +5,7 @@ description: Leverage the power of modern GPUs with WebGPU support and GPGPU com
 
 # GPU & WebGPU Plugin
 
-The GPU plugin allows you to unlock specialized hardware acceleration features. SciChart Engine is built on a multi-backend architecture, and this plugin provides the tools to select backends, manage GPU resources, and perform high-performance computing directly on the graphics card.
+The GPU plugin allows you to unlock specialized hardware acceleration features. Sci Plot is built on a multi-backend architecture, and this plugin provides the tools to select backends, manage GPU resources, and perform high-performance computing directly on the graphics card.
 
 ## Features
 
@@ -18,7 +18,7 @@ The GPU plugin allows you to unlock specialized hardware acceleration features. 
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginGpu } from 'scichart-engine';
+import { createChart, PluginGpu } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')!

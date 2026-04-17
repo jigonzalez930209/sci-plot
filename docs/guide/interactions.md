@@ -1,6 +1,6 @@
 # Interactions
 
-SciChart Engine provides rich built-in interactions for exploring data.
+Sci Plot provides rich built-in interactions for exploring data.
 
 <script setup>
 import { ref } from 'vue'
@@ -23,7 +23,7 @@ Scroll the mouse wheel to zoom in/out centered on the cursor position.
 
 ### Interaction Modes
 
-SciChart Engine uses a mode-based interaction system. You can switch between different modes depending on the desired user interaction:
+Sci Plot uses a mode-based interaction system. You can switch between different modes depending on the desired user interaction:
 
 | Mode | Action | Best For |
 |------|--------|----------|
@@ -278,7 +278,7 @@ chart.on('pan', ({ deltaX, deltaY }) => {
 
 ## Touch Support
 
-SciChart Engine supports touch gestures on mobile devices:
+Sci Plot supports touch gestures on mobile devices:
 
 | Gesture | Action |
 |---------|--------|

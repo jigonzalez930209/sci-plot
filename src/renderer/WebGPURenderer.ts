@@ -27,7 +27,7 @@ export class WebGPURenderer {
 
   async init(opts: WebGPURendererOptions = {}): Promise<void> {
     if (!this.available) {
-      throw new Error("[SciChartEngine] WebGPU is not supported in this environment");
+      throw new Error("[SciPlot] WebGPU is not supported in this environment");
     }
 
     const gpu = (globalThis as any).navigator.gpu;
@@ -36,14 +36,14 @@ export class WebGPURenderer {
     });
 
     if (!this.adapter) {
-      throw new Error("[SciChartEngine] Failed to request WebGPU adapter");
+      throw new Error("[SciPlot] Failed to request WebGPU adapter");
     }
 
     this.device = await this.adapter.requestDevice();
 
     const ctx = (this.canvas as any).getContext("webgpu");
     if (!ctx) {
-      throw new Error("[SciChartEngine] Failed to get WebGPU context");
+      throw new Error("[SciPlot] Failed to get WebGPU context");
     }
 
     this.context = ctx;

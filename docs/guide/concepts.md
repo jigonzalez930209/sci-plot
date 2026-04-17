@@ -1,6 +1,6 @@
 # Core Concepts
 
-Understanding the architecture of SciChart Engine.
+Understanding the architecture of Sci Plot.
 
 ## Architecture Overview
 
@@ -158,7 +158,7 @@ Events are synchronous and fire immediately after the action.
 
 ## Render Loop
 
-SciChart Engine uses `requestAnimationFrame` for smooth rendering:
+Sci Plot uses `requestAnimationFrame` for smooth rendering:
 
 ```
 ┌─────────────────────────────────────┐

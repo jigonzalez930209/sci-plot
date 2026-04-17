@@ -1,9 +1,9 @@
 ---
-description: Guide on how to create custom Plugins and Render Series in scichart-engine for AI Agents
+description: Guide on how to create custom Plugins and Render Series in sci-plot for AI Agents
 ---
 # AI SYSTEM INSTRUCTION: Component Creation Guide
 
-**CRITICAL DIRECTIVE**: Follow these exact steps when expanding `scichart-engine`. Because this is a WebGL engine, you do not "create a React component" to draw a line; you create a Renderer or a Plugin.
+**CRITICAL DIRECTIVE**: Follow these exact steps when expanding `sci-plot`. Because this is a WebGL engine, you do not "create a React component" to draw a line; you create a Renderer or a Plugin.
 
 ---
 
@@ -96,6 +96,6 @@ chart.getPlugin('custom-analysis').calculateMean('signal1');
 
 ## TASK C: React Wrapper Integrations
 
-If you added a new WebGL series type or Plugin, you must expose it in `/src/react/SciChart.tsx` if it requires a UI lifecycle wrapper (e.g., a React prop that feeds data into the plugin on change).
+If you added a new WebGL series type or Plugin, you must expose it in `/src/react/SciPlot.tsx` if it requires a UI lifecycle wrapper (e.g., a React prop that feeds data into the plugin on change).
 
-**Rule**: The React component handles the DOM and `ResizeObserver`. The React hooks (`useSciChart`) manage syncing `props.series` into internal WebGL series (`engine.updateSeries(id, newData)`).
+**Rule**: The React component handles the DOM and `ResizeObserver`. The React hooks (`useSciPlot`) manage syncing `props.series` into internal WebGL series (`engine.updateSeries(id, newData)`).

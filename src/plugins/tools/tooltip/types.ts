@@ -2,7 +2,7 @@
  * Tooltip System - Type Definitions
  * 
  * This module defines all types and interfaces for the high-performance
- * tooltip system in SciChart Engine.
+ * tooltip system in Sci Plot.
  * 
  * @module tooltip/types
  */

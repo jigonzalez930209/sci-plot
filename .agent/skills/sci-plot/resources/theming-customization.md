@@ -1,6 +1,6 @@
 # Theming & Design System
 
-SciChart Engine uses a powerful CSS-in-JS design system that allows for global themes and granular overrides.
+Sci Plot uses a powerful CSS-in-JS design system that allows for global themes and granular overrides.
 
 ## Predefined Themes
 - `midnight`: High-contrast blue-on-black (Standard for Lab software).
@@ -12,7 +12,7 @@ SciChart Engine uses a powerful CSS-in-JS design system that allows for global t
 Use `createTheme` to define a brand-new aesthetic.
 
 ```typescript
-import { createTheme } from 'scichart-engine';
+import { createTheme } from 'sci-plot';
 
 const myCustomTheme = createTheme({
   name: 'cyberpunk',
@@ -56,7 +56,7 @@ const cssTheme = createTheme({
 
 ## Layout Configuration
 
-Beyond visual styling, SciChart provides a dedicated `layout` system for controlling component positioning and behavior. See [Layout & Positioning Guide](./layout-positioning.md) for full details.
+Beyond visual styling, SciPlot provides a dedicated `layout` system for controlling component positioning and behavior. See [Layout & Positioning Guide](./layout-positioning.md) for full details.
 
 ### Key Layout Options
 

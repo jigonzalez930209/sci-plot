@@ -1,8 +1,8 @@
-# SciChart Engine Plugins Guide
+# Sci Plot Plugins Guide
 
-Plugins are imported from `scichart-engine/plugins/[name]`.
+Plugins are imported from `sci-plot/plugins/[name]`.
 
-## Analysis (`scichart-analysis`)
+## Analysis (`sci-plot-analysis`)
 Provides mathematical operations on data.
 - `detectPeaks(seriesId, options)`
 - `detectCycles(seriesId, options)`
@@ -10,7 +10,7 @@ Provides mathematical operations on data.
 - `fft(seriesId)`
 - `singleFrequencyFilter(seriesId, frequency)`
 
-## Tools (`scichart-tools`)
+## Tools (`sci-plot-tools`)
 Interactive measurement and interrogation tools.
 - `delta`: Measure distance and slope.
 - `peak`: Integrate area under a curve.
@@ -40,12 +40,12 @@ chart.disableCursor();
 - `'corner'`: Values displayed in a fixed corner box
 - `'disabled'`: Crosshair lines only, no coordinate values
 
-## ML Integration (`scichart-ml-integration`)
+## ML Integration (`sci-plot-ml-integration`)
 Integrates with Machine Learning models for prediction and anomaly detection.
 - `chart.ml.predict(seriesId, model)`
 - `chart.ml.detectAnomalies(seriesId, algorithm)`
 
-## LaTeX (`scichart-latex`)
+## LaTeX (`sci-plot-latex`)
 Native LaTeX rendering for mathematical expressions. When active, it automatically handles LaTeX strings in:
 - **Chart Titles**: `layout: { title: { text: '\\Delta E = mc^2' } }`
 - **Axis Labels**: `xAxis: { label: 'Time (\\mu s)' }`
@@ -55,17 +55,17 @@ Native LaTeX rendering for mathematical expressions. When active, it automatical
 chart.latex.render('\\int_0^\\infty e^{-x^2} dx', ctx, x, y);
 ```
 
-## Regression (`scichart-regression`)
+## Regression (`sci-plot-regression`)
 Advanced curve fitting.
 - `chart.regression.fit(seriesId, 'polynomial', { degree: 3 })`
 
-## Data Export (`scichart-data-export`)
+## Data Export (`sci-plot-data-export`)
 Enhanced export capabilities (MATLAB, Python, Excel, Binary).
 - `chart.dataExport.toMATLAB()`
 - `chart.dataExport.toExcel()`
 - `chart.dataExport.toNativeBinary()`
 
-## High Performance (`scichart-virtualization`, `scichart-gpu`)
+## High Performance (`sci-plot-virtualization`, `sci-plot-gpu`)
 Handle massive datasets (>10M points) and complex computations.
 - `PluginVirtualization`: Dynamic level-of-detail for huge files.
 - `PluginGpu`: Offload heavy calculations or use WebGPU for rendering.

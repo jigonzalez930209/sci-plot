@@ -5,7 +5,7 @@ description: Customizable marker shapes for scatter plots
 
 # Scatter Symbols
 
-SciChart Engine supports multiple high-performance scatter symbols rendered via WebGL. These symbols are essential for distinguishing between different data series in scientific plots.
+Sci Plot supports multiple high-performance scatter symbols rendered via WebGL. These symbols are essential for distinguishing between different data series in scientific plots.
 
 ## Supported Symbols
 
@@ -95,7 +95,7 @@ interface SeriesStyle {
 ## Complete Example
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),

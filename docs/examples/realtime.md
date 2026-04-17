@@ -7,7 +7,7 @@ description: High-performance live data visualization with configurable rolling 
 
 High-performance data streaming is critical for many scientific applications, especially in electrochemistry where you might want to visualize data as it's being acquired from a sensor or potentiostat.
 
-SciChart Engine provides optimized methods for appending data without recreating GPU buffers, enabling smooth visualization of millions of points in real-time.
+Sci Plot provides optimized methods for appending data without recreating GPU buffers, enabling smooth visualization of millions of points in real-time.
 
 ## Interactive Demo
 

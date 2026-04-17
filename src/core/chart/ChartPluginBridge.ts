@@ -23,9 +23,9 @@ export class ChartPluginBridge {
       if (p?.api) return p.api;
     }
 
-    // 3. Special case for latex if name is 'latex' but manifest is 'scichart-latex'
-    if (name === "latex" || name === "scichart-latex") {
-      const latex = this.pluginManager.get("scichart-latex") as any;
+    // 3. Special case for latex if name is 'latex' but manifest is 'sci-plot-latex'
+    if (name === "latex" || name === "sci-plot-latex") {
+      const latex = this.pluginManager.get("sci-plot-latex") as any;
       if (latex?.api) return latex.api;
       const providesLatex = manifests.find(m => m.provides?.includes("latex"));
       if (providesLatex) {
@@ -37,7 +37,7 @@ export class ChartPluginBridge {
   }
 
   get analysis(): any {
-    const api = this.getAPI<any>("scichart-analysis");
+    const api = this.getAPI<any>("sci-plot-analysis");
     if (api) return api;
 
     return {
@@ -51,7 +51,7 @@ export class ChartPluginBridge {
   }
 
   get tooltip(): any {
-    const manager = this.getAPI<any>("scichart-tools")?.getTooltipManager();
+    const manager = this.getAPI<any>("sci-plot-tools")?.getTooltipManager();
     if (manager) return manager;
 
     return {
@@ -64,7 +64,7 @@ export class ChartPluginBridge {
   }
 
   get loading(): any {
-    const api = this.getAPI<any>("scichart-loading");
+    const api = this.getAPI<any>("sci-plot-loading");
     if (api) return api;
 
     return {
@@ -76,11 +76,11 @@ export class ChartPluginBridge {
   }
 
   get deltaTool(): any {
-    return this.getAPI<any>("scichart-tools")?.getDeltaTool() ?? null;
+    return this.getAPI<any>("sci-plot-tools")?.getDeltaTool() ?? null;
   }
 
   get peakTool(): any {
-    return this.getAPI<any>("scichart-tools")?.getPeakTool() ?? null;
+    return this.getAPI<any>("sci-plot-tools")?.getPeakTool() ?? null;
   }
 
   get regression(): any {
@@ -88,19 +88,19 @@ export class ChartPluginBridge {
   }
 
   get radar(): any {
-    return this.getAPI<any>("scichart-radar");
+    return this.getAPI<any>("sci-plot-radar");
   }
 
   get ml(): any {
-    return this.getAPI<any>("scichart-ml-integration");
+    return this.getAPI<any>("sci-plot-ml-integration");
   }
 
   get snapshot(): any {
-    return this.getAPI<any>("scichart-snapshot");
+    return this.getAPI<any>("sci-plot-snapshot");
   }
 
   get dataExport(): any {
-    return this.getAPI<any>("scichart-data-export");
+    return this.getAPI<any>("sci-plot-data-export");
   }
 
   get roi(): any {
@@ -108,35 +108,35 @@ export class ChartPluginBridge {
   }
 
   get videoRecorder(): any {
-    return this.getAPI<any>("scichart-video-recorder");
+    return this.getAPI<any>("sci-plot-video-recorder");
   }
 
   get offscreen(): any {
-    return this.getAPI<any>("scichart-offscreen");
+    return this.getAPI<any>("sci-plot-offscreen");
   }
 
   get virtualization(): any {
-    return this.getAPI<any>("scichart-virtualization");
+    return this.getAPI<any>("sci-plot-virtualization");
   }
 
   get themeEditor(): any {
-    return this.getAPI<any>("scichart-theme-editor");
+    return this.getAPI<any>("sci-plot-theme-editor");
   }
 
   get sync(): any {
-    return this.getAPI<any>("scichart-sync");
+    return this.getAPI<any>("sci-plot-sync");
   }
 
   get brokenAxis(): any {
-    return this.getAPI<any>("scichart-broken-axis");
+    return this.getAPI<any>("sci-plot-broken-axis");
   }
 
   get forecasting(): any {
-    return this.getAPI<any>("scichart-forecasting");
+    return this.getAPI<any>("sci-plot-forecasting");
   }
 
   get latex(): any {
-    return this.getAPI<any>("scichart-latex");
+    return this.getAPI<any>("sci-plot-latex");
   }
 
   /**

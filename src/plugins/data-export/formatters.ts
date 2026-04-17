@@ -79,7 +79,7 @@ export function formatCSV(
 
   // Add metadata as comments (if supported)
   if (includeMetadata && Object.keys(metadata).length > 0) {
-    lines.push(`# SciChart Engine Data Export`);
+    lines.push(`# Sci Plot Data Export`);
     if (includeTimestamp) {
       lines.push(`# Timestamp: ${new Date().toISOString()}`);
     }
@@ -165,7 +165,7 @@ export function formatJSON(
   const exportData: Record<string, unknown> = {
     version: '1.0',
     exportDate: new Date().toISOString(),
-    format: 'scichart-engine-json'
+    format: 'sci-plot-json'
   };
 
   if (includeMetadata) {
@@ -364,7 +364,7 @@ export function formatBinary(
   let offset = 0;
   
   // Header
-  // Magic number: "SCE1" (SciChart Engine v1)
+  // Magic number: "SCE1" (Sci Plot v1)
   view.setUint8(offset++, 0x53); // S
   view.setUint8(offset++, 0x43); // C
   view.setUint8(offset++, 0x45); // E

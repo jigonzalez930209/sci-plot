@@ -5,15 +5,15 @@ description: Advanced measurement and analysis tools like Delta (cursor measurem
 
 # Interactive Tools
 
-SciChart Engine provides professional interactive tools for manual measurement and detailed peak analysis. These tools are part of the `PluginTools` module.
+Sci Plot provides professional interactive tools for manual measurement and detailed peak analysis. These tools are part of the `PluginTools` module.
 
 ## Requirement
 
 To use the interactive tools, you must load the `PluginTools`.
 
 ```typescript
-import { createChart } from 'scichart-engine';
-import { PluginTools } from 'scichart-engine/plugins';
+import { createChart } from 'sci-plot';
+import { PluginTools } from 'sci-plot/plugins';
 
 const chart = createChart({ container });
 

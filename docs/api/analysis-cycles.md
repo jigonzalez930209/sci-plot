@@ -1,11 +1,11 @@
 ---
 title: Cycle Detection API
-description: Detect cycles in oscillating or periodic data with SciChart Engine's detectCycles utility, perfect for cyclic voltammetry and signal processing.
+description: Detect cycles in oscillating or periodic data with Sci Plot's detectCycles utility, perfect for cyclic voltammetry and signal processing.
 ---
 
 # Cycle Detection
 
-Detect cycles in oscillating or periodic data. Available via `import { detectCycles } from 'scichart-engine'` or `chart.analysis.detectCycles()`.
+Detect cycles in oscillating or periodic data. Available via `import { detectCycles } from 'sci-plot'` or `chart.analysis.detectCycles()`.
 
 ::: tip Requirement
 Cycle detection is part of the `PluginAnalysis`.
@@ -14,7 +14,7 @@ Cycle detection is part of the `PluginAnalysis`.
 ## detectCycles
 
 ```typescript
-import { detectCycles } from 'scichart-engine';
+import { detectCycles } from 'sci-plot';
 
 const cycles = detectCycles(signal, 0.005);
 // Or via chart:
@@ -51,7 +51,7 @@ The algorithm detects cycles by:
 ### Example: Basic Usage
 
 ```typescript
-import { detectCycles } from 'scichart-engine'
+import { detectCycles } from 'sci-plot'
 
 // Oscillating signal (e.g., sine wave)
 const signal = new Float32Array(1000)
@@ -71,7 +71,7 @@ cycles.forEach(c => {
 ### Example: Visualize Each Cycle
 
 ```typescript
-import { detectCycles, generateCycleColors } from 'scichart-engine'
+import { detectCycles, generateCycleColors } from 'sci-plot'
 
 const cycles = detectCycles(xData)
 const colors = generateCycleColors(cycles.length)
@@ -92,7 +92,7 @@ cycles.forEach((cycle, i) => {
 ### Example: Cycle Statistics
 
 ```typescript
-import { detectCycles, calculateStats } from 'scichart-engine'
+import { detectCycles, calculateStats } from 'sci-plot'
 
 const cycles = detectCycles(xData)
 
@@ -128,7 +128,7 @@ Array of HSL color strings with evenly distributed hues.
 ### Example
 
 ```typescript
-import { generateCycleColors } from 'scichart-engine'
+import { generateCycleColors } from 'sci-plot'
 
 const colors = generateCycleColors(5)
 // ['hsl(0, 70%, 55%)', 'hsl(72, 70%, 55%)', 'hsl(144, 70%, 55%)', ...]

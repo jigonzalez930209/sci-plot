@@ -1,6 +1,6 @@
 ---
 title: Area Chart Examples
-description: Visualize cumulative data and trends with SciChart Engine's high-performance area charts, featuring semi-transparent fills and real-time updates.
+description: Visualize cumulative data and trends with Sci Plot's high-performance area charts, featuring semi-transparent fills and real-time updates.
 ---
 
 # Area Chart Demo

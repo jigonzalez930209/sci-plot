@@ -34,7 +34,7 @@ import {
   generateSawtoothWave,
   generateCVData,
   generateNyquistData,
-} from 'scichart-engine';
+} from 'sci-plot';
 
 // Basic waveforms
 const sine = generateSineWave({
@@ -69,7 +69,7 @@ const nyquist = generateNyquistData({
 Use the testing utilities for performance benchmarking:
 
 ```typescript
-import { benchmarkRender, assertPerformance } from 'scichart-engine';
+import { benchmarkRender, assertPerformance } from 'sci-plot';
 
 // Measure render performance
 const result = await benchmarkRender(chart, {
@@ -90,7 +90,7 @@ assertPerformance(result, {
 ## Snapshot Testing
 
 ```typescript
-import { createSnapshot, compareSnapshots } from 'scichart-engine';
+import { createSnapshot, compareSnapshots } from 'sci-plot';
 
 // Create a snapshot of chart state
 const snapshot = createSnapshot(chart);

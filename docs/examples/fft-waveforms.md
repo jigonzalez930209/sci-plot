@@ -64,7 +64,7 @@ When you switch to FFT mode for **square** or **triangle** waves, notice:
 ## API Reference
 
 ```typescript
-import { analyzeSpectrum } from 'scichart-engine/analysis'
+import { analyzeSpectrum } from 'sci-plot/analysis'
 
 const signal = new Float32Array(1024)
 // ... fill signal data

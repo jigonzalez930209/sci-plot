@@ -41,7 +41,7 @@ interface SeriesData {
 ```
 
 ::: tip TypedArrays Required
-SciChart Engine requires TypedArrays (`Float32Array` or `Float64Array`) for optimal WebGL performance. Regular JavaScript arrays will cause errors.
+Sci Plot requires TypedArrays (`Float32Array` or `Float64Array`) for optimal WebGL performance. Regular JavaScript arrays will cause errors.
 :::
 
 ### SeriesStyle
@@ -219,7 +219,7 @@ function onNewData(newPoints) {
 For very large datasets, use the built-in downsampling:
 
 ```typescript
-import { downsampleLTTB } from 'scichart-engine'
+import { downsampleLTTB } from 'sci-plot'
 
 // Reduce 10M points to 10k for display
 const { x: sampledX, y: sampledY } = downsampleLTTB(

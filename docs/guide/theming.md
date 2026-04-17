@@ -14,7 +14,7 @@ This chart automatically syncs with the documentation theme. Toggle dark/light m
 
 ## Built-in Themes
 
-SciChart Engine includes four pre-built themes:
+Sci Plot includes four pre-built themes:
 
 | Theme | Description | Best For |
 |-------|-------------|----------|
@@ -26,7 +26,7 @@ SciChart Engine includes four pre-built themes:
 ### Using Themes
 
 ```typescript
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 // Use theme by name
 const chart = createChart({
@@ -38,7 +38,7 @@ const chart = createChart({
 ### Theme Objects
 
 ```typescript
-import { DARK_THEME, LIGHT_THEME, MIDNIGHT_THEME } from 'scichart-engine'
+import { DARK_THEME, LIGHT_THEME, MIDNIGHT_THEME } from 'sci-plot'
 
 const chart = createChart({
   container,
@@ -86,7 +86,7 @@ function setTheme(themeName) {
 Create your own theme with `createTheme`:
 
 ```typescript
-import { createTheme } from 'scichart-engine'
+import { createTheme } from 'sci-plot'
 
 const myTheme = createTheme({
   name: 'my-custom-theme',
@@ -140,7 +140,7 @@ const chart = createChart({
 Base your theme on an existing one:
 
 ```typescript
-import { DARK_THEME, createTheme } from 'scichart-engine'
+import { DARK_THEME, createTheme } from 'sci-plot'
 
 const customDark = createTheme({
   ...DARK_THEME,
@@ -320,7 +320,7 @@ chart.addSeries({
 
 ## Color Schemes
 
-For multi-series charts, SciChart Engine provides **5 professional color schemes** with 20 distinct colors each, plus a unique highlight color for hover states.
+For multi-series charts, Sci Plot provides **5 professional color schemes** with 20 distinct colors each, plus a unique highlight color for hover states.
 
 ### Available Schemes
 
@@ -366,7 +366,7 @@ console.log(scheme.highlightColor)  // '#FFD700' (gold)
 ### Custom Color Schemes
 
 ```typescript
-import { type ColorScheme } from 'scichart-engine'
+import { type ColorScheme } from 'sci-plot'
 
 const customScheme: ColorScheme = {
   name: 'my-scheme',
@@ -426,7 +426,7 @@ for (let i = 0; i < 25; i++) {
 
 ## Layout vs Theme
 
-Beyond visual styling (colors, fonts, etc.), SciChart Engine provides a separate **layout system** for controlling component positioning and behavior.
+Beyond visual styling (colors, fonts, etc.), Sci Plot provides a separate **layout system** for controlling component positioning and behavior.
 
 | Concern | Use Theme | Use Layout |
 |---------|-----------|------------|

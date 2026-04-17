@@ -4,7 +4,7 @@ Learn about the high-performance specialized renderers for complex 3D data.
 
 ## Introduction
 
-While the core 3D series cover basic scatter and surface plots, many scientific applications require specialized geometry. SciChart Engine provides six specialized renderers optimized for specific data types.
+While the core 3D series cover basic scatter and surface plots, many scientific applications require specialized geometry. Sci Plot provides six specialized renderers optimized for specific data types.
 
 ## 1. Waterfall Renderer
 **Type**: `'waterfall'`

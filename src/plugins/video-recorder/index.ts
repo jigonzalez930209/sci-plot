@@ -15,7 +15,7 @@ import type {
 } from '../types';
 
 const manifest: PluginManifest = {
-  name: 'scichart-video-recorder',
+  name: 'sci-plot-video-recorder',
   version: '1.0.0',
   description: 'Capture chart animations and export to video files',
   provides: ['video-export', 'media-tools'],

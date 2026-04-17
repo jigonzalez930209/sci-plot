@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Delta Tool Module
+ * Sci Plot - Delta Tool Module
  * 
  * Provides interactive measurement tool for measuring distances,
  * differences, and slopes between two data points on the chart.
@@ -142,7 +142,7 @@ export class DeltaTool {
       precision: 4,
       showSlope: true,
       showDistance: true,
-      className: 'scichart-delta-tool',
+      className: 'sci-plot-delta-tool',
       highlightSize: 12,
       highlightColor: '#00f2ff',
       snapRadius: 30,

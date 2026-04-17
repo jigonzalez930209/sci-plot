@@ -1,5 +1,5 @@
 /**
- * SciChartEngine Engine - Debug Overlay Plugin
+ * SciPlot Engine - Debug Overlay Plugin
  * 
  * Provides performance metrics and debugging information.
  * 
@@ -17,9 +17,9 @@ export interface PluginDebugConfig extends Partial<DebugOverlayOptions> {
 }
 
 const manifestDebug: PluginManifest = {
-    name: "scichart-debug",
+    name: "sci-plot-debug",
     version: "1.0.0",
-    description: "Performance monitoring and debugging overlay for scichart-engine",
+    description: "Performance monitoring and debugging overlay for sci-plot",
     provides: ["ui"],
     tags: ["debug", "performance", "fps", "monitoring"],
 };
@@ -28,7 +28,7 @@ import { DebugOverlay, DebugOverlayOptions } from "../../core/debug";
 import { ChartStatistics } from "../../core/ChartStatistics";
 
 /**
- * SciChartEngine Debug Plugin
+ * SciPlot Debug Plugin
  * 
  * Adds a useful overlay with real-time performance metrics and debugging info.
  */

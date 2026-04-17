@@ -9,7 +9,7 @@ const resolution = ref('standard');
 const quality = ref(0.9);
 const includeBackground = ref(true);
 const includeOverlays = ref(true);
-const watermarkText = ref('SciChart Engine Export');
+const watermarkText = ref('Sci Plot Export');
 const lastSnapshotUrl = ref('');
 const isExporting = ref(false);
 
@@ -122,7 +122,7 @@ async function download() {
     includeBackground: includeBackground.value,
     includeOverlays: includeOverlays.value,
     watermarkText: watermarkText.value,
-    fileName: 'scichart-pro-export'
+    fileName: 'sci-plot-pro-export'
   });
 }
 

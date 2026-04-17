@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Context Menu Plugin
+ * Sci Plot - Context Menu Plugin
  * 
  * Provides a customizable right-click context menu for chart interactions.
  * 
@@ -7,8 +7,8 @@
  * 
  * @example
  * ```typescript
- * import { createChart } from 'scichart-engine';
- * import { PluginContextMenu } from 'scichart-engine/plugins/context-menu';
+ * import { createChart } from 'sci-plot';
+ * import { PluginContextMenu } from 'sci-plot/plugins/context-menu';
  * 
  * const chart = createChart({ container });
  * chart.use(PluginContextMenu({
@@ -122,16 +122,16 @@ const DEFAULT_PLOT_ITEMS: MenuItem[] = [
 // ============================================
 
 const manifestContextMenu: PluginManifest = {
-  name: "scichart-context-menu",
+  name: "sci-plot-context-menu",
   version: "1.0.0",
-  description: "Customizable right-click context menu for scichart-engine",
-  author: "SciChart Engine Team",
+  description: "Customizable right-click context menu for sci-plot",
+  author: "Sci Plot Team",
   provides: ["interaction"],
   tags: ["context-menu", "right-click", "menu", "ui"],
 };
 
 /**
- * SciChart Engine Context Menu Plugin
+ * Sci Plot Context Menu Plugin
  * 
  * Adds a customizable context menu with built-in actions and 
  * extensibility for custom menu items.
@@ -259,7 +259,7 @@ export function PluginContextMenu(
 
   function executeExport(format: 'csv' | 'json'): void {
     const chart = _ctx?.chart as any;
-    const exportPlugin = chart?.plugins?.get('scichart-data-export')?.api;
+    const exportPlugin = chart?.plugins?.get('sci-plot-data-export')?.api;
     
     if (exportPlugin) {
       exportPlugin.download(format);

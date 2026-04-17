@@ -1,6 +1,6 @@
 # Series & Data
 
-Learn how to work with data series in SciChart Engine.
+Learn how to work with data series in Sci Plot.
 
 <script setup>
 import { ref } from 'vue'
@@ -180,7 +180,7 @@ chart.addSeries({
 ## Data Requirements
 
 ::: warning TypedArrays Required
-SciChart Engine requires `Float32Array` or `Float64Array` for data. Regular JavaScript arrays will cause errors.
+Sci Plot requires `Float32Array` or `Float64Array` for data. Regular JavaScript arrays will cause errors.
 :::
 
 ```typescript
@@ -340,7 +340,7 @@ chart.addSeries({
 
 ## Multiple Y-Axes
 
-SciChart Engine supports multiple Y-axes. This is useful for comparing series with different units (e.g., Current and Potential).
+Sci Plot supports multiple Y-axes. This is useful for comparing series with different units (e.g., Current and Potential).
 
 ### 1. Register Additional Axis
 

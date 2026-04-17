@@ -267,7 +267,7 @@ axes: {
 ## Complete Example
 
 ```typescript
-import { Bubble3DRenderer } from 'scichart-engine/core/3d';
+import { Bubble3DRenderer } from 'sci-plot/core/3d';
 
 const renderer = new Bubble3DRenderer({
   canvas,

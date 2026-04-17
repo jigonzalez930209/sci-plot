@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Theme Editor Module
+ * Sci Plot - Theme Editor Module
  * 
  * Provides a visual theme editor for customizing chart appearance:
  * - Color pickers for all theme elements
@@ -361,7 +361,7 @@ export class ThemeEditor {
       baseTheme: THEME_PRESETS[0].theme,
       livePreview: true,
       showAdvanced: false,
-      className: 'scichart-theme-editor',
+      className: 'sci-plot-theme-editor',
       onChange: undefined,
       onExport: undefined,
       ...options,

@@ -18,7 +18,7 @@ The Selection API provides:
 ## Quick Start
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')!,

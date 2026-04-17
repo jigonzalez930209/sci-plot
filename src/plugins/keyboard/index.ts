@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Keyboard Shortcuts Plugin
+ * Sci Plot - Keyboard Shortcuts Plugin
  * 
  * Provides customizable keyboard shortcut management.
  * 
@@ -16,15 +16,15 @@ export interface PluginKeyboardConfig extends Partial<KeyBindingManagerOptions> 
 }
 
 const manifestKeyboard: PluginManifest = {
-    name: "scichart-keyboard",
+    name: "sci-plot-keyboard",
     version: "1.0.0",
-    description: "Keyboard shortcut management for scichart-engine",
+    description: "Keyboard shortcut management for sci-plot",
     provides: ["interaction"],
     tags: ["keyboard", "shortcuts", "interaction", "accessibility"],
 };
 
 /**
- * SciChartEngine Keyboard Plugin
+ * SciPlot Keyboard Plugin
  * 
  * Adds support for keyboard shortcuts and hotkeys.
  */

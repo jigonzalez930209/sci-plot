@@ -1,11 +1,11 @@
 {
-  "name": "scichart-engine",
+  "name": "sci-plot",
   "version": "1.11.1",
   "author": "jigonzalez930209",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jigonzalez930209/scichart-engine.git"
+    "url": "git+https://github.com/jigonzalez930209/sci-plot.git"
   },
   "keywords": [
     "chart",
@@ -18,17 +18,17 @@
   ],
   "description": "A high-performance scientific charting engine for web applications.",
   "type": "module",
-  "main": "./dist/scichart-engine.js",
-  "module": "./dist/scichart-engine.js",
+  "main": "./dist/sci-plot.js",
+  "module": "./dist/sci-plot.js",
   "types": "./dist/index.core.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.core.d.ts",
-      "import": "./dist/scichart-engine.js"
+      "import": "./dist/sci-plot.js"
     },
     "./full": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/scichart-engine.full.js"
+      "import": "./dist/sci-plot.full.js"
     },
     "./plugins/3d": {
       "types": "./dist/plugins/3d.d.ts",

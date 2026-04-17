@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: "SciChart Engine"
+  name: "Sci Plot"
   text: "Ultra-fast WebGL Scientific Charts"
   tagline: Render millions of points at 60 FPS with WebGL-powered precision
   actions:
@@ -14,7 +14,7 @@ hero:
       link: /examples/
     - theme: alt
       text: GitHub
-      link: https://github.com/jigonzalez930209/scichart-engine
+      link: https://github.com/jigonzalez930209/sci-plot
 
 features:
   - icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="rocketGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00f2ff"/><stop offset="100%" style="stop-color:#a855f7"/></linearGradient></defs><path d="M48 16c0 0-4-4-16 8S20 48 20 48l-4 8 8-4s12-4 24-16 0-20 0-20z" stroke="url(#rocketGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="28" r="4" fill="url(#rocketGrad)"/><path d="M16 48l-4 4M20 52l-4 4M12 44l-4 4" stroke="url(#rocketGrad)" stroke-width="2" stroke-linecap="round"/></svg>'
@@ -52,15 +52,15 @@ This chart automatically syncs with the documentation theme. Try toggling dark/l
 ### Installation
 
 ```bash
-npm install scichart-engine
+npm install sci-plot
 # or
-pnpm add scichart-engine
+pnpm add sci-plot
 ```
 
 ### Basic Usage
 
 ```typescript
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -83,7 +83,7 @@ chart.addSeries({
 ### React Usage
 
 ```tsx
-import { SciChart } from 'scichart-engine/react'
+import { SciPlot } from 'sci-plot/react'
 
 function MyChart() {
   const series = [{
@@ -94,7 +94,7 @@ function MyChart() {
   }]
 
   return (
-    <SciChart
+    <SciPlot
       series={series}
       xAxis={{ label: 'Time', auto: true }}
       yAxis={{ label: 'Value', auto: true }}
@@ -104,9 +104,9 @@ function MyChart() {
 }
 ```
 
-## Why SciChart Engine?
+## Why Sci Plot?
 
-| Feature | SciChart Engine | Chart.js | Plotly |
+| Feature | Sci Plot | Chart.js | Plotly |
 |---------|----------------|----------|--------|
 | Max Points (60 FPS) | **10M+** | ~10k | ~100k |
 | Rendering | WebGL | Canvas 2D | SVG/WebGL |

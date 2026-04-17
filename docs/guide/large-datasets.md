@@ -1,6 +1,6 @@
 # Large Datasets
 
-Handle millions of data points efficiently with SciChart Engine.
+Handle millions of data points efficiently with Sci Plot.
 
 <script setup>
 import { ref } from 'vue'
@@ -114,7 +114,7 @@ self.onmessage = (e) => {
 For datasets too large to display efficiently, use LTTB (Largest Triangle Three Buckets) downsampling:
 
 ```typescript
-import { downsampleLTTB } from 'scichart-engine'
+import { downsampleLTTB } from 'sci-plot'
 
 // Original: 10 million points
 const originalX = new Float32Array(10000000)

@@ -1,5 +1,5 @@
 /**
- * @fileoverview LaTeX rendering plugin for SciChart Engine
+ * @fileoverview LaTeX rendering plugin for Sci Plot
  * @module plugins/latex
  *
  * This plugin provides native LaTeX rendering without external dependencies.
@@ -12,7 +12,7 @@
  *
  * @example
  * ```typescript
- * import { PluginLaTeX } from 'scichart-engine/plugins';
+ * import { PluginLaTeX } from 'sci-plot/plugins';
  *
  * const latex = PluginLaTeX({
  *   fontSize: 16,
@@ -162,7 +162,7 @@ export function PluginLaTeX(config: PluginLaTeXConfig = {}): ChartPlugin<PluginL
 
   return {
     manifest: {
-      name: 'scichart-latex',
+      name: 'sci-plot-latex',
       version: '1.0.0',
       description: 'Native LaTeX rendering for mathematical expressions',
       provides: ['latex'],

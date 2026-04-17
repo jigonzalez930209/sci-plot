@@ -18,7 +18,7 @@ The Virtualization plugin is essential for maintaining 60 FPS performance when w
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginVirtualization } from 'scichart-engine';
+import { createChart, PluginVirtualization } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')!

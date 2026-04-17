@@ -17,7 +17,7 @@ The Responsive Design system provides:
 ## Quick Start
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 // Responsive is enabled by default
 const chart = createChart({

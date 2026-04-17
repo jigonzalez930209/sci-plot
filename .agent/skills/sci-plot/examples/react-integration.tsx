@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { createChart, type Chart } from 'scichart-engine';
+import { createChart, type Chart } from 'sci-plot';
 
 /**
- * React Component pattern for SciChart Engine
+ * React Component pattern for Sci Plot
  */
-export const SciChartComponent: React.FC = () => {
+export const SciPlotComponent: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<Chart | null>(null);
 

@@ -70,7 +70,7 @@ Simulates electrochemical measurements showing oxidation-reduction peaks. Critic
 ## Basic Implementation
 
 ```typescript
-import { createChart } from 'scichart-engine';
+import { createChart } from 'sci-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')

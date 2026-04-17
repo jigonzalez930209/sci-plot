@@ -1,11 +1,11 @@
 ---
 title: createChart API
-description: Learn how to initialize SciChart Engine with createChart, including configuration for axes, themes, and WebGL rendering options.
+description: Learn how to initialize Sci Plot with createChart, including configuration for axes, themes, and WebGL rendering options.
 ---
 
 # createChart
 
-Creates a new SciChart Engine instance.
+Creates a new Sci Plot instance.
 
 ## Signature
 
@@ -32,7 +32,7 @@ function createChart(options: ChartOptions): Chart
 | `layout` | `LayoutOptions` | defaults | Control margins and axis title spacing |
 
 ::: tip Modular Architecture
-From version 1.5.0, SciChart Engine uses a highly modular plugin-based architecture. To maintain a small core bundle, advanced features like **Tooltips**, **Analysis**, and **Annotations** must be explicitly loaded using `chart.use()`.
+From version 1.5.0, Sci Plot uses a highly modular plugin-based architecture. To maintain a small core bundle, advanced features like **Tooltips**, **Analysis**, and **Annotations** must be explicitly loaded using `chart.use()`.
 :::
 ### AxisOptions
 
@@ -211,7 +211,7 @@ chart.destroy()
 ## Example
 
 ```typescript
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 // Create chart
 const chart = createChart({
@@ -267,7 +267,7 @@ const chart = createChart({
 })
 
 // Use custom theme
-import { createTheme } from 'scichart-engine'
+import { createTheme } from 'sci-plot'
 
 const myTheme = createTheme({
   name: 'custom',

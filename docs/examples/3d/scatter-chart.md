@@ -14,7 +14,7 @@ The Scatter 3D chart renders individual points without connections, ideal for:
 ## Basic Usage
 
 ```typescript
-import { Chart3D } from 'scichart-engine/core/3d';
+import { Chart3D } from 'sci-plot/core/3d';
 
 const chart = new Chart3D({
   canvas: document.getElementById('canvas'),

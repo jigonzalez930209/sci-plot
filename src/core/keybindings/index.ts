@@ -1,5 +1,5 @@
 /**
- * SciChart Engine - Keyboard Shortcuts Module
+ * Sci Plot - Keyboard Shortcuts Module
  * 
  * Provides customizable keyboard shortcuts for chart interactions.
  * Supports key combinations, custom actions, and enable/disable per key.

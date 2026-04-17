@@ -1,5 +1,5 @@
 /**
- * SciChartEngine Engine - 3D Visualization Plugin
+ * SciPlot Engine - 3D Visualization Plugin
  * 
  * This plugin provides 3D rendering capabilities including:
  * - Line3D, Area3D, Bubble3D, Impulse3D renderers
@@ -58,15 +58,15 @@ export interface Plugin3DConfig {
 }
 
 const manifest3D: PluginManifest = {
-    name: "scichart-3d",
+    name: "sci-plot-3d",
     version: "1.0.0",
-    description: "Advanced 3D visualization for scichart-engine",
+    description: "Advanced 3D visualization for sci-plot",
     provides: ["visualization", "3d"],
     tags: ["3d", "webgl", "surface", "mesh"],
 };
 
 /**
- * SciChartEngine 3D Plugin
+ * SciPlot 3D Plugin
  * 
  * Provides interactive 3D charts, surfaces, and meshes.
  */

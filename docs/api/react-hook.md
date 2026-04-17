@@ -1,30 +1,30 @@
 ---
-title: useSciChart React Hook
-description: Master the useSciChart hook for imperative control over your charts in React, enabling direct access to the Chart instance and custom interaction logic.
+title: useSciPlot React Hook
+description: Master the useSciPlot hook for imperative control over your charts in React, enabling direct access to the Chart instance and custom interaction logic.
 ---
 
-# useSciChart Hook
+# useSciPlot Hook
 
 Low-level React hook for imperative chart control.
 
 ## Import
 
 ```tsx
-import { useSciChart } from 'scichart-engine/react'
+import { useSciPlot } from 'sci-plot/react'
 // or
-import { useSciChart } from 'scichart-engine'
+import { useSciPlot } from 'sci-plot'
 ```
 
 ## Signature
 
 ```typescript
-function useSciChart(options?: UseSciChartOptions): UseSciChartReturn
+function useSciPlot(options?: UseSciPlotOptions): UseSciPlotReturn
 ```
 
 ## Options
 
 ```typescript
-interface UseSciChartOptions {
+interface UseSciPlotOptions {
   xAxis?: AxisOptions
   yAxis?: AxisOptions
   theme?: string | ChartTheme
@@ -40,7 +40,7 @@ The hook also inherits `layout`, so `layout.xAxisLayout.titleGap` and `layout.yA
 ## Returns
 
 ```typescript
-interface UseSciChartReturn {
+interface UseSciPlotReturn {
   containerRef: React.RefObject<HTMLDivElement>
   chart: Chart | null
   isReady: boolean
@@ -56,10 +56,10 @@ interface UseSciChartReturn {
 ## Basic Usage
 
 ```tsx
-import { useSciChart } from 'scichart-engine/react'
+import { useSciPlot } from 'sci-plot/react'
 
 function MyChart() {
-  const { containerRef, addSeries, isReady } = useSciChart({
+  const { containerRef, addSeries, isReady } = useSciPlot({
     xAxis: { label: 'Wavenumber (cm^-1)', auto: true, invertAxis: true },
     yAxis: { label: 'Y', auto: true },
     layout: {
@@ -95,7 +95,7 @@ function MyChart() {
 
 ```tsx
 function RealtimeChart() {
-  const { containerRef, updateSeries, addSeries, isReady } = useSciChart()
+  const { containerRef, updateSeries, addSeries, isReady } = useSciPlot()
   const dataRef = useRef({ x: new Float32Array(0), y: new Float32Array(0) })
   const tRef = useRef(0)
 
@@ -138,7 +138,7 @@ function RealtimeChart() {
 
 ```tsx
 function ChartWithControls() {
-  const { containerRef, chart, isReady, bounds } = useSciChart()
+  const { containerRef, chart, isReady, bounds } = useSciPlot()
 
   const handleExport = () => {
     if (chart) {
@@ -168,13 +168,13 @@ function ChartWithControls() {
 
 ## When to Use
 
-Use `useSciChart` when you need:
+Use `useSciPlot` when you need:
 - Full control over chart lifecycle
 - Custom container styling
 - Direct access to chart instance
 - Integration with complex state management
 
-Use `<SciChart>` component when you want:
+Use `<SciPlot>` component when you want:
 - Simpler declarative API
 - Automatic series management
 - Less boilerplate code

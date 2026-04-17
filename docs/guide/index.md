@@ -1,8 +1,8 @@
 # Introduction
 
-SciChart Engine is a high-performance WebGL-based charting library designed for scientific data visualization.
+Sci Plot is a high-performance WebGL-based charting library designed for scientific data visualization.
 
-## Why SciChart Engine?
+## Why Sci Plot?
 
 - **Performance**: Render 10M+ data points at 60 FPS
 - **Precision**: Native Float32/Float64 array support
@@ -13,7 +13,7 @@ SciChart Engine is a high-performance WebGL-based charting library designed for 
 
 ### WebGL Rendering
 
-Unlike canvas-based libraries, SciChart Engine uses WebGL for hardware-accelerated rendering. This enables:
+Unlike canvas-based libraries, Sci Plot uses WebGL for hardware-accelerated rendering. This enables:
 
 - Smooth zooming and panning without re-rendering data
 - Efficient handling of millions of points
@@ -48,7 +48,7 @@ Integrated utilities for:
 ## Quick Example
 
 ```typescript
-import { createChart } from 'scichart-engine'
+import { createChart } from 'sci-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -77,10 +77,10 @@ chart.addSeries({
 
 ## Next Steps
 
-- [Installation](/guide/installation) - Add SciChart Engine to your project
+- [Installation](/guide/installation) - Add Sci Plot to your project
 - [Quick Start](/guide/quick-start) - Create your first chart
 - [Core Concepts](/guide/concepts) - Understand the architecture
-- [React Integration](/guide/react) - Use SciChart with React
+- [React Integration](/guide/react) - Use SciPlot with React
 - [Performance Optimization](/guide/performance) - Handle millions of points
 - [Responsive Design](/guide/responsive) - Mobile-first visualization
 - [Scientific Analysis](/guide/analysis) - Professional data tools

@@ -29,7 +29,7 @@ When enabled, hovering over one chart shows the cursor position on all linked ch
 ## Usage
 
 ```typescript
-import { createChart, createChartGroup, linkCharts } from 'scichart-engine';
+import { createChart, createChartGroup, linkCharts } from 'sci-plot';
 
 // Create two charts
 const chart1 = createChart({ container: document.getElementById('chart1') });
