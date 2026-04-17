@@ -234,7 +234,7 @@ Vec3.transformMat4(worldPos, localPos, modelMatrix);
 ## Usage Example
 
 ```typescript
-import { Mat4, Vec3 } from 'sci-plot/core/3d';
+import { Mat4, Vec3 } from 'velo-plot/core/3d';
 
 // Create matrices
 const model = Mat4.create();
