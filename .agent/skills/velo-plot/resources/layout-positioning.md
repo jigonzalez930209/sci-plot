@@ -16,7 +16,7 @@ The layout system allows fine-grained customization of:
 ## Quick Start
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -206,7 +206,7 @@ layout: {
 ## Complete Example
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
