@@ -58,9 +58,9 @@ export interface Plugin3DConfig {
 }
 
 const manifest3D: PluginManifest = {
-    name: "sci-plot-3d",
+    name: "velo-plot-3d",
     version: "1.0.0",
-    description: "Advanced 3D visualization for sci-plot",
+    description: "Advanced 3D visualization for velo-plot",
     provides: ["visualization", "3d"],
     tags: ["3d", "webgl", "surface", "mesh"],
 };
