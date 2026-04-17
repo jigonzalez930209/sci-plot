@@ -48,7 +48,7 @@ jobs:
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           
           # Check if version already exists
-          if npm view sci-plot@$PACKAGE_VERSION version > /dev/null 2>&1; then
+          if npm view velo-plot@$PACKAGE_VERSION version > /dev/null 2>&1; then
             echo "⚠️ Version $PACKAGE_VERSION already exists on NPM. Skipping publish."
           else
             echo "🚀 Publishing version $PACKAGE_VERSION..."
