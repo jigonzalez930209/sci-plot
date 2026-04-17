@@ -4,13 +4,13 @@
 
 ```bash
 # npm
-npm install sci-plot
+npm install velo-plot
 
 # pnpm
-pnpm add sci-plot
+pnpm add velo-plot
 
 # yarn
-yarn add sci-plot
+yarn add velo-plot
 ```
 
 ## Imports
@@ -19,16 +19,16 @@ yarn add sci-plot
 
 ```typescript
 // Core API
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 // Specialized Plugins 
-import { PluginTools, PluginAnalysis, PluginAnnotations } from 'sci-plot';
+import { PluginTools, PluginAnalysis, PluginAnnotations } from 'velo-plot';
 
 // React components
-import { SciPlot, useSciPlot } from 'sci-plot';
+import { SciPlot, useSciPlot } from 'velo-plot';
 
 // Built-in Themes
-import { MIDNIGHT_THEME, DARK_THEME, LIGHT_THEME } from 'sci-plot';
+import { MIDNIGHT_THEME, DARK_THEME, LIGHT_THEME } from 'velo-plot';
 ```
 
 ### TypeScript Usage
@@ -41,7 +41,7 @@ import {
   type Chart, 
   type ChartOptions,
   type SeriesData 
-} from 'sci-plot';
+} from 'velo-plot';
 
 const options: ChartOptions = {
   container: document.getElementById('chart')!,
