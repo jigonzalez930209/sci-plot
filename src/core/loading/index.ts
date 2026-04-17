@@ -81,7 +81,7 @@ export class LoadingIndicator {
       backgroundColor: 'rgba(0, 0, 0, 0.7)',
       textColor: '#ffffff',
       size: 'medium',
-      className: 'sci-plot-loading',
+      className: 'velo-plot-loading',
       autoHide: true,
       hideDelay: 200,
       ...options,
@@ -258,20 +258,20 @@ export class LoadingIndicator {
     switch (type) {
       case 'spinner':
         content = `
-          <div class="sci-plot-loading-spinner" style="
+          <div class="velo-plot-loading-spinner" style="
             width: ${spinnerSize}px;
             height: ${spinnerSize}px;
             border: 3px solid rgba(255,255,255,0.2);
             border-top-color: ${accentColor};
             border-radius: 50%;
-            animation: sci-plot-spin 0.8s linear infinite;
+            animation: velo-plot-spin 0.8s linear infinite;
           "></div>
         `;
         break;
 
       case 'progress':
         content = `
-          <div class="sci-plot-loading-progress" style="
+          <div class="velo-plot-loading-progress" style="
             width: 200px;
             height: 8px;
             background: rgba(255,255,255,0.2);
@@ -298,25 +298,25 @@ export class LoadingIndicator {
 
       case 'skeleton':
         content = `
-          <div class="sci-plot-loading-skeleton" style="
+          <div class="velo-plot-loading-skeleton" style="
             width: 80%;
             max-width: 300px;
           ">
-            <div class="sci-plot-skeleton-line" style="height: 20px; margin-bottom: 8px;"></div>
-            <div class="sci-plot-skeleton-line" style="height: 16px; width: 60%; margin-bottom: 8px;"></div>
-            <div class="sci-plot-skeleton-line" style="height: 40px;"></div>
+            <div class="velo-plot-skeleton-line" style="height: 20px; margin-bottom: 8px;"></div>
+            <div class="velo-plot-skeleton-line" style="height: 16px; width: 60%; margin-bottom: 8px;"></div>
+            <div class="velo-plot-skeleton-line" style="height: 40px;"></div>
           </div>
         `;
         break;
 
       case 'pulse':
         content = `
-          <div class="sci-plot-loading-pulse" style="
+          <div class="velo-plot-loading-pulse" style="
             width: ${spinnerSize}px;
             height: ${spinnerSize}px;
             background: ${accentColor};
             border-radius: 50%;
-            animation: sci-plot-pulse 1.2s ease-in-out infinite;
+            animation: velo-plot-pulse 1.2s ease-in-out infinite;
           "></div>
         `;
         break;
@@ -350,27 +350,27 @@ export class LoadingIndicator {
   }
 
   private injectStyles(): void {
-    const styleId = 'sci-plot-loading-styles';
+    const styleId = 'velo-plot-loading-styles';
     if (document.getElementById(styleId)) return;
 
     const style = document.createElement('style');
     style.id = styleId;
     style.textContent = `
-      @keyframes sci-plot-spin {
+      @keyframes velo-plot-spin {
         to { transform: rotate(360deg); }
       }
       
-      @keyframes sci-plot-pulse {
+      @keyframes velo-plot-pulse {
         0%, 100% { transform: scale(1); opacity: 1; }
         50% { transform: scale(1.2); opacity: 0.7; }
       }
       
-      @keyframes sci-plot-skeleton-shimmer {
+      @keyframes velo-plot-skeleton-shimmer {
         0% { background-position: -200% 0; }
         100% { background-position: 200% 0; }
       }
       
-      .sci-plot-skeleton-line {
+      .velo-plot-skeleton-line {
         background: linear-gradient(
           90deg,
           rgba(255,255,255,0.1) 25%,
@@ -378,7 +378,7 @@ export class LoadingIndicator {
           rgba(255,255,255,0.1) 75%
         );
         background-size: 200% 100%;
-        animation: sci-plot-skeleton-shimmer 1.5s infinite;
+        animation: velo-plot-skeleton-shimmer 1.5s infinite;
         border-radius: 4px;
       }
     `;
