@@ -23,9 +23,9 @@ export class ChartPluginBridge {
       if (p?.api) return p.api;
     }
 
-    // 3. Special case for latex if name is 'latex' but manifest is 'sci-plot-latex'
-    if (name === "latex" || name === "sci-plot-latex") {
-      const latex = this.pluginManager.get("sci-plot-latex") as any;
+    // 3. Special case for latex if name is 'latex' but manifest is 'velo-plot-latex'
+    if (name === "latex" || name === "velo-plot-latex") {
+      const latex = this.pluginManager.get("velo-plot-latex") as any;
       if (latex?.api) return latex.api;
       const providesLatex = manifests.find(m => m.provides?.includes("latex"));
       if (providesLatex) {
@@ -37,7 +37,7 @@ export class ChartPluginBridge {
   }
 
   get analysis(): any {
-    const api = this.getAPI<any>("sci-plot-analysis");
+    const api = this.getAPI<any>("velo-plot-analysis");
     if (api) return api;
 
     return {
@@ -51,7 +51,7 @@ export class ChartPluginBridge {
   }
 
   get tooltip(): any {
-    const manager = this.getAPI<any>("sci-plot-tools")?.getTooltipManager();
+    const manager = this.getAPI<any>("velo-plot-tools")?.getTooltipManager();
     if (manager) return manager;
 
     return {
@@ -64,7 +64,7 @@ export class ChartPluginBridge {
   }
 
   get loading(): any {
-    const api = this.getAPI<any>("sci-plot-loading");
+    const api = this.getAPI<any>("velo-plot-loading");
     if (api) return api;
 
     return {
@@ -76,11 +76,11 @@ export class ChartPluginBridge {
   }
 
   get deltaTool(): any {
-    return this.getAPI<any>("sci-plot-tools")?.getDeltaTool() ?? null;
+    return this.getAPI<any>("velo-plot-tools")?.getDeltaTool() ?? null;
   }
 
   get peakTool(): any {
-    return this.getAPI<any>("sci-plot-tools")?.getPeakTool() ?? null;
+    return this.getAPI<any>("velo-plot-tools")?.getPeakTool() ?? null;
   }
 
   get regression(): any {
@@ -88,19 +88,19 @@ export class ChartPluginBridge {
   }
 
   get radar(): any {
-    return this.getAPI<any>("sci-plot-radar");
+    return this.getAPI<any>("velo-plot-radar");
   }
 
   get ml(): any {
-    return this.getAPI<any>("sci-plot-ml-integration");
+    return this.getAPI<any>("velo-plot-ml-integration");
   }
 
   get snapshot(): any {
-    return this.getAPI<any>("sci-plot-snapshot");
+    return this.getAPI<any>("velo-plot-snapshot");
   }
 
   get dataExport(): any {
-    return this.getAPI<any>("sci-plot-data-export");
+    return this.getAPI<any>("velo-plot-data-export");
   }
 
   get roi(): any {
@@ -108,35 +108,35 @@ export class ChartPluginBridge {
   }
 
   get videoRecorder(): any {
-    return this.getAPI<any>("sci-plot-video-recorder");
+    return this.getAPI<any>("velo-plot-video-recorder");
   }
 
   get offscreen(): any {
-    return this.getAPI<any>("sci-plot-offscreen");
+    return this.getAPI<any>("velo-plot-offscreen");
   }
 
   get virtualization(): any {
-    return this.getAPI<any>("sci-plot-virtualization");
+    return this.getAPI<any>("velo-plot-virtualization");
   }
 
   get themeEditor(): any {
-    return this.getAPI<any>("sci-plot-theme-editor");
+    return this.getAPI<any>("velo-plot-theme-editor");
   }
 
   get sync(): any {
-    return this.getAPI<any>("sci-plot-sync");
+    return this.getAPI<any>("velo-plot-sync");
   }
 
   get brokenAxis(): any {
-    return this.getAPI<any>("sci-plot-broken-axis");
+    return this.getAPI<any>("velo-plot-broken-axis");
   }
 
   get forecasting(): any {
-    return this.getAPI<any>("sci-plot-forecasting");
+    return this.getAPI<any>("velo-plot-forecasting");
   }
 
   get latex(): any {
-    return this.getAPI<any>("sci-plot-latex");
+    return this.getAPI<any>("velo-plot-latex");
   }
 
   /**
