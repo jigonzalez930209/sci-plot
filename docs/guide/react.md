@@ -11,7 +11,7 @@ The engine provides a React-first experience through two main paths: the `<SciPl
 The simplest way to add a chart to your React app.
 
 ```tsx
-import { SciPlot } from 'sci-plot/react'
+import { SciPlot } from 'velo-plot/react'
 
 function App() {
   const data = {
@@ -42,7 +42,7 @@ function App() {
 Use `useSciPlot` when you need full access to the low-level `Chart` instance (e.g., for specialized analysis, dynamic series management, or custom plugins).
 
 ```tsx
-import { useSciPlot } from 'sci-plot/react'
+import { useSciPlot } from 'velo-plot/react'
 import { useEffect } from 'react'
 
 function CustomChart() {
@@ -105,6 +105,6 @@ return (
 
 ## Next Steps
 
-- Explore the [React API Reference](/api/react-sci-plot)
+- Explore the [React API Reference](/api/react-velo-plot)
 - See the [React Hook Reference](/api/react-hook)
 - View the [React Integration Example](/examples/react)
