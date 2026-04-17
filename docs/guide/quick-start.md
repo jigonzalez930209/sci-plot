@@ -26,7 +26,7 @@ Create your first chart in minutes.
 
 ```javascript
 // main.js
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -60,7 +60,7 @@ chart.addSeries({
 ### 1. Create Component
 
 ```tsx
-import { SciPlot } from 'sci-plot/react'
+import { SciPlot } from 'velo-plot/react'
 
 function MyChart() {
   // Generate data
@@ -117,7 +117,7 @@ function App() {
 To enable advanced interactions like tooltips or the delta tool, you must load the `PluginTools`.
 
 ```typescript
-import { PluginTools } from 'sci-plot';
+import { PluginTools } from 'velo-plot';
 
 await chart.use(PluginTools());
 
