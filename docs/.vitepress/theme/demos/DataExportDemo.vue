@@ -62,7 +62,7 @@ async function handleExport() {
   exportResult.value = '';
   
   try {
-    const dataExport = chart.getPlugin('sci-plot-data-export') || chart.dataExport;
+    const dataExport = chart.getPlugin('velo-plot-data-export') || chart.dataExport;
     
     if (!dataExport) {
       exportStatus.value = `❌ Error: Data Export Plugin not found. Available plugins: ${chart.getPluginNames().join(', ')}`;
@@ -103,7 +103,7 @@ async function handleDownload() {
   if (!chart) return;
   
   try {
-    const dataExport = chart.getPlugin('sci-plot-data-export') || chart.dataExport;
+    const dataExport = chart.getPlugin('velo-plot-data-export') || chart.dataExport;
     
     if (!dataExport) {
       exportStatus.value = '❌ Error: Data Export Plugin not found';
