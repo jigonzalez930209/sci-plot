@@ -14,7 +14,7 @@ Sci Plot supports multiple Y axes, allowing you to visualize data with different
 Define multiple Y axes when creating the chart:
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
