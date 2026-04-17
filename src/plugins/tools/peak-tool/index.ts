@@ -140,7 +140,7 @@ export class PeakTool {
       labelColor: '#ffffff',
       showPeak: true,
       precision: 4,
-      className: 'sci-plot-peak-tool',
+      className: 'velo-plot-peak-tool',
       highlightSize: 12,
       highlightColor: '#00f2ff',
       snapRadius: 30,
