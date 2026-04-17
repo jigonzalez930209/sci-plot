@@ -18,9 +18,9 @@ export interface PluginSyncConfig {
 }
 
 const manifestSync: PluginManifest = {
-    name: "sci-plot-sync",
+    name: "velo-plot-sync",
     version: "1.0.0",
-    description: "Multi-chart synchronization for sci-plot",
+    description: "Multi-chart synchronization for velo-plot",
     provides: ["interaction"],
     tags: ["sync", "multi-chart", "coordination"],
 };
