@@ -220,7 +220,7 @@ export const SciPlot = forwardRef<SciPlotRef, SciPlotProps>(
     return (
       <div
         ref={containerRef}
-        className={`sci-plot-container ${className}`}
+        className={`velo-plot-container ${className}`}
         style={containerStyle}
       >
         {/* Debug overlay */}
