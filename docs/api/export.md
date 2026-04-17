@@ -188,7 +188,7 @@ const dataUrl = chart.exportImage('jpeg');
 
 ```tsx
 import { useRef } from 'react';
-import { SciPlot } from 'sci-plot/react';
+import { SciPlot } from 'velo-plot/react';
 
 function ChartWithExport() {
   const chartRef = useRef(null);
