@@ -16,8 +16,8 @@ Plugins are self-contained modules that receive a **PluginContext** upon initial
 From version 1.5.0, core features are modularized into plugins. You should explicitly load the plugins you need to keep your application bundle small.
 
 ```typescript
-import { createChart } from 'sci-plot';
-import { PluginTools, PluginAnalysis, PluginAnnotations } from 'sci-plot/plugins';
+import { createChart } from 'velo-plot';
+import { PluginTools, PluginAnalysis, PluginAnnotations } from 'velo-plot/plugins';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -30,8 +30,8 @@ await chart.use(PluginAnalysis());
 await chart.use(PluginAnnotations());
 
 // Accessing the plugin APIs
-const tools = chart.getPlugin('sci-plot-tools');
-const analysis = chart.getPlugin('sci-plot-analysis');
+const tools = chart.getPlugin('velo-plot-tools');
+const analysis = chart.getPlugin('velo-plot-analysis');
 
 // Example: switching to delta measurement mode
 chart.setMode('delta');
@@ -46,7 +46,7 @@ chart.loading.setProgress(25);
 A plugin is an object or a function returning an object that implements the `ChartPlugin` interface.
 
 ```typescript
-import { definePlugin, type PluginContext } from 'sci-plot';
+import { definePlugin, type PluginContext } from 'velo-plot';
 
 export const MyCustomPlugin = definePlugin({
   name: 'my-plugin',
