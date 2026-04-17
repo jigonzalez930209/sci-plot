@@ -24,7 +24,7 @@ The context provides safe access to chart internals:
 
 ## Custom Plugin Example
 ```typescript
-import { createConfigurablePlugin } from 'sci-plot/plugins';
+import { createConfigurablePlugin } from 'velo-plot/plugins';
 
 const ThresholdPlugin = createConfigurablePlugin<{ value: number }>(
   { name: 'threshold-warning' },
