@@ -38,7 +38,7 @@ class PythonChart:
         return self
 
     def to_json(self) -> str:
-        """Export the full configuration to a JSON string compatible with sci-plot."""
+        """Export the full configuration to a JSON string compatible with velo-plot."""
         full_config = {
             "containerId": self.container_id,
             "options": self.options,
