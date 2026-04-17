@@ -91,7 +91,7 @@ export class ChartControls {
     `;
 
     this.toolbar = document.createElement("div");
-    this.toolbar.className = "sci-plot-modebar";
+    this.toolbar.className = "velo-plot-modebar";
     
     this.buttonsWrapper = document.createElement("div");
     this.buttonsWrapper.style.cssText = `
@@ -351,7 +351,7 @@ export class ChartControls {
       this.isPinned ? "Unpin Toolbar" : "Pin Toolbar",
       () => {
         this.isPinned = !this.isPinned;
-        btn.innerHTML = `<span class="sci-plot-control-icon">${this.isPinned ? ICONS.PIN : ICONS.PIN_OFF}</span>`;
+        btn.innerHTML = `<span class="velo-plot-control-icon">${this.isPinned ? ICONS.PIN : ICONS.PIN_OFF}</span>`;
         this.enforceSVGVisibility(btn);
         this.updateVisibility();
       },
@@ -363,7 +363,7 @@ export class ChartControls {
 
   private enforceSVGVisibility(btn: HTMLButtonElement): void {
     // Force SVG visibility and make sure currentColor is applied even under aggressive page CSS
-    const icon = btn.querySelector<HTMLElement>(".sci-plot-control-icon");
+    const icon = btn.querySelector<HTMLElement>(".velo-plot-control-icon");
     if (icon) {
       icon.style.display = "flex";
       icon.style.alignItems = "center";
@@ -395,7 +395,7 @@ export class ChartControls {
     parent: HTMLElement = this.buttonsWrapper
   ): HTMLButtonElement {
     const btn = document.createElement("button");
-    btn.innerHTML = `<span class="sci-plot-control-icon">${svg}</span>`;
+    btn.innerHTML = `<span class="velo-plot-control-icon">${svg}</span>`;
     btn.title = title;
     btn.dataset.id = id;
 
