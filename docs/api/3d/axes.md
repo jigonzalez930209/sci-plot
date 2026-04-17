@@ -19,7 +19,7 @@ The `Axes3D` class renders a complete 3D axis system including:
 ## Basic Usage
 
 ```typescript
-import { Bubble3DRenderer } from 'sci-plot/core/3d';
+import { Bubble3DRenderer } from 'velo-plot/core/3d';
 
 // Axes are enabled by default
 const renderer = new Bubble3DRenderer({
