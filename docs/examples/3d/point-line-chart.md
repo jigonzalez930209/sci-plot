@@ -14,7 +14,7 @@ The Point Line 3D chart renders connected data points in 3D space, ideal for:
 ## Basic Usage
 
 ```typescript
-import { Chart3D } from 'sci-plot/core/3d';
+import { Chart3D } from 'velo-plot/core/3d';
 
 const chart = new Chart3D({
   canvas: document.getElementById('canvas'),
