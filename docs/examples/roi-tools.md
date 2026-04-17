@@ -25,7 +25,7 @@ Capture regions using a **Rectangle**, **Circle**, **Polygon**, or free-hand **L
 ## Basic Implementation
 
 ```typescript
-import { createChart, PluginROI } from 'sci-plot';
+import { createChart, PluginROI } from 'velo-plot';
 
 const chart = createChart({ container });
 
