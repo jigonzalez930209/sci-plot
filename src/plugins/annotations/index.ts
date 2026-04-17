@@ -18,9 +18,9 @@ export interface PluginAnnotationsConfig {
 }
 
 const manifestAnnotations: PluginManifest = {
-    name: "sci-plot-annotations",
+    name: "velo-plot-annotations",
     version: "1.0.0",
-    description: "Annotation support for sci-plot",
+    description: "Annotation support for velo-plot",
     provides: ["annotation"],
     tags: ["annotation", "overlay", "label"],
 };
@@ -50,7 +50,7 @@ export function PluginAnnotations(_config: PluginAnnotationsConfig = {}): ChartP
             const viewBounds = ctx.data.getViewBounds();
 
             // Get LaTeX API if plugin is available
-            const latexPlugin = ctx.getPlugin<any>("sci-plot-latex");
+            const latexPlugin = ctx.getPlugin<any>("velo-plot-latex");
             const latexAPI = latexPlugin?.api;
 
             // Render all annotations using the manager and provided contexts
