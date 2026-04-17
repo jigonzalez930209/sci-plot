@@ -230,7 +230,7 @@ chart.use(PluginAnomalyDetection({
 ### Basic Detection
 
 ```typescript
-import { createChart, PluginAnomalyDetection } from 'sci-plot';
+import { createChart, PluginAnomalyDetection } from 'velo-plot';
 
 const chart = createChart({ container });
 
