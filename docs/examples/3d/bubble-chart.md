@@ -16,7 +16,7 @@ The 3D Bubble Chart renders thousands of spherical markers in 3D space, each wit
 ## Basic Usage
 
 ```typescript
-import { Bubble3DRenderer } from 'sci-plot/core/3d';
+import { Bubble3DRenderer } from 'velo-plot/core/3d';
 
 const renderer = new Bubble3DRenderer({
   canvas: document.getElementById('canvas') as HTMLCanvasElement,
