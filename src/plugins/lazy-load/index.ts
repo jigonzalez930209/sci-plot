@@ -17,7 +17,7 @@ import type {
 } from '../types';
 
 const manifest: PluginManifest = {
-  name: 'sci-plot-lazy-load',
+  name: 'velo-plot-lazy-load',
   version: '1.0.0',
   description: 'Lazy loading for large datasets with viewport-based chunking',
   provides: ['lazy-load', 'data-streaming'],

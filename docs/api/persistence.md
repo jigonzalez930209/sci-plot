@@ -89,7 +89,7 @@ interface DeserializeOptions {
 Numeric data (Float32Array) is encoded as Base64. This provides a ~33% size increase compared to binary, but is much more compact than JSON number arrays (~10-20x smaller for many datasets).
 
 ```typescript
-import { encodeFloat32Array, decodeFloat32Array } from 'sci-plot';
+import { encodeFloat32Array, decodeFloat32Array } from 'velo-plot';
 
 const encoded = encodeFloat32Array(new Float32Array([1, 2, 3]));
 const decoded = decodeFloat32Array(encoded);
@@ -99,7 +99,7 @@ const decoded = decodeFloat32Array(encoded);
 You can use the `StateHistory` utility to implement undo/redo functionality:
 
 ```typescript
-import { StateHistory } from 'sci-plot';
+import { StateHistory } from 'velo-plot';
 
 const history = new StateHistory(50); // Keep 50 steps
 

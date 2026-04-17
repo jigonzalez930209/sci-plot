@@ -18,7 +18,7 @@ The Broken Axis plugin allows you to define gaps or "breaks" in your data range,
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginBrokenAxis } from 'sci-plot';
+import { createChart, PluginBrokenAxis } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')!

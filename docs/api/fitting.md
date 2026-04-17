@@ -12,8 +12,8 @@ The Curve Fitting system allows you to mathematically analyze data series and vi
 The Curve Fitting system is part of the `PluginAnalysis` module. You must load this plugin to use `addFitLine`.
 
 ```typescript
-import { createChart } from 'sci-plot';
-import { PluginAnalysis, PluginAnnotations } from 'sci-plot/plugins';
+import { createChart } from 'velo-plot';
+import { PluginAnalysis, PluginAnnotations } from 'velo-plot/plugins';
 
 const chart = createChart({ container });
 
@@ -77,7 +77,7 @@ interface FitOptions {
 If you want to perform the regression math without automatically adding a series to the chart, you can use the `fitData` utility.
 
 ```typescript
-import { fitData } from 'sci-plot/analysis';
+import { fitData } from 'velo-plot/analysis';
 
 const result = fitData(xValues, yValues, 'polynomial', { degree: 3 });
 

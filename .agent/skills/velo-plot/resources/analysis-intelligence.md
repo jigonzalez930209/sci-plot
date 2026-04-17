@@ -10,7 +10,7 @@ The `PluginPatternRecognition` identifies geometric and technical patterns in ti
 - **Exhaustion**: `rising-wedge`, `falling-wedge`.
 
 ```typescript
-import { PluginPatternRecognition } from 'sci-plot/plugins/pattern-recognition';
+import { PluginPatternRecognition } from 'velo-plot/plugins/pattern-recognition';
 
 chart.use(PluginPatternRecognition({
   defaultParameters: { minConfidence: 0.8 },
@@ -32,7 +32,7 @@ The `PluginForecasting` adds predictive capabilities using statistical models.
 - `holtWinters`: Triple Exponential Smoothing (Trend + Seasonality).
 
 ```typescript
-import { PluginForecasting } from 'sci-plot/plugins/forecasting';
+import { PluginForecasting } from 'velo-plot/plugins/forecasting';
 
 chart.use(PluginForecasting());
 
@@ -49,7 +49,7 @@ chart.forecasting.visualize(result);
 The `PluginDragEdit` allows users to manually adjust data points on the chart.
 
 ```typescript
-import { PluginDragEdit } from 'sci-plot/plugins/drag-edit';
+import { PluginDragEdit } from 'velo-plot/plugins/drag-edit';
 
 chart.use(PluginDragEdit({
   constraint: 'y', // Only allow vertical dragging

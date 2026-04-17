@@ -18,7 +18,7 @@ The Offscreen plugin enables `OffscreenCanvas` support, allowing Sci Plot to per
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginOffscreen } from 'sci-plot';
+import { createChart, PluginOffscreen } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')!

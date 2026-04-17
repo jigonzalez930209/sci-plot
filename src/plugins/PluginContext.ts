@@ -208,7 +208,7 @@ class UIContextImpl implements UIContext {
         }
 
         const overlay = document.createElement("div");
-        overlay.id = `sci-plot-plugin-${id}`;
+        overlay.id = `velo-plot-plugin-${id}`;
         overlay.className = options.className || "";
         overlay.style.cssText = `
       position: absolute;
@@ -249,7 +249,7 @@ class UIContextImpl implements UIContext {
         // Create notifications container if needed
         if (!this.notifications) {
             this.notifications = document.createElement("div");
-            this.notifications.className = "sci-plot-notifications";
+            this.notifications.className = "velo-plot-notifications";
             this.notifications.style.cssText = `
         position: absolute;
         ${position.includes("top") ? "top: 10px;" : "bottom: 10px;"}
@@ -265,7 +265,7 @@ class UIContextImpl implements UIContext {
 
         // Create notification element
         const notification = document.createElement("div");
-        notification.className = `sci-plot-notification sci-plot-notification-${type}`;
+        notification.className = `velo-plot-notification velo-plot-notification-${type}`;
 
         const colors = {
             info: { bg: "#3b82f6", text: "#fff" },

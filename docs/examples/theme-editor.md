@@ -39,7 +39,7 @@ Fine-tune individual colors using the color pickers:
 Click "Export JSON" to copy your theme configuration. Use it in your code:
 
 ```typescript
-import { createChart, createTheme, DARK_THEME } from 'sci-plot';
+import { createChart, createTheme, DARK_THEME } from 'velo-plot';
 
 // Use a preset
 const chart = createChart({
@@ -66,7 +66,7 @@ import {
   getPresetTheme,
   getPresetNames,
   THEME_PRESETS 
-} from 'sci-plot';
+} from 'velo-plot';
 
 // Create embedded theme editor
 const editor = createThemeEditor(container, {

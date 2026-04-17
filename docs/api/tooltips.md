@@ -12,8 +12,8 @@ The Sci Plot features a high-performance, customizable tooltip system designed f
 The tooltip system is provided by the `PluginTools` module. You must load this plugin to enable tooltips.
 
 ```typescript
-import { createChart } from 'sci-plot';
-import { PluginTools } from 'sci-plot/plugins';
+import { createChart } from 'velo-plot';
+import { PluginTools } from 'velo-plot/plugins';
 
 const chart = createChart({
   container: document.getElementById('chart')

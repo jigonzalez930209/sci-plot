@@ -16,7 +16,7 @@ The Vector Field 3D chart renders a grid of directional arrows (vectors). Each a
 ## Basic Usage
 
 ```typescript
-import { VectorField3DRenderer } from 'sci-plot/core/3d';
+import { VectorField3DRenderer } from 'velo-plot/core/3d';
 
 const renderer = new VectorField3DRenderer({
   canvas: document.getElementById('canvas'),

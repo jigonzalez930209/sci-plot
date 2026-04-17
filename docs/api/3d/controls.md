@@ -13,7 +13,7 @@ The `OrbitController` handles user input for controlling the `OrbitCamera`:
 ## Basic Usage
 
 ```typescript
-import { OrbitCamera, OrbitController } from 'sci-plot/core/3d';
+import { OrbitCamera, OrbitController } from 'velo-plot/core/3d';
 
 const camera = new OrbitCamera();
 const controller = new OrbitController(camera, canvas, {

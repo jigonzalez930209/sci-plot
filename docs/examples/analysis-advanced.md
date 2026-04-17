@@ -21,10 +21,10 @@ Experiment with real-time analysis functions:
 The Savitzky-Golay filter fits a local polynomial to a window of points, removing noise while preserving the shape, width, and height of peaks.
 
 ```typescript
-import { PluginAnalysis } from 'sci-plot';
+import { PluginAnalysis } from 'velo-plot';
 
 // Using the analysis plugin
-const analysis = chart.getPluginAPI('sci-plot-analysis');
+const analysis = chart.getPluginAPI('velo-plot-analysis');
 const smoothed = analysis.savitzkyGolay(rawSignal, 11, 3);
 ```
 
@@ -40,7 +40,7 @@ const smoothed = analysis.savitzkyGolay(rawSignal, 11, 3);
 Eliminates linear drift or signal shifts to isolate true peaks.
 
 ```typescript
-import { subtractBaseline } from 'sci-plot';
+import { subtractBaseline } from 'velo-plot';
 
 // Subtract linear baseline between x=0 and x=10
 const corrected = subtractBaseline(x, y, 0, 10);
@@ -237,7 +237,7 @@ Most analysis functions are available directly via the `PluginAnalysis` (auto-lo
 const chart = createChart({ container });
 
 // Access analysis via plugin API
-const analysis = chart.getPluginAPI('sci-plot-analysis');
+const analysis = chart.getPluginAPI('velo-plot-analysis');
 
 analysis.savitzkyGolay(data, 11, 3);
 analysis.fft(signal);

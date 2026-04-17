@@ -18,8 +18,8 @@ The `PluginLaTeX` provides native LaTeX rendering capabilities without any exter
 ## Installation
 
 ```typescript
-import { createChart } from 'sci-plot';
-import { PluginLaTeX } from 'sci-plot/plugins';
+import { createChart } from 'velo-plot';
+import { PluginLaTeX } from 'velo-plot/plugins';
 
 const chart = createChart({ container });
 

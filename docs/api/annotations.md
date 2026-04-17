@@ -10,7 +10,7 @@ Annotations allow you to add visual markers, lines, text, and shapes to your cha
 ## Quick Example
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -231,7 +231,7 @@ All annotations support common styling options:
 ## React Usage
 
 ```tsx
-import { SciPlot } from 'sci-plot/react';
+import { SciPlot } from 'velo-plot/react';
 import { useRef, useEffect } from 'react';
 
 function ChartWithAnnotations() {
@@ -273,5 +273,5 @@ import type {
   BandAnnotation,
   TextAnnotation,
   ArrowAnnotation
-} from 'sci-plot';
+} from 'velo-plot';
 ```

@@ -10,9 +10,9 @@ React component for declarative chart creation.
 ## Import
 
 ```tsx
-import { SciPlot } from 'sci-plot/react'
+import { SciPlot } from 'velo-plot/react'
 // or
-import { SciPlot } from 'sci-plot'
+import { SciPlot } from 'velo-plot'
 ```
 
 ## Props
@@ -51,7 +51,7 @@ interface SciPlotSeries {
 ## Basic Usage
 
 ```tsx
-import { SciPlot } from 'sci-plot/react'
+import { SciPlot } from 'velo-plot/react'
 
 function MyChart() {
   const series = [{
@@ -121,7 +121,7 @@ Use a ref to access the underlying chart instance:
 
 ```tsx
 import { useRef } from 'react'
-import { SciPlot, type SciPlotRef } from 'sci-plot/react'
+import { SciPlot, type SciPlotRef } from 'velo-plot/react'
 
 function MyChart() {
   const chartRef = useRef<SciPlotRef>(null)

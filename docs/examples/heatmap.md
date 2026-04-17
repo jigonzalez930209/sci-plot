@@ -11,7 +11,7 @@ Heatmaps allow you to visualize 3D data (X, Y, and Z intensity) as a 2D colored 
 Heatmaps use a specialized `addHeatmap` method because they require a 2D data matrix.
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),

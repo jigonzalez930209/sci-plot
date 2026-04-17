@@ -10,9 +10,9 @@ Low-level React hook for imperative chart control.
 ## Import
 
 ```tsx
-import { useSciPlot } from 'sci-plot/react'
+import { useSciPlot } from 'velo-plot/react'
 // or
-import { useSciPlot } from 'sci-plot'
+import { useSciPlot } from 'velo-plot'
 ```
 
 ## Signature
@@ -56,7 +56,7 @@ interface UseSciPlotReturn {
 ## Basic Usage
 
 ```tsx
-import { useSciPlot } from 'sci-plot/react'
+import { useSciPlot } from 'velo-plot/react'
 
 function MyChart() {
   const { containerRef, addSeries, isReady } = useSciPlot({

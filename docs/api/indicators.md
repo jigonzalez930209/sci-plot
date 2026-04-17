@@ -12,7 +12,7 @@ Sci Plot includes a comprehensive library of technical analysis indicators commo
 ### Simple Moving Average (SMA)
 
 ```typescript
-import { sma } from 'sci-plot';
+import { sma } from 'velo-plot';
 
 const prices = new Float32Array([10, 11, 12, 11, 13, 14, 15, 14, 16, 17]);
 const sma20 = sma(prices, 20);  // 20-period SMA
@@ -23,7 +23,7 @@ const sma20 = sma(prices, 20);  // 20-period SMA
 EMA gives more weight to recent prices for faster response:
 
 ```typescript
-import { ema, dema, tema } from 'sci-plot';
+import { ema, dema, tema } from 'velo-plot';
 
 const emaValues = ema(prices, 12);  // 12-period EMA
 const demaValues = dema(prices, 12); // Double EMA (smoother)
@@ -33,7 +33,7 @@ const temaValues = tema(prices, 12); // Triple EMA (smoothest)
 ### Weighted Moving Average (WMA)
 
 ```typescript
-import { wma } from 'sci-plot';
+import { wma } from 'velo-plot';
 
 const wmaValues = wma(prices, 10); // Linear weighted MA
 ```
@@ -43,7 +43,7 @@ const wmaValues = wma(prices, 10); // Linear weighted MA
 ### RSI (Relative Strength Index)
 
 ```typescript
-import { rsi } from 'sci-plot';
+import { rsi } from 'velo-plot';
 
 const rsiValues = rsi(prices, 14);  // 14-period RSI (0-100)
 
@@ -54,7 +54,7 @@ const rsiValues = rsi(prices, 14);  // 14-period RSI (0-100)
 ### MACD (Moving Average Convergence Divergence)
 
 ```typescript
-import { macd, type IndicatorResult } from 'sci-plot';
+import { macd, type IndicatorResult } from 'velo-plot';
 
 const result = macd(prices, 12, 26, 9);
 // result.values: MACD line (Fast EMA - Slow EMA)
@@ -65,7 +65,7 @@ const result = macd(prices, 12, 26, 9);
 ### Stochastic Oscillator
 
 ```typescript
-import { stochastic, type OHLCData } from 'sci-plot';
+import { stochastic, type OHLCData } from 'velo-plot';
 
 const ohlc: OHLCData = {
   open: openPrices,
@@ -82,7 +82,7 @@ const stoch = stochastic(ohlc, 14, 3);
 ### Momentum & ROC
 
 ```typescript
-import { momentum, roc } from 'sci-plot';
+import { momentum, roc } from 'velo-plot';
 
 const mom = momentum(prices, 10);  // Price - Price[n periods ago]
 const rocValues = roc(prices, 10); // Percentage change over n periods
@@ -93,7 +93,7 @@ const rocValues = roc(prices, 10); // Percentage change over n periods
 ### Bollinger Bands
 
 ```typescript
-import { bollingerBands } from 'sci-plot';
+import { bollingerBands } from 'velo-plot';
 
 const bb = bollingerBands(prices, 20, 2);
 // bb.values: Middle band (20-SMA)
@@ -104,7 +104,7 @@ const bb = bollingerBands(prices, 20, 2);
 ### ATR (Average True Range)
 
 ```typescript
-import { atr, type OHLCData } from 'sci-plot';
+import { atr, type OHLCData } from 'velo-plot';
 
 const atrValues = atr(ohlc, 14);
 // Measures volatility, useful for position sizing
@@ -113,7 +113,7 @@ const atrValues = atr(ohlc, 14);
 ### Standard Deviation
 
 ```typescript
-import { standardDeviation } from 'sci-plot';
+import { standardDeviation } from 'velo-plot';
 
 const stdDev = standardDeviation(prices, 20);
 ```
@@ -123,7 +123,7 @@ const stdDev = standardDeviation(prices, 20);
 ### VWAP (Volume Weighted Average Price)
 
 ```typescript
-import { vwap, type OHLCData } from 'sci-plot';
+import { vwap, type OHLCData } from 'velo-plot';
 
 const ohlcWithVolume: OHLCData = {
   ...ohlc,
@@ -137,7 +137,7 @@ const vwapValues = vwap(ohlcWithVolume);
 ### OBV (On-Balance Volume)
 
 ```typescript
-import { obv } from 'sci-plot';
+import { obv } from 'velo-plot';
 
 const obvValues = obv(closePrices, volumeData);
 // Volume flow indicator
@@ -148,7 +148,7 @@ const obvValues = obv(closePrices, volumeData);
 ### ADX (Average Directional Index)
 
 ```typescript
-import { adx } from 'sci-plot';
+import { adx } from 'velo-plot';
 
 const adxResult = adx(ohlc, 14);
 // adxResult.values: ADX (trend strength 0-100)
@@ -162,7 +162,7 @@ const adxResult = adx(ohlc, 14);
 ### Aroon Oscillator
 
 ```typescript
-import { aroon } from 'sci-plot';
+import { aroon } from 'velo-plot';
 
 const aroonResult = aroon(ohlc, 25);
 // aroonResult.values: Aroon Oscillator (Up - Down)
@@ -173,7 +173,7 @@ const aroonResult = aroon(ohlc, 25);
 ## Utility Functions
 
 ```typescript
-import { percentChange, cumsum, normalize } from 'sci-plot';
+import { percentChange, cumsum, normalize } from 'velo-plot';
 
 // Percentage change
 const returns = percentChange(prices, 1); // Daily returns
@@ -188,7 +188,7 @@ const normalized = normalize(data);
 ## Creating Chart with Indicators
 
 ```typescript
-import { createChart, ema, bollingerBands } from 'sci-plot';
+import { createChart, ema, bollingerBands } from 'velo-plot';
 
 // Sample OHLC data
 const prices = stockData.close;

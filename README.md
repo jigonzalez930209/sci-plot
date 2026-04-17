@@ -3,7 +3,7 @@
 A high-performance, WebGL-powered scientific charting engine built for precision, speed, and deep interactivity. Optimized for electrochemical and scientific data visualization.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![NPM Version](https://img.shields.io/npm/v/sci-plot.svg)](https://www.npmjs.com/package/sci-plot)
+[![NPM Version](https://img.shields.io/npm/v/velo-plot.svg)](https://www.npmjs.com/package/velo-plot)
 
 
 ## ✨ Features
@@ -23,9 +23,9 @@ A high-performance, WebGL-powered scientific charting engine built for precision
 ## 🛠️ Installation
 
 ```bash
-npm install sci-plot
+npm install velo-plot
 # or
-pnpm add sci-plot
+pnpm add velo-plot
 ```
 
 ## 🚀 Quick Examples
@@ -33,7 +33,7 @@ pnpm add sci-plot
 ### React (Recommended)
 
 ```tsx
-import { SciPlot } from 'sci-plot/react';
+import { SciPlot } from 'velo-plot/react';
 
 function App() {
   const data = {
@@ -57,7 +57,7 @@ function App() {
 ### Vanilla JavaScript
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart-container'),
@@ -108,11 +108,11 @@ for (let i = 0; i < 20; i++) {
 
 ## 📖 Documentation
 
-Visit [Sci Plot Docs](https://jigonzalez930209.github.io/sci-plot/) for:
--   [Getting Started Guide](https://jigonzalez930209.github.io/sci-plot/guide/)
--   [Core Concepts](https://jigonzalez930209.github.io/sci-plot/guide/concepts)
--   [API Reference](https://jigonzalez930209.github.io/sci-plot/api/chart)
--   [Interactive Examples](https://jigonzalez930209.github.io/sci-plot/examples/)
+Visit [Sci Plot Docs](https://jigonzalez930209.github.io/velo-plot/) for:
+-   [Getting Started Guide](https://jigonzalez930209.github.io/velo-plot/guide/)
+-   [Core Concepts](https://jigonzalez930209.github.io/velo-plot/guide/concepts)
+-   [API Reference](https://jigonzalez930209.github.io/velo-plot/api/chart)
+-   [Interactive Examples](https://jigonzalez930209.github.io/velo-plot/examples/)
 
 ## 📄 License
 

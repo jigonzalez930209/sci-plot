@@ -7,8 +7,8 @@
  * 
  * @example
  * ```typescript
- * import { createChart } from 'sci-plot';
- * import { PluginContextMenu } from 'sci-plot/plugins/context-menu';
+ * import { createChart } from 'velo-plot';
+ * import { PluginContextMenu } from 'velo-plot/plugins/context-menu';
  * 
  * const chart = createChart({ container });
  * chart.use(PluginContextMenu({
@@ -122,9 +122,9 @@ const DEFAULT_PLOT_ITEMS: MenuItem[] = [
 // ============================================
 
 const manifestContextMenu: PluginManifest = {
-  name: "sci-plot-context-menu",
+  name: "velo-plot-context-menu",
   version: "1.0.0",
-  description: "Customizable right-click context menu for sci-plot",
+  description: "Customizable right-click context menu for velo-plot",
   author: "Sci Plot Team",
   provides: ["interaction"],
   tags: ["context-menu", "right-click", "menu", "ui"],
@@ -259,7 +259,7 @@ export function PluginContextMenu(
 
   function executeExport(format: 'csv' | 'json'): void {
     const chart = _ctx?.chart as any;
-    const exportPlugin = chart?.plugins?.get('sci-plot-data-export')?.api;
+    const exportPlugin = chart?.plugins?.get('velo-plot-data-export')?.api;
     
     if (exportPlugin) {
       exportPlugin.download(format);

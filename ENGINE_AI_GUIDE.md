@@ -13,7 +13,7 @@ Sci Plot uses a modular, plugin-based architecture centered around the `Chart` i
 To create a chart, you need a container `HTMLDivElement` and a set of options.
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart-container'),
@@ -61,7 +61,7 @@ chart.setAutoScroll(true);
 
 The engine's power comes from its built-in plugins, which are often loaded automatically or via `chart.use()`.
 
-### 1. Analysis Plugin (`sci-plot-analysis`)
+### 1. Analysis Plugin (`velo-plot-analysis`)
 Provides mathematical and statistical operations.
 
 - **Available via `chart.analysis`**:
@@ -73,7 +73,7 @@ Provides mathematical and statistical operations.
   chart.addFitLine('data-series', 'linear'); // Adds a regression line
   ```
 
-### 2. Measurement Tools (`sci-plot-tools`)
+### 2. Measurement Tools (`velo-plot-tools`)
 Interactive tools for precise data interrogation.
 
 ```typescript
@@ -98,7 +98,7 @@ chart.tooltip.configure({
 A specialized plugin for streaming data that shows a directional arrow based on recent trend.
 
 ```typescript
-import { DirectionIndicatorPlugin } from 'sci-plot/plugins';
+import { DirectionIndicatorPlugin } from 'velo-plot/plugins';
 
 chart.use(DirectionIndicatorPlugin({
   seriesId: 'live-data',

@@ -16,9 +16,9 @@ export interface PluginClipboardConfig {
 }
 
 const manifestClipboard: PluginManifest = {
-    name: "sci-plot-clipboard",
+    name: "velo-plot-clipboard",
     version: "1.0.0",
-    description: "Clipboard integration for sci-plot",
+    description: "Clipboard integration for velo-plot",
     provides: ["interaction"],
     tags: ["clipboard", "copy", "paste", "export"],
 };

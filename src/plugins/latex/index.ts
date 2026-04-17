@@ -12,7 +12,7 @@
  *
  * @example
  * ```typescript
- * import { PluginLaTeX } from 'sci-plot/plugins';
+ * import { PluginLaTeX } from 'velo-plot/plugins';
  *
  * const latex = PluginLaTeX({
  *   fontSize: 16,
@@ -162,7 +162,7 @@ export function PluginLaTeX(config: PluginLaTeXConfig = {}): ChartPlugin<PluginL
 
   return {
     manifest: {
-      name: 'sci-plot-latex',
+      name: 'velo-plot-latex',
       version: '1.0.0',
       description: 'Native LaTeX rendering for mathematical expressions',
       provides: ['latex'],

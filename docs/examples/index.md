@@ -154,7 +154,7 @@ Interactive tools for selecting and analyzing specific data regions.
 ### Minimal Example
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -172,7 +172,7 @@ chart.addSeries({
 ### React Minimal
 
 ```tsx
-import { SciPlot } from 'sci-plot/react'
+import { SciPlot } from 'velo-plot/react'
 
 <SciPlot
   series={[{

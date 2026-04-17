@@ -122,7 +122,7 @@ async function download() {
     includeBackground: includeBackground.value,
     includeOverlays: includeOverlays.value,
     watermarkText: watermarkText.value,
-    fileName: 'sci-plot-pro-export'
+    fileName: 'velo-plot-pro-export'
   });
 }
 

@@ -1,11 +1,11 @@
 {
-  "name": "sci-plot",
+  "name": "velo-plot",
   "version": "1.11.1",
   "author": "jigonzalez930209",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jigonzalez930209/sci-plot.git"
+    "url": "git+https://github.com/jigonzalez930209/velo-plot.git"
   },
   "keywords": [
     "chart",
@@ -18,17 +18,17 @@
   ],
   "description": "A high-performance scientific charting engine for web applications.",
   "type": "module",
-  "main": "./dist/sci-plot.js",
-  "module": "./dist/sci-plot.js",
+  "main": "./dist/velo-plot.js",
+  "module": "./dist/velo-plot.js",
   "types": "./dist/index.core.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.core.d.ts",
-      "import": "./dist/sci-plot.js"
+      "import": "./dist/velo-plot.js"
     },
     "./full": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/sci-plot.full.js"
+      "import": "./dist/velo-plot.full.js"
     },
     "./plugins/3d": {
       "types": "./dist/plugins/3d.d.ts",

@@ -16,7 +16,7 @@ The Surface Mesh 3D chart displays a grid-based height map where Y values repres
 ## Basic Usage
 
 ```typescript
-import { Chart3D, SurfaceMesh3D } from 'sci-plot/core/3d';
+import { Chart3D, SurfaceMesh3D } from 'velo-plot/core/3d';
 
 // Create chart
 const chart = new Chart3D({

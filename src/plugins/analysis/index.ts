@@ -182,9 +182,9 @@ export interface PluginAnalysisConfig {
 }
 
 const manifestAnalysis: PluginManifest = {
-    name: "sci-plot-analysis",
+    name: "velo-plot-analysis",
     version: "1.0.0",
-    description: "Data analysis and signal processing for sci-plot",
+    description: "Data analysis and signal processing for velo-plot",
     provides: ["analysis"],
     tags: ["fft", "filters", "statistics", "math"],
 };

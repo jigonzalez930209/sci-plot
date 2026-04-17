@@ -19,9 +19,9 @@ export interface PluginI18nConfig {
 }
 
 const manifestI18n: PluginManifest = {
-    name: "sci-plot-i18n",
+    name: "velo-plot-i18n",
     version: "1.0.0",
-    description: "Internationalization and localization for sci-plot",
+    description: "Internationalization and localization for velo-plot",
     provides: ["ui"],
     tags: ["i18n", "l10n", "locale", "language"],
 };

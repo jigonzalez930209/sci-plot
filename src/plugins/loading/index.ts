@@ -16,9 +16,9 @@ export interface PluginLoadingConfig extends Partial<LoadingIndicatorOptions> {
 }
 
 const manifestLoading: PluginManifest = {
-    name: "sci-plot-loading",
+    name: "velo-plot-loading",
     version: "1.0.0",
-    description: "Loading and progress indicators for sci-plot",
+    description: "Loading and progress indicators for velo-plot",
     provides: ["ui"],
     tags: ["loading", "progress", "ui", "ux"],
 };

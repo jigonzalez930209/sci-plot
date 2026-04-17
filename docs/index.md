@@ -14,7 +14,7 @@ hero:
       link: /examples/
     - theme: alt
       text: GitHub
-      link: https://github.com/jigonzalez930209/sci-plot
+      link: https://github.com/jigonzalez930209/velo-plot
 
 features:
   - icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="rocketGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00f2ff"/><stop offset="100%" style="stop-color:#a855f7"/></linearGradient></defs><path d="M48 16c0 0-4-4-16 8S20 48 20 48l-4 8 8-4s12-4 24-16 0-20 0-20z" stroke="url(#rocketGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="28" r="4" fill="url(#rocketGrad)"/><path d="M16 48l-4 4M20 52l-4 4M12 44l-4 4" stroke="url(#rocketGrad)" stroke-width="2" stroke-linecap="round"/></svg>'
@@ -52,15 +52,15 @@ This chart automatically syncs with the documentation theme. Try toggling dark/l
 ### Installation
 
 ```bash
-npm install sci-plot
+npm install velo-plot
 # or
-pnpm add sci-plot
+pnpm add velo-plot
 ```
 
 ### Basic Usage
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -83,7 +83,7 @@ chart.addSeries({
 ### React Usage
 
 ```tsx
-import { SciPlot } from 'sci-plot/react'
+import { SciPlot } from 'velo-plot/react'
 
 function MyChart() {
   const series = [{

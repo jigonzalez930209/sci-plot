@@ -86,7 +86,7 @@ export class ChartLegend {
     const { width, x, y } = this.options;
 
     this.container = document.createElement("div");
-    this.container.className = "sci-plot-legend";
+    this.container.className = "velo-plot-legend";
 
     this.container.style.cssText = `
       position: absolute;

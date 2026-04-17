@@ -41,9 +41,9 @@ export interface PluginStreamingConfig {
 }
 
 const manifestStreaming: PluginManifest = {
-    name: "sci-plot-streaming",
+    name: "velo-plot-streaming",
     version: "1.0.0",
-    description: "Real-time data streaming support for sci-plot",
+    description: "Real-time data streaming support for velo-plot",
     provides: ["data-source"],
     tags: ["websocket", "real-time", "streaming", "backpressure"],
 };

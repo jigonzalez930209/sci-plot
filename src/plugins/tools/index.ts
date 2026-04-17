@@ -24,9 +24,9 @@ export interface PluginToolsConfig {
 }
 
 const manifestTools: PluginManifest = {
-    name: "sci-plot-tools",
+    name: "velo-plot-tools",
     version: "1.0.0",
-    description: "Advanced interaction and measurement tools for sci-plot",
+    description: "Advanced interaction and measurement tools for velo-plot",
     provides: ["interaction"],
     tags: ["delta-tool", "peak-tool", "tooltip"],
 };

@@ -20,7 +20,7 @@ import type {
 } from '../types';
 
 const manifestML: PluginManifest = {
-  name: "sci-plot-ml-integration",
+  name: "velo-plot-ml-integration",
   version: "1.0.0",
   description: "Machine Learning Integration Bridge for Sci Plot",
   provides: ["ml", "prediction", "inference"],

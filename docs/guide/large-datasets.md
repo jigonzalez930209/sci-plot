@@ -114,7 +114,7 @@ self.onmessage = (e) => {
 For datasets too large to display efficiently, use LTTB (Largest Triangle Three Buckets) downsampling:
 
 ```typescript
-import { downsampleLTTB } from 'sci-plot'
+import { downsampleLTTB } from 'velo-plot'
 
 // Original: 10 million points
 const originalX = new Float32Array(10000000)

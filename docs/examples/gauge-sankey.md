@@ -10,7 +10,7 @@ Beautiful KPI visualization.
 The Gauge chart is ideal for showing a single value within a predefined range.
 
 ```typescript
-import { SciPlot } from 'sci-plot';
+import { SciPlot } from 'velo-plot';
 
 const chart = new SciPlot({
   container: document.getElementById('chart-container'),

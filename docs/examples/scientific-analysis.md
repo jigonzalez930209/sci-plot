@@ -95,7 +95,7 @@ data: {
 The ML Integration plugin provides native statistical functions without external dependencies:
 
 ```typescript
-import { PluginMLIntegration } from 'sci-plot'
+import { PluginMLIntegration } from 'velo-plot'
 
 // Initialize plugin
 chart.use(PluginMLIntegration())

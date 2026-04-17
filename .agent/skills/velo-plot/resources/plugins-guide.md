@@ -1,8 +1,8 @@
 # Sci Plot Plugins Guide
 
-Plugins are imported from `sci-plot/plugins/[name]`.
+Plugins are imported from `velo-plot/plugins/[name]`.
 
-## Analysis (`sci-plot-analysis`)
+## Analysis (`velo-plot-analysis`)
 Provides mathematical operations on data.
 - `detectPeaks(seriesId, options)`
 - `detectCycles(seriesId, options)`
@@ -10,7 +10,7 @@ Provides mathematical operations on data.
 - `fft(seriesId)`
 - `singleFrequencyFilter(seriesId, frequency)`
 
-## Tools (`sci-plot-tools`)
+## Tools (`velo-plot-tools`)
 Interactive measurement and interrogation tools.
 - `delta`: Measure distance and slope.
 - `peak`: Integrate area under a curve.
@@ -40,12 +40,12 @@ chart.disableCursor();
 - `'corner'`: Values displayed in a fixed corner box
 - `'disabled'`: Crosshair lines only, no coordinate values
 
-## ML Integration (`sci-plot-ml-integration`)
+## ML Integration (`velo-plot-ml-integration`)
 Integrates with Machine Learning models for prediction and anomaly detection.
 - `chart.ml.predict(seriesId, model)`
 - `chart.ml.detectAnomalies(seriesId, algorithm)`
 
-## LaTeX (`sci-plot-latex`)
+## LaTeX (`velo-plot-latex`)
 Native LaTeX rendering for mathematical expressions. When active, it automatically handles LaTeX strings in:
 - **Chart Titles**: `layout: { title: { text: '\\Delta E = mc^2' } }`
 - **Axis Labels**: `xAxis: { label: 'Time (\\mu s)' }`
@@ -55,17 +55,17 @@ Native LaTeX rendering for mathematical expressions. When active, it automatical
 chart.latex.render('\\int_0^\\infty e^{-x^2} dx', ctx, x, y);
 ```
 
-## Regression (`sci-plot-regression`)
+## Regression (`velo-plot-regression`)
 Advanced curve fitting.
 - `chart.regression.fit(seriesId, 'polynomial', { degree: 3 })`
 
-## Data Export (`sci-plot-data-export`)
+## Data Export (`velo-plot-data-export`)
 Enhanced export capabilities (MATLAB, Python, Excel, Binary).
 - `chart.dataExport.toMATLAB()`
 - `chart.dataExport.toExcel()`
 - `chart.dataExport.toNativeBinary()`
 
-## High Performance (`sci-plot-virtualization`, `sci-plot-gpu`)
+## High Performance (`velo-plot-virtualization`, `velo-plot-gpu`)
 Handle massive datasets (>10M points) and complex computations.
 - `PluginVirtualization`: Dynamic level-of-detail for huge files.
 - `PluginGpu`: Offload heavy calculations or use WebGPU for rendering.

@@ -12,7 +12,7 @@ Sci Plot includes several utilities to enhance developer experience and improve 
 Configure keyboard shortcuts for common chart interactions:
 
 ```typescript
-import { createChart, KeyBindingManager, DEFAULT_KEY_BINDINGS } from 'sci-plot';
+import { createChart, KeyBindingManager, DEFAULT_KEY_BINDINGS } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -47,7 +47,7 @@ const chart = createChart({
 Copy chart data to clipboard in various formats:
 
 ```typescript
-import { copyToClipboard, getClipboardManager } from 'sci-plot';
+import { copyToClipboard, getClipboardManager } from 'velo-plot';
 
 // Copy selected points
 const result = await copyToClipboard(selectedPoints, {
@@ -90,7 +90,7 @@ X,Y
 Enable a visual debug overlay showing performance metrics:
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -130,7 +130,7 @@ import {
   setGlobalLocale, 
   createLocaleFormatter,
   LOCALE_ES_ES 
-} from 'sci-plot';
+} from 'velo-plot';
 
 // Set global locale
 setGlobalLocale('es-ES');
@@ -165,7 +165,7 @@ console.log(formatter.formatWithPrefix(1.5e-6, 'A')); // "1,50 µA"
 Show loading states for large data operations:
 
 ```typescript
-import { showLoading, showProgress, LoadingIndicator } from 'sci-plot';
+import { showLoading, showProgress, LoadingIndicator } from 'velo-plot';
 
 // Simple spinner
 const loader = showLoading(container, 'Loading data...');
@@ -220,7 +220,7 @@ import {
   benchmarkRender,
   assertPerformance,
   waitForFrames,
-} from 'sci-plot';
+} from 'velo-plot';
 
 // Generate waveforms
 const sine = generateSineWave({

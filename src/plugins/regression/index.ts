@@ -6,7 +6,7 @@
  * 
  * @example
  * ```typescript
- * import { PluginRegression } from 'sci-plot/plugins/regression';
+ * import { PluginRegression } from 'velo-plot/plugins/regression';
  * 
  * chart.use(PluginRegression({
  *   defaultMethod: 'polynomial',

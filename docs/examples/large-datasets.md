@@ -19,7 +19,7 @@ import { ref } from 'vue'
 ## Code
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -88,7 +88,7 @@ Sci Plot uses WebGL:
 For even larger datasets, use LTTB downsampling:
 
 ```typescript
-import { downsampleLTTB } from 'sci-plot'
+import { downsampleLTTB } from 'velo-plot'
 
 // Original: 10 million points
 const originalX = new Float32Array(10000000)
@@ -180,7 +180,7 @@ largeArray = null
 
 ```tsx
 import { useMemo } from 'react'
-import { SciPlot } from 'sci-plot/react'
+import { SciPlot } from 'velo-plot/react'
 
 function LargeDatasetChart() {
   const series = useMemo(() => {

@@ -16,7 +16,7 @@ Voxels (Volumetric Pixels) are the 3D equivalent of pixels. The Voxel 3DRenderer
 ## Basic Usage
 
 ```typescript
-import { Voxel3DRenderer } from 'sci-plot/core/3d';
+import { Voxel3DRenderer } from 'velo-plot/core/3d';
 
 const renderer = new Voxel3DRenderer({
   canvas: document.getElementById('canvas'),

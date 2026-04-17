@@ -16,9 +16,9 @@ export interface PluginKeyboardConfig extends Partial<KeyBindingManagerOptions> 
 }
 
 const manifestKeyboard: PluginManifest = {
-    name: "sci-plot-keyboard",
+    name: "velo-plot-keyboard",
     version: "1.0.0",
-    description: "Keyboard shortcut management for sci-plot",
+    description: "Keyboard shortcut management for velo-plot",
     provides: ["interaction"],
     tags: ["keyboard", "shortcuts", "interaction", "accessibility"],
 };

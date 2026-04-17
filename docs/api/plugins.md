@@ -62,8 +62,8 @@ Plugins receive a rich context providing safe access to chart internals:
 Plugins are loaded using the `chart.use()` method. Note that from version 1.5.0, many features like **Tooltips**, **Analysis**, and **Annotations** must be explicitly loaded as plugins.
 
 ```typescript
-import { createChart } from 'sci-plot';
-import { PluginTools, PluginAnalysis, PluginAnnotations } from 'sci-plot/plugins';
+import { createChart } from 'velo-plot';
+import { PluginTools, PluginAnalysis, PluginAnnotations } from 'velo-plot/plugins';
 
 const chart = createChart({ container });
 
@@ -96,7 +96,7 @@ Starting from version 1.9.0, most plugins register their public API directly on 
 The recommended way to create a plugin is using the `createPlugin` or `createConfigurablePlugin` helpers.
 
 ```typescript
-import { createConfigurablePlugin } from 'sci-plot/plugins';
+import { createConfigurablePlugin } from 'velo-plot/plugins';
 
 interface MyPluginConfig {
   color: string;

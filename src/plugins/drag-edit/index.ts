@@ -17,7 +17,7 @@ import type {
 } from '../types';
 
 const manifest: PluginManifest = {
-  name: 'sci-plot-drag-edit',
+  name: 'velo-plot-drag-edit',
   version: '1.0.0',
   description: 'Interactive drag & drop editing of data points',
   provides: ['drag-edit', 'point-editing'],

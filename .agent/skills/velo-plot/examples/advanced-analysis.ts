@@ -1,5 +1,5 @@
-import { createChart } from 'sci-plot';
-import { PluginAnalysis } from 'sci-plot/plugins/analysis';
+import { createChart } from 'velo-plot';
+import { PluginAnalysis } from 'velo-plot/plugins/analysis';
 
 /**
  * Advanced analysis: Peak detection and FFT

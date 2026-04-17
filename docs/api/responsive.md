@@ -17,7 +17,7 @@ The Responsive Design system provides:
 ## Quick Start
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 // Responsive is enabled by default
 const chart = createChart({

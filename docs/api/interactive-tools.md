@@ -12,8 +12,8 @@ Sci Plot provides professional interactive tools for manual measurement and deta
 To use the interactive tools, you must load the `PluginTools`.
 
 ```typescript
-import { createChart } from 'sci-plot';
-import { PluginTools } from 'sci-plot/plugins';
+import { createChart } from 'velo-plot';
+import { PluginTools } from 'velo-plot/plugins';
 
 const chart = createChart({ container });
 

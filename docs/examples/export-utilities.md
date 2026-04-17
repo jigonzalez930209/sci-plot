@@ -17,7 +17,7 @@ Extract raw data for external analysis in CSV, JSON, and more.
 ### API Reference Summary
 
 ```typescript
-import { PluginSnapshot, PluginVideoRecorder, PluginDataExport } from 'sci-plot';
+import { PluginSnapshot, PluginVideoRecorder, PluginDataExport } from 'velo-plot';
 
 // High-res Image
 chart.use(PluginSnapshot());

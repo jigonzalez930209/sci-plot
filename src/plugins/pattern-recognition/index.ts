@@ -6,7 +6,7 @@
  * 
  * @example
  * ```typescript
- * import { PluginPatternRecognition } from 'sci-plot/plugins/pattern-recognition';
+ * import { PluginPatternRecognition } from 'velo-plot/plugins/pattern-recognition';
  * 
  * chart.use(PluginPatternRecognition({
  *   defaultParameters: {

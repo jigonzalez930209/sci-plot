@@ -3,10 +3,10 @@
 The engine includes a specialized high-performance 3D renderer for volumetric data, surfaces, and point clouds.
 
 ## Initialization
-3D charts are initialized via the `createChart3D` function (requires `sci-plot/plugins/3d`).
+3D charts are initialized via the `createChart3D` function (requires `velo-plot/plugins/3d`).
 
 ```typescript
-import { createChart3D } from 'sci-plot/plugins/3d';
+import { createChart3D } from 'velo-plot/plugins/3d';
 
 const chart3d = createChart3D({
   container,

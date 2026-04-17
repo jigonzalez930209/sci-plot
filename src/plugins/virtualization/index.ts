@@ -20,7 +20,7 @@ import {
 } from "../../workers/downsample";
 
 const manifest: PluginManifest = {
-  name: "sci-plot-virtualization",
+  name: "velo-plot-virtualization",
   version: "1.0.0",
   description: "Viewport-aware data virtualization with LOD strategies",
   provides: ["performance", "data-virtualization"],

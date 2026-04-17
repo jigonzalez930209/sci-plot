@@ -10,7 +10,7 @@
 
 ## 📊 Resumen Ejecutivo
 
-Este documento propone **39 nuevas features** organizadas en 8 categorías y 4 fases de desarrollo para mejorar la usabilidad, rendimiento y capacidades de la librería `sci-plot`.
+Este documento propone **39 nuevas features** organizadas en 8 categorías y 4 fases de desarrollo para mejorar la usabilidad, rendimiento y capacidades de la librería `velo-plot`.
 
 **🚀 Implementación 100% Nativa**: Todas las features están diseñadas sin dependencias de librerías de terceros, utilizando algoritmos matemáticos puros y renderizado nativo para máximo control y rendimiento.
 
@@ -1102,7 +1102,7 @@ chart.stopRecording().then(blob => {
 
 ## 📝 Conclusión
 
-Esta propuesta define un camino claro para evolucionar `sci-plot` de una librería de charts científicos a una **plataforma completa de visualización y análisis de datos**.
+Esta propuesta define un camino claro para evolucionar `velo-plot` de una librería de charts científicos a una **plataforma completa de visualización y análisis de datos**.
 
 Las 39 features propuestas están organizadas para maximizar el valor en cada fase, comenzando con mejoras de alto impacto y bajo esfuerzo, y progresando hacia capacidades más avanzadas.
 

@@ -14,7 +14,7 @@ The Column 3D chart renders vertical bars in 3D space, perfect for:
 ## Basic Usage
 
 ```typescript
-import { Chart3D } from 'sci-plot/core/3d';
+import { Chart3D } from 'velo-plot/core/3d';
 
 const chart = new Chart3D({
   canvas: document.getElementById('canvas'),

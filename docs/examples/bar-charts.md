@@ -11,7 +11,7 @@ Sci Plot supports high-performance bar charts for categorical data or discrete m
 You can add a bar series using the `addSeries` method with `type: 'bar'` or the convenience method `addBar`.
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { SciPlot, type SciPlotRef } from 'sci-plot/react';
+import { SciPlot, type SciPlotRef } from 'velo-plot/react';
 
 /**
  * Declarative React pattern using the built-in SciPlot component

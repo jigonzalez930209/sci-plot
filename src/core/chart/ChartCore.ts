@@ -203,7 +203,7 @@ export class ChartImpl implements Chart {
   get brokenAxis(): any { return this.pluginBridge.brokenAxis; }
   get forecasting(): any { return this.pluginBridge.forecasting; }
   get latex(): any {
-    return this.pluginBridge?.latex ?? this.getPluginAPI("sci-plot-latex");
+    return this.pluginBridge?.latex ?? this.getPluginAPI("velo-plot-latex");
   }
 
   private animationEngine: AnimationEngine;
@@ -913,7 +913,7 @@ export class ChartImpl implements Chart {
    * Add a line of best fit to a series
    */
   addFitLine(seriesId: string, type: any, options?: any): string {
-    const api = this.getPluginAPI<any>("sci-plot-analysis");
+    const api = this.getPluginAPI<any>("velo-plot-analysis");
     if (api && api.addFitLine) {
       return api.addFitLine(seriesId, type, options);
     }
@@ -1124,7 +1124,7 @@ export class ChartImpl implements Chart {
     const id = annotation.id || `annotation-${++this.annotationIdCounter}`;
     const annWithId = { ...annotation, id };
 
-    const api = this.getPluginAPI<any>("sci-plot-annotations");
+    const api = this.getPluginAPI<any>("velo-plot-annotations");
     if (api) {
       api.add(annWithId);
       this.requestOverlayRender();
@@ -1135,7 +1135,7 @@ export class ChartImpl implements Chart {
   }
 
   removeAnnotation(id: string): boolean {
-    const api = this.getPluginAPI<any>("sci-plot-annotations");
+    const api = this.getPluginAPI<any>("velo-plot-annotations");
     if (api) {
       const result = api.remove(id);
       this.requestOverlayRender();
@@ -1145,21 +1145,21 @@ export class ChartImpl implements Chart {
   }
 
   updateAnnotation(id: string, updates: Partial<Annotation>): void {
-    const api = this.getPluginAPI<any>("sci-plot-annotations");
+    const api = this.getPluginAPI<any>("velo-plot-annotations");
     api?.update?.(id, updates);
     this.requestOverlayRender();
   }
 
   getAnnotation(id: string): Annotation | undefined {
-    return this.getPluginAPI<any>("sci-plot-annotations")?.get(id);
+    return this.getPluginAPI<any>("velo-plot-annotations")?.get(id);
   }
 
   getAnnotations(): Annotation[] {
-    return this.getPluginAPI<any>("sci-plot-annotations")?.getAll() ?? [];
+    return this.getPluginAPI<any>("velo-plot-annotations")?.getAll() ?? [];
   }
 
   clearAnnotations(): void {
-    this.getPluginAPI<any>("sci-plot-annotations")?.clear();
+    this.getPluginAPI<any>("velo-plot-annotations")?.clear();
     this.requestOverlayRender();
   }
 
@@ -1345,7 +1345,7 @@ export class ChartImpl implements Chart {
     this.selectionManager.clearSelection();
 
     // Delegate to tools plugin if available
-    const toolsApi = this.getPluginAPI<any>("sci-plot-tools");
+    const toolsApi = this.getPluginAPI<any>("velo-plot-tools");
     if (mode === 'delta' || mode === 'peak') {
       if (toolsApi) {
         toolsApi.setMode(mode);
@@ -1353,7 +1353,7 @@ export class ChartImpl implements Chart {
         // Plugin not yet loaded - retry after a short delay
         console.info(`[SciPlot] Tools plugin not ready, retrying setMode('${mode}')...`);
         setTimeout(() => {
-          const api = this.getPluginAPI<any>("sci-plot-tools");
+          const api = this.getPluginAPI<any>("velo-plot-tools");
           if (api) {
             api.setMode(mode);
           } else {
@@ -1380,14 +1380,14 @@ export class ChartImpl implements Chart {
    * Get the Delta Tool instance for advanced measurements
    */
   getDeltaTool(): any | null {
-    return this.getPluginAPI<any>("sci-plot-tools")?.getDeltaTool() ?? null;
+    return this.getPluginAPI<any>("velo-plot-tools")?.getDeltaTool() ?? null;
   }
 
   /**
    * Get the Peak Tool instance for peak integration
    */
   getPeakTool(): any | null {
-    return this.getPluginAPI<any>("sci-plot-tools")?.getPeakTool() ?? null;
+    return this.getPluginAPI<any>("velo-plot-tools")?.getPeakTool() ?? null;
   }
 
   // ============================================
@@ -1481,7 +1481,7 @@ export class ChartImpl implements Chart {
     await this.pluginManager.use(plugin);
 
     // If annotations plugin was just added, process queued annotations
-    const annotationsApi = this.getPluginAPI<any>("sci-plot-annotations");
+    const annotationsApi = this.getPluginAPI<any>("velo-plot-annotations");
     if (annotationsApi && this.annotationQueue.length > 0) {
       this.annotationQueue.forEach((a) => annotationsApi.add(a));
       this.annotationQueue = [];
@@ -1489,7 +1489,7 @@ export class ChartImpl implements Chart {
     }
 
     // Process queued tooltip configurations
-    const toolsApi = this.getPluginAPI<any>("sci-plot-tools");
+    const toolsApi = this.getPluginAPI<any>("velo-plot-tools");
     if (toolsApi && this.tooltipConfigQueue.length > 0) {
       const manager = toolsApi.getTooltipManager();
       if (manager) {
@@ -1499,7 +1499,7 @@ export class ChartImpl implements Chart {
     }
 
     // Process queued fit lines
-    const analysisApi = this.getPluginAPI<any>("sci-plot-analysis");
+    const analysisApi = this.getPluginAPI<any>("velo-plot-analysis");
     if (analysisApi && this.fitLineQueue.length > 0) {
       this.fitLineQueue.forEach((q) => {
         analysisApi.addFitLine(q.seriesId, q.type, { ...q.options, id: q.id });

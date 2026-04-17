@@ -142,7 +142,7 @@ export class DeltaTool {
       precision: 4,
       showSlope: true,
       showDistance: true,
-      className: 'sci-plot-delta-tool',
+      className: 'velo-plot-delta-tool',
       highlightSize: 12,
       highlightColor: '#00f2ff',
       snapRadius: 30,

@@ -21,7 +21,7 @@ import { ref } from 'vue'
 ## Code
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 // Create chart
 const chart = createChart({
@@ -132,7 +132,7 @@ chart.addSeries({
 ## React Version
 
 ```tsx
-import { SciPlot } from 'sci-plot/react'
+import { SciPlot } from 'velo-plot/react'
 
 function BasicChart() {
   const n = 10000

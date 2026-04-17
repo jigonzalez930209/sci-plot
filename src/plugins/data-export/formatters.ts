@@ -165,7 +165,7 @@ export function formatJSON(
   const exportData: Record<string, unknown> = {
     version: '1.0',
     exportDate: new Date().toISOString(),
-    format: 'sci-plot-json'
+    format: 'velo-plot-json'
   };
 
   if (includeMetadata) {

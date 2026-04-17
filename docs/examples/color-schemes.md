@@ -24,7 +24,7 @@ Demonstrates the 5 professional color schemes with 20 colors each, and the bring
 ## Basic Usage
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -169,7 +169,7 @@ chart.addSeries({ id: 's3', type: 'line', data: { x, y } })  // Ocean colors
 Create your own scheme:
 
 ```typescript
-import { type ColorScheme } from 'sci-plot'
+import { type ColorScheme } from 'velo-plot'
 
 const customScheme: ColorScheme = {
   name: 'corporate',
@@ -241,7 +241,7 @@ for (let i = 0; i < 20; i++) {
 ## React Example
 
 ```tsx
-import { SciPlot } from 'sci-plot/react'
+import { SciPlot } from 'velo-plot/react'
 import { useState } from 'react'
 
 function MultiSeriesChart() {

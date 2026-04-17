@@ -1,10 +1,10 @@
 # Getting Started with 3D Charts
 
-Learn how to create interactive 3D visualizations with sci-plot.
+Learn how to create interactive 3D visualizations with velo-plot.
 
 ## Overview
 
-sci-plot provides a lightweight, high-performance WebGL2-based 3D rendering system with:
+velo-plot provides a lightweight, high-performance WebGL2-based 3D rendering system with:
 
 - **100,000+ data points** rendered in a single draw call
 - **Interactive orbit camera** with rotate, zoom, and pan
@@ -16,9 +16,9 @@ sci-plot provides a lightweight, high-performance WebGL2-based 3D rendering syst
 ### 1. Installation
 
 ```bash
-npm install sci-plot
+npm install velo-plot
 # or
-pnpm add sci-plot
+pnpm add velo-plot
 ```
 
 ### 2. Create a Container
@@ -30,7 +30,7 @@ pnpm add sci-plot
 ### 3. Initialize the Renderer
 
 ```typescript
-import { Bubble3DRenderer } from 'sci-plot/core/3d';
+import { Bubble3DRenderer } from 'velo-plot/core/3d';
 
 const canvas = document.createElement('canvas');
 document.getElementById('chart-container').appendChild(canvas);
@@ -239,7 +239,7 @@ renderer.on('cameraChange', (event) => {
 ## Complete Example
 
 ```typescript
-import { Bubble3DRenderer } from 'sci-plot/core/3d';
+import { Bubble3DRenderer } from 'velo-plot/core/3d';
 
 async function createChart() {
   const container = document.getElementById('chart');

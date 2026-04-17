@@ -34,7 +34,7 @@ High-performance WebGL2-based 3D chart visualizations with instanced rendering.
 ## Quick Start
 
 ```typescript
-import { Chart3D } from 'sci-plot/core/3d';
+import { Chart3D } from 'velo-plot/core/3d';
 
 const chart = new Chart3D({
   canvas: document.getElementById('canvas'),

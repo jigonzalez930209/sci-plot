@@ -18,9 +18,9 @@ export interface PluginThemeEditorConfig {
 }
 
 const manifestThemeEditor: PluginManifest = {
-    name: "sci-plot-theme-editor",
+    name: "velo-plot-theme-editor",
     version: "1.0.0",
-    description: "Visual theme editor for sci-plot",
+    description: "Visual theme editor for velo-plot",
     provides: ["ui", "theme"],
     tags: ["theme", "editor", "styling", "ui"],
 };

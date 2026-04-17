@@ -45,7 +45,7 @@ The Complex FFT API provides full access to the **real and imaginary parts** of 
 ### Basic Complex FFT
 
 ```typescript
-import { analyzeComplexSpectrum } from 'sci-plot';
+import { analyzeComplexSpectrum } from 'velo-plot';
 
 const signal = new Float32Array(1024);
 // Fill with data...
@@ -68,7 +68,7 @@ console.log(result.nyquist);   // Nyquist frequency index
 For complex signals like I/Q from SDR (Software Defined Radio):
 
 ```typescript
-import { fftFromComplexInput } from 'sci-plot';
+import { fftFromComplexInput } from 'velo-plot';
 
 // I/Q data from radio receiver
 const inPhase = new Float32Array([...]);     // I component
@@ -84,7 +84,7 @@ console.log(result.imag);  // Imaginary part of FFT
 ### Inverse FFT with Complex Output
 
 ```typescript
-import { ifftComplex, arraysToComplex } from 'sci-plot';
+import { ifftComplex, arraysToComplex } from 'velo-plot';
 
 // After manipulating spectrum...
 const complex = arraysToComplex(modifiedReal, modifiedImag);
@@ -96,7 +96,7 @@ const { real, imag } = ifftComplex(complex);
 ### Positive Frequencies Only
 
 ```typescript
-import { analyzeComplexSpectrum, getPositiveFrequencies } from 'sci-plot';
+import { analyzeComplexSpectrum, getPositiveFrequencies } from 'velo-plot';
 
 const fullSpectrum = analyzeComplexSpectrum(data, sampleRate);
 const positive = getPositiveFrequencies(fullSpectrum);

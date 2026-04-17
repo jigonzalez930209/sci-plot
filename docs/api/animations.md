@@ -12,7 +12,7 @@ Sci Plot includes a powerful animation system for smooth visual transitions duri
 Animations are **enabled by default**. You can configure them when creating a chart:
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 // Animations enabled by default
 const chart = createChart({
@@ -109,7 +109,7 @@ chart.autoScale(false);
 For custom animations, use the `AnimationEngine` class:
 
 ```typescript
-import { AnimationEngine, easings } from 'sci-plot';
+import { AnimationEngine, easings } from 'velo-plot';
 
 const engine = new AnimationEngine();
 
@@ -142,7 +142,7 @@ await handle.promise;
 ## Default Configuration
 
 ```typescript
-import { DEFAULT_ANIMATION_CONFIG } from 'sci-plot';
+import { DEFAULT_ANIMATION_CONFIG } from 'velo-plot';
 
 console.log(DEFAULT_ANIMATION_CONFIG);
 // {

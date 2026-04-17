@@ -17,7 +17,7 @@ Sci Plot 3D uses specialized renderer classes that manage their own WebGL2 conte
 Renders filled 3D areas (curtain effect) with lighting and tooltips.
 
 ```typescript
-import { Area3DRenderer } from 'sci-plot/plugins/3d';
+import { Area3DRenderer } from 'velo-plot/plugins/3d';
 
 const renderer = new Area3DRenderer({
   canvas: document.getElementById('my-canvas'),
@@ -30,7 +30,7 @@ const renderer = new Area3DRenderer({
 Specialized for cascading spectral results or time-series profiles.
 
 ```typescript
-import { Waterfall3DRenderer } from 'sci-plot/plugins/3d';
+import { Waterfall3DRenderer } from 'velo-plot/plugins/3d';
 ```
 
 ## Specialized Renderer Classes

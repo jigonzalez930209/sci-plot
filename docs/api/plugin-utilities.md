@@ -18,7 +18,7 @@ Provides a centralized system for managing keyboard interactions.
 
 ### Basic Usage
 ```typescript
-import { PluginKeyboard } from 'sci-plot/plugins';
+import { PluginKeyboard } from 'velo-plot/plugins';
 
 await chart.use(PluginKeyboard({
   extraShortcuts: [
@@ -41,7 +41,7 @@ Enables localization for date formats, number separators, and UI strings (toolti
 
 ### Basic Usage
 ```typescript
-import { PluginI18n } from 'sci-plot/plugins';
+import { PluginI18n } from 'velo-plot/plugins';
 
 await chart.use(PluginI18n({
   locale: 'de-DE', // German formatting
@@ -64,7 +64,7 @@ Allows users to copy chart data directly to their system clipboard for use in Ex
 
 ### Basic Usage
 ```typescript
-import { PluginClipboard } from 'sci-plot/plugins';
+import { PluginClipboard } from 'velo-plot/plugins';
 
 await chart.use(PluginClipboard({
   format: 'csv',
@@ -81,7 +81,7 @@ Shows a customizable loading state while data is being fetched or processed.
 
 ### Basic Usage
 ```typescript
-import { PluginLoading } from 'sci-plot/plugins';
+import { PluginLoading } from 'velo-plot/plugins';
 
 await chart.use(PluginLoading({
   type: 'spinner',

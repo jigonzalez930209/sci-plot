@@ -6,8 +6,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        'sci-plot': resolve(__dirname, 'src/index.core.ts'),
-        'sci-plot.full': resolve(__dirname, 'src/index.ts'),
+        'velo-plot': resolve(__dirname, 'src/index.core.ts'),
+        'velo-plot.full': resolve(__dirname, 'src/index.ts'),
         'plugins/3d': resolve(__dirname, 'src/plugins/3d/index.ts'),
         'plugins/gpu': resolve(__dirname, 'src/plugins/gpu/index.ts'),
         'plugins/analysis': resolve(__dirname, 'src/plugins/analysis/index.ts'),

@@ -112,7 +112,7 @@ import {
   MIDNIGHT_THEME,
   ELECTROCHEM_THEME,
   DEFAULT_THEME,
-} from 'sci-plot'
+} from 'velo-plot'
 
 // Use directly
 createChart({
@@ -124,7 +124,7 @@ createChart({
 ## Getting Theme by Name
 
 ```typescript
-import { getThemeByName } from 'sci-plot'
+import { getThemeByName } from 'velo-plot'
 
 const theme = getThemeByName('midnight')
 ```

@@ -219,7 +219,7 @@ function onNewData(newPoints) {
 For very large datasets, use the built-in downsampling:
 
 ```typescript
-import { downsampleLTTB } from 'sci-plot'
+import { downsampleLTTB } from 'velo-plot'
 
 // Reduce 10M points to 10k for display
 const { x: sampledX, y: sampledY } = downsampleLTTB(

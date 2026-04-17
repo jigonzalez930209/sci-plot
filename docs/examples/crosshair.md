@@ -69,7 +69,7 @@ chart.enableCursor({
 ## Complete Example
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),

@@ -1,5 +1,5 @@
-import { createChart } from 'sci-plot';
-import { PluginTools } from 'sci-plot/plugins/tools';
+import { createChart } from 'velo-plot';
+import { PluginTools } from 'velo-plot/plugins/tools';
 
 /**
  * Basic chart setup with a line series and tooltips

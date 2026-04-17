@@ -1,13 +1,13 @@
 ---
-description: Architecture of sci-plot for AI Agents
+description: Architecture of velo-plot for AI Agents
 ---
-# AI SYSTEM INSTRUCTION: sci-plot Architecture
+# AI SYSTEM INSTRUCTION: velo-plot Architecture
 
 **CRITICAL DIRECTIVE**: This document defines the engine's architecture. No external AI agent should attempt to rewrite the WebGL buffers or the core charting math unless explicitly instructed.
 
 ## 1. The Rendering Pipeline
 
-`sci-plot` relies on a pure WebGL rendering pipeline designed for raw data throughput.
+`velo-plot` relies on a pure WebGL rendering pipeline designed for raw data throughput.
 
 - **Data Buffers**: Data pushed to a series is transferred to the GPU via WebGL Buffers (`gl.bufferData`). 
 - **Shaders**: Fragment and Vertex shaders are heavily optimized. Avoid modifying GLSL files unless you are solving an explicit graphical issue.

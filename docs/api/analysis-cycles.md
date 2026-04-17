@@ -5,7 +5,7 @@ description: Detect cycles in oscillating or periodic data with Sci Plot's detec
 
 # Cycle Detection
 
-Detect cycles in oscillating or periodic data. Available via `import { detectCycles } from 'sci-plot'` or `chart.analysis.detectCycles()`.
+Detect cycles in oscillating or periodic data. Available via `import { detectCycles } from 'velo-plot'` or `chart.analysis.detectCycles()`.
 
 ::: tip Requirement
 Cycle detection is part of the `PluginAnalysis`.
@@ -14,7 +14,7 @@ Cycle detection is part of the `PluginAnalysis`.
 ## detectCycles
 
 ```typescript
-import { detectCycles } from 'sci-plot';
+import { detectCycles } from 'velo-plot';
 
 const cycles = detectCycles(signal, 0.005);
 // Or via chart:
@@ -51,7 +51,7 @@ The algorithm detects cycles by:
 ### Example: Basic Usage
 
 ```typescript
-import { detectCycles } from 'sci-plot'
+import { detectCycles } from 'velo-plot'
 
 // Oscillating signal (e.g., sine wave)
 const signal = new Float32Array(1000)
@@ -71,7 +71,7 @@ cycles.forEach(c => {
 ### Example: Visualize Each Cycle
 
 ```typescript
-import { detectCycles, generateCycleColors } from 'sci-plot'
+import { detectCycles, generateCycleColors } from 'velo-plot'
 
 const cycles = detectCycles(xData)
 const colors = generateCycleColors(cycles.length)
@@ -92,7 +92,7 @@ cycles.forEach((cycle, i) => {
 ### Example: Cycle Statistics
 
 ```typescript
-import { detectCycles, calculateStats } from 'sci-plot'
+import { detectCycles, calculateStats } from 'velo-plot'
 
 const cycles = detectCycles(xData)
 
@@ -128,7 +128,7 @@ Array of HSL color strings with evenly distributed hues.
 ### Example
 
 ```typescript
-import { generateCycleColors } from 'sci-plot'
+import { generateCycleColors } from 'velo-plot'
 
 const colors = generateCycleColors(5)
 // ['hsl(0, 70%, 55%)', 'hsl(72, 70%, 55%)', 'hsl(144, 70%, 55%)', ...]

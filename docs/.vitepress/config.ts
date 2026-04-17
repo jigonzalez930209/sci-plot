@@ -4,7 +4,7 @@ import path from "path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const base = '/sci-plot/';
+const base = '/velo-plot/';
 
 export default defineConfig({
   base,
@@ -41,7 +41,7 @@ export default defineConfig({
       { text: "Examples", link: "/examples/" },
       {
         text: "Contributing",
-        link: "https://github.com/jigonzalez930209/sci-plot/blob/main/CONTRIBUTING.md",
+        link: "https://github.com/jigonzalez930209/velo-plot/blob/main/CONTRIBUTING.md",
       },
     ],
     sidebar: {
@@ -159,7 +159,7 @@ export default defineConfig({
         {
           text: "Ecosystem",
           items: [
-            { text: "React Components", link: "/api/react-sci-plot" },
+            { text: "React Components", link: "/api/react-velo-plot" },
             { text: "React Hooks", link: "/api/react-hook" },
             { text: "Theming API", link: "/api/themes" },
             { text: "Chart Sync", link: "/api/chart-sync" },
@@ -296,7 +296,7 @@ export default defineConfig({
     socialLinks: [
       {
         icon: "github",
-        link: "https://github.com/jigonzalez930209/sci-plot",
+        link: "https://github.com/jigonzalez930209/velo-plot",
       },
     ],
     footer: {

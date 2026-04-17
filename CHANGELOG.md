@@ -147,7 +147,7 @@ All notable changes to this project will be documented in this file.
 - **Comprehensive Tooltip System**: New tooltip module featuring customizable templates, smart positioning, and multi-series support.
 
 ### Changed
-- **Package Renaming**: Transitioned to `@jigonzalez930209/sci-plot` for better package management.
+- **Package Renaming**: Transitioned to `@jigonzalez930209/velo-plot` for better package management.
 
 ## [0.3.0] - 2026-01-01
 
@@ -194,7 +194,7 @@ All notable changes to this project will be documented in this file.
 ## [0.1.0] - 2025-12-30
 
 ### Added
-- Initial standalone release of sci-plot.
+- Initial standalone release of velo-plot.
 - WebGL specialized renderer for scientific data.
 - React components and hooks support.
 - Support for Panning and Box Zoom.
