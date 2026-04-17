@@ -10,7 +10,7 @@ When dealing with ultra-high-speed data (e.g., 100kHz sensors), the `Backpressur
 - `pause`: Pauses processing until the buffer drains.
 
 ```typescript
-import { createBackpressureManager } from 'sci-plot';
+import { createBackpressureManager } from 'velo-plot';
 
 const bp = createBackpressureManager(50000, 'drop-oldest');
 
@@ -28,7 +28,7 @@ setInterval(() => {
 Use `CircularBuffer` for high-performance memory management without frequent GC sweeps.
 
 ```typescript
-import { CircularBuffer } from 'sci-plot';
+import { CircularBuffer } from 'velo-plot';
 
 const buffer = new CircularBuffer(1000); // Fixed size
 buffer.pushOverwrite(newPoint); // Efficient O(1) push or overwrite
@@ -38,7 +38,7 @@ buffer.pushOverwrite(newPoint); // Efficient O(1) push or overwrite
 The `PluginOffscreen` allows the entire chart rendering to happen in a Web Worker, preventing the main thread from locking up during complex visual updates.
 
 ```typescript
-import { PluginOffscreen } from 'sci-plot/plugins/offscreen';
+import { PluginOffscreen } from 'velo-plot/plugins/offscreen';
 
 chart.use(PluginOffscreen({
   workerUrl: '/workers/chart-worker.js'
