@@ -15,7 +15,7 @@ import { ref } from 'vue'
 ### Setup
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 const chart = createChart({
   container,
