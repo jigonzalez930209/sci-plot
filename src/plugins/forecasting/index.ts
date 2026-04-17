@@ -20,9 +20,9 @@ import type {
 } from '../types';
 
 const manifestForecasting: PluginManifest = {
-  name: "sci-plot-forecasting",
+  name: "velo-plot-forecasting",
   version: "1.0.0",
-  description: "Time series forecasting for sci-plot",
+  description: "Time series forecasting for velo-plot",
   provides: ["analysis", "forecasting"],
   tags: ["statistics", "forecasting", "analysis"],
 };
