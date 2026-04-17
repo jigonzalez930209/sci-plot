@@ -18,7 +18,7 @@ Use the selector below to switch between different physical models. The **Auto-S
 Unlike the basic `addFitLine`, the `PluginRegression` exposes a full API for scientific analysis.
 
 ```typescript
-import { PluginRegression } from 'sci-plot/plugins';
+import { PluginRegression } from 'velo-plot/plugins';
 
 // 1. Comparison of multiple models
 const candidates = ['linear', 'polynomial', 'exponential', 'gaussian'];
