@@ -5,6 +5,7 @@ A high-performance, WebGL-powered scientific charting engine built for precision
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NPM Version](https://img.shields.io/npm/v/sci-plot.svg)](https://www.npmjs.com/package/sci-plot)
 
+
 ## ✨ Features
 
 -   **🚀 High Performance**: Render millions of data points at 60 FPS using a specialized raw WebGL renderer.
