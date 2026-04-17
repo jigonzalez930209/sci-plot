@@ -12,7 +12,7 @@ Link multiple charts together so they share zoom, pan, and cursor states. Perfec
 ### Link Two Charts
 
 ```typescript
-import { createChart, linkCharts } from 'sci-plot';
+import { createChart, linkCharts } from 'velo-plot';
 
 const chart1 = createChart({ container: document.getElementById('chart1') });
 const chart2 = createChart({ container: document.getElementById('chart2') });
@@ -24,7 +24,7 @@ const group = linkCharts(chart1, chart2);
 ### Create a Chart Group
 
 ```typescript
-import { createChartGroup } from 'sci-plot';
+import { createChartGroup } from 'velo-plot';
 
 const group = createChartGroup([chart1, chart2, chart3], {
   axis: 'x',           // Sync X-axis only (default)
@@ -71,7 +71,7 @@ createChartGroup([chart1, chart2], {
 One chart controls another, but not vice versa:
 
 ```typescript
-import { createMasterSlave } from 'sci-plot';
+import { createMasterSlave } from 'velo-plot';
 
 // chart1 controls chart2, but chart2 doesn't affect chart1
 const group = createMasterSlave(chart1, chart2, 'x');
