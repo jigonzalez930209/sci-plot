@@ -11,7 +11,7 @@ import type {
 import type { ChartPlugin, PluginContext, PluginManifest } from "../types";
 
 const manifest: PluginManifest = {
-  name: "sci-plot-offscreen",
+  name: "velo-plot-offscreen",
   version: "1.0.0",
   description: "Offscreen rendering support with worker-ready scaffolding",
   provides: ["performance", "offscreen"],
