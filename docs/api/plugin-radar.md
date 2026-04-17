@@ -10,8 +10,8 @@ The `PluginRadar` allows you to create high-performance Radar (Spider) charts. T
 ## Installation
 
 ```typescript
-import { createChart } from 'sci-plot';
-import { PluginRadar } from 'sci-plot/plugins';
+import { createChart } from 'velo-plot';
+import { PluginRadar } from 'velo-plot/plugins';
 
 const chart = createChart({ container });
 
