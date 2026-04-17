@@ -19,7 +19,7 @@ The ROI plugin provides advanced interactive selection tools for scientific data
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginROI } from 'sci-plot';
+import { createChart, PluginROI } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')!
