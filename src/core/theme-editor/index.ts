@@ -361,7 +361,7 @@ export class ThemeEditor {
       baseTheme: THEME_PRESETS[0].theme,
       livePreview: true,
       showAdvanced: false,
-      className: 'sci-plot-theme-editor',
+      className: 'velo-plot-theme-editor',
       onChange: undefined,
       onExport: undefined,
       ...options,
