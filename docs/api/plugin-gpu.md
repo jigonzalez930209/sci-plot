@@ -18,7 +18,7 @@ The GPU plugin allows you to unlock specialized hardware acceleration features. 
 ## Basic Usage
 
 ```typescript
-import { createChart, PluginGpu } from 'sci-plot';
+import { createChart, PluginGpu } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')!
