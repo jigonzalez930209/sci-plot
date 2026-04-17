@@ -19,7 +19,7 @@ The Anomaly Detection plugin provides real-time detection of outliers and anomal
 ## Installation
 
 ```typescript
-import { createChart, PluginAnomalyDetection } from 'sci-plot';
+import { createChart, PluginAnomalyDetection } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart')
