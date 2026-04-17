@@ -45,7 +45,7 @@ export async function examplePerformanceAndAnalysis(container: HTMLDivElement) {
     });
 
     // 4. Use the analysis API via the plugin context
-    const analysisPlugin = (chart as any).getPlugin("sci-plot-analysis");
+    const analysisPlugin = (chart as any).getPlugin("velo-plot-analysis");
 
     // Simulate real-time data update
     setInterval(() => {
@@ -82,7 +82,7 @@ export async function exampleAdvancedStreaming(container: HTMLDivElement) {
     }));
 
     // 2. Configure a WebSocket stream (Mocked here)
-    const streaming = (chart as any).getPlugin("sci-plot-streaming");
+    const streaming = (chart as any).getPlugin("velo-plot-streaming");
 
     if (streaming) {
         // Prepare chart for incoming data
