@@ -1,5 +1,5 @@
 ---
-name: sci-plot
+name: velo-plot
 description: High-performance scientific charting and data analysis using Sci Plot (WebGL).
 ---
 
@@ -12,7 +12,7 @@ This skill allows agents to integrate and manage the **Sci Plot**, a high-perfor
 To initialize a chart in a DOM element:
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart-id'),
