@@ -18,7 +18,7 @@ This example shows an IR-style spectrum where wavenumber descends from left to r
 ## Configuration
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
