@@ -5,7 +5,7 @@ The engine supports multiple locales for numbers, dates, and UI labels.
 
 ### Global & Per-Chart Settings
 ```typescript
-import { setGlobalLocale } from 'sci-plot';
+import { setGlobalLocale } from 'velo-plot';
 
 setGlobalLocale('es-ES'); // Global setting
 
@@ -22,7 +22,7 @@ const chart = createChart({
 The `PluginKeyboard` provides a centralized manager for hotkeys.
 
 ```typescript
-import { PluginKeyboard } from 'sci-plot/plugins/keyboard';
+import { PluginKeyboard } from 'velo-plot/plugins/keyboard';
 
 chart.use(PluginKeyboard({
   extraShortcuts: [
@@ -36,7 +36,7 @@ chart.use(PluginKeyboard({
 The `PluginClipboard` allows users to copy chart data directly to Excel, MATLAB, or other tools.
 
 ```typescript
-import { PluginClipboard } from 'sci-plot/plugins/clipboard';
+import { PluginClipboard } from 'velo-plot/plugins/clipboard';
 
 chart.use(PluginClipboard({
   format: 'csv', // 'csv', 'tsv', 'json'
