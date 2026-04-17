@@ -17,7 +17,7 @@ The statistics panel is displayed in the bottom-right corner. It calculates valu
 The statistics panel is a built-in UI component that can be enabled during chart creation.
 
 ```typescript
-import { createChart } from 'sci-plot'
+import { createChart } from 'velo-plot'
 
 const chart = createChart({
   container: document.getElementById('chart'),
