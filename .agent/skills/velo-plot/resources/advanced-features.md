@@ -19,11 +19,11 @@ chart.addSeries({
 });
 ```
 
-## Chart Synchronization (`sci-plot-sync`)
+## Chart Synchronization (`velo-plot-sync`)
 Synchronize zooming and panning across multiple chart instances.
 
 ```typescript
-import { PluginSync } from 'sci-plot/plugins/sync';
+import { PluginSync } from 'velo-plot/plugins/sync';
 
 const syncGroup = 'experiment-1';
 chart1.use(PluginSync({ group: syncGroup }));
@@ -51,7 +51,7 @@ chart.addAnnotation({
 For datasets exceeding 10M points, use `PluginVirtualization`. It dynamically manages memory and Level-of-Detail (LoD) to maintain 60 FPS.
 
 ```typescript
-import { PluginVirtualization } from 'sci-plot/plugins/virtualization';
+import { PluginVirtualization } from 'velo-plot/plugins/virtualization';
 
 chart.use(PluginVirtualization({
   cacheSize: '2GB',
@@ -63,7 +63,7 @@ chart.use(PluginVirtualization({
 Record high-resolution videos of your animated charts or real-time experiments.
 
 ```typescript
-import { PluginVideoRecorder } from 'sci-plot/plugins/video-recorder';
+import { PluginVideoRecorder } from 'velo-plot/plugins/video-recorder';
 
 chart.use(PluginVideoRecorder());
 chart.videoRecorder.start({ fps: 60, quality: 1.0 });
