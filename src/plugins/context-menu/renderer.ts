@@ -137,7 +137,7 @@ export class MenuRenderer {
 
   private createMenu(items: MenuItem[], context: MenuContext): HTMLDivElement {
     const menu = document.createElement('div');
-    menu.className = 'sci-plot-context-menu';
+    menu.className = 'velo-plot-context-menu';
     menu.style.cssText = this.getMenuStyle();
 
     items.forEach(item => {
@@ -157,7 +157,7 @@ export class MenuRenderer {
     // Separator
     if (item.type === 'separator') {
       const sep = document.createElement('div');
-      sep.className = 'sci-plot-menu-separator';
+      sep.className = 'velo-plot-menu-separator';
       sep.style.cssText = `
         height: 1px;
         margin: 4px 8px;
@@ -168,7 +168,7 @@ export class MenuRenderer {
 
     // Regular item
     const el = document.createElement('div');
-    el.className = 'sci-plot-menu-item';
+    el.className = 'velo-plot-menu-item';
     
     const isDisabled = 'disabled' in item && Boolean(item.disabled);
     el.style.cssText = this.getItemStyle(isDisabled);
@@ -176,7 +176,7 @@ export class MenuRenderer {
     // Icon
     if ('icon' in item && item.icon) {
       const icon = document.createElement('span');
-      icon.className = 'sci-plot-menu-icon';
+      icon.className = 'velo-plot-menu-icon';
       icon.style.cssText = 'margin-right: 12px; width: 16px; text-align: center;';
       icon.textContent = item.icon;
       el.appendChild(icon);
@@ -184,7 +184,7 @@ export class MenuRenderer {
 
     // Label
     const label = document.createElement('span');
-    label.className = 'sci-plot-menu-label';
+    label.className = 'velo-plot-menu-label';
     label.style.cssText = 'flex: 1;';
     label.textContent = item.label;
     el.appendChild(label);
@@ -207,7 +207,7 @@ export class MenuRenderer {
     // Shortcut
     if ('shortcut' in item && item.shortcut) {
       const shortcut = document.createElement('span');
-      shortcut.className = 'sci-plot-menu-shortcut';
+      shortcut.className = 'velo-plot-menu-shortcut';
       shortcut.style.cssText = `
         margin-left: 24px;
         opacity: 0.5;
@@ -256,11 +256,11 @@ export class MenuRenderer {
 
   private showSubmenu(parent: HTMLElement, items: MenuItem[], context: MenuContext): void {
     // Remove any existing submenu
-    const existing = parent.querySelector('.sci-plot-submenu');
+    const existing = parent.querySelector('.velo-plot-submenu');
     if (existing) return;
 
     const submenu = document.createElement('div');
-    submenu.className = 'sci-plot-submenu';
+    submenu.className = 'velo-plot-submenu';
     submenu.style.cssText = `
       ${this.getMenuStyle()}
       position: absolute;
@@ -279,7 +279,7 @@ export class MenuRenderer {
   }
 
   private hideSubmenu(parent: HTMLElement, e: MouseEvent): void {
-    const submenu = parent.querySelector('.sci-plot-submenu');
+    const submenu = parent.querySelector('.velo-plot-submenu');
     if (!submenu) return;
 
     // Check if moving to submenu
