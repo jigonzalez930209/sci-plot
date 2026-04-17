@@ -215,7 +215,7 @@ Nuevos tipos de visualización altamente especializados para KPIs y flujos.
 
 | Export | Description |
 |--------|-------------|
-| [`SciPlot`](/api/react-sci-plot) | React component |
+| [`SciPlot`](/api/react-velo-plot) | React component |
 | [`useSciPlot`](/api/react-hook) | React hook for imperative control |
 
 ## Data Analysis
