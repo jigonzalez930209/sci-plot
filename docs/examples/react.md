@@ -15,7 +15,7 @@ import { ref } from 'vue'
 The simplest way to use Sci Plot in React:
 
 ```tsx
-import { SciPlot } from 'sci-plot/react'
+import { SciPlot } from 'velo-plot/react'
 
 function MyChart() {
   const series = [{
@@ -131,7 +131,7 @@ For advanced control, use a ref to access the chart instance:
 
 ```tsx
 import { useRef } from 'react'
-import { SciPlot, type SciPlotRef } from 'sci-plot/react'
+import { SciPlot, type SciPlotRef } from 'velo-plot/react'
 
 function ControlledChart() {
   const chartRef = useRef<SciPlotRef>(null)
@@ -187,7 +187,7 @@ For high-performance streaming, use refs to avoid React re-renders:
 
 ```tsx
 import { useRef, useEffect, useState } from 'react'
-import { SciPlot, type SciPlotRef } from 'sci-plot/react'
+import { SciPlot, type SciPlotRef } from 'velo-plot/react'
 
 function RealtimeChart() {
   const chartRef = useRef<SciPlotRef>(null)
@@ -259,7 +259,7 @@ function RealtimeChart() {
 For more control, use the hook directly:
 
 ```tsx
-import { useSciPlot } from 'sci-plot/react'
+import { useSciPlot } from 'velo-plot/react'
 
 function HookChart() {
   const { 
