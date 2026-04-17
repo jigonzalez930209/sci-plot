@@ -104,7 +104,7 @@ export class DebugOverlay {
       opacity: 0.8,
       fontSize: 11,
       updateInterval: 250,
-      className: 'sci-plot-debug-overlay',
+      className: 'velo-plot-debug-overlay',
       ...options,
     };
   }
@@ -403,7 +403,7 @@ export function createDebugOverlay(
  * Quick enable debug mode (attaches to first chart container found)
  */
 export function enableDebugMode(options?: DebugOverlayOptions): DebugOverlay | null {
-  const container = document.querySelector('.sci-plot-container') as HTMLElement;
+  const container = document.querySelector('.velo-plot-container') as HTMLElement;
   if (!container) {
     console.warn('[SciPlot] No chart container found for debug overlay');
     return null;
