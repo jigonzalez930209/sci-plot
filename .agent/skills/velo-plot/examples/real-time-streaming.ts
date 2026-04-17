@@ -1,4 +1,4 @@
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 /**
  * High-performance real-time streaming example
