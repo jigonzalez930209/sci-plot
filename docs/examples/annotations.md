@@ -22,7 +22,7 @@ This demo showcases all annotation types available in Sci Plot. The chart displa
 ## Code
 
 ```typescript
-import { createChart } from 'sci-plot';
+import { createChart } from 'velo-plot';
 
 const chart = createChart({
   container: document.getElementById('chart'),
