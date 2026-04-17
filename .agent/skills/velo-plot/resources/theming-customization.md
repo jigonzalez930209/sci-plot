@@ -12,7 +12,7 @@ Sci Plot uses a powerful CSS-in-JS design system that allows for global themes a
 Use `createTheme` to define a brand-new aesthetic.
 
 ```typescript
-import { createTheme } from 'sci-plot';
+import { createTheme } from 'velo-plot';
 
 const myCustomTheme = createTheme({
   name: 'cyberpunk',
