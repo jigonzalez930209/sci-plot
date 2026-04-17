@@ -21,9 +21,9 @@ import type {
 } from './types';
 
 const manifestSnapshot: PluginManifest = {
-  name: "sci-plot-snapshot",
+  name: "velo-plot-snapshot",
   version: "1.0.0",
-  description: "High-resolution image export for sci-plot",
+  description: "High-resolution image export for velo-plot",
   provides: ["export", "snapshot"],
   tags: ["snapshot", "export", "publication", "image"],
 };
@@ -36,7 +36,7 @@ const DEFAULT_OPTIONS: Required<SnapshotExportOptions> = {
   includeOverlays: true,
   watermarkText: '',
   transparent: false,
-  fileName: 'sci-plot-snapshot-export',
+  fileName: 'velo-plot-snapshot-export',
   download: false
 };
 
