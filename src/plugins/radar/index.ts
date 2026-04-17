@@ -12,9 +12,9 @@ import type {
 } from '../types';
 
 const manifestRadar: PluginManifest = {
-  name: "sci-plot-radar",
+  name: "velo-plot-radar",
   version: "1.0.0",
-  description: "Advanced Radar/Spider Charts for sci-plot",
+  description: "Advanced Radar/Spider Charts for velo-plot",
   provides: ["radar", "spider-chart"],
   tags: ["radar", "visualization", "comparison"],
 };
