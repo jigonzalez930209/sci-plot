@@ -12,8 +12,8 @@ The Statistics Panel provides real-time statistical calculations for all visible
 The Statistics Panel is provided by the `StatsPlugin`. You must load this plugin to see the panel.
 
 ```typescript
-import { createChart } from 'sci-plot';
-import { StatsPlugin } from 'sci-plot/plugins';
+import { createChart } from 'velo-plot';
+import { StatsPlugin } from 'velo-plot/plugins';
 
 const chart = createChart({
   container: document.getElementById('chart'),
@@ -131,7 +131,7 @@ chart.setTheme('light');
 You can access statistics programmatically using the analysis utilities:
 
 ```typescript
-import { calculateStats, integrate } from 'sci-plot';
+import { calculateStats, integrate } from 'velo-plot';
 
 const series = chart.getSeries('my-data');
 const data = series.getData();
